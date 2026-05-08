@@ -1,0 +1,35 @@
+{
+  "metrics": {
+    "totalRevenue": "₹128,430",
+    "revenueGrowth": "+12.5%",
+    "activeAgents": "1,240",
+    "agentGrowth": "+8.2%",
+    "activePackages": "452",
+    "packageGrowth": "+15.3%",
+    "totalSubscribers": "8,920",
+    "subscriberGrowth": "+5.4%"
+  },
+  "recentActivities": [
+    {
+      "id": "1",
+      "user": "Rahul Sharma",
+      "action": "New agent registration",
+      "time": "2 mins ago",
+      "status": "pending"
+    },
+    {
+      "id": "2",
+      "user": "Global Travels",
+      "action": "Package approved: Bali Getaway",
+      "time": "15 mins ago",
+      "status": "completed"
+    },
+    {
+      "id": "3",
+      "user": "Anita Desai",
+      "action": "Subscription upgraded to Premium",
+      "time": "1 hour ago",
+      "status": "completed"
+    }
+  ]
+}

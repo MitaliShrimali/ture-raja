@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F8F7F4;
+  --foreground: #1A1A24;
+  --primary: #E8460A;
+  --primary-hover: #D13D08;
+  --card: #FFFFFF;
+  --muted: #6B6B7A;
+  --border: rgba(0,0,0,0.06);
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+  
+  --font-syne: var(--font-syne);
+  --font-dm-sans: var(--font-dm-sans);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-card: var(--card);
+  --color-muted-text: var(--muted);
+  --color-border-soft: var(--border);
+  
+  --font-syne: var(--font-syne);
+  --font-dm-sans: var(--font-dm-sans);
+  
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --shadow-premium: 0 10px 40px rgba(0, 0, 0, 0.05);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-dm-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .font-syne {
+  font-family: var(--font-syne), sans-serif;
+}
+
+@layer utilities {
+  .container-custom {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  
+  .glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .hover-lift {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-8px);
+  }
+
+  .section-spacing {
+    padding: 60px 0;
+  }
+
+  @media (min-width: 1024px) {
+    .section-spacing {
+      padding: 100px 0;
+    }
+  }
+}

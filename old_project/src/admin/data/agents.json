@@ -1,0 +1,20 @@
+[
+  {
+    "id": "A1",
+    "agencyName": "Himalayan Treks",
+    "owner": "Suresh Raina",
+    "status": "Verified",
+    "location": "Manali",
+    "packages": 12,
+    "revenue": "₹45,200"
+  },
+  {
+    "id": "A2",
+    "agencyName": "Goa Beach Travels",
+    "owner": "Rohan Dsouza",
+    "status": "Pending",
+    "location": "Goa",
+    "packages": 5,
+    "revenue": "₹12,800"
+  }
+]
