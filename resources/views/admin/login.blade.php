@@ -25,36 +25,13 @@
     </style>
 </head>
 <body class="bg-white min-h-screen relative overflow-x-hidden">
-    <!-- Floating Navbar -->
-    <div class="fixed top-8 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-6">
-        <div class="glass rounded-full py-3 px-8 flex items-center justify-between shadow-lg shadow-black/5">
-            <div class="flex items-center gap-8">
-                <a href="#" class="text-[10px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary transition-colors flex items-center gap-2">
-                    <i data-lucide="layout-dashboard" size="14"></i> DASHBOARD
-                </a>
-                <a href="#" class="text-[10px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary transition-colors flex items-center gap-2">
-                    <i data-lucide="user" size="14"></i> PROFILE
-                </a>
-                <a href="#" class="text-[10px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary transition-colors flex items-center gap-2">
-                    <i data-lucide="user-plus" size="14"></i> SIGN UP
-                </a>
-                <a href="#" class="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
-                    <i data-lucide="log-in" size="14"></i> SIGN IN
-                </a>
-            </div>
-            <button class="bg-[#E8460A] text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-primary-hover transition-all">
-                Contact Admin
-            </button>
-        </div>
-    </div>
-
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen" x-data="{ showPassword: false }">
         <!-- Form Side -->
-        <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-32 pb-12">
+        <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12">
             <div class="max-w-md w-full mx-auto space-y-10">
                 <div class="space-y-4">
-                    <h1 class="text-4xl font-black text-foreground tracking-tight">Sign In</h1>
-                    <p class="text-muted-text font-medium">Enter your email and password to sign in!</p>
+                    <h1 class="text-4xl font-black text-foreground tracking-tight font-heading">Sign In</h1>
+                    <p class="text-muted-text font-medium">Enter your email and password to access the admin dashboard!</p>
                 </div>
 
                 <!-- Google Sign In -->
@@ -78,14 +55,14 @@
                 <form action="/admin/dashboard" class="space-y-6">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email<span class="text-primary">*</span></label>
-                        <input type="email" placeholder="mail@simmmple.com" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
+                        <input type="email" placeholder="mail@tourraja.com" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Password<span class="text-primary">*</span></label>
                         <div class="relative">
-                            <input type="password" placeholder="Min. 8 characters" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 pr-12 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
-                            <button type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-muted-text hover:text-primary transition-colors">
-                                <i data-lucide="eye" size="18"></i>
+                            <input :type="showPassword ? 'text' : 'password'" placeholder="Min. 8 characters" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 pr-12 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
+                            <button @click="showPassword = !showPassword" type="button" class="absolute right-4 top-1/2 -translate-y-1/2 text-muted-text hover:text-primary transition-colors">
+                                <i :data-lucide="showPassword ? 'eye-off' : 'eye'" size="18"></i>
                             </button>
                         </div>
                     </div>

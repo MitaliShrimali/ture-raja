@@ -1,15 +1,29 @@
 @props([
-    'title',
-    'image',
+    'pkg' => null,
+    'title' => null,
+    'image' => null,
     'destination' => null,
-    'duration',
+    'duration' => null,
     'groupSize' => '4-6 guest',
-    'rating',
-    'reviews',
-    'price',
+    'rating' => '0',
+    'reviews' => '0',
+    'price' => 0,
     'oldPrice' => null,
     'badge' => null,
 ])
+
+@php
+    // If a pkg object is passed, extract properties from it
+    if ($pkg) {
+        $title = $title ?? ($pkg->title ?? $pkg['title'] ?? '');
+        $image = $image ?? ($pkg->image ?? $pkg['image'] ?? '');
+        $duration = $duration ?? ($pkg->duration ?? $pkg['duration'] ?? '');
+        $rating = $rating ?? ($pkg->rating ?? $pkg['rating'] ?? '0');
+        $reviews = $reviews ?? ($pkg->reviews ?? $pkg['reviews'] ?? '0');
+        $price = $price ?? ($pkg->price ?? $pkg['price'] ?? 0);
+        $badge = $badge ?? ($pkg->badge ?? $pkg['badge'] ?? null);
+    }
+@endphp
 
 <div {{ $attributes->merge(['class' => 'group bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50']) }}>
     <!-- Image Container -->
