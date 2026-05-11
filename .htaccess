@@ -6,15 +6,7 @@
     RewriteEngine On
     RewriteBase /tour-raja/
 
-    # Handle assets in the build folder
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^build/(.*)$ public/build/$1 [L]
-
-    # Handle other public assets
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^assets/(.*)$ public/assets/$1 [L]
-
-    # Handle the front controller
+    # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
