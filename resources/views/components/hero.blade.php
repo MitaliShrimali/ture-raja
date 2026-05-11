@@ -22,7 +22,7 @@
 
             <!-- Main Heading -->
             <div class="space-y-4">
-                <h1 class="text-4xl md:text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight font-heading animate-fade-in [animation-delay:400ms]">
+                <h1 class="text-4xl md:text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight font-heading animate-fade-in [animation-delay:400ms]" style="color: #ffffff !important;">
                     Discover Exclusive <br class="hidden sm:block">
                     <span class="text-primary">Travel Packages</span> <br class="hidden sm:block">
                     from Local Agents Near You!
