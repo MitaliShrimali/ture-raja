@@ -1,11 +1,17 @@
 <IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
     RewriteEngine On
+    RewriteBase /tour-raja/
 
-    # If the request is for an actual file or directory in the root, serve it
-    RewriteCond %{REQUEST_FILENAME} -f [OR]
-    RewriteCond %{REQUEST_FILENAME} -d
-    RewriteRule ^ - [L]
+    # Handle Trailing Slashes...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)/$ $1 [L,R=301]
 
-    # Otherwise, rewrite everything to the public folder
+    # Handle Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
