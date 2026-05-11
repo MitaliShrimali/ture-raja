@@ -48,7 +48,7 @@
             </div>
 
             <!-- Navigation Links -->
-            <nav class="flex-1 overflow-y-auto px-4 py-6 space-y-8 hide-scrollbar">
+            <nav id="sidebar-nav" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 hide-scrollbar">
                 @php
                     $menuGroups = [
                         [
@@ -176,6 +176,29 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+
+            const sidebarNav = document.getElementById('sidebar-nav');
+            if (sidebarNav) {
+                // Restore scroll position
+                const savedScroll = sessionStorage.getItem('sidebarScrollPos');
+                if (savedScroll !== null) {
+                    sidebarNav.scrollTop = parseInt(savedScroll, 10);
+                } else {
+                    const activeItem = sidebarNav.querySelector('.bg-primary');
+                    if (activeItem) {
+                        activeItem.scrollIntoView({ block: 'center' });
+                    }
+                }
+
+                // Save scroll position when it changes
+                let scrollTimeout;
+                sidebarNav.addEventListener('scroll', () => {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        sessionStorage.setItem('sidebarScrollPos', sidebarNav.scrollTop);
+                    }, 100);
+                }, { passive: true });
+            }
         });
     </script>
     <style>
