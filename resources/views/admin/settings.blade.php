@@ -5,7 +5,7 @@
     <div class="flex items-center justify-between">
         <div class="space-y-2">
             <p class="text-xs font-bold text-primary uppercase tracking-widest">Platform Admin</p>
-            <h1 class="text-5xl font-black text-foreground tracking-tight">System Settings</h1>
+            <h2 class="font-black text-foreground tracking-tight">System Settings</h2>
             <p class="text-muted-text font-medium">Configure core platform parameters and global defaults.</p>
         </div>
         <button class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">

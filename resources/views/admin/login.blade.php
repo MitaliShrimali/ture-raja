@@ -30,8 +30,8 @@
         <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12">
             <div class="max-w-md w-full mx-auto space-y-10">
                 <div class="space-y-4">
-                    <h1 class="text-4xl font-black text-foreground tracking-tight font-heading">Sign In</h1>
-                    <p class="text-muted-text font-medium">Enter your credentials to access the TourRaja Admin Central.</p>
+                    <h2 class="font-black text-foreground tracking-tight font-heading">Sign In</h2>
+                    <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Enter your credentials to access the TourRaja Admin Central.</p>
                 </div>
 
                 <!-- Main Form -->
@@ -83,7 +83,7 @@
         <div class="hidden lg:flex lg:w-[55%] orange-side items-center justify-center relative">
             <div class="text-center space-y-4">
                 <div class="flex items-center justify-center">
-                    <h2 class="text-7xl font-black text-white tracking-tighter flex items-center gap-2">
+                    <h2 class="font-black text-white tracking-tighter flex items-center gap-2">
                         tourraja
                         <div class="relative -top-6">
                             <i data-lucide="crown" class="text-white" size="32" stroke-width="3"></i>

@@ -3,7 +3,7 @@
 @section('content')
 <div class="space-y-10 pb-12">
     <div class="space-y-2">
-        <h1 class="text-5xl font-black text-foreground tracking-tight">Subscriber Management</h1>
+        <h2 class="font-black text-foreground tracking-tight">Subscriber Management</h2>
         <p class="text-muted-text font-medium">Oversee your community engagement and platform growth metrics.</p>
     </div>
 

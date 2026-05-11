@@ -4,8 +4,8 @@
 <div class="space-y-10 pb-12 max-w-7xl mx-auto">
     <!-- Header -->
     <div class="space-y-2">
-        <p class="text-xs font-bold text-primary uppercase tracking-widest">Admin / Management</p>
-        <h1 class="text-5xl font-black text-foreground tracking-tight">Onboard New Agent</h1>
+        <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Management</p>
+        <h2 class="font-black text-foreground tracking-tight">Onboard New Agent</h2>
         <p class="text-muted-text font-medium max-w-2xl">
             Expand the Horizon network by registering a new premium travel agent partner. All fields are required for secure portal access.
         </p>

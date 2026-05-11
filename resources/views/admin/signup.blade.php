@@ -53,8 +53,8 @@
         <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-32 pb-12">
             <div class="max-w-md w-full mx-auto space-y-10">
                 <div class="space-y-4">
-                    <h1 class="text-4xl font-black text-foreground tracking-tight">Sign Up</h1>
-                    <p class="text-muted-text font-medium">Join the TourRaja admin network today!</p>
+                    <h2 class="font-black text-foreground tracking-tight">Sign Up</h2>
+                    <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Join the TourRaja admin network today!</p>
                 </div>
 
                 <!-- Main Form -->
@@ -105,7 +105,7 @@
             <div class="text-center space-y-4">
                 <!-- Large Logo -->
                 <div class="flex items-center justify-center">
-                    <h2 class="text-7xl font-black text-white tracking-tighter flex items-center gap-2">
+                    <h2 class="font-black text-white tracking-tighter flex items-center gap-2">
                         tourraja
                         <div class="relative -top-6">
                             <i data-lucide="crown" class="text-white" size="32" stroke-width="3"></i>

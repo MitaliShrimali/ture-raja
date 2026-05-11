@@ -4,7 +4,7 @@
 <div class="space-y-10 pb-12">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
-            <h1 class="text-5xl font-black text-foreground tracking-tight">Subscription Plans</h1>
+            <h2 class="font-black text-foreground tracking-tight">Subscription Plans</h2>
             <p class="text-muted-text font-medium">Define and configure agent-tier subscription levels and benefits.</p>
         </div>
         <button class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
@@ -54,7 +54,7 @@
                             {{ $plan['name'] }}
                         </span>
                         <div class="flex items-baseline gap-1">
-                            <h2 class="text-5xl font-black text-foreground">{{ $plan['price'] }}</h2>
+                            <h2 class="font-black text-foreground">{{ $plan['price'] }}</h2>
                             <span class="text-muted-text font-bold text-sm">{{ $plan['period'] }}</span>
                         </div>
                     </div>

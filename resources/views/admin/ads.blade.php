@@ -10,7 +10,7 @@
         </div>
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div class="space-y-2">
-                <h1 class="text-5xl font-black text-foreground tracking-tight">Advertisement Campaigns</h1>
+                <h2 class="font-black text-foreground tracking-tight">Advertisement Campaigns</h2>
                 <p class="text-muted-text font-medium">Monitor, track, and optimize your global advertising reach.</p>
             </div>
             <button class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">

@@ -6,7 +6,7 @@
         <i data-lucide="hammer" size="40"></i>
     </div>
     <div class="space-y-2">
-        <h1 class="text-4xl font-black text-foreground tracking-tight">{{ $title }}</h1>
+        <h2 class="font-black text-foreground tracking-tight">{{ $title }}</h2>
         <p class="text-muted-text font-bold uppercase text-[10px] tracking-widest">
             This section is currently being provisioned
         </p>

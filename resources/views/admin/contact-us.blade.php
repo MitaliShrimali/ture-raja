@@ -4,7 +4,7 @@
 <div class="space-y-10 pb-12">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
-            <h1 class="text-5xl font-black text-foreground tracking-tight">Contact Inquiries</h1>
+            <h2 class="font-black text-foreground tracking-tight">Contact Inquiries</h2>
             <p class="text-muted-text font-medium">Manage traveler queries and support tickets efficiently.</p>
         </div>
         <button class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">

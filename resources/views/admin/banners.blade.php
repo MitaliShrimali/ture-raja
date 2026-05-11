@@ -10,7 +10,7 @@
         </div>
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div class="space-y-2">
-                <h1 class="text-5xl font-black text-foreground tracking-tight">Manage Banners</h1>
+                <h2 class="font-black text-foreground tracking-tight">Manage Banners</h2>
                 <p class="text-muted-text font-medium max-w-2xl">
                     Curate the first impression for your travelers. High-impact banners drive 40% more conversions.
                 </p>
@@ -122,7 +122,7 @@
                 <div class="absolute inset-0 bg-black/40 flex items-center px-16">
                     <div class="max-w-md space-y-6">
                         <span class="bg-primary px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Live Preview</span>
-                        <h2 class="text-4xl font-black text-white leading-tight">Discover the Soul of South India with Exclusive Tours</h2>
+                        <h2 class="font-black text-white leading-tight">Discover the Soul of South India with Exclusive Tours</h2>
                         <p class="text-white/80 font-medium">Tailor-made itineraries for the discerning explorer.</p>
                         <button class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-primary transition-all">
                             Explore Packages

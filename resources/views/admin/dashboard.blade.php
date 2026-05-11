@@ -4,9 +4,9 @@
 <div class="space-y-10 pb-12">
     <!-- Hero Header -->
     <section class="space-y-2">
-        <h1 class="text-5xl font-black font-syne text-foreground tracking-tight">
+        <h2 class="font-black font-syne text-foreground tracking-tight">
             Global Command Center
-        </h1>
+        </h2>
         <p class="text-lg text-muted-text font-medium">
             Monitoring platform performance across 12 regions • <span class="text-primary">Live Data</span>
         </p>

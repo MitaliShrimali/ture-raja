@@ -41,7 +41,7 @@
     <section class="py-16 lg:py-20 bg-background">
         <div class="container-custom">
             <!-- Header with Filters -->
-            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12 animate-fade-up">
+            <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12" style="z-index: 9999; position: relative;">
                 <div class="space-y-2">
                     <h2 class="text-3xl md:text-5xl font-black text-foreground tracking-tight font-heading">
                         Featured Travel Packages
@@ -52,39 +52,89 @@
                 </div>
 
                 <!-- Filters -->
-                <div class="flex flex-wrap items-center gap-3">
-                    @php
-                        $filters = [
-                            ['label' => 'Categories', 'icon' => 'chevron-down'],
-                            ['label' => 'Duration', 'icon' => 'chevron-down'],
-                            ['label' => 'Review / Rating', 'icon' => 'chevron-down'],
-                            ['label' => 'Price range', 'icon' => 'chevron-down'],
-                        ];
-                    @endphp
-                    @foreach($filters as $filter)
-                        <button class="px-5 py-2.5 rounded-full bg-white border border-border-soft text-foreground text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-all">
-                            {{ $filter['label'] }}
-                            <i data-lucide="{{ $filter['icon'] }}" size="14" class="opacity-50"></i>
+                <div class="flex flex-wrap items-center gap-3" id="filter-bar">
+                    <!-- Category Filter -->
+                    <div class="relative filter-dropdown">
+                        <button onclick="toggleDropdown('cat-menu')" class="px-5 py-2.5 rounded-full bg-white border border-border-soft text-foreground text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-all" id="cat-btn">
+                            Categories
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
-                    @endforeach
+                        <div id="cat-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl shadow-premium min-w-[160px] py-2" style="z-index: 9999;">
+                            <button onclick="applyFilter('category','all','cat-btn','Categories')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">All</button>
+                            <button onclick="applyFilter('category','domestic','cat-btn','Domestic')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">Domestic</button>
+                            <button onclick="applyFilter('category','international','cat-btn','International')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">International</button>
+                            <button onclick="applyFilter('category','religious','cat-btn','Religious')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">Religious</button>
+                            <button onclick="applyFilter('category','adventure','cat-btn','Adventure')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">Adventure</button>
+                        </div>
+                    </div>
+
+                    <!-- Duration Filter -->
+                    <div class="relative filter-dropdown">
+                        <button onclick="toggleDropdown('dur-menu')" class="px-5 py-2.5 rounded-full bg-white border border-border-soft text-foreground text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-all" id="dur-btn">
+                            Duration
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div id="dur-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl shadow-premium min-w-[170px] py-2" style="z-index: 9999;">
+                            <button onclick="applyFilter('duration','all','dur-btn','Duration')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">All</button>
+                            <button onclick="applyFilter('duration','1-3','dur-btn','1–3 Days')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">1–3 Days</button>
+                            <button onclick="applyFilter('duration','4-6','dur-btn','4–6 Days')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">4–6 Days</button>
+                            <button onclick="applyFilter('duration','7+','dur-btn','7+ Days')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">7+ Days</button>
+                        </div>
+                    </div>
+
+                    <!-- Rating Filter -->
+                    <div class="relative filter-dropdown">
+                        <button onclick="toggleDropdown('rat-menu')" class="px-5 py-2.5 rounded-full bg-white border border-border-soft text-foreground text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-all" id="rat-btn">
+                            Review / Rating
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div id="rat-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl shadow-premium min-w-[160px] py-2" style="z-index: 9999;">
+                            <button onclick="applyFilter('rating','all','rat-btn','Review / Rating')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">All</button>
+                            <button onclick="applyFilter('rating','4.8','rat-btn','⭐ 4.8+')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">⭐ 4.8+</button>
+                            <button onclick="applyFilter('rating','4.5','rat-btn','⭐ 4.5+')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">⭐ 4.5+</button>
+                            <button onclick="applyFilter('rating','4.0','rat-btn','⭐ 4.0+')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">⭐ 4.0+</button>
+                        </div>
+                    </div>
+
+                    <!-- Price Range Filter -->
+                    <div class="relative filter-dropdown">
+                        <button onclick="toggleDropdown('pri-menu')" class="px-5 py-2.5 rounded-full bg-white border border-border-soft text-foreground text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-all" id="pri-btn">
+                            Price range
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                        </button>
+                        <div id="pri-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl shadow-premium min-w-[180px] py-2" style="z-index: 9999;">
+                            <button onclick="applyFilter('price','all','pri-btn','Price range')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">All</button>
+                            <button onclick="applyFilter('price','0-20000','pri-btn','Under ₹20,000')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">Under ₹20,000</button>
+                            <button onclick="applyFilter('price','20000-40000','pri-btn','₹20K – ₹40K')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">₹20,000 – ₹40,000</button>
+                            <button onclick="applyFilter('price','40000+','pri-btn','₹40,000+')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">₹40,000+</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- No Results Message -->
+            <p id="no-results" class="hidden text-center text-text-muted font-bold py-20">No packages match your filters. <button onclick="resetFilters()" class="text-primary underline ml-1">Reset filters</button></p>
+
             <!-- Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10" id="packages-grid" style="position: relative; z-index: 1;">
                 @php
                     $packages = [
-                        ['title' => 'Monaco Luxury Tour Package', 'image' => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600', 'duration' => '2 days 3 nights', 'groupSize' => '4-6 guest', 'rating' => '4.96', 'reviews' => '672', 'price' => 44825, 'oldPrice' => 59825, 'badge' => 'Top Rated'],
-                        ['title' => 'Vietnam Tour Package', 'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=600', 'duration' => '3 days 3 nights', 'groupSize' => '2-3 guest', 'rating' => '4.91', 'reviews' => '670', 'price' => 17320, 'oldPrice' => 25320, 'badge' => 'Best Sale'],
-                        ['title' => 'Char Dham Yatra Package', 'image' => 'https://images.unsplash.com/photo-1596403204987-9323eb72322c?auto=format&fit=crop&q=80&w=600', 'duration' => '7 days 6 nights', 'groupSize' => '4-6 guest', 'rating' => '4.86', 'reviews' => '656', 'price' => 15463, 'oldPrice' => 15463, 'badge' => '25% Off'],
-                        ['title' => 'Goa Package', 'image' => 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=600', 'duration' => '2 days 3 nights', 'groupSize' => '4-6 guest', 'rating' => '4.74', 'reviews' => '631', 'price' => 14755, 'oldPrice' => 19825, 'badge' => 'Top Rated'],
-                        ['title' => 'Spiti Valley Package', 'image' => 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&q=80&w=600', 'duration' => '3 days 3 nights', 'groupSize' => '4-6 guest', 'rating' => '4.51', 'reviews' => '617', 'price' => 24840, 'oldPrice' => 31825, 'badge' => 'Best Sale'],
-                        ['title' => 'SWISS PARIS DELIGHT', 'image' => 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600', 'duration' => '7 days 6 nights', 'groupSize' => '4-6 guest', 'rating' => '4.29', 'reviews' => '608', 'price' => 51247, 'oldPrice' => null, 'badge' => '25% Off'],
+                        ['slug'=>'monaco-luxury-tour','title'=>'Monaco Luxury Tour Package','image'=>'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600','duration'=>'2 days 3 nights','duration_days'=>2,'groupSize'=>'4-6 guest','rating'=>'4.96','reviews'=>'672','price'=>44825,'oldPrice'=>59825,'badge'=>'Top Rated','category'=>'international'],
+                        ['slug'=>'vietnam-tour-package','title'=>'Vietnam Tour Package','image'=>'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=600','duration'=>'3 days 3 nights','duration_days'=>3,'groupSize'=>'2-3 guest','rating'=>'4.91','reviews'=>'670','price'=>17320,'oldPrice'=>25320,'badge'=>'Best Sale','category'=>'international'],
+                        ['slug'=>'char-dham-yatra','title'=>'Char Dham Yatra Package','image'=>'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=600','duration'=>'7 days 6 nights','duration_days'=>7,'groupSize'=>'4-6 guest','rating'=>'4.86','reviews'=>'656','price'=>15463,'oldPrice'=>19000,'badge'=>'25% Off','category'=>'religious'],
+                        ['slug'=>'goa-beach-package','title'=>'Goa Beach Holiday Package','image'=>'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=600','duration'=>'2 days 3 nights','duration_days'=>2,'groupSize'=>'4-6 guest','rating'=>'4.74','reviews'=>'631','price'=>14755,'oldPrice'=>19825,'badge'=>'Top Rated','category'=>'domestic'],
+                        ['slug'=>'spiti-valley-adventure','title'=>'Spiti Valley Package','image'=>'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&q=80&w=600','duration'=>'3 days 3 nights','duration_days'=>3,'groupSize'=>'4-6 guest','rating'=>'4.51','reviews'=>'617','price'=>24840,'oldPrice'=>31825,'badge'=>'Best Sale','category'=>'adventure'],
+                        ['slug'=>'swiss-paris-delight','title'=>'Swiss Paris Delight','image'=>'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600','duration'=>'7 days 6 nights','duration_days'=>7,'groupSize'=>'4-6 guest','rating'=>'4.29','reviews'=>'608','price'=>51247,'oldPrice'=>null,'badge'=>'25% Off','category'=>'international'],
                     ];
                 @endphp
 
                 @foreach($packages as $pkg)
-                    <div class="animate-fade-up" style="animation-delay: {{ $loop->index * 100 }}ms">
+                    <div class="animate-fade-up pkg-card"
+                         style="animation-delay: {{ $loop->index * 100 }}ms"
+                         data-category="{{ $pkg['category'] }}"
+                         data-duration="{{ $pkg['duration_days'] }}"
+                         data-rating="{{ $pkg['rating'] }}"
+                         data-price="{{ $pkg['price'] }}">
                         <x-package-card 
                             :title="$pkg['title']" 
                             :image="$pkg['image']" 
@@ -95,6 +145,7 @@
                             :price="$pkg['price']"
                             :oldPrice="$pkg['oldPrice']"
                             :badge="$pkg['badge']"
+                            :slug="$pkg['slug']"
                         />
                     </div>
                 @endforeach
@@ -405,26 +456,109 @@
     @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // ── Sliders ──────────────────────────────────────────────
             const setupSlider = (sliderId, prevBtnId, nextBtnId, scrollAmount = 400) => {
                 const slider = document.getElementById(sliderId);
                 const prevBtn = document.getElementById(prevBtnId);
                 const nextBtn = document.getElementById(nextBtnId);
-
                 if (!slider || !prevBtn || !nextBtn) return;
-
-                nextBtn.addEventListener('click', () => {
-                    slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-                });
-
-                prevBtn.addEventListener('click', () => {
-                    slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-                });
+                nextBtn.addEventListener('click', () => slider.scrollBy({ left: scrollAmount, behavior: 'smooth' }));
+                prevBtn.addEventListener('click', () => slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' }));
             };
-
             setupSlider('intl-slider', 'prev-intl', 'next-intl');
             setupSlider('dom-slider', 'prev-dom', 'next-dom');
             setupSlider('testi-slider', 'prev-testi', 'next-testi', 474);
+
+            // ── Close dropdowns when clicking outside ─────────────────
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.filter-dropdown')) {
+                    document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+                }
+            });
         });
+
+        // ── Filter State ─────────────────────────────────────────────
+        const activeFilters = { category: 'all', duration: 'all', rating: 'all', price: 'all' };
+
+        function toggleDropdown(menuId) {
+            const menu = document.getElementById(menuId);
+            const allMenus = document.querySelectorAll('[id$="-menu"]');
+            allMenus.forEach(m => { if (m.id !== menuId) m.classList.add('hidden'); });
+            menu.classList.toggle('hidden');
+        }
+
+        function applyFilter(type, value, btnId, label) {
+            activeFilters[type] = value;
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.childNodes[0].textContent = label + ' ';
+                btn.classList.toggle('bg-primary', value !== 'all');
+                btn.classList.toggle('text-white', value !== 'all');
+                btn.classList.toggle('border-primary', value !== 'all');
+                btn.classList.toggle('bg-white', value === 'all');
+                btn.classList.toggle('text-foreground', value === 'all');
+                btn.classList.toggle('border-border-soft', value === 'all');
+            }
+            // hide this dropdown
+            document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+            filterCards();
+        }
+
+        function filterCards() {
+            const cards = document.querySelectorAll('.pkg-card');
+            let visible = 0;
+
+            cards.forEach(card => {
+                const cat      = card.dataset.category;
+                const days     = parseInt(card.dataset.duration);
+                const rating   = parseFloat(card.dataset.rating);
+                const price    = parseInt(card.dataset.price);
+
+                // Category
+                const catOk = activeFilters.category === 'all' || cat === activeFilters.category;
+
+                // Duration
+                let durOk = true;
+                if (activeFilters.duration === '1-3') durOk = days >= 1 && days <= 3;
+                else if (activeFilters.duration === '4-6') durOk = days >= 4 && days <= 6;
+                else if (activeFilters.duration === '7+') durOk = days >= 7;
+
+                // Rating
+                let ratOk = true;
+                if (activeFilters.rating !== 'all') ratOk = rating >= parseFloat(activeFilters.rating);
+
+                // Price
+                let priOk = true;
+                if (activeFilters.price === '0-20000') priOk = price < 20000;
+                else if (activeFilters.price === '20000-40000') priOk = price >= 20000 && price <= 40000;
+                else if (activeFilters.price === '40000+') priOk = price > 40000;
+
+                const show = catOk && durOk && ratOk && priOk;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            const noResults = document.getElementById('no-results');
+            if (noResults) noResults.classList.toggle('hidden', visible > 0);
+        }
+
+        function resetFilters() {
+            ['category','duration','rating','price'].forEach(t => {
+                activeFilters[t] = 'all';
+            });
+            const defaults = { 'cat-btn':'Categories','dur-btn':'Duration','rat-btn':'Review / Rating','pri-btn':'Price range' };
+            Object.entries(defaults).forEach(([id, label]) => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.childNodes[0].textContent = label + ' ';
+                    btn.className = btn.className
+                        .replace('bg-primary','bg-white')
+                        .replace('text-white','text-foreground')
+                        .replace('border-primary','border-border-soft');
+                }
+            });
+            filterCards();
+        }
     </script>
     @endpush
 @endsection

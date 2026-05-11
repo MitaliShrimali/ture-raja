@@ -4,15 +4,11 @@
 <div class="space-y-10 pb-12 max-w-7xl mx-auto">
     <!-- Header -->
     <div class="space-y-4">
-        <div class="flex items-center gap-2 text-[10px] font-black text-muted-text uppercase tracking-widest">
-            <span>Dashboard</span>
-            <span class="opacity-40">/</span>
-            <span class="text-primary">Lead Management</span>
-        </div>
+        <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Leads</p>
         
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div class="space-y-2">
-                <h2 class="text-4xl font-black text-foreground tracking-tight">Lead Records</h2>
+                <h2 class="font-black text-foreground tracking-tight">Lead Records</h2>
                 <p class="text-muted-text font-medium">Manage your prospective travelers and track conversion performance.</p>
             </div>
             <div class="flex items-center gap-3">
