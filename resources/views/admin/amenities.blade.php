@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12 max-w-5xl mx-auto">
+<div class="space-y-10 pb-12">
     <div class="flex items-center justify-between">
         <div class="space-y-2">
             <h2 class="font-black text-foreground tracking-tight">Amenities</h2>

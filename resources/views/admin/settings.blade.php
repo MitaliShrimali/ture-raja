@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12 max-w-6xl mx-auto">
+<div class="space-y-10 pb-12">
     <div class="flex items-center justify-between">
         <div class="space-y-2">
             <p class="text-xs font-bold text-primary uppercase tracking-widest">Platform Admin</p>

@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12 max-w-7xl mx-auto">
+<div class="space-y-10 pb-12">
     <!-- Header -->
     <div class="space-y-2">
         <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Management</p>
