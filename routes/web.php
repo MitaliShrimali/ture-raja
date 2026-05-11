@@ -62,7 +62,7 @@ Route::get('/tour/{slug}', function($slug) {
     return view('tour.show', compact('slug'));
 })->name('tour.show');
 Route::get('/login', function() {
-    return view('login');
+    return view('admin.login');
 })->name('login');
 
 Route::get('/package/{id}', [PackageController::class, 'show']);
