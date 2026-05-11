@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles & Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'], 'build')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <!-- Lordicon for animated icons -->
     <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>
