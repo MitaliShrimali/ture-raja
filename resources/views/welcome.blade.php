@@ -221,12 +221,17 @@
             <div class="flex gap-6 overflow-x-auto hide-scrollbar snap-x-mandatory pb-4" id="intl-slider">
                 @php
                     $intl = [
-                        ['title' => 'Bangkok', 'image' => 'https://images.unsplash.com/photo-1508009603885-50cf7c579367?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'Bangkok', 'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Dubai', 'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600'],
-                        ['title' => 'Las Vegas', 'image' => 'https://images.unsplash.com/photo-1605833559746-6d16288955d7?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'Las Vegas', 'image' => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Rome', 'image' => 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Bali', 'image' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Andaman', 'image' => 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'Paris', 'image' => 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'Maldives', 'image' => 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'Singapore', 'image' => 'https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'Tokyo', 'image' => 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'London', 'image' => 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600'],
                     ];
                 @endphp
 
@@ -266,12 +271,12 @@
                         ['title' => 'Kerala', 'image' => 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Jaipur', 'image' => 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Manali', 'image' => 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&q=80&w=600'],
-                        ['title' => 'Rishikesh', 'image' => 'https://images.unsplash.com/photo-1596403204987-9323eb72322c?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'Rishikesh', 'image' => 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Srinagar', 'image' => 'https://images.unsplash.com/photo-1562979314-bee7453e911c?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Varanasi', 'image' => 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Mumbai', 'image' => 'https://images.unsplash.com/photo-1566552881560-0be862a7c445?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Hampi', 'image' => 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&q=80&w=600'],
-                        ['title' => 'Mysore', 'image' => 'https://images.unsplash.com/photo-1600100397608-f03366710476?auto=format&fit=crop&q=80&w=600'],
+                        ['title' => 'Mysore', 'image' => 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Ooty', 'image' => 'https://images.unsplash.com/photo-1590490359854-dfba19688d70?auto=format&fit=crop&q=80&w=600'],
                         ['title' => 'Darjeeling', 'image' => 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&q=80&w=600'],
                     ];
@@ -330,7 +335,7 @@
                     </div>
                     <div class="relative z-10 space-y-4 lg:space-y-6 max-w-sm">
                         <span class="inline-block px-3 py-1 lg:px-4 lg:py-1.5 rounded-full bg-primary/20 text-primary text-[10px] lg:text-xs font-black uppercase tracking-widest">Limited Offer</span>
-                        <h2 class="text-2xl lg:text-4xl font-black text-white leading-tight font-heading">
+                        <h2 class="text-2xl lg:text-4xl font-black leading-tight font-heading" style="color: #ffffff !important;">
                             Summer Escape <br/> <span class="text-primary">25% OFF</span>
                         </h2>
                         <p class="text-white/60 text-sm lg:text-base font-medium">
@@ -457,17 +462,44 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ── Sliders ──────────────────────────────────────────────
-            const setupSlider = (sliderId, prevBtnId, nextBtnId, scrollAmount = 400) => {
+            const setupSlider = (sliderId, prevBtnId, nextBtnId, scrollAmount = 400, autoSwipe = true) => {
                 const slider = document.getElementById(sliderId);
                 const prevBtn = document.getElementById(prevBtnId);
                 const nextBtn = document.getElementById(nextBtnId);
-                if (!slider || !prevBtn || !nextBtn) return;
-                nextBtn.addEventListener('click', () => slider.scrollBy({ left: scrollAmount, behavior: 'smooth' }));
-                prevBtn.addEventListener('click', () => slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' }));
+                if (!slider) return;
+                
+                const moveNext = () => {
+                    if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
+                        slider.scrollTo({ left: 0, behavior: 'smooth' });
+                    } else {
+                        slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                    }
+                };
+
+                if (nextBtn) nextBtn.addEventListener('click', moveNext);
+                if (prevBtn) prevBtn.addEventListener('click', () => slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' }));
+
+                if (autoSwipe) {
+                    let interval = setInterval(moveNext, 1500);
+                    const resetInterval = () => {
+                        clearInterval(interval);
+                        interval = setInterval(moveNext, 1500);
+                    };
+                    slider.addEventListener('mouseenter', () => clearInterval(interval));
+                    slider.addEventListener('mouseleave', resetInterval);
+                    slider.addEventListener('touchstart', () => clearInterval(interval), {passive: true});
+                    slider.addEventListener('touchend', resetInterval, {passive: true});
+                    slider.addEventListener('scroll', () => {
+                        clearTimeout(slider.scrollTimeout);
+                        clearInterval(interval);
+                        slider.scrollTimeout = setTimeout(resetInterval, 1500);
+                    }, {passive: true});
+                }
             };
-            setupSlider('intl-slider', 'prev-intl', 'next-intl');
-            setupSlider('dom-slider', 'prev-dom', 'next-dom');
-            setupSlider('testi-slider', 'prev-testi', 'next-testi', 474);
+            // 350px width + 24px gap = 374
+            setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, true);
+            setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, true);
+            setupSlider('testi-slider', 'prev-testi', 'next-testi', 474, true);
 
             // ── Close dropdowns when clicking outside ─────────────────
             document.addEventListener('click', (e) => {

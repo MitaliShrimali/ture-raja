@@ -249,7 +249,35 @@ Route::get('/packages/{slug}', function ($slug) {
     ];
 
     if (!isset($allPackages[$slug])) {
-        abort(404);
+        $title = ucwords(str_replace('-', ' ', $slug));
+        $allPackages[$slug] = [
+            'slug'       => $slug,
+            'title'      => $title . ' Experience',
+            'image'      => 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
+            'duration'   => '4 days 3 nights',
+            'groupSize'  => '2-4 guest',
+            'rating'     => '4.8',
+            'reviews'    => '320',
+            'price'      => rand(15000, 50000),
+            'oldPrice'   => null,
+            'badge'      => 'Popular',
+            'category'   => 'international',
+            'overview'   => "Experience the incredible beauty and culture of $title. This package offers an unforgettable journey filled with stunning landscapes, historic sites, and amazing local cuisine.",
+            'highlights' => [
+                "Guided city tour of $title",
+                "Visit top attractions and hidden gems",
+                "Authentic local dining experience",
+                "Comfortable 4-star accommodation",
+                "Airport transfers included",
+            ],
+            'included'   => ['Hotel Stay', 'Daily Breakfast', 'Tour Guide', 'Transfers'],
+            'excluded'   => ['Flights', 'Personal Expenses', 'Visa Fees'],
+            'itinerary'  => [
+                ['title' => 'Arrival & Check-in', 'desc' => "Arrive at $title, transfer to your hotel and relax."],
+                ['title' => 'City Exploration', 'desc' => 'Full day guided tour exploring major landmarks.'],
+                ['title' => 'Leisure & Departure', 'desc' => 'Free time for shopping before transferring to the airport.'],
+            ],
+        ];
     }
 
     return view('packages.show', ['package' => $allPackages[$slug]]);
