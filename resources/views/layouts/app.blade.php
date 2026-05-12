@@ -21,7 +21,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body 
-    x-data="{ isScrolled: false, isMobileMenuOpen: false }" 
+    x-data="{ isScrolled: false, isMobileMenuOpen: false, isHome: {{ request()->is('/') ? 'true' : 'false' }} }" 
     @scroll.window="isScrolled = window.pageYOffset > 50"
     class="min-h-full flex flex-col font-body bg-background text-text-main"
 >
@@ -31,7 +31,7 @@
     <!-- Mobile Menu Component -->
     <x-mobile-menu />
 
-    <main class="relative flex-grow">
+    <main class="relative flex-grow" :class="!isHome ? 'pt-[96px]' : ''">
         @yield('content')
     </main>
 

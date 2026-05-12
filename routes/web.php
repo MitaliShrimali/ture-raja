@@ -22,7 +22,7 @@ Route::get('/profile', [HomeController::class, 'profile']);
 
 Route::prefix('admin')->group(function () {
     Route::get('/login', function () {
-        return view('admin.login');
+        return view('admin.login', ['type' => 'admin']);
     });
     Route::get('/signup', function () {
         return view('admin.signup');
@@ -62,7 +62,8 @@ Route::get('/tour/{slug}', function($slug) {
     return view('tour.show', compact('slug'));
 })->name('tour.show');
 Route::get('/login', function() {
-    return view('admin.login');
+    $type = request('tab') == 'agent' ? 'agent' : 'customer';
+    return view('admin.login', compact('type'));
 })->name('login');
 
 Route::get('/package/{id}', [PackageController::class, 'show']);

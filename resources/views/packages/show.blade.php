@@ -70,32 +70,32 @@
                 </div>
 
                 {{-- Quick Info Strip --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 grid grid-cols-3 gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                            <svg width="20" height="20" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 grid grid-cols-3 gap-2 sm:gap-4">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         </div>
                         <div>
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Duration</p>
-                            <p class="font-bold text-gray-800 text-sm">{{ $package['duration'] }}</p>
+                            <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Duration</p>
+                            <p class="font-bold text-gray-800 text-xs sm:text-sm">{{ $package['duration'] }}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                            <svg width="20" height="20" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         </div>
                         <div>
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Group Size</p>
-                            <p class="font-bold text-gray-800 text-sm">{{ $package['groupSize'] }}</p>
+                            <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Group Size</p>
+                            <p class="font-bold text-gray-800 text-xs sm:text-sm">{{ $package['groupSize'] }}</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
-                            <svg width="20" height="20" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                         </div>
                         <div>
-                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Type</p>
-                            <p class="font-bold text-gray-800 text-sm capitalize">{{ $package['category'] }}</p>
+                            <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Type</p>
+                            <p class="font-bold text-gray-800 text-xs sm:text-sm capitalize">{{ $package['category'] }}</p>
                         </div>
                     </div>
                 </div>

@@ -24,21 +24,45 @@
         }
     </style>
 </head>
+@php
+    $type = $type ?? 'admin';
+    $title = 'Sign In';
+    $subtext = 'Enter your credentials to access the TourRaja Admin Central.';
+    $actionUrl = url('admin/dashboard');
+    $defaultEmail = 'admin@tourraja.com';
+    $btnText = 'Access Dashboard';
+
+    if ($type === 'agent') {
+        $title = 'Agent Sign In';
+        $subtext = 'Enter your credentials to access the TourRaja Agent Portal.';
+        $actionUrl = url('/');
+        $defaultEmail = 'agent@tourraja.com';
+        $btnText = 'Access Agent Portal';
+    } elseif ($type === 'customer') {
+        $title = 'Customer Sign In';
+        $subtext = 'Enter your credentials to access your TourRaja Account.';
+        $actionUrl = url('/');
+        $defaultEmail = 'user@example.com';
+        $btnText = 'Sign In to Account';
+    } else {
+        $title = 'Admin Sign In';
+    }
+@endphp
 <body class="bg-white min-h-screen relative overflow-x-hidden">
     <div class="flex min-h-screen" x-data="{ showPassword: false }">
         <!-- Form Side -->
         <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12">
             <div class="max-w-md w-full mx-auto space-y-10">
                 <div class="space-y-4">
-                    <h2 class="font-black text-foreground tracking-tight font-heading">Sign In</h2>
-                    <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Enter your credentials to access the TourRaja Admin Central.</p>
+                    <h2 class="font-black text-foreground tracking-tight font-heading">{{ $title }}</h2>
+                    <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">{{ $subtext }}</p>
                 </div>
 
                 <!-- Main Form -->
-                <form action="{{ url('admin/dashboard') }}" class="space-y-8">
+                <form action="{{ $actionUrl }}" class="space-y-8">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
-                        <input type="email" value="admin@tourraja.com" placeholder="admin@tourraja.com" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
+                        <input type="email" value="{{ $defaultEmail }}" placeholder="{{ $defaultEmail }}" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
                     </div>
                     
                     <div class="space-y-2">
@@ -67,7 +91,7 @@
                     </div>
 
                     <button type="submit" class="w-full bg-[#E8460A] hover:bg-primary-hover text-white rounded-2xl py-5 font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1">
-                        Access Dashboard
+                        {{ $btnText }}
                     </button>
                 </form>
 
