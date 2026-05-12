@@ -15,21 +15,24 @@
 
 @php
     if ($pkg) {
-        $title    = $title    ?? ($pkg->title    ?? $pkg['title']    ?? '');
-        $image    = $image    ?? ($pkg->image    ?? $pkg['image']    ?? '');
-        $duration = $duration ?? ($pkg->duration ?? $pkg['duration'] ?? '');
-        $rating   = $rating   ?? ($pkg->rating   ?? $pkg['rating']   ?? '0');
-        $reviews  = $reviews  ?? ($pkg->reviews  ?? $pkg['reviews']  ?? '0');
-        $price    = $price    ?? ($pkg->price    ?? $pkg['price']    ?? 0);
-        $badge    = $badge    ?? ($pkg->badge    ?? $pkg['badge']    ?? null);
-        $slug     = $slug     ?? ($pkg->slug     ?? $pkg['slug']     ?? null);
+        $pkgArr = (array) $pkg;
+        $title    = $pkgArr['title']    ?? $title;
+        $image    = $pkgArr['image']    ?? $image;
+        $duration = $pkgArr['duration'] ?? $duration;
+        $groupSize= $pkgArr['groupSize']?? $groupSize;
+        $rating   = $pkgArr['rating']   ?? $rating;
+        $reviews  = $pkgArr['reviews']  ?? $reviews;
+        $price    = $pkgArr['price']    ?? $price;
+        $oldPrice = $pkgArr['oldPrice'] ?? $oldPrice;
+        $badge    = $pkgArr['badge']    ?? $badge;
+        $slug     = $pkgArr['slug']     ?? $slug;
     }
     $detailUrl = $slug ? url('packages/' . $slug) : '#';
 @endphp
 
-<div {{ $attributes->merge(['class' => 'group bg-white rounded-[32px] overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50']) }}>
+<div {{ $attributes->merge(['class' => 'group bg-white rounded-[24px] overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50 package-card-inner']) }}>
     <!-- Image Container -->
-    <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-[24px]">
+    <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-[20px] package-image-container">
         <img 
             src="{{ $image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800' }}" 
             alt="{{ $title }}" 
@@ -61,8 +64,8 @@
     </div>
 
     <!-- Content -->
-    <div class="px-6 pt-5 pb-6 flex flex-col flex-grow space-y-4">
-        <div class="space-y-2">
+    <div class="px-6 pt-5 pb-6 flex flex-col flex-grow space-y-4 package-content">
+        <div class="space-y-2 package-info">
             <h3 class="text-xl font-black text-foreground leading-tight line-clamp-2 min-h-[3rem] font-heading">
                 {{ $title }}
             </h3>
@@ -79,7 +82,7 @@
             </div>
         </div>
 
-        <div class="pt-4 border-t border-border-soft/50 flex items-end justify-between mt-auto">
+        <div class="pt-4 border-t border-border-soft/50 flex items-end justify-between mt-auto package-action">
             <div class="flex flex-col">
                 <div class="flex items-center gap-1.5">
                     <span class="text-2xl font-black text-foreground tracking-tight font-heading">₹{{ number_format($price) }}</span>

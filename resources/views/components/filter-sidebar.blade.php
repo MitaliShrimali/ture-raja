@@ -1,7 +1,7 @@
 @props([
     'searchTerm' => '',
     'selectedCategories' => [],
-    'priceRange' => 5000,
+    'priceRange' => 100000,
     'selectedDurations' => []
 ])
 
@@ -48,23 +48,23 @@
     <div class="bg-white rounded-[32px] p-8 shadow-soft border border-border-soft space-y-6">
         <div class="flex items-center justify-between border-b border-border-soft pb-4">
             <h3 class="text-xl font-black tracking-tight">Price Range</h3>
-            <span class="text-primary font-black text-sm">₹100 - ₹<span id="priceRangeValue">{{ request('max_price', 5000) }}</span></span>
+            <span class="text-primary font-black text-sm">₹100 - ₹<span id="priceRangeValue">{{ request('max_price', 100000) }}</span></span>
         </div>
         <div class="px-2">
             <input 
                 type="range" 
                 name="max_price"
                 min="100" 
-                max="5000" 
-                step="100"
-                value="{{ request('max_price', 5000) }}"
+                max="100000" 
+                step="1000"
+                value="{{ request('max_price', 100000) }}"
                 oninput="document.getElementById('priceRangeValue').innerText = this.value"
                 class="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-primary" 
             >
         </div>
         <div class="flex justify-between text-[10px] font-black text-muted-text uppercase tracking-widest">
             <span>Min: ₹100</span>
-            <span>Max: ₹5000</span>
+            <span>Max: ₹100,000</span>
         </div>
     </div>
 
