@@ -44,15 +44,55 @@
                 </a>
             </div>
 
+            <!-- Wishlist -->
+            <div class="relative hidden lg:block" x-data="{ open: false }" @click.away="open = false">
+                <button 
+                    @click="open = !open"
+                    class="relative flex items-center justify-center w-11 h-11 bg-primary/10 hover:bg-primary backdrop-blur-md text-primary hover:text-white rounded-full transition-all shadow-premium group border border-primary/20"
+                >
+                    <i data-lucide="heart" size="20" class="transition-colors group-hover:fill-white group-hover:text-white"></i>
+                    <span id="wishlist-count" class="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-white hidden">0</span>
+                </button>
+
+                <!-- Wishlist Dropdown -->
+                <div 
+                    x-show="open" 
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 translate-y-1"
+                    x-transition:enter-end="opacity-100 translate-y-0"
+                    class="absolute right-0 mt-3 w-80 bg-white rounded-3xl shadow-premium border border-border-soft overflow-hidden"
+                    style="display: none;"
+                >
+                    <div class="p-5 border-b border-border-soft">
+                        <h4 class="text-sm font-black text-foreground uppercase tracking-widest">My Wishlist</h4>
+                    </div>
+                    <div id="wishlist-items" class="max-h-96 overflow-y-auto p-4 space-y-4">
+                        <!-- Items will be injected here -->
+                        <p class="text-center text-text-muted text-xs py-8 font-bold">Your wishlist is empty</p>
+                    </div>
+                    <div class="p-4 bg-gray-50">
+                        <a href="{{ url('/listing') }}" class="block w-full py-3 bg-black text-white text-center text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary transition-all">Explore More</a>
+                    </div>
+                </div>
+            </div>
+
             <a href="{{ url('/login') }}" class="hidden lg:flex items-center justify-center w-11 h-11 bg-white/10 hover:bg-primary backdrop-blur-md text-white rounded-full transition-all shadow-premium group">
                 <i data-lucide="user" size="20" :class="(isScrolled || !isHome) ? 'text-foreground group-hover:text-white' : 'text-white'"></i>
             </a>
             
+            <!-- Mobile Wishlist Icon -->
+            <button 
+                @click="isMobileMenuOpen = true"
+                class="lg:hidden relative flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-full border border-primary/20"
+            >
+                <i data-lucide="heart" size="18" class="fill-primary"></i>
+            </button>
+
             <!-- Mobile Toggle -->
             <button 
                 @click="isMobileMenuOpen = true"
                 :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'"
-                class="lg:hidden p-2.5 ml-2"
+                class="lg:hidden p-2.5 ml-1"
             >
                 <i data-lucide="menu" size="28"></i>
             </button>

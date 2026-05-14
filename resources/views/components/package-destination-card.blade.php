@@ -2,6 +2,7 @@
     'title',
     'image',
     'count' => '40+ Packages',
+    'rating' => '4.8',
 ])
 
 <a href="{{ url('packages/' . \Illuminate\Support\Str::slug($title)) }}" {{ $attributes->merge(['class' => 'relative flex-shrink-0 w-[280px] md:w-[350px] aspect-[3/4] group overflow-hidden rounded-[40px] shadow-premium cursor-pointer block']) }}>
@@ -28,6 +29,12 @@
             <div class="flex items-center gap-2 text-white/70 text-sm font-bold">
                 <i data-lucide="map-pin" size="14" class="text-primary"></i>
                 {{ $count }}
+            </div>
+
+            <!-- ⭐ Rating (New) -->
+            <div class="flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 w-fit">
+                <i data-lucide="star" size="12" class="fill-orange-400 text-orange-400"></i>
+                <span class="text-xs font-black text-white">{{ $rating }}</span>
             </div>
         </div>
 

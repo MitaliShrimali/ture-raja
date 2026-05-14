@@ -125,11 +125,14 @@
                         ['slug'=>'goa-beach-package','title'=>'Goa Beach Holiday Package','image'=>'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=600','duration'=>'2 days 3 nights','duration_days'=>2,'groupSize'=>'4-6 guest','rating'=>'4.74','reviews'=>'631','price'=>14755,'oldPrice'=>19825,'badge'=>'Top Rated','category'=>'domestic'],
                         ['slug'=>'spiti-valley-adventure','title'=>'Spiti Valley Package','image'=>'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&q=80&w=600','duration'=>'3 days 3 nights','duration_days'=>3,'groupSize'=>'4-6 guest','rating'=>'4.51','reviews'=>'617','price'=>24840,'oldPrice'=>31825,'badge'=>'Best Sale','category'=>'adventure'],
                         ['slug'=>'swiss-paris-delight','title'=>'Swiss Paris Delight','image'=>'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600','duration'=>'7 days 6 nights','duration_days'=>7,'groupSize'=>'4-6 guest','rating'=>'4.29','reviews'=>'608','price'=>51247,'oldPrice'=>null,'badge'=>'25% Off','category'=>'international'],
+                        ['slug'=>'kerala-backwaters','title'=>'Kerala Backwaters Escape','image'=>'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&q=80&w=600','duration'=>'4 days 3 nights','duration_days'=>4,'groupSize'=>'2-4 guest','rating'=>'4.65','reviews'=>'420','price'=>12500,'oldPrice'=>15000,'badge'=>'Popular','category'=>'domestic'],
+                        ['slug'=>'dubai-desert-safari','title'=>'Dubai Desert Safari & Burj','image'=>'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600','duration'=>'4 days 3 nights','duration_days'=>4,'groupSize'=>'2-6 guest','rating'=>'4.8','reviews'=>'890','price'=>29999,'oldPrice'=>35000,'badge'=>'Trending','category'=>'international'],
+                        ['slug'=>'bali-luxury-villa','title'=>'Bali Luxury Villa Escape','image'=>'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=600','duration'=>'5 days 4 nights','duration_days'=>5,'groupSize'=>'2 guest','rating'=>'4.9','reviews'=>'543','price'=>35000,'oldPrice'=>42000,'badge'=>'Honeymoon','category'=>'international'],
                     ];
                 @endphp
 
                 @foreach($packages as $pkg)
-                    <div class="animate-fade-up pkg-card"
+                    <div class="animate-fade-up pkg-card {{ $loop->index >= 6 ? 'hidden' : '' }}"
                          style="animation-delay: {{ $loop->index * 100 }}ms"
                          data-category="{{ $pkg['category'] }}"
                          data-duration="{{ $pkg['duration_days'] }}"
@@ -152,8 +155,8 @@
             </div>
 
             <!-- Load More Button -->
-            <div class="mt-20 flex justify-center animate-fade-up">
-                <button class="bg-black text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-primary transition-all duration-300">
+            <div class="mt-20 flex justify-center animate-fade-up" id="load-more-container">
+                <button onclick="loadMoreFeatured()" class="bg-black text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-premium">
                     Load More Packages
                 </button>
             </div>
@@ -236,8 +239,9 @@
                 @endphp
 
                 @foreach($intl as $pkg)
+                    @php $rating = number_format(4.5 + (rand(0, 5) / 10), 1); @endphp
                     <div class="snap-start">
-                        <x-package-destination-card :title="$pkg['title']" :image="$pkg['image']" />
+                        <x-package-destination-card :title="$pkg['title']" :image="$pkg['image']" :rating="$rating" />
                     </div>
                 @endforeach
             </div>
@@ -283,8 +287,9 @@
                 @endphp
 
                 @foreach($dom as $pkg)
+                    @php $rating = number_format(4.5 + (rand(0, 5) / 10), 1); @endphp
                     <div class="snap-start">
-                        <x-package-destination-card :title="$pkg['title']" :image="$pkg['image']" />
+                        <x-package-destination-card :title="$pkg['title']" :image="$pkg['image']" :rating="$rating" />
                     </div>
                 @endforeach
             </div>
@@ -387,41 +392,72 @@
                 </div>
             </div>
 
-            <div class="flex gap-6 overflow-x-auto hide-scrollbar snap-x-mandatory pb-8" id="testi-slider">
-                @php
-                    $testimonials = [
-                        ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara', 'rating' => 5],
-                        ['name' => 'Atend John', 'loc' => 'California', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=john', 'rating' => 5],
-                        ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara2', 'rating' => 3],
-                        ['name' => 'Michael Chen', 'loc' => 'Singapore', 'text' => "Excellent service and direct agent contact saved me 30% on my last Bali trip.", 'img' => 'https://i.pravatar.cc/150?u=mike', 'rating' => 5],
-                    ];
-                @endphp
+            <div class="relative group">
+                <div class="flex gap-6 overflow-hidden py-8 testimonial-track" id="testi-slider">
+                    @php
+                        $testimonials = [
+                            ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara', 'rating' => 5],
+                            ['name' => 'Atend John', 'loc' => 'California', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=john', 'rating' => 5],
+                            ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara2', 'rating' => 3],
+                            ['name' => 'Michael Chen', 'loc' => 'Singapore', 'text' => "Excellent service and direct agent contact saved me 30% on my last Bali trip.", 'img' => 'https://i.pravatar.cc/150?u=mike', 'rating' => 5],
+                        ];
+                        // Clone for seamless loop
+                        $allTestimonials = array_merge($testimonials, $testimonials);
+                    @endphp
 
-                @foreach($testimonials as $testi)
-                    <div class="snap-start flex-shrink-0 w-full md:w-[450px]">
-                        <div class="p-10 rounded-[40px] border border-border-soft bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-6">
-                            <h4 class="text-xl font-black text-foreground font-heading">The best booking system</h4>
-                            <p class="text-text-muted text-sm leading-relaxed font-medium italic">"{{ $testi['text'] }}"</p>
-                            
-                            <div class="flex items-center justify-between pt-4 border-t border-border-soft/50 mt-auto">
-                                <div class="flex items-center gap-4">
-                                    <img src="{{ $testi['img'] }}" class="w-12 h-12 rounded-full object-cover ring-2 ring-primary/10">
-                                    <div class="flex flex-col">
-                                        <span class="font-black text-foreground">{{ $testi['name'] }}</span>
-                                        <span class="text-xs text-text-muted font-bold">{{ $testi['loc'] }}</span>
+                    @foreach($allTestimonials as $testi)
+                        <div class="flex-shrink-0 w-full md:w-[450px] testimonial-card">
+                            <div class="p-6 md:p-10 rounded-[40px] border border-border-soft bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-4 md:space-y-6">
+                                <h4 class="text-lg md:text-xl font-black text-foreground font-heading">The best booking system</h4>
+                                <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic">"{{ $testi['text'] }}"</p>
+                                
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-border-soft/50 mt-auto gap-4">
+                                    <div class="flex items-center gap-4">
+                                        <img src="{{ $testi['img'] }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-primary/10">
+                                        <div class="flex flex-col">
+                                            <span class="font-black text-foreground text-sm md:text-base">{{ $testi['name'] }}</span>
+                                            <span class="text-[10px] md:text-xs text-text-muted font-bold">{{ $testi['loc'] }}</span>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="flex gap-0.5">
-                                    @for($i=0; $i<5; $i++)
-                                        <i data-lucide="star" size="14" class="{{ $i < $testi['rating'] ? 'fill-orange-400 text-orange-400' : 'text-gray-200' }}"></i>
-                                    @endfor
+                                    <div class="flex gap-0.5">
+                                        @for($i=0; $i<5; $i++)
+                                            <i data-lucide="star" size="14" class="{{ $i < $testi['rating'] ? 'fill-orange-400 text-orange-400' : 'text-gray-200' }}"></i>
+                                        @endfor
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         </div>
+
+        <style>
+            @keyframes marquee {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-450px * 4 - 24px * 4)); }
+            }
+            .testimonial-track {
+                display: flex;
+                width: max-content;
+                animation: marquee 40s linear infinite;
+            }
+            .testimonial-track:hover {
+                animation-play-state: paused;
+            }
+            @media (max-width: 767px) {
+                .testimonial-card {
+                    width: calc(100vw - 80px); /* Leave space for next card */
+                }
+                @keyframes marquee-mobile {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .testimonial-track {
+                    animation: marquee-mobile 15s linear infinite;
+                }
+            }
+        </style>
     </section>
 
     <!-- Section 9: Newsletter -->
@@ -499,7 +535,6 @@
             // 350px width + 24px gap = 374
             setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, true);
             setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, true);
-            setupSlider('testi-slider', 'prev-testi', 'next-testi', 474, true);
 
             // ── Close dropdowns when clicking outside ─────────────────
             document.addEventListener('click', (e) => {
@@ -590,6 +625,16 @@
                 }
             });
             filterCards();
+        }
+        function loadMoreFeatured() {
+            const hiddenCards = document.querySelectorAll('.pkg-card.hidden');
+            for (let i = 0; i < 3 && i < hiddenCards.length; i++) {
+                hiddenCards[i].classList.remove('hidden');
+                hiddenCards[i].classList.add('animate-fade-up');
+            }
+            if (document.querySelectorAll('.pkg-card.hidden').length === 0) {
+                document.getElementById('load-more-container').style.display = 'none';
+            }
         }
     </script>
     @endpush

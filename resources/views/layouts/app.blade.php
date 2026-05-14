@@ -24,6 +24,7 @@
     x-data="{ isScrolled: false, isMobileMenuOpen: false, isHome: {{ request()->is('/') ? 'true' : 'false' }} }" 
     @scroll.window="isScrolled = window.pageYOffset > 50"
     class="min-h-full flex flex-col font-body bg-background text-text-main"
+    :class="{ 'overflow-hidden': isMobileMenuOpen }"
 >
     <!-- Navbar Component -->
     <x-navbar />
@@ -31,17 +32,117 @@
     <!-- Mobile Menu Component -->
     <x-mobile-menu />
 
-    <main class="relative flex-grow" :class="!isHome ? 'pt-[96px]' : ''">
+    <main class="relative flex-grow" :class="(isHome) ? '' : 'pt-[120px] lg:pt-[140px]'">
         @yield('content')
     </main>
 
     <!-- Footer Component -->
     <x-footer />
 
+    <style>
+        .wishlist-btn.active svg {
+            fill: currentColor !important;
+        }
+        [x-cloak] { display: none !important; }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+            updateWishlistUI();
         });
+
+        // ── Wishlist Logic ──────────────────────────────────────────
+        window.toggleWishlist = function(e, pkg) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            let wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
+            const index = wishlist.findIndex(item => item.slug === pkg.slug);
+            
+            if (index > -1) {
+                wishlist.splice(index, 1);
+            } else {
+                wishlist.push(pkg);
+            }
+            
+            localStorage.setItem('tourraja_wishlist', JSON.stringify(wishlist));
+            updateWishlistUI();
+        };
+
+        window.updateWishlistUI = function() {
+            const wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
+            const countEl = document.getElementById('wishlist-count');
+            const itemsEl = document.getElementById('wishlist-items');
+            
+            const countElMobile = document.getElementById('wishlist-count-mobile');
+            const itemsElMobile = document.getElementById('wishlist-items-mobile');
+            
+            // Update Counts
+            if (countEl) {
+                countEl.textContent = wishlist.length;
+                countEl.classList.toggle('hidden', wishlist.length === 0);
+            }
+            if (countElMobile) {
+                countElMobile.textContent = wishlist.length;
+            }
+            
+            // Update Dropdown Items (Desktop)
+            if (itemsEl) {
+                if (wishlist.length === 0) {
+                    itemsEl.innerHTML = '<p class="text-center text-text-muted text-xs py-8 font-bold">Your wishlist is empty</p>';
+                } else {
+                    itemsEl.innerHTML = wishlist.map(item => `
+                        <div class="flex items-center gap-3 group/item">
+                            <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover">
+                            <div class="flex-1 min-w-0">
+                                <h5 class="text-xs font-black text-foreground truncate">${item.title}</h5>
+                                <p class="text-[10px] text-primary font-bold">₹${Number(item.price).toLocaleString()}</p>
+                            </div>
+                            <button onclick="toggleWishlist(event, {slug: '${item.slug}'})" class="text-gray-300 hover:text-primary transition-colors">
+                                <i data-lucide="trash-2" size="14"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Update Items (Mobile)
+            if (itemsElMobile) {
+                if (wishlist.length === 0) {
+                    itemsElMobile.innerHTML = '<p class="text-xs text-text-muted font-bold italic">No items yet</p>';
+                } else {
+                    itemsElMobile.innerHTML = wishlist.map(item => `
+                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-soft">
+                            <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
+                            <div class="flex-1 min-w-0">
+                                <h5 class="text-[10px] font-black text-foreground truncate">${item.title}</h5>
+                                <p class="text-[10px] text-primary font-bold">₹${Number(item.price).toLocaleString()}</p>
+                            </div>
+                            <button onclick="toggleWishlist(event, {slug: '${item.slug}'})" class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all">
+                                <i data-lucide="trash-2" size="14"></i>
+                            </button>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            lucide.createIcons();
+            
+            // Update Button States
+            document.querySelectorAll('.wishlist-btn').forEach(btn => {
+                const slug = btn.getAttribute('data-wishlist-slug');
+                const isInWishlist = wishlist.some(item => item.slug === slug);
+                
+                if (isInWishlist) {
+                    btn.classList.add('active', 'bg-white', 'text-primary');
+                    btn.classList.remove('bg-white/20', 'text-white');
+                } else {
+                    btn.classList.remove('active', 'bg-white', 'text-primary');
+                    btn.classList.add('bg-white/20', 'text-white');
+                }
+            });
+        };
     </script>
     @stack('scripts')
 </body>

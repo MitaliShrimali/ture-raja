@@ -27,10 +27,10 @@
         x-transition:leave="transition ease-in duration-300"
         x-transition:leave-start="translate-x-0"
         x-transition:leave-end="translate-x-full"
-        class="fixed inset-y-0 right-0 w-full max-w-sm bg-background shadow-premium flex flex-col p-8"
+        class="fixed inset-y-0 right-0 w-full max-w-sm bg-background shadow-premium flex flex-col p-8 overflow-y-auto"
     >
         <!-- Header -->
-        <div class="flex items-center justify-between mb-12">
+        <div class="flex items-center justify-between mb-8">
             <a href="{{ url('/') }}" class="flex items-center gap-2">
                 <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl">
                     T
@@ -48,7 +48,7 @@
         </div>
 
         <!-- Links -->
-        <div class="flex flex-col gap-6 text-2xl font-bold font-heading text-foreground mb-12">
+        <div class="flex flex-col gap-5 text-xl font-bold font-heading text-foreground mb-8">
             <a href="{{ url('/') }}" class="hover:text-primary transition-colors flex items-center justify-between group">
                 Home
                 <i data-lucide="chevron-right" size="20" class="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all"></i>
@@ -61,6 +61,17 @@
                 About Us
                 <i data-lucide="chevron-right" size="20" class="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all"></i>
             </a>
+            <div class="pt-4 mt-4 border-t border-border-soft flex items-center justify-between">
+                <span class="text-sm font-black text-foreground uppercase tracking-widest">My Wishlist</span>
+                <div class="relative">
+                    <i data-lucide="heart" size="24" class="text-primary fill-primary"></i>
+                    <span id="wishlist-count-mobile" class="absolute -top-2 -right-2 w-5 h-5 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center border-2 border-background">0</span>
+                </div>
+            </div>
+            <div id="wishlist-items-mobile" class="max-h-60 overflow-y-auto space-y-4 py-2">
+                <!-- Items injected here -->
+                <p class="text-xs text-text-muted font-bold italic">No items yet</p>
+            </div>
         </div>
 
         <hr class="border-border-soft mb-8">

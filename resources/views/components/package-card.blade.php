@@ -49,36 +49,37 @@
         </div>
 
         <!-- Wishlist Button top-right -->
-        <button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all duration-300 border border-white/30">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <button 
+            onclick="toggleWishlist(event, { slug: '{{ $slug }}', title: '{{ addslashes($title) }}', image: '{{ $image }}', price: '{{ $price }}' })"
+            data-wishlist-slug="{{ $slug }}"
+            class="wishlist-btn absolute top-4 right-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all duration-300 border border-white/30"
+        >
+            <i data-lucide="heart" size="16"></i>
         </button>
-
-        <!-- ⭐ Rating Badge — bottom-right corner (professional style) -->
-        <div class="absolute bottom-3 right-3 z-10">
-            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 backdrop-blur-sm shadow-lg border border-white/50">
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#fb923c" stroke="#fb923c" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                <span class="text-xs font-black text-foreground">{{ $rating }}</span>
-                <span class="text-[10px] text-text-muted font-bold">({{ $reviews }})</span>
-            </div>
-        </div>
     </div>
 
     <!-- Content -->
     <div class="px-6 pt-5 pb-6 flex flex-col flex-grow space-y-4 package-content">
-        <div class="space-y-2 package-info">
-            <h3 class="text-xl font-black text-foreground leading-tight line-clamp-2 min-h-[3rem] font-heading">
+
+        <div class="flex items-start justify-between gap-4">
+            <h3 class="text-xl font-black text-foreground leading-tight line-clamp-2 font-heading min-h-[3rem] flex-grow">
                 {{ $title }}
             </h3>
             
-            <div class="flex items-center gap-4 text-[11px] font-bold text-text-muted">
-                <div class="flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-50"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    {{ $duration }}
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-50"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                    {{ $groupSize }}
-                </div>
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-100 shrink-0 mt-1 shadow-sm">
+                <i data-lucide="star" class="fill-orange-400 text-orange-400" size="14"></i>
+                <span class="text-xs font-black text-foreground">{{ $rating }}</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-4 text-[11px] font-bold text-text-muted">
+            <div class="flex items-center gap-1.5">
+                <i data-lucide="clock" size="14" class="opacity-50"></i>
+                {{ $duration }}
+            </div>
+            <div class="flex items-center gap-1.5">
+                <i data-lucide="users" size="14" class="opacity-50"></i>
+                {{ $groupSize }}
             </div>
         </div>
 

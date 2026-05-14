@@ -9,6 +9,8 @@
 </style>
 
 <div class="bg-[#F8F9FA] min-h-screen">
+    {{-- Top Spacer for Fixed Navbar --}}
+    <div class="h-[90px] lg:h-[110px]"></div>
 
     {{-- Breadcrumb --}}
     <div class="bg-white border-b border-gray-200">
