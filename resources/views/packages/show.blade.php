@@ -8,9 +8,8 @@
     .itinerary-line { min-height: 40px; }
 </style>
 
-<div class="bg-[#F8F9FA] min-h-screen">
-    {{-- Top Spacer for Fixed Navbar --}}
-    <div class="h-[90px] lg:h-[110px]"></div>
+<div class="bg-[#F8F9FA] min-h-screen pt-32 lg:pt-40">
+
 
     {{-- Breadcrumb --}}
     <div class="bg-white border-b border-gray-200">
@@ -66,9 +65,89 @@
             {{-- ── LEFT MAIN CONTENT (2/3 width) ───────────────────── --}}
             <div class="w-full lg:w-2/3 space-y-6">
 
-                {{-- Hero Image --}}
-                <div class="rounded-2xl overflow-hidden" style="height: 400px;">
-                    <img src="{{ $package['image'] }}" alt="{{ $package['title'] }}" class="w-full h-full object-cover">
+                {{-- Interactive Image Slider --}}
+                <div x-data="{ 
+                    activeSlide: 0,
+                    slides: [
+                        '{{ $package['image'] }}',
+                        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
+                        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200',
+                        'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200',
+                        'https://images.unsplash.com/photo-1472396961695-1ad7a82fe28b?auto=format&fit=crop&q=80&w=1200'
+                    ],
+                    next() {
+                        this.activeSlide = (this.activeSlide + 1) % this.slides.length;
+                        this.scrollToActive();
+                    },
+                    prev() {
+                        this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length;
+                        this.scrollToActive();
+                    },
+                    scrollToActive() {
+                        const container = this.$refs.slider;
+                        container.scrollTo({
+                            left: container.offsetWidth * this.activeSlide,
+                            behavior: 'smooth'
+                        });
+                    },
+                    init() {
+                        setInterval(() => this.next(), 6000);
+                    }
+                }" class="relative group rounded-[32px] overflow-hidden shadow-2xl bg-gray-100">
+                    
+                    {{-- Scrollable Container --}}
+                    <div 
+                        x-ref="slider"
+                        @scroll.debounce.100ms="activeSlide = Math.round($event.target.scrollLeft / $event.target.offsetWidth)"
+                        class="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar" 
+                        style="height: 380px;"
+                    >
+                        <template x-for="(slide, index) in slides" :key="index">
+                            <div class="w-full flex-shrink-0 snap-center relative">
+                                <img :src="slide" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Package Image">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                            </div>
+                        </template>
+                    </div>
+
+                    {{-- Top Actions (Wishlist) --}}
+                    <div class="absolute top-5 right-5 z-20">
+                        <button 
+                            class="w-11 h-11 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all duration-300 shadow-lg"
+                            onclick="toggleWishlist(event, {slug: '{{ $package['slug'] }}', title: '{{ $package['title'] }}', image: '{{ $package['image'] }}', price: '{{ $package['price'] }}'})"
+                        >
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        </button>
+                    </div>
+
+                    {{-- Premium Combined Controls (Matching User Reference) --}}
+                    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6 z-20 bg-black/30 backdrop-blur-xl px-7 py-3.5 rounded-full border border-white/10 shadow-2xl">
+                        <!-- Left Arrow (Thin style) -->
+                        <button @click="prev()" class="text-white hover:text-primary transition-all duration-300 transform hover:scale-125">
+                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                        </button>
+
+                        <!-- Dots/Pills -->
+                        <div class="flex items-center gap-3">
+                            <template x-for="(slide, index) in slides" :key="index">
+                                <button 
+                                    @click="scrollToActive(activeSlide = index)"
+                                    class="transition-all duration-500 rounded-full"
+                                    :class="activeSlide === index ? 'w-10 h-3 bg-primary shadow-glow' : 'w-3 h-3 bg-white shadow-sm hover:bg-white/80'"
+                                ></button>
+                            </template>
+                        </div>
+
+                        <!-- Right Arrow (Thin style) -->
+                        <button @click="next()" class="text-white hover:text-primary transition-all duration-300 transform hover:scale-125">
+                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+
+                    <style>
+                        .hide-scrollbar::-webkit-scrollbar { display: none; }
+                        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                    </style>
                 </div>
 
                 {{-- Quick Info Strip --}}

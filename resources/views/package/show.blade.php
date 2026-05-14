@@ -3,7 +3,7 @@
 @section('title', $pkg['title'] . ' - Tour Raja')
 
 @section('content')
-    <div class="pt-24 pb-16 text-left">
+    <div class="pt-32 lg:pt-40 pb-16 text-left">
         <div class="container-custom">
             <!-- Breadcrumbs -->
             <div class="flex items-center gap-2 text-gray-400 text-sm mb-8 font-medium">
@@ -17,26 +17,93 @@
             <div class="flex flex-col lg:flex-row gap-12">
                 <!-- Left Content -->
                 <div class="flex-1 space-y-12">
-                    <!-- Image Gallery -->
-                    <div class="space-y-4">
-                        <div class="relative aspect-[16/9] rounded-[40px] overflow-hidden shadow-2xl">
-                            <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}" class="w-full h-full object-cover" />
-                            <div class="absolute top-6 right-6 flex gap-3">
-                                <button class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all shadow-lg">
-                                    <i data-lucide="heart" size="24"></i>
-                                </button>
-                                <button class="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all shadow-lg">
-                                    <i data-lucide="share-2" size="24"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-4 gap-4">
-                            @for($i = 1; $i <= 4; $i++)
-                                <div class="aspect-square rounded-2xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity shadow-soft">
-                                    <img src="{{ asset($pkg['image']) }}" alt="Gallery {{ $i }}" class="w-full h-full object-cover" />
+                    <!-- Interactive Image Slider -->
+                    <div x-data="{ 
+                        activeSlide: 0,
+                        slides: [
+                            '{{ asset($pkg['image']) }}',
+                            'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
+                            'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200',
+                            'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200',
+                            'https://images.unsplash.com/photo-1472396961695-1ad7a82fe28b?auto=format&fit=crop&q=80&w=1200'
+                        ],
+                        next() {
+                            this.activeSlide = (this.activeSlide + 1) % this.slides.length;
+                            this.scrollToActive();
+                        },
+                        prev() {
+                            this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length;
+                            this.scrollToActive();
+                        },
+                        scrollToActive() {
+                            const container = this.$refs.slider;
+                            container.scrollTo({
+                                left: container.offsetWidth * this.activeSlide,
+                                behavior: 'smooth'
+                            });
+                        },
+                        init() {
+                            setInterval(() => this.next(), 6000);
+                        }
+                    }" class="relative group rounded-[40px] overflow-hidden shadow-2xl bg-gray-100">
+                        
+                        {{-- Scrollable Container --}}
+                        <div 
+                            x-ref="slider"
+                            @scroll.debounce.100ms="activeSlide = Math.round($event.target.scrollLeft / $event.target.offsetWidth)"
+                            class="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar" 
+                            style="height: 400px;"
+                        >
+                            <template x-for="(slide, index) in slides" :key="index">
+                                <div class="w-full flex-shrink-0 snap-center relative">
+                                    <img :src="slide" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Package Image">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
                                 </div>
-                            @endfor
+                            </template>
                         </div>
+
+                        {{-- Top Actions --}}
+                        <div class="absolute top-6 right-6 flex gap-3 z-20">
+                            <button 
+                                class="w-12 h-12 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all duration-300 shadow-lg"
+                                onclick="toggleWishlist(event, {slug: '{{ $pkg['id'] }}', title: '{{ $pkg['title'] }}', image: '{{ asset($pkg['image']) }}', price: '{{ $pkg['price'] }}'})"
+                            >
+                                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            </button>
+                            <button class="w-12 h-12 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all duration-300 shadow-lg">
+                                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                            </button>
+                        </div>
+
+                        {{-- Premium Combined Controls (Matching User Reference) --}}
+                        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6 z-20 bg-black/30 backdrop-blur-xl px-7 py-3.5 rounded-full border border-white/10 shadow-2xl">
+                            <!-- Left Arrow (Thin style) -->
+                            <button @click="prev()" class="text-white hover:text-primary transition-all duration-300 transform hover:scale-125">
+                                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                            </button>
+
+                            <!-- Dots/Pills -->
+                            <div class="flex items-center gap-3">
+                                <template x-for="(slide, index) in slides" :key="index">
+                                    <button 
+                                        @click="scrollToActive(activeSlide = index)"
+                                        class="transition-all duration-500 rounded-full"
+                                        :class="activeSlide === index ? 'w-10 h-3 bg-primary shadow-glow' : 'w-3 h-3 bg-white shadow-sm hover:bg-white/80'"
+                                    ></button>
+                                </template>
+                            </div>
+
+                            <!-- Right Arrow (Thin style) -->
+                            <button @click="next()" class="text-white hover:text-primary transition-all duration-300 transform hover:scale-125">
+                                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
+
+
+                        <style>
+                            .hide-scrollbar::-webkit-scrollbar { display: none; }
+                            .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                        </style>
                     </div>
 
                     <!-- Title & Info -->
