@@ -1,18 +1,41 @@
-<section class="relative min-h-screen flex items-center justify-center py-24 lg:py-32">
-    <!-- Background Image with Cinematic Zoom -->
-    <div class="absolute inset-0 z-0 overflow-hidden">
-        <img
-            src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
-            alt="Cinematic Travel Background"
-            class="w-full h-full object-cover animate-zoom-slow"
-        />
-        <!-- Darker Overlay Gradient for better contrast -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background"></div>
+<section class="relative min-h-screen flex items-center justify-center py-24 lg:py-32 overflow-hidden">
+    <!-- Background Slider -->
+    <div class="absolute inset-0 z-0 overflow-hidden bg-[#1A1A24]">
+        <div class="hero-slider-container" id="heroSlider" style="display: flex; width: 100%; height: 100%; transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); will-change: transform;">@php
+                $slides = [
+                    'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1920&q=80',
+                    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1920&q=80',
+                    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1920&q=80',
+                    'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1920&q=80',
+                    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80',
+                ];
+            @endphp @foreach($slides as $index => $url)<div class="hero-slide" style="background-image: url('{{ $url }}'); width: 100%; height: 100%; flex: 0 0 100%; background-size: cover; background-position: center;"></div>@endforeach</div>
+        
+        <!-- Original Cinematic Overlay Gradient -->
+         
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-background z-10 pointer-events-none"></div>
+    </div>
+
+    <!-- Slider Navigation (Corner) -->
+    <div class="absolute bottom-12 right-8 lg:right-16 z-40 flex items-center gap-4 animate-fade-in [animation-delay:1000ms]">
+        <div class="hero-nav-dots flex items-center">
+            <button onclick="prevHeroSlide()" class="text-white/70 hover:text-white transition-colors mr-2">
+                <i data-lucide="arrow-left" size="20"></i>
+            </button>
+            
+            @foreach($slides as $index => $url)
+                <div class="hero-dot {{ $index === 0 ? 'active' : '' }}" data-dot="{{ $index }}" onclick="goToHeroSlide({{ $index }})" style="cursor: pointer; width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.3); margin: 0 4px;"></div>
+            @endforeach
+
+            <button onclick="nextHeroSlide()" class="text-white/70 hover:text-white transition-colors ml-2">
+                <i data-lucide="arrow-right" size="20"></i>
+            </button>
+        </div>
     </div>
 
     <!-- Content -->
-    <div class="container-custom relative z-10 text-center text-white">
-        <div class="max-w-5xl mx-auto flex flex-col items-center gap-8 md:gap-10">
+    <div class="container-custom relative z-30 text-center text-white pointer-events-none">
+        <div class="max-w-5xl mx-auto flex flex-col items-center gap-8 md:gap-10 pointer-events-auto">
             <!-- Top Badge -->
             <div class="animate-fade-in [animation-delay:200ms]">
                 <span class="inline-block px-5 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] md:text-xs font-black tracking-[0.2em] uppercase">
@@ -34,7 +57,7 @@
                 </p>
             </div>
 
-            <!-- Floating Search Bar - Robust Responsiveness -->
+            <!-- Floating Search Bar -->
             <div class="w-full max-w-4xl pt-4 animate-fade-in [animation-delay:800ms]">
                 <div class="bg-white/95 backdrop-blur-2xl rounded-3xl lg:rounded-full p-2 lg:p-3 shadow-premium shadow-black/30 flex flex-col lg:flex-row items-center gap-2">
                     <!-- Destination -->
@@ -72,4 +95,50 @@
             </div>
         </div>
     </div>
+
+    <script>
+        let currentSlide = 0;
+        const slider = document.getElementById('heroSlider');
+        const dots = document.querySelectorAll('.hero-dot');
+        const totalSlides = dots.length;
+        let slideInterval;
+
+        function showSlide(index) {
+            if (!slider) return;
+            slider.style.transform = `translateX(-${index * 100}%)`;
+            
+            dots.forEach((d, i) => {
+                d.classList.toggle('active', i === index);
+            });
+            currentSlide = index;
+        }
+
+        function nextHeroSlide() {
+            let next = (currentSlide + 1) % totalSlides;
+            showSlide(next);
+            resetInterval();
+        }
+
+        function prevHeroSlide() {
+            let prev = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(prev);
+            resetInterval();
+        }
+
+        function goToHeroSlide(index) {
+            showSlide(index);
+            resetInterval();
+        }
+
+        function startInterval() {
+            slideInterval = setInterval(nextHeroSlide, 5000);
+        }
+
+        function resetInterval() {
+            clearInterval(slideInterval);
+            startInterval();
+        }
+
+        document.addEventListener('DOMContentLoaded', startInterval);
+    </script>
 </section>

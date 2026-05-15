@@ -3,33 +3,32 @@
 @section('content')
     <x-hero />
 
-    <!-- Section 1: Minimal Popular Transits -->
-    <section class="py-8 bg-white border-b border-border-soft/30 animate-fade-up">
+    <!-- Section 1: Browse Popular Transits -->
+    <section class="py-12 bg-white border-b border-border-soft/30 animate-fade-up">
         <div class="container-custom">
-            <h2 class="text-2xl font-black text-foreground mb-10 tracking-tight font-heading">Popular Transits</h2>
+            <h2 class="text-xl font-black text-foreground mb-10 text-center tracking-tight font-heading">Browse Popular Transits</h2>
 
-            <div class="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-8 gap-6 lg:gap-4 items-start">
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4 lg:gap-3">
                 @php
                     $transits = [
-                        ['label' => 'Bullet Ride', 'icon' => 'bike'],
-                        ['label' => 'Flight', 'icon' => 'plane'],
-                        ['label' => 'Train', 'icon' => 'train-front'],
-                        ['label' => 'Bus', 'icon' => 'bus'],
-                        ['label' => 'Cruise', 'icon' => 'ship'],
-                        ['label' => 'Land', 'icon' => 'map'],
-                        ['label' => 'Trekking', 'icon' => 'mountain'],
-                        ['label' => 'Helicopter', 'icon' => 'helicopter'],
+                        ['label' => 'Flight Package', 'gif' => 'https://s13.gifyu.com/images/b7YmN.gif'],
+                        ['label' => 'Train Package', 'gif' => 'https://s13.gifyu.com/images/b7Yms.gif'],
+                        ['label' => 'Bus Package', 'gif' => 'https://s13.gifyu.com/images/b7YmK.gif'],
+                        ['label' => 'Bullet Ride', 'gif' => 'https://s13.gifyu.com/images/b7YmH.gif'],
+                        ['label' => 'Cruise Package', 'gif' => 'https://s13.gifyu.com/images/b7Ymx.gif'],
+                        ['label' => 'Land Package', 'gif' => 'https://s13.gifyu.com/images/b7Ymw.gif'],
+                        ['label' => 'Tracking', 'gif' => 'https://s13.gifyu.com/images/b7YmT.gif'],
+                        ['label' => 'Helicopter Package', 'gif' => 'https://s13.gifyu.com/images/b7Ym3.gif'],
                     ];
                 @endphp
 
                 @foreach($transits as $item)
-                    <div class="group flex flex-col items-center text-center space-y-3 cursor-pointer">
-                        <div class="relative w-16 h-16 flex items-center justify-center transition-all duration-500 group-hover:scale-110">
-                            <div class="absolute inset-0 bg-primary/5 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500"></div>
-                            <i data-lucide="{{ $item['icon'] }}" class="text-foreground group-hover:text-primary transition-colors duration-500 relative z-10" size="32" stroke-width="1.5"></i>
+                    <div class="group flex flex-col items-center justify-between p-4 border border-blue-400/30 rounded-xl hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/10 transition-all duration-300 cursor-pointer bg-white h-full min-h-[140px]">
+                        <div class="w-16 h-16 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                            <img src="{{ $item['gif'] }}" alt="{{ $item['label'] }}" class="w-full h-full object-contain pointer-events-none">
                         </div>
-                        <h4 class="font-bold text-foreground group-hover:text-primary transition-colors text-[10px] lg:text-[11px] uppercase tracking-wide leading-tight">
-                            {{ $item['label'] }}<br/>Package
+                        <h4 class="font-black text-foreground group-hover:text-primary transition-colors text-[10px] lg:text-[11px] uppercase tracking-tighter text-center leading-tight mt-2">
+                            {{ $item['label'] }}
                         </h4>
                     </div>
                 @endforeach
