@@ -473,12 +473,20 @@
                             Subscribe to see secret deals prices drop the moment you sign up!
                         </h2>
                         
-                        <div class="relative max-w-md mt-10">
-                            <input type="email" placeholder="Your Email" class="w-full h-16 pl-8 pr-40 rounded-full bg-white border-none shadow-soft text-foreground font-bold focus:ring-2 focus:ring-primary/20 placeholder:text-text-muted/50">
-                            <button class="absolute right-2 top-2 h-12 px-8 rounded-full bg-black text-white font-black text-xs uppercase tracking-widest hover:bg-primary transition-all duration-300">
+                        @if(session('success') && str_contains(session('success'), 'subscrib'))
+                            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-sm flex items-center gap-3">
+                                <i data-lucide="check-circle" size="20"></i>
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        <form action="{{ route('newsletter.subscribe') }}" method="POST" class="relative max-w-md mt-10">
+                            @csrf
+                            <input type="email" name="email" placeholder="Your Email" required class="w-full h-16 pl-8 pr-40 rounded-full bg-white border-none shadow-soft text-foreground font-bold focus:ring-2 focus:ring-primary/20 placeholder:text-text-muted/50">
+                            <button type="submit" class="absolute right-2 top-2 h-12 px-8 rounded-full bg-black text-white font-black text-xs uppercase tracking-widest hover:bg-primary transition-all duration-300">
                                 Subscribe
                             </button>
-                        </div>
+                        </form>
                         <p class="text-text-muted text-xs font-bold opacity-60">No ads. No trails. No commitments</p>
                     </div>
                 </div>

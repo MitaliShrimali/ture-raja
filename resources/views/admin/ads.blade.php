@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editAd: { id: '', campaign_name: '', position: '', image: '', link: '', status: '' } }">
     <div class="space-y-4">
         <div class="flex items-center gap-2 text-[10px] font-black text-muted-text uppercase tracking-widest">
             <span>Pages</span>
@@ -13,66 +13,16 @@
                 <h2 class="font-black text-foreground tracking-tight">Advertisement Campaigns</h2>
                 <p class="text-muted-text font-medium">Monitor, track, and optimize your global advertising reach.</p>
             </div>
-            <button class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
+            <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
                 <i data-lucide="plus" size="20"></i> Create New Ad
             </button>
-        </div>
-    </div>
-
-    <!-- Campaign Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-8 rounded-[40px] shadow-soft border border-border-soft flex items-center gap-6">
-            <div class="w-16 h-16 bg-orange-50 rounded-3xl flex items-center justify-center text-primary">
-                <i data-lucide="megaphone" size="32"></i>
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <p class="text-[10px] font-black text-muted-text uppercase tracking-widest opacity-60">Active Now</p>
-                    <span class="text-[10px] font-bold text-green-500">+12%</span>
-                </div>
-                <h4 class="text-3xl font-black text-foreground tracking-tight">248</h4>
-            </div>
-        </div>
-        <div class="bg-white p-8 rounded-[40px] shadow-soft border border-border-soft flex items-center gap-6">
-            <div class="w-16 h-16 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-500">
-                <i data-lucide="trending-up" size="32"></i>
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <p class="text-[10px] font-black text-muted-text uppercase tracking-widest opacity-60">Total Impressions</p>
-                    <span class="text-[10px] font-bold text-blue-500">Target Reached</span>
-                </div>
-                <h4 class="text-3xl font-black text-foreground tracking-tight">1.2M</h4>
-            </div>
-        </div>
-        <div class="bg-white p-8 rounded-[40px] shadow-soft border border-border-soft flex items-center gap-6">
-            <div class="w-16 h-16 bg-red-50 rounded-3xl flex items-center justify-center text-red-500">
-                <i data-lucide="clock" size="32"></i>
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <p class="text-[10px] font-black text-muted-text uppercase tracking-widest opacity-60">Expiring Soon</p>
-                    <span class="text-[10px] font-bold text-red-500">Action Needed</span>
-                </div>
-                <h4 class="text-3xl font-black text-foreground tracking-tight">14</h4>
-            </div>
         </div>
     </div>
 
     <!-- Active Ads Table -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="flex items-center gap-8">
-                <h3 class="text-xl font-black">Active Advertisements</h3>
-                <div class="flex items-center bg-gray-100 p-1 rounded-xl">
-                    <button class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-muted-text hover:text-foreground">All (1,042)</button>
-                    <button class="px-4 py-1.5 text-[10px] font-black uppercase tracking-widest bg-white text-primary rounded-lg shadow-sm">Live (248)</button>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <button class="p-2.5 text-muted-text hover:text-foreground"><i data-lucide="filter" size="20"></i></button>
-                <button class="p-2.5 text-muted-text hover:text-foreground"><i data-lucide="download" size="20"></i></button>
-            </div>
+            <h3 class="text-xl font-black">Active Advertisements</h3>
         </div>
 
         <div class="admin-table-container">
@@ -80,64 +30,229 @@
                 <thead>
                     <tr class="bg-gray-50/50">
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">SR. NO</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">TITLE & DETAILS</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">CAMPAIGN TITLE & LINK</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">BANNER PREVIEW</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">ADVERTISER</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">EXPIRY DATE</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">POSITION</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">CLICKS / VIEWS</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">STATUS</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-soft">
-                    @php
-                        $ads = [
-                            ['sr' => '01', 'title' => 'Summer Expedition Promo', 'id' => 'ADV-2023-9901', 'advertiser' => 'Travel Agency Pro', 'expiry' => 'Oct 24, 2024', 'status' => 'Live', 'preview' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=200'],
-                            ['sr' => '02', 'title' => 'Luxury Resort Spotlight', 'id' => 'ADV-2023-8824', 'advertiser' => 'Heli-Sky Resorts', 'expiry' => 'Dec 12, 2023', 'status' => 'Expired', 'preview' => 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=200'],
-                            ['sr' => '03', 'title' => 'Winter Gear Flash Sale', 'id' => 'ADV-2024-1205', 'advertiser' => 'Nomad Outfitters', 'expiry' => 'Jan 30, 2025', 'status' => 'Paused', 'preview' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=200'],
-                        ];
-                    @endphp
-                    @foreach($ads as $ad)
+                    @forelse($ads as $index => $ad)
+                        @php
+                            $srNo = str_pad($ads->firstItem() + $index, 2, '0', STR_PAD_LEFT);
+                        @endphp
                         <tr class="group hover:bg-gray-50/30 transition-colors">
-                            <td class="py-6 px-8 text-sm font-bold text-muted-text opacity-40">{{ $ad['sr'] }}</td>
+                            <td class="py-6 px-8 text-sm font-bold text-muted-text opacity-40">{{ $srNo }}</td>
                             <td class="py-6 px-8">
                                 <div class="space-y-1">
-                                    <p class="text-sm font-black text-foreground">{{ $ad['title'] }}</p>
-                                    <p class="text-[10px] font-bold text-muted-text uppercase tracking-tighter">ID: {{ $ad['id'] }}</p>
+                                    <p class="text-sm font-black text-foreground">{{ $ad->campaign_name }}</p>
+                                    <p class="text-[10px] font-bold text-muted-text uppercase tracking-tighter">URL: {{ $ad->link }}</p>
                                 </div>
                             </td>
                             <td class="py-6 px-8">
                                 <div class="w-24 h-12 rounded-xl overflow-hidden border border-border-soft bg-gray-100">
-                                    <img src="{{ $ad['preview'] }}" alt="Preview" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                                    <img src="{{ $ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=200' }}" alt="Preview" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
                                 </div>
                             </td>
-                            <td class="py-6 px-8">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center font-black text-[10px] text-muted-text">
-                                        @foreach(explode(' ', $ad['advertiser']) as $n) {{ $n[0] }} @endforeach
-                                    </div>
-                                    <span class="text-sm font-bold text-muted-text">{{ $ad['advertiser'] }}</span>
-                                </div>
+                            <td class="py-6 px-8 text-sm font-bold text-muted-text">{{ $ad->position }}</td>
+                            <td class="py-6 px-8 text-xs font-bold text-muted-text">
+                                <span class="text-foreground font-black">{{ $ad->clicks }}</span> Clicks / <span class="text-foreground font-black">{{ $ad->views }}</span> Views
                             </td>
-                            <td class="py-6 px-8 text-sm font-bold text-muted-text">{{ $ad['expiry'] }}</td>
                             <td class="py-6 px-8">
-                                <span class="px-3 py-1 rounded-full 
-                                    {{ $ad['status'] === 'Live' ? 'bg-green-50 text-green-500' : 
-                                       ($ad['status'] === 'Paused' ? 'bg-yellow-50 text-yellow-500' : 'bg-gray-50 text-gray-400') }} 
-                                    text-[10px] font-black uppercase tracking-wider">
-                                    {{ $ad['status'] }}
-                                </span>
+                                <a href="{{ url('/admin/ads/toggle/' . $ad->id) }}" class="inline-block">
+                                    <span class="px-3 py-1 rounded-full 
+                                        {{ $ad->status === 'Active' ? 'bg-green-50 text-green-500 hover:bg-green-100' : 'bg-yellow-50 text-yellow-500 hover:bg-yellow-100' }} 
+                                        text-[10px] font-black uppercase tracking-wider transition-all">
+                                        {{ $ad->status }}
+                                    </span>
+                                </a>
                             </td>
                             <td class="py-6 px-8 text-right">
                                 <div class="flex items-center justify-end gap-1">
-                                    <button class="p-2 text-muted-text hover:text-primary"><i data-lucide="eye" size="18"></i></button>
-                                    <button class="p-2 text-muted-text hover:text-primary"><i data-lucide="edit-3" size="18"></i></button>
-                                    <button class="p-2 text-muted-text hover:text-red-500"><i data-lucide="trash-2" size="18"></i></button>
+                                    <button 
+                                        @click="showEditModal = true; editAd = { id: '{{ $ad->id }}', campaign_name: '{{ addslashes($ad->campaign_name) }}', position: '{{ addslashes($ad->position) }}', image: '{{ addslashes($ad->image) }}', link: '{{ addslashes($ad->link) }}', status: '{{ $ad->status }}' }"
+                                        class="p-2 text-muted-text hover:text-primary transition-all"
+                                    >
+                                        <i data-lucide="edit-3" size="18"></i>
+                                    </button>
+                                    <a 
+                                        href="{{ url('/admin/ads/delete/' . $ad->id) }}" 
+                                        onclick="return confirm('Are you sure you want to delete this ad campaign?');"
+                                        class="p-2 text-muted-text hover:text-red-500 transition-all"
+                                    >
+                                        <i data-lucide="trash-2" size="18"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="7" class="py-12 text-center text-sm font-bold text-muted-text">No ad campaigns registered.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
+        </div>
+
+        <!-- Custom Pagination -->
+        <div class="p-8 bg-gray-50/50 border-t border-border-soft flex flex-col md:flex-row items-center justify-between gap-6">
+            <p class="text-sm font-bold text-muted-text">Showing {{ $ads->firstItem() ?? 0 }} to {{ $ads->lastItem() ?? 0 }} of {{ $ads->total() }} entries</p>
+            <div class="flex items-center gap-2">
+                @if($ads->onFirstPage())
+                    <button class="p-2 text-muted-text opacity-40 cursor-not-allowed" disabled><i data-lucide="chevron-left" size="20"></i></button>
+                @else
+                    <a href="{{ $ads->previousPageUrl() }}" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-left" size="20"></i></a>
+                @endif
+                
+                @foreach(range(1, $ads->lastPage()) as $i)
+                    @if($i == 1 || $i == $ads->lastPage() || abs($i - $ads->currentPage()) <= 1)
+                        @if($i == $ads->currentPage())
+                            <button class="w-10 h-10 rounded-full text-sm font-black bg-primary text-white shadow-lg shadow-primary/20 transition-all">
+                                {{ $i }}
+                            </button>
+                        @else
+                            <a href="{{ $ads->url($i) }}" class="w-10 h-10 rounded-full text-sm font-black transition-all text-muted-text hover:bg-white hover:text-primary flex items-center justify-center">
+                                {{ $i }}
+                            </a>
+                        @endif
+                    @elseif($i == 2 || $i == $ads->lastPage() - 1)
+                        <span class="text-muted-text font-black px-1">...</span>
+                    @endif
+                @endforeach
+                
+                @if($ads->hasMorePages())
+                    <a href="{{ $ads->nextPageUrl() }}" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-right" size="20"></i></a>
+                @else
+                    <button class="p-2 text-muted-text opacity-40 cursor-not-allowed" disabled><i data-lucide="chevron-right" size="20"></i></button>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= MODALS ================= -->
+
+    <!-- Add Ad Modal -->
+    <div 
+        x-show="showAddModal" 
+        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        style="display: none;"
+    >
+        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
+            <div class="flex items-center justify-between border-b border-border-soft pb-4">
+                <div class="space-y-1">
+                    <h3 class="text-xl font-black text-foreground">Create New Campaign</h3>
+                    <p class="text-xs text-muted-text font-medium">Log a new premium marketing advertisement.</p>
+                </div>
+                <button @click="showAddModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                    <i data-lucide="x" size="20"></i>
+                </button>
+            </div>
+            
+            <form action="{{ url('/admin/ads/store') }}" method="POST" class="space-y-6">
+                @csrf
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Campaign Name<span class="text-primary">*</span></label>
+                    <input required type="text" name="campaign_name" placeholder="E.g. Summer Expedition Promo" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Placement Position</label>
+                    <select name="position" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="Home Hero">Home Hero</option>
+                        <option value="Package Sidebar">Package Sidebar</option>
+                        <option value="Footer Banner">Footer Banner</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Image URL</label>
+                    <input type="text" name="image" placeholder="E.g. https://images.unsplash.com/..." class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Click Target URL</label>
+                    <input type="text" name="link" placeholder="E.g. /discover" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                    <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="Active">Active</option>
+                        <option value="Paused">Paused</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center justify-end gap-4 pt-4">
+                    <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Ad Modal -->
+    <div 
+        x-show="showEditModal" 
+        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        style="display: none;"
+    >
+        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
+            <div class="flex items-center justify-between border-b border-border-soft pb-4">
+                <div class="space-y-1">
+                    <h3 class="text-xl font-black text-foreground">Edit Campaign</h3>
+                    <p class="text-xs text-muted-text font-medium">Update advertisement details and links.</p>
+                </div>
+                <button @click="showEditModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                    <i data-lucide="x" size="20"></i>
+                </button>
+            </div>
+            
+            <form action="{{ url('/admin/ads/update') }}" method="POST" class="space-y-6">
+                @csrf
+                <input type="hidden" name="id" x-model="editAd.id" />
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Campaign Name<span class="text-primary">*</span></label>
+                    <input required type="text" name="campaign_name" x-model="editAd.campaign_name" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Placement Position</label>
+                    <select name="position" x-model="editAd.position" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="Home Hero">Home Hero</option>
+                        <option value="Package Sidebar">Package Sidebar</option>
+                        <option value="Footer Banner">Footer Banner</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Image URL</label>
+                    <input type="text" name="image" x-model="editAd.image" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Click Target URL</label>
+                    <input type="text" name="link" x-model="editAd.link" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                    <select name="status" x-model="editAd.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="Active">Active</option>
+                        <option value="Paused">Paused</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center justify-end gap-4 pt-4">
+                    <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

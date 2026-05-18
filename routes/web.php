@@ -4,22 +4,50 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\PackageController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index']);
+// ─── PUBLIC / USER ROUTES ────────────────────────────────────────────────────
 
+Route::get('/', [UserController::class, 'home'])->name('home');
 Route::get('/listing', [ListingController::class, 'index']);
+Route::get('/discover', [ListingController::class, 'index'])->name('discover');
 
-Route::get('/about', function () {
-    return view('about');
-});
+// Static pages (keep original behaviour)
+Route::get('/about', function () { return view('about'); });
+Route::get('/contact', function () { return view('contact'); });
 
-Route::get('/contact', function () {
-    return view('contact');
-});
+// Search from hero bar → redirect to listing
+Route::get('/search', [UserController::class, 'search'])->name('search');
 
-Route::get('/profile', [HomeController::class, 'profile']);
+// Newsletter subscription
+Route::post('/newsletter/subscribe', [UserController::class, 'subscribe'])->name('newsletter.subscribe');
 
+// Contact form submission (stores in user_inquiries + contacts for admin)
+Route::post('/contact/submit', [UserController::class, 'submitContact'])->name('contact.submit');
+
+// Package booking request
+Route::post('/package/book', [UserController::class, 'bookPackage'])->name('package.book');
+
+// Wishlist toggle (AJAX + form fallback)
+Route::post('/wishlist/toggle', [UserController::class, 'toggleWishlist'])->name('wishlist.toggle');
+Route::get('/wishlist/remove/{packageId}', [UserController::class, 'removeWishlist'])->name('wishlist.remove');
+
+// User profile & dashboard
+Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+Route::post('/profile/password', [UserController::class, 'changePassword'])->name('profile.password');
+Route::get('/profile/cancel-booking/{id}', [UserController::class, 'cancelBooking'])->name('booking.cancel');
+Route::get('/profile/notification/read/{id}', [UserController::class, 'markNotificationRead'])->name('notification.read');
+Route::post('/profile/review', [UserController::class, 'submitReview'])->name('review.submit');
+
+// ─── LOGIN ROUTE ─────────────────────────────────────────────────────────────
+Route::get('/login', function() {
+    $type = request('tab') == 'agent' ? 'agent' : 'customer';
+    return view('admin.login', compact('type'));
+})->name('login');
+
+// ─── ADMIN ROUTES ────────────────────────────────────────────────────────────
 Route::prefix('admin')->group(function () {
     Route::get('/login', function () {
         return view('admin.login', ['type' => 'admin']);
@@ -55,16 +83,98 @@ Route::prefix('admin')->group(function () {
     Route::get('/contact', [AdminController::class, 'contact']);
     Route::get('/subscribers', [AdminController::class, 'subscribers']);
     Route::get('/settings', [AdminController::class, 'settings']);
+
+    // CRUD Routes
+    Route::post('/users/store', [AdminController::class, 'storeUser']);
+    Route::post('/users/update', [AdminController::class, 'updateUser']);
+    Route::get('/users/delete/{id}', [AdminController::class, 'deleteUser']);
+    Route::get('/users/toggle/{id}', [AdminController::class, 'toggleUser']);
+
+    Route::post('/agents/store', [AdminController::class, 'storeAgent']);
+    Route::post('/agents/update', [AdminController::class, 'updateAgent']);
+    Route::get('/agents/delete/{id}', [AdminController::class, 'deleteAgent']);
+    Route::get('/agents/toggle/{id}', [AdminController::class, 'toggleAgent']);
+
+    Route::post('/leads/store', [AdminController::class, 'storeLead']);
+    Route::post('/leads/update', [AdminController::class, 'updateLead']);
+    Route::get('/leads/delete/{id}', [AdminController::class, 'deleteLead']);
+
+    Route::post('/hotels/store', [AdminController::class, 'storeHotel']);
+    Route::post('/hotels/update', [AdminController::class, 'updateHotel']);
+    Route::get('/hotels/delete/{id}', [AdminController::class, 'deleteHotel']);
+    Route::get('/hotels/toggle/{id}', [AdminController::class, 'toggleHotel']);
+
+    Route::post('/amenities/store', [AdminController::class, 'storeAmenity']);
+    Route::post('/amenities/update', [AdminController::class, 'updateAmenity']);
+    Route::get('/amenities/delete/{id}', [AdminController::class, 'deleteAmenity']);
+    Route::get('/amenities/toggle/{id}', [AdminController::class, 'toggleAmenity']);
+
+    Route::post('/packages/store', [AdminController::class, 'storePackage']);
+    Route::post('/packages/update', [AdminController::class, 'updatePackage']);
+    Route::get('/packages/delete/{id}', [AdminController::class, 'deletePackage']);
+    Route::get('/packages/toggle/{id}', [AdminController::class, 'togglePackage']);
+
+    Route::post('/holiday-types/store', [AdminController::class, 'storeHolidayType']);
+    Route::post('/holiday-types/update', [AdminController::class, 'updateHolidayType']);
+    Route::get('/holiday-types/delete/{id}', [AdminController::class, 'deleteHolidayType']);
+    Route::get('/holiday-types/toggle/{id}', [AdminController::class, 'toggleHolidayType']);
+
+    Route::post('/activities/store', [AdminController::class, 'storeActivity']);
+    Route::post('/activities/update', [AdminController::class, 'updateActivity']);
+    Route::get('/activities/delete/{id}', [AdminController::class, 'deleteActivity']);
+    Route::get('/activities/toggle/{id}', [AdminController::class, 'toggleActivity']);
+
+    Route::post('/paid-users/store', [AdminController::class, 'storePaidUser']);
+    Route::post('/paid-users/update', [AdminController::class, 'updatePaidUser']);
+    Route::get('/paid-users/delete/{id}', [AdminController::class, 'deletePaidUser']);
+    Route::get('/paid-users/toggle/{id}', [AdminController::class, 'togglePaidUser']);
+
+    Route::post('/user-plans/store', [AdminController::class, 'storeUserPlan']);
+    Route::post('/user-plans/update', [AdminController::class, 'updateUserPlan']);
+    Route::get('/user-plans/delete/{id}', [AdminController::class, 'deleteUserPlan']);
+
+    Route::post('/payments/store', [AdminController::class, 'storePayment']);
+    Route::post('/payments/update', [AdminController::class, 'updatePayment']);
+    Route::get('/payments/delete/{id}', [AdminController::class, 'deletePayment']);
+
+    Route::post('/ads/store', [AdminController::class, 'storeAd']);
+    Route::post('/ads/update', [AdminController::class, 'updateAd']);
+    Route::get('/ads/delete/{id}', [AdminController::class, 'deleteAd']);
+    Route::get('/ads/toggle/{id}', [AdminController::class, 'toggleAd']);
+
+    Route::post('/plans/store', [AdminController::class, 'storePlan']);
+    Route::post('/plans/update', [AdminController::class, 'updatePlan']);
+    Route::get('/plans/delete/{id}', [AdminController::class, 'deletePlan']);
+    Route::get('/plans/toggle/{id}', [AdminController::class, 'togglePlan']);
+
+    Route::post('/banners/store', [AdminController::class, 'storeBanner']);
+    Route::post('/banners/update', [AdminController::class, 'updateBanner']);
+    Route::get('/banners/delete/{id}', [AdminController::class, 'deleteBanner']);
+    Route::get('/banners/toggle/{id}', [AdminController::class, 'toggleBanner']);
+
+    Route::post('/notifications/store', [AdminController::class, 'storeNotification']);
+    Route::get('/notifications/delete/{id}', [AdminController::class, 'deleteNotification']);
+
+    Route::post('/cms/store', [AdminController::class, 'storeCmsPage']);
+    Route::post('/cms/update', [AdminController::class, 'updateCmsPage']);
+    Route::get('/cms/delete/{id}', [AdminController::class, 'deleteCmsPage']);
+    Route::get('/cms/toggle/{id}', [AdminController::class, 'toggleCmsPage']);
+
+    Route::post('/contacts/store', [AdminController::class, 'storeContact']);
+    Route::get('/contacts/delete/{id}', [AdminController::class, 'deleteContact']);
+    Route::get('/contacts/toggle/{id}', [AdminController::class, 'toggleContact']);
+
+    Route::post('/subscribers/store', [AdminController::class, 'storeSubscriber']);
+    Route::get('/subscribers/delete/{id}', [AdminController::class, 'deleteSubscriber']);
+    Route::get('/subscribers/toggle/{id}', [AdminController::class, 'toggleSubscriber']);
+
+    Route::post('/settings/update', [AdminController::class, 'updateSettings']);
+    Route::post('/profile/update', [AdminController::class, 'updateProfile']);
 });
 
-Route::get('/discover', [ListingController::class, 'index'])->name('discover');
 Route::get('/tour/{slug}', function($slug) {
     return view('tour.show', compact('slug'));
 })->name('tour.show');
-Route::get('/login', function() {
-    $type = request('tab') == 'agent' ? 'agent' : 'customer';
-    return view('admin.login', compact('type'));
-})->name('login');
 
 Route::get('/package/{id}', [PackageController::class, 'show']);
 

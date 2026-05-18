@@ -49,24 +49,39 @@
 
                 <!-- Contact Form -->
                 <div class="lg:col-span-2 bg-white rounded-[40px] p-8 md:p-16 shadow-soft border border-gray-50">
-                    <form class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    @if(session('success'))
+                        <div class="mb-6 p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-sm flex items-center gap-3">
+                            <i data-lucide="check-circle" size="20"></i>
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="mb-6 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 font-bold text-sm flex items-center gap-3">
+                            <i data-lucide="alert-circle" size="20"></i>
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('contact.submit') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         @csrf
                         <div class="space-y-3">
                             <label class="text-sm font-bold uppercase tracking-widest text-gray-400">Full Name</label>
-                            <input type="text" placeholder="John Doe" class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="John Doe" class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                            @error('name') <p class="text-red-500 text-xs font-bold">{{ $message }}</p> @enderror
                         </div>
                         <div class="space-y-3">
                             <label class="text-sm font-bold uppercase tracking-widest text-gray-400">Email Address</label>
-                            <input type="email" placeholder="john@example.com" class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                            <input type="email" name="email" value="{{ old('email') }}" required placeholder="john@example.com" class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                            @error('email') <p class="text-red-500 text-xs font-bold">{{ $message }}</p> @enderror
                         </div>
                         <div class="space-y-3">
                             <label class="text-sm font-bold uppercase tracking-widest text-gray-400">Phone Number</label>
-                            <input type="text" placeholder="+1 (234) 567-890" class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
+                            <input type="text" name="phone" value="{{ old('phone') }}" placeholder="+1 (234) 567-890" class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                         </div>
                         <div class="space-y-3">
                             <label class="text-sm font-bold uppercase tracking-widest text-gray-400">Subject</label>
                             <div class="relative">
-                                <select class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none">
+                                <select name="subject" class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none">
                                     <option>General Inquiry</option>
                                     <option>Booking Problem</option>
                                     <option>Custom Package</option>
@@ -77,10 +92,11 @@
                         </div>
                         <div class="md:col-span-2 space-y-3">
                             <label class="text-sm font-bold uppercase tracking-widest text-gray-400">Your Message</label>
-                            <textarea rows={6} placeholder="Tell us about your dream trip..." class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
+                            <textarea name="message" rows="6" required placeholder="Tell us about your dream trip..." class="w-full bg-background border border-gray-100 rounded-2xl py-5 px-6 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none">{{ old('message') }}</textarea>
+                            @error('message') <p class="text-red-500 text-xs font-bold">{{ $message }}</p> @enderror
                         </div>
                         <div class="md:col-span-2">
-                            <button class="w-full bg-primary hover:bg-primary-hover text-white py-6 rounded-[24px] font-black text-xl transition-all shadow-lg shadow-primary/30 flex items-center justify-center gap-4">
+                            <button type="submit" class="w-full bg-primary hover:bg-primary-hover text-white py-6 rounded-[24px] font-black text-xl transition-all shadow-lg shadow-primary/30 flex items-center justify-center gap-4">
                                 Send Message Now
                             </button>
                         </div>

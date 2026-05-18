@@ -7,7 +7,7 @@
 
 <aside class="space-y-8 sticky top-28 h-fit">
     <!-- Search Input -->
-    <div class="relative group">
+    <div class="relative group hidden lg:block">
         <input 
             type="text" 
             name="search"
@@ -20,7 +20,7 @@
 
     <!-- Categories Filter -->
     <div class="bg-white rounded-[32px] p-8 shadow-soft border border-border-soft space-y-6">
-        <h3 class="text-xl font-black border-b border-border-soft pb-4 tracking-tight">Categories</h3>
+        <h3 class="text-lg lg:text-xl font-black border-b border-border-soft pb-4 tracking-tight">Categories</h3>
         <div class="space-y-4">
             @foreach(["Tropical", "Mountains", "City", "Adventure", "International", "Domestic"] as $cat)
                 <label class="flex items-center gap-3 cursor-pointer group">
@@ -46,8 +46,8 @@
 
     <!-- Price Range Filter -->
     <div class="bg-white rounded-[32px] p-8 shadow-soft border border-border-soft space-y-6">
-        <div class="flex items-center justify-between border-b border-border-soft pb-4">
-            <h3 class="text-xl font-black tracking-tight">Price Range</h3>
+        <div class="border-b border-border-soft pb-4 flex flex-col gap-1">
+            <h3 class="text-lg lg:text-xl font-black tracking-tight">Price Range</h3>
             <span class="text-primary font-black text-sm">₹100 - ₹<span id="priceRangeValue">{{ request('max_price', 100000) }}</span></span>
         </div>
         <div class="px-2">
@@ -70,7 +70,7 @@
 
     <!-- Duration Filter -->
     <div class="bg-white rounded-[32px] p-8 shadow-soft border border-border-soft space-y-6">
-        <h3 class="text-xl font-black border-b border-border-soft pb-4 tracking-tight">Duration</h3>
+        <h3 class="text-lg lg:text-xl font-black border-b border-border-soft pb-4 tracking-tight">Duration</h3>
         <div class="space-y-4">
             @foreach(["1-3 Days", "4-7 Days", "8-14 Days", "15+ Days"] as $dur)
                 <label class="flex items-center gap-3 cursor-pointer group">

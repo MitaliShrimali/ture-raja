@@ -8,49 +8,63 @@ class ListingController extends Controller
 {
     public function index(Request $request)
     {
-        $packages = collect($this->getStaticPackages());
+        // Try to fetch from DB first
+        try {
+            $dbPackages = \App\Models\Package::where('status', 'Active')->get()->toArray();
+        } catch (\Exception $e) {
+            $dbPackages = [];
+        }
 
+        // Use DB packages if available, otherwise fall back to static list
+        $packages = collect(!empty($dbPackages) ? $dbPackages : $this->getStaticPackages());
+
+        // ── Search by destination / title ──────────────────────────
         if ($request->filled('search')) {
             $search = strtolower($request->search);
             $packages = $packages->filter(function($pkg) use ($search) {
-                return str_contains(strtolower($pkg['title']), $search) || str_contains(strtolower($pkg['location'] ?? ''), $search);
+                $pkg = (array) $pkg;
+                return str_contains(strtolower($pkg['title'] ?? ''), $search)
+                    || str_contains(strtolower($pkg['location'] ?? ''), $search);
             });
         }
 
+        // ── Category filter ────────────────────────────────────────
         if ($request->filled('categories')) {
-            $cats = array_map('strtolower', $request->categories);
+            $cats = array_map('strtolower', (array) $request->categories);
             $packages = $packages->filter(function($pkg) use ($cats) {
-                return in_array(strtolower($pkg['category']), $cats);
+                $pkg = (array) $pkg;
+                return in_array(strtolower($pkg['category'] ?? ''), $cats);
             });
         }
 
+        // ── Price filter ───────────────────────────────────────────
         if ($request->filled('max_price')) {
             $packages = $packages->filter(function($pkg) use ($request) {
-                return $pkg['price'] <= $request->max_price;
+                $pkg = (array) $pkg;
+                return ($pkg['price'] ?? 0) <= $request->max_price;
             });
         }
 
+        // ── Duration filter ────────────────────────────────────────
         if ($request->filled('durations')) {
             $packages = $packages->filter(function($pkg) use ($request) {
-                $durText = strtolower($pkg['duration']);
-                foreach ($request->durations as $dur) {
-                    if ($dur === '1-3 Days' && (str_contains($durText, '1 day') || str_contains($durText, '2 day') || str_contains($durText, '3 day') || str_contains($durText, '2 days') || str_contains($durText, '3 days'))) return true;
-                    if ($dur === '4-7 Days' && (str_contains($durText, '4 day') || str_contains($durText, '5 day') || str_contains($durText, '6 day') || str_contains($durText, '7 day'))) return true;
-                    if ($dur === '8-14 Days' && (str_contains($durText, '8 day') || str_contains($durText, '9 day') || str_contains($durText, '10 day') || str_contains($durText, '14 day'))) return true;
-                    if ($dur === '15+ Days' && (str_contains($durText, '15 day') || str_contains($durText, 'month'))) return true;
+                $pkg = (array) $pkg;
+                $durText = strtolower($pkg['duration'] ?? '');
+                foreach ((array) $request->durations as $dur) {
+                    if ($dur === '1-3 Days' && preg_match('/^[1-3]\s*day/', $durText)) return true;
+                    if ($dur === '4-7 Days' && preg_match('/^[4-7]\s*day/', $durText)) return true;
+                    if ($dur === '8-14 Days' && preg_match('/^[8-9]|1[0-4]\s*day/', $durText)) return true;
+                    if ($dur === '15+ Days' && preg_match('/^1[5-9]|[2-9]\d\s*day|month/', $durText)) return true;
                 }
                 return false;
             });
         }
 
+        // ── Sort ───────────────────────────────────────────────────
         $sort = $request->input('sort', 'Recommended');
-        if ($sort === 'Price: Low to High') {
-            $packages = $packages->sortBy('price');
-        } elseif ($sort === 'Price: High to Low') {
-            $packages = $packages->sortByDesc('price');
-        } elseif ($sort === 'Top Rated') {
-            $packages = $packages->sortByDesc('rating');
-        }
+        if ($sort === 'Price: Low to High')  $packages = $packages->sortBy(fn($p) => ((array)$p)['price'] ?? 0);
+        elseif ($sort === 'Price: High to Low') $packages = $packages->sortByDesc(fn($p) => ((array)$p)['price'] ?? 0);
+        elseif ($sort === 'Top Rated')       $packages = $packages->sortByDesc(fn($p) => ((array)$p)['rating'] ?? 0);
 
         return view('listing', ['packages' => $packages->values()]);
     }

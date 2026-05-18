@@ -1,54 +1,44 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editUser: { id: '', name: '', email: '', plan: '', amount: '', status: '' } }">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
             <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Management</p>
-            <h2 class="font-black text-foreground tracking-tight">Paid User</h2>
+            <h2 class="font-black text-foreground tracking-tight">Paid User Registry</h2>
         </div>
-        <button class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
+        <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
             <i data-lucide="plus" size="20"></i>
             Add User
         </button>
     </div>
 
-    <!-- Filters Section -->
+    <!-- Filters & Search Section -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft p-10 space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+        <form method="GET" action="{{ url('/admin/paid-users') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div class="space-y-2">
-                <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-2">From Date</label>
-                <input type="date" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none text-sm font-bold text-foreground">
+                <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-2">Search Name or Email</label>
+                <div class="relative group">
+                    <i data-lucide="search" class="absolute left-6 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
+                    <input 
+                        type="text" 
+                        name="search"
+                        value="{{ $search ?? '' }}"
+                        placeholder="E.g. Nomad Ventures"
+                        class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-14 pr-6 outline-none text-sm font-bold text-foreground"
+                    >
+                </div>
             </div>
-            <div class="space-y-2">
-                <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-2">To Date</label>
-                <input type="date" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none text-sm font-bold text-foreground">
+            <div class="flex items-end gap-3 md:col-span-2 lg:col-span-1">
+                <button type="submit" class="flex-1 py-4 px-6 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-primary-hover transition-all text-center">
+                    Apply Search
+                </button>
+                <a href="{{ url('/admin/paid-users') }}" class="flex-1 py-4 px-6 bg-gray-100 text-muted-text rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-200 transition-all text-center">
+                    Reset
+                </a>
             </div>
-            <div class="space-y-2">
-                <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-2">Search Country</label>
-                <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none text-sm font-bold text-foreground">
-                    <option>All Countries</option>
-                </select>
-            </div>
-            <div class="space-y-2">
-                <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-2">Search State</label>
-                <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none text-sm font-bold text-foreground">
-                    <option>Select State</option>
-                </select>
-            </div>
-            <div class="space-y-2">
-                <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-2">Search City</label>
-                <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none text-sm font-bold text-foreground">
-                    <option>Select City</option>
-                </select>
-            </div>
-        </div>
-        <div class="flex justify-end">
-            <button class="flex items-center gap-2 px-8 py-3 bg-gray-200 text-muted-text rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-gray-300 transition-all">
-                Reset Filters
-            </button>
-        </div>
+        </form>
     </div>
 
     <!-- Table Card -->
@@ -60,99 +50,223 @@
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">#</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">TRAVEL AGENT NAME</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">EMAIL</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">MOBILE</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">GUARANTEED</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">JOINED DATE</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">PLAN</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center text-orange-500">PENDING</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center text-green-500">APPROVED</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">AMOUNT PAID</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">STATUS</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-soft">
-                    @php
-                        $agents = [
-                            ['sr' => '01', 'name' => 'Nomad Ventures', 'email' => 'contact@nomadventures.com', 'mobile' => '+91 98765 43210', 'guaranteed' => true, 'plan' => 'Premium', 'pending' => '03', 'approved' => '12', 'status' => 'active'],
-                            ['sr' => '02', 'name' => 'Azure Horizons', 'email' => 'hello@azurehorizons.travel', 'mobile' => '+91 91234 56789', 'guaranteed' => false, 'plan' => 'Standard', 'pending' => '08', 'approved' => '05', 'status' => 'active'],
-                            ['sr' => '03', 'name' => 'Globe Trotters Co', 'email' => 'support@globetrotters.org', 'mobile' => '+91 99988 77766', 'guaranteed' => true, 'plan' => 'Premium', 'pending' => '01', 'approved' => '24', 'status' => 'inactive'],
-                            ['sr' => '04', 'name' => 'Alpine Escape', 'email' => 'info@alpine-escape.com', 'mobile' => '+91 94433 22110', 'guaranteed' => false, 'plan' => 'Standard', 'pending' => '11', 'approved' => '02', 'status' => 'active'],
-                        ];
-                    @endphp
-                    @foreach($agents as $agent)
+                    @forelse($paidUsers as $index => $user)
+                        @php
+                            $srNo = str_pad($paidUsers->firstItem() + $index, 2, '0', STR_PAD_LEFT);
+                        @endphp
                         <tr class="group hover:bg-gray-50/30 transition-colors">
-                            <td class="py-6 px-8 text-sm font-bold text-muted-text opacity-60">{{ $agent['sr'] }}</td>
-                            <td class="py-6 px-8 text-sm font-black text-primary">{{ $agent['name'] }}</td>
-                            <td class="py-6 px-8 text-sm font-medium text-muted-text">{{ $agent['email'] }}</td>
-                            <td class="py-6 px-8 text-sm font-bold text-foreground whitespace-nowrap">{{ $agent['mobile'] }}</td>
-                            <td class="py-6 px-8 text-center">
-                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ $agent['guaranteed'] ? 'bg-green-50 text-green-500' : 'bg-gray-100 text-muted-text opacity-50' }}">
-                                    {{ $agent['guaranteed'] ? 'YES' : 'NO' }}
-                                </span>
-                            </td>
-                            <td class="py-6 px-8 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <div class="w-2 h-2 rounded-full {{ $agent['plan'] === 'Premium' ? 'bg-orange-400' : 'bg-gray-300' }}"></div>
-                                    <span class="text-xs font-bold">{{ $agent['plan'] }}</span>
+                            <td class="py-6 px-8 text-sm font-bold text-muted-text opacity-60">{{ $srNo }}</td>
+                            <td class="py-6 px-8">
+                                <div class="flex items-center gap-3">
+                                    <img src="{{ $user->avatar ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($user->name) }}" class="w-8 h-8 rounded-full bg-gray-100 object-cover" />
+                                    <span class="text-sm font-black text-primary">{{ $user->name }}</span>
                                 </div>
                             </td>
+                            <td class="py-6 px-8 text-sm font-medium text-muted-text">{{ $user->email }}</td>
+                            <td class="py-6 px-8 text-sm font-bold text-foreground whitespace-nowrap">{{ \Carbon\Carbon::parse($user->joined_date)->format('d M, Y') }}</td>
                             <td class="py-6 px-8 text-center">
-                                <span class="text-lg font-black text-orange-500">{{ $agent['pending'] }}</span>
+                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ $user->plan === 'Premium' ? 'bg-orange-50 text-orange-500' : 'bg-blue-50 text-blue-500' }}">
+                                    {{ $user->plan }}
+                                </span>
                             </td>
+                            <td class="py-6 px-8 text-center text-sm font-black text-foreground">₹{{ number_format($user->amount, 2) }}</td>
                             <td class="py-6 px-8 text-center">
-                                <span class="text-lg font-black text-green-500">{{ $agent['approved'] }}</span>
+                                <a href="{{ url('/admin/paid-users/toggle/' . $user->id) }}" class="inline-block">
+                                    <span class="px-3 py-1 rounded-full {{ $user->status === 'Active' ? 'bg-green-50 text-green-500 hover:bg-green-100' : 'bg-red-50 text-red-500 hover:bg-red-100' }} text-[10px] font-black uppercase tracking-wider transition-all">
+                                        {{ $user->status }}
+                                    </span>
+                                </a>
                             </td>
-                            <td class="py-6 px-8 text-center">
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer" {{ $agent['status'] === 'active' ? 'checked' : '' }}>
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
-                            </td>
-                            <td class="py-6 px-8">
-                                <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button class="p-2 text-muted-text hover:text-primary transition-all"><i data-lucide="search" size="18"></i></button>
+                            <td class="py-6 px-8 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <button 
+                                        @click="showEditModal = true; editUser = { id: '{{ $user->id }}', name: '{{ addslashes($user->name) }}', email: '{{ addslashes($user->email) }}', plan: '{{ $user->plan }}', amount: '{{ $user->amount }}', status: '{{ $user->status }}' }"
+                                        class="p-2 text-muted-text hover:text-primary transition-all"
+                                    >
+                                        <i data-lucide="edit-3" size="18"></i>
+                                    </button>
+                                    <a 
+                                        href="{{ url('/admin/paid-users/delete/' . $user->id) }}" 
+                                        onclick="return confirm('Are you sure you want to remove this user?');"
+                                        class="p-2 text-muted-text hover:text-red-500 transition-all"
+                                    >
+                                        <i data-lucide="trash-2" size="18"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="8" class="py-12 text-center text-sm font-bold text-muted-text">No active paid subscriptions found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
+        <!-- Custom Pagination -->
         <div class="p-8 bg-gray-50/50 border-t border-border-soft flex flex-col md:flex-row items-center justify-between gap-6">
-            <p class="text-sm font-bold text-muted-text">Showing 1 to 4 of 63 entries</p>
+            <p class="text-sm font-bold text-muted-text">Showing {{ $paidUsers->firstItem() ?? 0 }} to {{ $paidUsers->lastItem() ?? 0 }} of {{ $paidUsers->total() }} entries</p>
             <div class="flex items-center gap-2">
-                <button class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-left" size="20"></i></button>
-                @foreach([1, 2, 3, "...", 7] as $p)
-                    <button class="w-10 h-10 rounded-full text-sm font-black transition-all {{ $p === 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-muted-text hover:bg-white hover:text-primary' }}">
-                        {{ $p }}
-                    </button>
+                @if($paidUsers->onFirstPage())
+                    <button class="p-2 text-muted-text opacity-40 cursor-not-allowed" disabled><i data-lucide="chevron-left" size="20"></i></button>
+                @else
+                    <a href="{{ $paidUsers->previousPageUrl() }}" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-left" size="20"></i></a>
+                @endif
+                
+                @foreach(range(1, $paidUsers->lastPage()) as $i)
+                    @if($i == 1 || $i == $paidUsers->lastPage() || abs($i - $paidUsers->currentPage()) <= 1)
+                        @if($i == $paidUsers->currentPage())
+                            <button class="w-10 h-10 rounded-full text-sm font-black bg-primary text-white shadow-lg shadow-primary/20 transition-all">
+                                {{ $i }}
+                            </button>
+                        @else
+                            <a href="{{ $paidUsers->url($i) }}" class="w-10 h-10 rounded-full text-sm font-black transition-all text-muted-text hover:bg-white hover:text-primary flex items-center justify-center">
+                                {{ $i }}
+                            </a>
+                        @endif
+                    @elseif($i == 2 || $i == $paidUsers->lastPage() - 1)
+                        <span class="text-muted-text font-black px-1">...</span>
+                    @endif
                 @endforeach
-                <button class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-right" size="20"></i></button>
+                
+                @if($paidUsers->hasMorePages())
+                    <a href="{{ $paidUsers->nextPageUrl() }}" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-right" size="20"></i></a>
+                @else
+                    <button class="p-2 text-muted-text opacity-40 cursor-not-allowed" disabled><i data-lucide="chevron-right" size="20"></i></button>
+                @endif
             </div>
         </div>
     </div>
 
-    <!-- Metrics Section -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        @php
-            $metrics = [
-                ['label' => 'New Agents', 'value' => '12', 'icon' => 'user', 'color' => 'bg-orange-50 text-orange-600'],
-                ['label' => 'Active Plans', 'value' => '45', 'icon' => 'shield', 'color' => 'bg-green-50 text-green-600'],
-                ['label' => 'Pending Approvals', 'value' => '08', 'icon' => 'clock', 'color' => 'bg-yellow-50 text-yellow-600'],
-                ['label' => 'Total Conversion', 'value' => '84%', 'icon' => 'bar-chart', 'color' => 'bg-blue-50 text-blue-600'],
-            ];
-        @endphp
-        @foreach($metrics as $metric)
-            <div class="bg-white p-8 rounded-[40px] shadow-soft border border-border-soft flex items-center gap-6">
-                <div class="w-14 h-14 rounded-2xl {{ $metric['color'] }} flex items-center justify-center">
-                    <i data-lucide="{{ $metric['icon'] }}" size="28"></i>
+    <!-- ================= MODALS ================= -->
+
+    <!-- Add Paid User Modal -->
+    <div 
+        x-show="showAddModal" 
+        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        style="display: none;"
+    >
+        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
+            <div class="flex items-center justify-between border-b border-border-soft pb-4">
+                <div class="space-y-1">
+                    <h3 class="text-xl font-black text-foreground">Add Paid User</h3>
+                    <p class="text-xs text-muted-text font-medium">Manually register a premium paid user account.</p>
                 </div>
-                <div>
-                    <p class="text-[10px] font-black text-muted-text uppercase tracking-widest opacity-60">{{ $metric['label'] }}</p>
-                    <h4 class="text-3xl font-black text-foreground tracking-tight">{{ $metric['value'] }}</h4>
-                </div>
+                <button @click="showAddModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                    <i data-lucide="x" size="20"></i>
+                </button>
             </div>
-        @endforeach
+            
+            <form action="{{ url('/admin/paid-users/store') }}" method="POST" class="space-y-6">
+                @csrf
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Display Name<span class="text-primary">*</span></label>
+                    <input required type="text" name="name" placeholder="E.g. Anita Desai" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
+                    <input required type="email" name="email" placeholder="E.g. anita@agency.com" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Plan Tier</label>
+                        <select name="plan" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                            <option value="Premium">Premium</option>
+                            <option value="Standard">Standard</option>
+                            <option value="Enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Amount Paid (INR)</label>
+                        <input required type="number" step="0.01" name="amount" placeholder="E.g. 2999" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-end gap-4 pt-4">
+                    <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Paid User Modal -->
+    <div 
+        x-show="showEditModal" 
+        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        style="display: none;"
+    >
+        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
+            <div class="flex items-center justify-between border-b border-border-soft pb-4">
+                <div class="space-y-1">
+                    <h3 class="text-xl font-black text-foreground">Edit Paid User</h3>
+                    <p class="text-xs text-muted-text font-medium">Update premium membership and details.</p>
+                </div>
+                <button @click="showEditModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                    <i data-lucide="x" size="20"></i>
+                </button>
+            </div>
+            
+            <form action="{{ url('/admin/paid-users/update') }}" method="POST" class="space-y-6">
+                @csrf
+                <input type="hidden" name="id" x-model="editUser.id" />
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Display Name<span class="text-primary">*</span></label>
+                    <input required type="text" name="name" x-model="editUser.name" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
+                    <input required type="email" name="email" x-model="editUser.email" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Plan Tier</label>
+                        <select name="plan" x-model="editUser.plan" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                            <option value="Premium">Premium</option>
+                            <option value="Standard">Standard</option>
+                            <option value="Enterprise">Enterprise</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Amount Paid (INR)</label>
+                        <input required type="number" step="0.01" name="amount" x-model="editUser.amount" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                    <select name="status" x-model="editUser.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="Active">Active</option>
+                        <option value="Suspended">Suspended</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center justify-end gap-4 pt-4">
+                    <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 @endsection

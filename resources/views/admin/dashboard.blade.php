@@ -60,38 +60,42 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border-soft">
-                        @for($i = 1; $i <= 5; $i++)
+                        @forelse($recentPayments as $payment)
                             <tr class="group hover:bg-gray-50/50 transition-colors">
                                 <td class="py-5">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-muted-text">
-                                            {{ chr(64 + $i) }}
+                                        <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-muted-text uppercase">
+                                            {{ substr($payment->user_name, 0, 1) }}
                                         </div>
                                         <div>
-                                            <p class="text-sm font-bold text-foreground">User_{{ $i }}</p>
-                                            <p class="text-[10px] text-muted-text font-medium">user{{ $i }}@example.com</p>
+                                            <p class="text-sm font-bold text-foreground">{{ $payment->user_name }}</p>
+                                            <p class="text-[10px] text-muted-text font-medium">{{ $payment->email }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="py-5">
                                     <span class="px-3 py-1 rounded-full bg-primary/5 text-primary text-[10px] font-black uppercase tracking-wider">
-                                        Premium Plus
+                                        {{ $payment->plan_type }}
                                     </span>
                                 </td>
                                 <td class="py-5">
-                                    <div class="flex items-center gap-2 text-green-500">
-                                        <i data-lucide="check-circle-2" size="14"></i>
-                                        <span class="text-xs font-bold">Active</span>
+                                    <div class="flex items-center gap-2 {{ $payment->status === 'Completed' ? 'text-green-500' : ($payment->status === 'Pending' ? 'text-orange-500' : 'text-red-500') }}">
+                                        <i data-lucide="{{ $payment->status === 'Completed' ? 'check-circle-2' : ($payment->status === 'Pending' ? 'clock' : 'x-circle') }}" size="14"></i>
+                                        <span class="text-xs font-bold">{{ $payment->status }}</span>
                                     </div>
                                 </td>
                                 <td class="py-5">
-                                    <p class="text-sm font-bold text-foreground">₹199.00</p>
+                                    <p class="text-sm font-bold text-foreground">₹{{ number_format($payment->amount, 2) }}</p>
                                 </td>
                                 <td class="py-5">
-                                    <p class="text-xs text-muted-text font-medium">Oct 24, 2024</p>
+                                    <p class="text-xs text-muted-text font-medium">{{ date('M d, Y', strtotime($payment->date)) }}</p>
                                 </td>
                             </tr>
-                        @endfor
+                        @empty
+                            <tr>
+                                <td colspan="5" class="py-10 text-center text-sm font-bold text-muted-text">No subscription transactions found.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>

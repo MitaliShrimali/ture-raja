@@ -1,0 +1,418 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Package;
+
+class UserController extends Controller
+{
+    // ─── Helpers ─────────────────────────────────────────────────────
+    private function userId(): int
+    {
+        // In production this would be Auth::id().
+        // During demo we use user id 1 (the seeded demo user).
+        return Auth::check() ? Auth::id() : 1;
+    }
+
+    private function getStaticPackages(): array
+    {
+        return [
+            ['id'=>1,'slug'=>'monaco-luxury-tour','title'=>'Monaco Luxury Tour Package','location'=>'Monaco','price'=>44825,'old_price'=>59825,'rating'=>'4.96','reviews'=>'672','duration'=>'2 days 3 nights','duration_days'=>2,'groupSize'=>'4-6 guest','image'=>'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600','category'=>'international','badge'=>'Top Rated'],
+            ['id'=>2,'slug'=>'vietnam-tour-package','title'=>'Vietnam Tour Package','location'=>'Vietnam','price'=>17320,'old_price'=>25320,'rating'=>'4.91','reviews'=>'670','duration'=>'3 days 3 nights','duration_days'=>3,'groupSize'=>'2-3 guest','image'=>'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=600','category'=>'international','badge'=>'Best Sale'],
+            ['id'=>3,'slug'=>'char-dham-yatra','title'=>'Char Dham Yatra Package','location'=>'India','price'=>15463,'old_price'=>19000,'rating'=>'4.86','reviews'=>'656','duration'=>'7 days 6 nights','duration_days'=>7,'groupSize'=>'4-6 guest','image'=>'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=600','category'=>'religious','badge'=>'25% Off'],
+            ['id'=>4,'slug'=>'goa-beach-package','title'=>'Goa Beach Holiday Package','location'=>'Goa, India','price'=>14755,'old_price'=>19825,'rating'=>'4.74','reviews'=>'631','duration'=>'2 days 3 nights','duration_days'=>2,'groupSize'=>'4-6 guest','image'=>'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=600','category'=>'domestic','badge'=>'Top Rated'],
+            ['id'=>5,'slug'=>'spiti-valley-adventure','title'=>'Spiti Valley Package','location'=>'Himachal, India','price'=>24840,'old_price'=>31825,'rating'=>'4.51','reviews'=>'617','duration'=>'3 days 3 nights','duration_days'=>3,'groupSize'=>'4-6 guest','image'=>'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&q=80&w=600','category'=>'adventure','badge'=>'Best Sale'],
+            ['id'=>6,'slug'=>'swiss-paris-delight','title'=>'Swiss Paris Delight','location'=>'Europe','price'=>51247,'old_price'=>null,'rating'=>'4.29','reviews'=>'608','duration'=>'7 days 6 nights','duration_days'=>7,'groupSize'=>'4-6 guest','image'=>'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600','category'=>'international','badge'=>'25% Off'],
+            ['id'=>7,'slug'=>'kerala-backwaters','title'=>'Kerala Backwaters Escape','location'=>'Kerala, India','price'=>12500,'old_price'=>15000,'rating'=>'4.65','reviews'=>'420','duration'=>'4 days 3 nights','duration_days'=>4,'groupSize'=>'2-4 guest','image'=>'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&q=80&w=600','category'=>'domestic','badge'=>'Popular'],
+            ['id'=>8,'slug'=>'dubai-desert-safari','title'=>'Dubai Desert Safari & Burj','location'=>'Dubai, UAE','price'=>29999,'old_price'=>35000,'rating'=>'4.80','reviews'=>'890','duration'=>'4 days 3 nights','duration_days'=>4,'groupSize'=>'2-6 guest','image'=>'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600','category'=>'international','badge'=>'Trending'],
+            ['id'=>9,'slug'=>'bali-luxury-villa','title'=>'Bali Luxury Villa Escape','location'=>'Bali, Indonesia','price'=>35000,'old_price'=>42000,'rating'=>'4.90','reviews'=>'543','duration'=>'5 days 4 nights','duration_days'=>5,'groupSize'=>'2 guest','image'=>'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=600','category'=>'international','badge'=>'Honeymoon'],
+            ['id'=>10,'slug'=>'rishikesh-rafting','title'=>'Rishikesh Rafting & Yoga','location'=>'Rishikesh, India','price'=>8500,'old_price'=>null,'rating'=>'4.40','reviews'=>'312','duration'=>'2 days 1 nights','duration_days'=>2,'groupSize'=>'4-10 guest','image'=>'https://images.unsplash.com/photo-1596403204987-9323eb72322c?auto=format&fit=crop&q=80&w=600','category'=>'adventure','badge'=>'Weekend'],
+        ];
+    }
+
+    // ─── HOME PAGE ────────────────────────────────────────────────────
+    public function home()
+    {
+        try {
+            $packages = Package::where('status', 'Active')->get();
+            if ($packages->isEmpty()) {
+                $packages = collect($this->getStaticPackages());
+            }
+        } catch (\Exception $e) {
+            $packages = collect($this->getStaticPackages());
+        }
+
+        // Pull active home banners for the hero slider from DB
+        try {
+            $heroBanners = DB::table('banners')->where('status', 'Active')->get();
+        } catch (\Exception $e) {
+            $heroBanners = collect();
+        }
+
+        return view('welcome', compact('packages', 'heroBanners'));
+    }
+
+    // ─── SEARCH ───────────────────────────────────────────────────────
+    public function search(Request $request)
+    {
+        $destination = $request->input('destination', '');
+        $fromCity    = $request->input('from_city', '');
+
+        // Log the search query for analytics
+        try {
+            DB::table('user_search_queries')->insert([
+                'user_id'       => Auth::check() ? Auth::id() : null,
+                'destination'   => $destination,
+                'from_city'     => $fromCity,
+                'results_count' => 0,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+        } catch (\Exception $e) {
+            // silently ignore DB errors
+        }
+
+        // Redirect to discover/listing page with the search term
+        return redirect()->route('discover', ['search' => $destination]);
+    }
+
+    // ─── NEWSLETTER SUBSCRIBE ─────────────────────────────────────────
+    public function subscribe(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        $email = $request->input('email');
+
+        try {
+            // Insert into user_newsletter_subscriptions (user side)
+            DB::table('user_newsletter_subscriptions')->updateOrInsert(
+                ['email' => $email],
+                ['status' => 'Subscribed', 'updated_at' => now(), 'created_at' => now()]
+            );
+
+            // Mirror into admin subscribers table so admin can see it
+            DB::table('subscribers')->updateOrInsert(
+                ['email' => $email],
+                ['status' => 'Subscribed', 'updated_at' => now(), 'created_at' => now()]
+            );
+        } catch (\Exception $e) {
+            // silently continue
+        }
+
+        return redirect()->back()->with('success', 'Thank you for subscribing! 🎉 You\'ll receive exclusive deals in your inbox.');
+    }
+
+    // ─── CONTACT FORM SUBMIT ──────────────────────────────────────────
+    public function submitContact(Request $request)
+    {
+        $request->validate([
+            'name'    => 'required|string|max:255',
+            'email'   => 'required|email',
+            'message' => 'required|string',
+        ]);
+
+        try {
+            $data = [
+                'user_id'    => Auth::check() ? Auth::id() : null,
+                'name'       => $request->name,
+                'email'      => $request->email,
+                'phone'      => $request->phone,
+                'subject'    => $request->subject,
+                'message'    => $request->message,
+                'status'     => 'Pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            // Store in user_inquiries
+            DB::table('user_inquiries')->insert($data);
+
+            // Mirror into admin contacts table so admin sees it immediately
+            DB::table('contacts')->insert([
+                'name'       => $request->name,
+                'email'      => $request->email,
+                'phone'      => $request->phone,
+                'subject'    => $request->subject,
+                'message'    => $request->message,
+                'status'     => 'Pending',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Could not send your message. Please try again.');
+        }
+
+        return redirect()->back()->with('success', 'Your message has been received! Our team will respond within 24 hours. ✅');
+    }
+
+    // ─── PACKAGE BOOKING REQUEST ──────────────────────────────────────
+    public function bookPackage(Request $request)
+    {
+        $request->validate([
+            'package_id'     => 'required',
+            'traveler_name'  => 'required|string',
+            'traveler_email' => 'required|email',
+            'traveler_phone' => 'required|string',
+            'guests'         => 'required|integer|min:1',
+            'travel_date'    => 'required|date',
+        ]);
+
+        $userId = Auth::check() ? Auth::id() : null;
+
+        try {
+            DB::table('user_bookings')->insert([
+                'user_id'        => $userId,
+                'package_id'     => $request->package_id,
+                'package_title'  => $request->package_title,
+                'package_image'  => $request->package_image,
+                'package_price'  => $request->package_price ?? 0,
+                'traveler_name'  => $request->traveler_name,
+                'traveler_email' => $request->traveler_email,
+                'traveler_phone' => $request->traveler_phone,
+                'guests'         => $request->guests,
+                'travel_date'    => $request->travel_date,
+                'special_request'=> $request->special_request,
+                'status'         => 'Pending',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ]);
+
+            // Mirror into leads for the admin
+            DB::table('leads')->insert([
+                'name'       => $request->traveler_name,
+                'email'      => $request->traveler_email,
+                'phone'      => $request->traveler_phone,
+                'agent'      => 'Auto-assigned',
+                'package'    => $request->package_title,
+                'status'     => 'New',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Booking request failed. Please try again.');
+        }
+
+        return redirect()->back()->with('success', 'Booking request submitted! We will confirm your trip shortly. ✅');
+    }
+
+    // ─── WISHLIST TOGGLE ─────────────────────────────────────────────
+    public function toggleWishlist(Request $request)
+    {
+        $userId    = $this->userId();
+        $packageId = $request->input('package_id');
+
+        try {
+            $exists = DB::table('user_wishlists')
+                        ->where('user_id', $userId)
+                        ->where('package_id', $packageId)
+                        ->exists();
+
+            if ($exists) {
+                DB::table('user_wishlists')
+                    ->where('user_id', $userId)
+                    ->where('package_id', $packageId)
+                    ->delete();
+                $saved = false;
+            } else {
+                DB::table('user_wishlists')->insert([
+                    'user_id'        => $userId,
+                    'package_id'     => $packageId,
+                    'package_title'  => $request->input('package_title', ''),
+                    'package_image'  => $request->input('package_image', ''),
+                    'package_price'  => $request->input('package_price', 0),
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ]);
+                $saved = true;
+            }
+
+            return response()->json(['success' => true, 'saved' => $saved]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false]);
+        }
+    }
+
+    // ─── WISHLIST REMOVE (from profile page) ─────────────────────────
+    public function removeWishlist(int $packageId)
+    {
+        try {
+            DB::table('user_wishlists')
+                ->where('user_id', $this->userId())
+                ->where('package_id', $packageId)
+                ->delete();
+        } catch (\Exception $e) {}
+
+        return redirect()->back()->with('success', 'Removed from wishlist.');
+    }
+
+    // ─── PROFILE PAGE ────────────────────────────────────────────────
+    public function profile()
+    {
+        $userId = $this->userId();
+
+        try {
+            $user    = DB::table('users')->find($userId);
+            $profile = DB::table('user_profiles')->where('user_id', $userId)->first();
+            $wishlist = DB::table('user_wishlists')
+                          ->where('user_id', $userId)
+                          ->orderByDesc('created_at')
+                          ->paginate(6, ['*'], 'wpage');
+            $bookings = DB::table('user_bookings')
+                          ->where('user_id', $userId)
+                          ->orderByDesc('created_at')
+                          ->paginate(5, ['*'], 'bpage');
+            $unreadCount = DB::table('user_notifications')
+                             ->where('user_id', $userId)
+                             ->where('is_read', false)
+                             ->count();
+            $userNotifications = DB::table('user_notifications')
+                                   ->where('user_id', $userId)
+                                   ->orderByDesc('created_at')
+                                   ->limit(10)
+                                   ->get();
+        } catch (\Exception $e) {
+            $user = null; $profile = null; $wishlist = collect(); $bookings = collect();
+            $unreadCount = 0; $userNotifications = collect();
+        }
+
+        // Fallback static packages for wishlist when DB not available
+        $packages = collect($this->getStaticPackages());
+
+        return view('profile', compact(
+            'user', 'profile', 'wishlist', 'bookings',
+            'packages', 'unreadCount', 'userNotifications'
+        ));
+    }
+
+    // ─── UPDATE PROFILE ───────────────────────────────────────────────
+    public function updateProfile(Request $request)
+    {
+        $userId = $this->userId();
+
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email',
+        ]);
+
+        try {
+            // Update users table
+            DB::table('users')->where('id', $userId)->update([
+                'name'       => $request->name,
+                'email'      => $request->email,
+                'updated_at' => now(),
+            ]);
+
+            // Update or create user_profiles entry
+            $exists = DB::table('user_profiles')->where('user_id', $userId)->exists();
+            $profileData = [
+                'phone'         => $request->phone,
+                'city'          => $request->city,
+                'country'       => $request->country,
+                'date_of_birth' => $request->date_of_birth,
+                'gender'        => $request->gender,
+                'updated_at'    => now(),
+            ];
+
+            if ($exists) {
+                DB::table('user_profiles')->where('user_id', $userId)->update($profileData);
+            } else {
+                DB::table('user_profiles')->insert(array_merge($profileData, [
+                    'user_id'    => $userId,
+                    'created_at' => now(),
+                ]));
+            }
+
+            // Handle avatar upload
+            if ($request->hasFile('avatar')) {
+                $path = $request->file('avatar')->store('avatars', 'public');
+                DB::table('user_profiles')->where('user_id', $userId)->update(['avatar' => $path]);
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to update profile. Please try again.');
+        }
+
+        return redirect()->back()->with('success', 'Profile updated successfully! ✅');
+    }
+
+    // ─── CHANGE PASSWORD ──────────────────────────────────────────────
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password'     => 'required|min:8|confirmed',
+        ]);
+
+        $userId = $this->userId();
+        $user   = DB::table('users')->find($userId);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->with('error', 'Current password is incorrect.');
+        }
+
+        DB::table('users')->where('id', $userId)->update([
+            'password'   => Hash::make($request->new_password),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Password changed successfully! ✅');
+    }
+
+    // ─── CANCEL BOOKING ───────────────────────────────────────────────
+    public function cancelBooking(int $bookingId)
+    {
+        try {
+            DB::table('user_bookings')
+                ->where('id', $bookingId)
+                ->where('user_id', $this->userId())
+                ->update(['status' => 'Cancelled', 'updated_at' => now()]);
+        } catch (\Exception $e) {}
+
+        return redirect()->back()->with('success', 'Booking cancelled successfully.');
+    }
+
+    // ─── MARK NOTIFICATION READ ───────────────────────────────────────
+    public function markNotificationRead(int $notifId)
+    {
+        try {
+            DB::table('user_notifications')
+                ->where('id', $notifId)
+                ->where('user_id', $this->userId())
+                ->update(['is_read' => true, 'updated_at' => now()]);
+        } catch (\Exception $e) {}
+
+        return redirect()->back();
+    }
+
+    // ─── SUBMIT REVIEW ────────────────────────────────────────────────
+    public function submitReview(Request $request)
+    {
+        $request->validate([
+            'package_id'    => 'required',
+            'package_title' => 'required',
+            'rating'        => 'required|integer|between:1,5',
+            'review_body'   => 'required|string|min:10',
+        ]);
+
+        try {
+            DB::table('user_reviews')->insert([
+                'user_id'       => $this->userId(),
+                'package_id'    => $request->package_id,
+                'package_title' => $request->package_title,
+                'rating'        => $request->rating,
+                'review_title'  => $request->review_title,
+                'review_body'   => $request->review_body,
+                'status'        => 'Pending',
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Could not submit review. Please try again.');
+        }
+
+        return redirect()->back()->with('success', 'Your review has been submitted and is pending approval. Thank you! ⭐');
+    }
+}

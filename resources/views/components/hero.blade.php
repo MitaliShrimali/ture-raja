@@ -57,41 +57,51 @@
                 </p>
             </div>
 
-            <!-- Floating Search Bar -->
+            <!-- Floating Search Bar — wired to /search route -->
             <div class="w-full max-w-4xl pt-4 animate-fade-in [animation-delay:800ms]">
-                <div class="bg-white/95 backdrop-blur-2xl rounded-3xl lg:rounded-full p-2 lg:p-3 shadow-premium shadow-black/30 flex flex-col lg:flex-row items-center gap-2">
-                    <!-- Destination -->
-                    <div class="flex-1 w-full flex items-center gap-4 px-6 py-4 lg:py-1 border-b lg:border-b-0 lg:border-r border-gray-100">
-                        <i data-lucide="map-pin" class="text-primary shrink-0" size="24"></i>
-                        <div class="text-left flex-1">
-                            <p class="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Destination</p>
-                            <input 
-                                type="text" 
-                                placeholder="Where to go?" 
-                                class="w-full bg-transparent text-foreground font-bold focus:outline-none placeholder:text-foreground/30 text-base"
-                            >
+                <form action="{{ route('search') }}" method="GET" id="hero-search-form">
+                    <div class="bg-white/95 backdrop-blur-2xl rounded-3xl lg:rounded-full p-2 lg:p-3 shadow-premium shadow-black/30 flex flex-col lg:flex-row items-center gap-2">
+                        <!-- Destination -->
+                        <div class="flex-1 w-full flex items-center gap-4 px-6 py-4 lg:py-1 border-b lg:border-b-0 lg:border-r border-gray-100">
+                            <i data-lucide="map-pin" class="text-primary shrink-0" size="24"></i>
+                            <div class="text-left flex-1">
+                                <p class="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Destination</p>
+                                <input 
+                                    type="text"
+                                    name="destination"
+                                    id="hero-destination"
+                                    placeholder="Where to go?" 
+                                    value="{{ request('destination') }}"
+                                    autocomplete="off"
+                                    class="w-full bg-transparent text-foreground font-bold focus:outline-none placeholder:text-foreground/30 text-base"
+                                >
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Local City -->
-                    <div class="flex-1 w-full flex items-center gap-4 px-6 py-4 lg:py-1">
-                        <i data-lucide="navigation" class="text-primary shrink-0" size="24"></i>
-                        <div class="text-left flex-1">
-                            <p class="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">From City</p>
-                            <input 
-                                type="text" 
-                                placeholder="Search from local city" 
-                                class="w-full bg-transparent text-foreground font-bold focus:outline-none placeholder:text-foreground/30 text-base"
-                            >
+                        <!-- Local City -->
+                        <div class="flex-1 w-full flex items-center gap-4 px-6 py-4 lg:py-1">
+                            <i data-lucide="navigation" class="text-primary shrink-0" size="24"></i>
+                            <div class="text-left flex-1">
+                                <p class="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">From City</p>
+                                <input 
+                                    type="text"
+                                    name="from_city"
+                                    id="hero-from-city"
+                                    placeholder="Search from local city" 
+                                    value="{{ request('from_city') }}"
+                                    autocomplete="off"
+                                    class="w-full bg-transparent text-foreground font-bold focus:outline-none placeholder:text-foreground/30 text-base"
+                                >
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Search Button -->
-                    <button class="w-full lg:w-auto px-10 py-5 bg-primary hover:bg-primary-hover text-white rounded-2xl lg:rounded-full font-black text-sm uppercase tracking-widest transition-all shadow-glow flex items-center justify-center gap-3 group shrink-0">
-                        <i data-lucide="search" size="20" class="group-hover:scale-110 transition-transform"></i>
-                        <span>Search</span>
-                    </button>
-                </div>
+                        <!-- Search Button -->
+                        <button type="submit" class="w-full lg:w-auto px-10 py-5 bg-primary hover:bg-primary-hover text-white rounded-2xl lg:rounded-full font-black text-sm uppercase tracking-widest transition-all shadow-glow flex items-center justify-center gap-3 group shrink-0">
+                            <i data-lucide="search" size="20" class="group-hover:scale-110 transition-transform"></i>
+                            <span>Search</span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

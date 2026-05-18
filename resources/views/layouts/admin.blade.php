@@ -149,15 +149,49 @@
                         <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white shadow-sm"></span>
                     </button>
 
+                    <!-- Session Notifications -->
+                    @if(session('success') || session('error'))
+                        <div 
+                            x-data="{ show: true }" 
+                            x-init="setTimeout(() => show = false, 4000)" 
+                            x-show="show" 
+                            x-transition:enter="transition ease-out duration-300 transform"
+                            x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                            x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+                            x-transition:leave="transition ease-in duration-200"
+                            x-transition:leave-start="opacity-100"
+                            x-transition:leave-end="opacity-0"
+                            class="fixed top-8 right-8 z-[100] max-w-sm w-full bg-white rounded-3xl shadow-premium border {{ session('success') ? 'border-green-100' : 'border-red-100' }} p-6 flex items-start gap-4"
+                        >
+                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 {{ session('success') ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500' }}">
+                                <i data-lucide="{{ session('success') ? 'check-circle-2' : 'alert-circle' }}" size="20"></i>
+                            </div>
+                            <div class="flex-1 space-y-1">
+                                <h4 class="text-sm font-black text-foreground">{{ session('success') ? 'Action Successful' : 'Action Failed' }}</h4>
+                                <p class="text-xs text-muted-text font-medium leading-relaxed">{{ session('success') ?? session('error') }}</p>
+                            </div>
+                            <button @click="show = false" class="text-muted-text/40 hover:text-muted-text">
+                                <i data-lucide="x" size="16"></i>
+                            </button>
+                        </div>
+                    @endif
+
                     <!-- User Profile -->
+                    @php
+                        $activeAdmin = \DB::table('users')->where('id', 1)->first() ?? (object)[
+                            'name' => 'Super Admin',
+                            'role' => 'SUPER ADMIN',
+                            'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
+                        ];
+                    @endphp
                     <div class="flex items-center gap-4 pl-4 border-l border-border-soft">
                         <div class="text-right hidden md:block">
-                            <p class="text-sm font-black text-foreground leading-none">Super Admin</p>
-                            <p class="text-[10px] font-black text-primary uppercase tracking-widest mt-1">HQ Command</p>
+                            <p class="text-sm font-black text-foreground leading-none">{{ $activeAdmin->name }}</p>
+                            <p class="text-[10px] font-black text-primary uppercase tracking-widest mt-1">{{ $activeAdmin->role }}</p>
                         </div>
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-primary to-orange-400 p-[2px] shadow-lg shadow-primary/20">
                             <div class="w-full h-full rounded-[9px] bg-white p-0.5 overflow-hidden">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Avatar" class="w-full h-full object-cover rounded-[7px]">
+                                <img src="{{ $activeAdmin->avatar }}" alt="Avatar" class="w-full h-full object-cover rounded-[7px]">
                             </div>
                         </div>
                     </div>
