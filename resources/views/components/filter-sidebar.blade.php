@@ -30,7 +30,7 @@
                             name="categories[]"
                             value="{{ $cat }}"
                             {{ in_array($cat, request('categories', [])) ? 'checked' : '' }}
-                            class="peer appearance-none w-6 h-6 border-2 border-gray-100 rounded-lg checked:bg-primary checked:border-primary transition-all cursor-pointer" 
+                            class="peer appearance-none w-6 h-6 border-2 border-orange-500/40 hover:border-orange-500 rounded-lg checked:bg-primary checked:border-primary transition-all cursor-pointer" 
                         >
                         <div class="absolute opacity-0 peer-checked:opacity-100 text-white transition-opacity pointer-events-none">
                             <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
@@ -80,7 +80,7 @@
                             name="durations[]"
                             value="{{ $dur }}"
                             {{ in_array($dur, request('durations', [])) ? 'checked' : '' }}
-                            class="peer appearance-none w-6 h-6 border-2 border-gray-100 rounded-lg checked:bg-primary checked:border-primary transition-all cursor-pointer" 
+                            class="peer appearance-none w-6 h-6 border-2 border-orange-500/40 hover:border-orange-500 rounded-lg checked:bg-primary checked:border-primary transition-all cursor-pointer" 
                         >
                         <div class="absolute opacity-0 peer-checked:opacity-100 text-white transition-opacity pointer-events-none">
                             <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
