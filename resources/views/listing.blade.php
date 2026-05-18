@@ -134,7 +134,7 @@
         </div>
     </div>
 
-    <div class="container-custom py-16" x-data="{ viewStyle: 'grid' }" x-init="$watch('viewStyle', () => { $nextTick(() => lucide.createIcons()) })">
+    <div class="container-custom py-16" x-data="{ viewStyle: localStorage.getItem('tourraja_view_style') || 'grid' }" x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) })">
 
         <form action="{{ url('/listing') }}" method="GET" class="flex flex-col lg:flex-row gap-12">
             <!-- Sidebar -->
