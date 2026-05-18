@@ -160,9 +160,9 @@ Route::prefix('admin')->group(function () {
     Route::get('/cms/delete/{id}', [AdminController::class, 'deleteCmsPage']);
     Route::get('/cms/toggle/{id}', [AdminController::class, 'toggleCmsPage']);
 
-    Route::post('/contacts/store', [AdminController::class, 'storeContact']);
-    Route::get('/contacts/delete/{id}', [AdminController::class, 'deleteContact']);
-    Route::get('/contacts/toggle/{id}', [AdminController::class, 'toggleContact']);
+    Route::post('/contact/store', [AdminController::class, 'storeContact']);
+    Route::get('/contact/delete/{id}', [AdminController::class, 'deleteContact']);
+    Route::get('/contact/toggle/{id}', [AdminController::class, 'toggleContact']);
 
     Route::post('/subscribers/store', [AdminController::class, 'storeSubscriber']);
     Route::get('/subscribers/delete/{id}', [AdminController::class, 'deleteSubscriber']);

@@ -263,9 +263,9 @@
                         <p class="text-sm text-primary font-bold line-through mt-1">₹{{ number_format($package['oldPrice']) }}</p>
                         @endif
                     </div>
-                    <a href="#contact-form" class="block w-full py-3.5 bg-primary hover:bg-primary/90 text-white text-center font-black text-sm uppercase tracking-widest rounded-xl transition-all duration-200 shadow-glow">
+                    <button type="button" @click="showBookingModal = true" class="block w-full py-3.5 bg-primary hover:bg-primary/90 text-white text-center font-black text-sm uppercase tracking-widest rounded-xl transition-all duration-200 shadow-glow">
                         Book Now
-                    </a>
+                    </button>
                     <a href="#contact-form" class="block w-full py-3 border-2 border-gray-200 hover:border-orange-300 text-gray-700 text-center font-bold text-sm rounded-xl transition-all duration-200">
                         Enquire Now
                     </a>
@@ -317,16 +317,32 @@
                         <h3 class="text-base font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">Get in touch</h3>
                         <p class="text-sm text-gray-500 mt-1">We are here for you, how can we help?</p>
                     </div>
-                    <form class="space-y-3">
-                        <input type="text" placeholder="Enter your name"
+
+                    @if(session('success'))
+                        <div class="p-3 bg-green-50 border border-green-100 rounded-xl text-green-700 font-bold text-xs flex items-center gap-2">
+                            <i data-lucide="check-circle" size="16"></i>
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 font-bold text-xs flex items-center gap-2">
+                            <i data-lucide="alert-circle" size="16"></i>
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('contact.submit') }}" method="POST" class="space-y-3">
+                        @csrf
+                        <input type="hidden" name="subject" value="Inquiry for {{ $package['title'] }}">
+                        <input type="text" name="name" required placeholder="Enter your name"
                             class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
-                        <input type="email" placeholder="Enter your email"
+                        <input type="email" name="email" required placeholder="Enter your email"
                             class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
-                        <textarea rows="3" placeholder="Got ahead, we are listening..."
+                        <textarea name="message" required rows="3" placeholder="Go ahead, we are listening..."
                             class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400 resize-none"></textarea>
                         <button type="submit"
                             class="w-full py-3 bg-primary hover:bg-primary/90 text-white font-black text-sm rounded-xl transition-colors duration-200 shadow-glow">
-                            Submit
+                            Submit Inquiry
                         </button>
                     </form>
                 </div>
@@ -334,6 +350,63 @@
             </div>{{-- end right sidebar --}}
         </div>{{-- end grid --}}
     </div>
+    
+    {{-- Booking Modal (Alpine JS wrapper needed at root of page) --}}
+    <div x-show="showBookingModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showBookingModal = false"></div>
+        <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 lg:p-8 animate-fade-in-up">
+            <button @click="showBookingModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                <i data-lucide="x" size="18"></i>
+            </button>
+            <h2 class="text-2xl font-black mb-1">Book {{ $package['title'] }}</h2>
+            <p class="text-gray-500 text-sm mb-6">Complete the form below to request a booking.</p>
+            
+            <form action="{{ route('package.book') }}" method="POST" class="space-y-4">
+                @csrf
+                <input type="hidden" name="package_id" value="{{ $package['id'] ?? 0 }}">
+                <input type="hidden" name="package_title" value="{{ $package['title'] ?? '' }}">
+                <input type="hidden" name="package_image" value="{{ $package['image'] ?? '' }}">
+                <input type="hidden" name="package_price" value="{{ $package['price'] ?? 0 }}">
+                
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Traveler Name</label>
+                    <input type="text" name="traveler_name" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Email</label>
+                        <input type="email" name="traveler_email" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Phone</label>
+                        <input type="text" name="traveler_phone" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Travel Date</label>
+                        <input type="date" name="travel_date" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Guests</label>
+                        <input type="number" name="guests" min="1" value="2" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                    </div>
+                </div>
+                
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Special Requests</label>
+                    <textarea name="special_request" rows="2" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"></textarea>
+                </div>
+                
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-4 bg-primary hover:bg-primary-hover text-white font-black rounded-xl transition-all shadow-lg shadow-primary/30">
+                        Confirm Booking Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection
-
