@@ -73,7 +73,7 @@
                         'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
                         'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200',
                         'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200',
-                        'https://images.unsplash.com/photo-1472396961695-1ad7a82fe28b?auto=format&fit=crop&q=80&w=1200'
+                        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=1200'
                     ],
                     next() {
                         this.activeSlide = (this.activeSlide + 1) % this.slides.length;
@@ -86,7 +86,7 @@
                     scrollToActive() {
                         const container = this.$refs.slider;
                         container.scrollTo({
-                            left: container.offsetWidth * this.activeSlide,
+                            left: container.getBoundingClientRect().width * this.activeSlide,
                             behavior: 'smooth'
                         });
                     },
@@ -103,7 +103,7 @@
                         style="height: 380px;"
                     >
                         <template x-for="(slide, index) in slides" :key="index">
-                            <div class="w-full flex-shrink-0 snap-center relative">
+                            <div class="w-full min-w-full flex-shrink-0 snap-center relative overflow-hidden">
                                 <img :src="slide" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Package Image">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
                             </div>
