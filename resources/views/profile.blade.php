@@ -30,14 +30,14 @@
         </div>
         <div class="container-custom relative z-10 flex flex-col items-center text-center text-white">
             <div class="relative mb-6">
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-[40px] border-4 border-white overflow-hidden shadow-2xl">
+                <a href="{{ url('/profile') }}" class="block w-32 h-32 md:w-40 md:h-40 rounded-[40px] border-4 border-white overflow-hidden shadow-2xl hover:scale-105 transition-all">
                     <img src="{{ $avatarUrl }}" alt="Avatar" class="w-full h-full object-cover bg-white" id="avatar-preview" />
-                </div>
+                </a>
                 <label for="avatar-upload" class="absolute bottom-2 right-2 w-10 h-10 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg hover:bg-primary-hover transition-colors cursor-pointer">
                     <i data-lucide="camera" size="20"></i>
                 </label>
             </div>
-            <h1 class="text-4xl font-black mb-2 font-syne">{{ $displayName }}</h1>
+            <h1 class="text-4xl font-black mb-2 font-syne text-white drop-shadow-md" style="color: white !important;">{{ $displayName }}</h1>
             <div class="flex items-center gap-4 text-white/60 font-medium">
                 <div class="flex items-center gap-1">
                     <i data-lucide="map-pin" size="16"></i>
@@ -52,18 +52,18 @@
         </div>
     </div>
 
-    <!-- Flash Messages -->
+    <!-- Flash Messages (Toast Style) -->
     @if(session('success'))
-        <div class="container-custom mt-4">
-            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-sm flex items-center gap-3">
+        <div class="fixed top-24 right-8 z-50 animate-in slide-in-from-right-8 fade-in duration-500">
+            <div class="p-4 bg-green-500 border border-green-600 rounded-2xl text-white font-bold text-sm flex items-center gap-3 shadow-2xl">
                 <i data-lucide="check-circle" size="20"></i>
                 {{ session('success') }}
             </div>
         </div>
     @endif
     @if(session('error'))
-        <div class="container-custom mt-4">
-            <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 font-bold text-sm flex items-center gap-3">
+        <div class="fixed top-24 right-8 z-50 animate-in slide-in-from-right-8 fade-in duration-500">
+            <div class="p-4 bg-red-500 border border-red-600 rounded-2xl text-white font-bold text-sm flex items-center gap-3 shadow-2xl">
                 <i data-lucide="alert-circle" size="20"></i>
                 {{ session('error') }}
             </div>
@@ -113,7 +113,7 @@
                         @endif
                     </button>
                     <hr class="my-4 border-gray-100" />
-                    <a href="{{ route('login') }}" class="flex items-center gap-4 p-5 rounded-[20px] font-bold text-red-500 hover:bg-red-50 transition-all">
+                    <a href="{{ url('/logout') }}" class="flex items-center gap-4 p-5 rounded-[20px] font-bold text-red-500 hover:bg-red-50 transition-all">
                         <i data-lucide="log-out" size="22"></i>
                         <span>Sign Out</span>
                     </a>
@@ -126,7 +126,7 @@
                 <!-- ═══════════ WISHLIST TAB ═══════════ -->
                 <div x-show="activeTab === 'wishlist'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-3xl font-black text-foreground font-syne">Saved Packages</h2>
+                        <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Saved Packages</h2>
                         <span class="bg-primary/10 text-primary px-4 py-1.5 rounded-full font-bold text-sm">
                             {{ $wishlistItems->count() }} Saved
                         </span>
@@ -177,7 +177,7 @@
                 <!-- ═══════════ PERSONAL INFO TAB ═══════════ -->
                 <div x-show="activeTab === 'profile'" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div class="bg-white rounded-[32px] p-8 md:p-12 shadow-soft border border-gray-50 space-y-10">
-                        <h2 class="text-3xl font-black font-syne">Personal Information</h2>
+                        <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Personal Information</h2>
                         
                         <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
                             @csrf
@@ -229,7 +229,7 @@
 
                 <!-- ═══════════ BOOKING HISTORY TAB ═══════════ -->
                 <div x-show="activeTab === 'history'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <h2 class="text-3xl font-black text-foreground font-syne">Booking History</h2>
+                    <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Booking History</h2>
                     <div class="space-y-6">
                         @forelse($bookingItems as $booking)
                             <div class="bg-white rounded-[32px] p-6 shadow-soft border border-gray-50 flex flex-col md:flex-row items-center gap-6 hover:shadow-card transition-all">
@@ -290,7 +290,7 @@
                 <!-- ═══════════ NOTIFICATIONS TAB ═══════════ -->
                 <div x-show="activeTab === 'notifications'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-3xl font-black text-foreground font-syne">Notifications</h2>
+                        <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Notifications</h2>
                         @if($unread > 0)
                             <span class="bg-red-50 text-red-500 px-4 py-1.5 rounded-full font-bold text-sm">{{ $unread }} Unread</span>
                         @endif
@@ -372,7 +372,7 @@
                 <!-- ═══════════ MEMBERSHIP & PAYMENTS TAB ═══════════ -->
                 <div x-show="activeTab === 'membership'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-3xl font-black text-foreground font-syne">Membership & Billing</h2>
+                        <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Membership & Billing</h2>
                     </div>
 
                     @if($activePlan)
@@ -407,21 +407,25 @@
                         </div>
                     @else
                         <!-- No Active Plan - VIP Pitch Card -->
-                        <div class="relative overflow-hidden bg-gradient-to-r from-slate-950 via-slate-800 to-slate-950 text-white rounded-[32px] p-8 md:p-10 shadow-lg">
-                            <div class="absolute inset-0 bg-cover bg-center opacity-10" style="background-image: url('{{ asset('tourex/hero-bg.png') }}')"></div>
+                        <div class="relative overflow-hidden bg-white border border-gray-100 rounded-[32px] p-8 md:p-10 shadow-premium">
+                            <!-- Attractive VIP Landscape Background -->
+                            <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('{{ asset('tourex/hero-bg.png') }}')"></div>
+                            <!-- Glassmorphism overlay to ensure black text readability -->
+                            <div class="absolute inset-0 bg-white/80 backdrop-blur-[2px] z-0"></div>
+                            <div class="absolute right-0 top-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-20 -mt-20 z-0"></div>
                             <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
                                 <div class="space-y-4">
-                                    <h3 class="text-3xl font-black font-syne">Unlock the TourRaja VIP Club</h3>
-                                    <p class="text-white/70 max-w-lg text-sm leading-relaxed font-medium">
+                                    <h3 class="text-3xl font-black font-syne text-foreground">Unlock the TourRaja VIP Club</h3>
+                                    <p class="text-muted-text max-w-lg text-sm leading-relaxed font-medium">
                                         Get access to customized travel plans, premium local tour guides, zero booking fees, and 24/7 dedicated travel advisor support!
                                     </p>
-                                    <div class="flex items-center gap-4 text-xs font-bold text-white/50 uppercase tracking-wider">
-                                        <span>✓ Zero Booking Fees</span>
-                                        <span>✓ 24/7 Support</span>
-                                        <span>✓ Exclusive Discounts</span>
+                                    <div class="flex items-center gap-4 text-xs font-bold text-foreground/70 uppercase tracking-wider">
+                                        <span class="flex items-center gap-1"><i data-lucide="check" size="14" class="text-primary"></i> Zero Booking Fees</span>
+                                        <span class="flex items-center gap-1"><i data-lucide="check" size="14" class="text-primary"></i> 24/7 Support</span>
+                                        <span class="flex items-center gap-1"><i data-lucide="check" size="14" class="text-primary"></i> Exclusive Discounts</span>
                                     </div>
                                 </div>
-                                <a href="{{ route('discover') }}" class="px-8 py-4 bg-primary hover:bg-primary-hover text-white rounded-full font-black text-sm uppercase tracking-wider transition-all shrink-0">
+                                <a href="{{ route('discover') }}" class="px-8 py-4 bg-primary hover:bg-primary-hover text-white rounded-full font-black text-sm uppercase tracking-wider transition-all shrink-0 shadow-lg shadow-primary/20">
                                     Explore Packages
                                 </a>
                             </div>

@@ -119,7 +119,7 @@
 
             <!-- Bottom Actions -->
             <div class="p-6 border-t border-border-soft space-y-4 shrink-0">
-                <a href="{{ url('/') }}" class="flex items-center gap-4 px-4 py-3.5 text-red-500 hover:bg-red-50 rounded-2xl transition-all text-sm font-black">
+                <a href="{{ url('/logout') }}" class="flex items-center gap-4 px-4 py-3.5 text-red-500 hover:bg-red-50 rounded-2xl transition-all text-sm font-black">
                     <i data-lucide="log-out" size="20"></i>
                     <span>Exit Admin</span>
                 </a>
@@ -178,23 +178,24 @@
 
                     <!-- User Profile -->
                     @php
-                        $activeAdmin = \DB::table('users')->where('id', 1)->first() ?? (object)[
+                        $activeAdmin = Auth::check() ? Auth::user() : (\DB::table('users')->where('id', 1)->first() ?? (object)[
                             'name' => 'Super Admin',
                             'role' => 'SUPER ADMIN',
                             'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
-                        ];
+                        ]);
+                        $adminAvatar = ($activeAdmin && !empty($activeAdmin->avatar)) ? $activeAdmin->avatar : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($activeAdmin->name ?? 'Admin');
                     @endphp
-                    <div class="flex items-center gap-4 pl-4 border-l border-border-soft">
+                    <a href="{{ url('/admin/login') }}" class="flex items-center gap-4 pl-4 border-l border-border-soft hover:opacity-80 transition-all">
                         <div class="text-right hidden md:block">
                             <p class="text-sm font-black text-foreground leading-none">{{ $activeAdmin->name }}</p>
                             <p class="text-[10px] font-black text-primary uppercase tracking-widest mt-1">{{ $activeAdmin->role }}</p>
                         </div>
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-primary to-orange-400 p-[2px] shadow-lg shadow-primary/20">
                             <div class="w-full h-full rounded-[9px] bg-white p-0.5 overflow-hidden">
-                                <img src="{{ $activeAdmin->avatar }}" alt="Avatar" class="w-full h-full object-cover rounded-[7px]">
+                                <img src="{{ $adminAvatar }}" alt="Avatar" class="w-full h-full object-cover rounded-[7px]">
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </header>
 

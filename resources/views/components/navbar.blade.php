@@ -76,9 +76,19 @@
                 </div>
             </div>
 
-            <a href="{{ url('/login') }}" class="hidden lg:flex items-center justify-center w-11 h-11 bg-white/10 hover:bg-primary backdrop-blur-md text-white rounded-full transition-all shadow-premium group">
-                <i data-lucide="user" size="20" :class="(isScrolled || !isHome) ? 'text-foreground group-hover:text-white' : 'text-white'"></i>
-            </a>
+            @if(Auth::check())
+                <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-11 h-11 bg-primary text-white rounded-full transition-all shadow-premium hover:scale-105 duration-300">
+                    @if(Auth::user()->avatar)
+                        <img src="{{ Auth::user()->avatar }}" class="w-full h-full rounded-full object-cover">
+                    @else
+                        <span class="font-bold text-xs uppercase">{{ substr(Auth::user()->name, 0, 2) }}</span>
+                    @endif
+                </a>
+            @else
+                <a href="{{ url('/login') }}" class="hidden lg:flex items-center justify-center w-11 h-11 bg-white/10 hover:bg-primary backdrop-blur-md text-white rounded-full transition-all shadow-premium group">
+                    <i data-lucide="user" size="20" :class="(isScrolled || !isHome) ? 'text-foreground group-hover:text-white' : 'text-white'"></i>
+                </a>
+            @endif
             
             <!-- Mobile Wishlist Icon -->
             <button 

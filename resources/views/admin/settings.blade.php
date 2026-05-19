@@ -29,11 +29,12 @@
         </div>
 
         @php
-            $activeAdmin = \DB::table('users')->where('id', 1)->first() ?? (object)[
+            $activeAdmin = Auth::check() ? Auth::user() : (\DB::table('users')->where('id', 1)->first() ?? (object)[
                 'name' => 'Super Admin',
                 'email' => 'admin@tourraja.com',
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
-            ];
+            ]);
+            $adminAvatar = ($activeAdmin && !empty($activeAdmin->avatar)) ? $activeAdmin->avatar : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($activeAdmin->name ?? 'Admin');
         @endphp
 
         <form action="{{ url('/admin/profile/update') }}" method="POST" class="space-y-6 max-w-2xl">
@@ -41,7 +42,7 @@
             <div class="flex items-center gap-6">
                 <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-primary to-orange-400 p-[3px] shadow-lg shadow-primary/20 shrink-0">
                     <div class="w-full h-full rounded-[21px] bg-white p-1 overflow-hidden">
-                        <img src="{{ $activeAdmin->avatar }}" alt="Avatar" class="w-full h-full object-cover rounded-[18px]">
+                        <img src="{{ $adminAvatar }}" alt="Avatar" class="w-full h-full object-cover rounded-[18px]">
                     </div>
                 </div>
                 <div>

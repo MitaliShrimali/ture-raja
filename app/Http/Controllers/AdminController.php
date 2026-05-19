@@ -1090,7 +1090,9 @@ class AdminController extends Controller
     {
         $request->validate(['name' => 'required', 'email' => 'required|email']);
         
-        DB::table('users')->where('id', 1)->update([
+        $adminId = Auth::check() ? Auth::id() : 1;
+        
+        DB::table('users')->where('id', $adminId)->update([
             'name' => $request->name,
             'email' => $request->email,
             'updated_at' => now(),
@@ -1254,6 +1256,20 @@ class AdminController extends Controller
         $recentInquiries = DB::table('contacts')->orderBy('id', 'desc')->limit(5)->get();
         
         return view('admin.reports', compact('totalInquiries', 'totalLeads', 'totalBookings', 'totalRevenue', 'recentInquiries'));
+    }
+
+    public function adminProfile()
+    {
+        $admin = Auth::check() ? Auth::user() : DB::table('users')->where('id', 1)->first();
+        
+        // System and analytical overview stats for admin profile!
+        $totalPackages = DB::table('packages')->count();
+        $totalLeads = DB::table('leads')->count();
+        $totalUsers = DB::table('users')->count();
+        $totalPayments = DB::table('payments')->count();
+        $totalRevenue = DB::table('payments')->sum('amount');
+        
+        return view('admin.profile', compact('admin', 'totalPackages', 'totalLeads', 'totalUsers', 'totalPayments', 'totalRevenue'));
     }
 }
 

@@ -272,42 +272,131 @@
                 </div>
 
                 {{-- Agent Card --}}
+                @php
+                    $agentName = $package['agent'] ?? 'Miths Holidays';
+                    if (is_array($agentName)) {
+                        $agentName = $agentName['name'] ?? 'Miths Holidays';
+                    }
+
+                    // Dynamic rich profiles for each agent name
+                    $agentProfiles = [
+                        'nomad ventures' => (object)[
+                            'id' => 1,
+                            'name' => 'Nomad Ventures',
+                            'phone' => '+1 (555) 019-2831',
+                            'email' => 'contact@nomad.com',
+                            'region' => 'Asia Pacific Region',
+                            'tier' => 'Premium'
+                        ],
+                        'azure horizons' => (object)[
+                            'id' => 2,
+                            'name' => 'Azure Horizons',
+                            'phone' => '+44 (123) 456-7890',
+                            'email' => 'info@azure.com',
+                            'region' => 'London, United Kingdom',
+                            'tier' => 'Standard'
+                        ],
+                        'globe trotters' => (object)[
+                            'id' => 3,
+                            'name' => 'Globe Trotters',
+                            'phone' => '+1 (555) 012-3456',
+                            'email' => 'contact@globetrotters.com',
+                            'region' => 'New York, USA',
+                            'tier' => 'Enterprise'
+                        ],
+                        'atlas global travels' => (object)[
+                            'id' => 4,
+                            'name' => 'Atlas Global Travels',
+                            'phone' => '+91 99999 88888',
+                            'email' => 'info@atlasglobal.com',
+                            'region' => 'New Delhi, India',
+                            'tier' => 'Premium'
+                        ],
+                        'miths holidays' => (object)[
+                            'id' => 64,
+                            'name' => 'Miths Holidays',
+                            'phone' => '+91 7383682183',
+                            'email' => 'mithstours@gmail.com',
+                            'region' => '101 GF Nr Trikon Bagh Rajkot - Gujarat',
+                            'tier' => 'Premium'
+                        ]
+                    ];
+
+                    $agentKey = strtolower($agentName);
+                    $agentData = $agentProfiles[$agentKey] ?? null;
+
+                    // Fallback to database check
+                    if (!$agentData) {
+                        $dbAgent = \DB::table('agents')->where('name', $agentName)->first();
+                        if ($dbAgent) {
+                            $agentData = $dbAgent;
+                        }
+                    }
+
+                    // Ultimate fallback
+                    if (!$agentData) {
+                        $agentData = (object)[
+                            'id' => 64,
+                            'name' => 'Miths Holidays',
+                            'phone' => '+91 7383682183',
+                            'email' => 'mithstours@gmail.com',
+                            'region' => '101 GF Nr Trikon Bagh Rajkot - Gujarat',
+                            'tier' => 'Premium'
+                        ];
+                    }
+
+                    // Ensure agent ID exists
+                    if (!isset($agentData->id)) {
+                        $agentData->id = 64;
+                    }
+                    
+                    $agentName = $agentData->name ?? 'Miths Holidays';
+                    $agentPhone = $agentData->phone ?? '+91 7383682183';
+                    $agentEmail = $agentData->email ?? 'mithstours@gmail.com';
+                    $agentRegion = $agentData->region ?? '101 GF Nr Trikon Bagh Rajkot - Gujarat';
+                    $agentInitial = strtoupper(substr($agentName, 0, 1));
+                    $agentLogo = 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
+                    
+                    $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentData->id);
+                @endphp
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 space-y-4">
                     <h3 class="text-base font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">Agent Information</h3>
                     <div class="flex flex-col items-center text-center py-2 space-y-2">
-                        <div class="w-16 h-16 rounded-full bg-primary/10 border-4 border-primary/20 flex items-center justify-center text-2xl font-black text-primary">M</div>
+                        <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-primary/20 flex items-center justify-center shadow-md">
+                            <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-full h-full object-cover">
+                        </div>
                         <div>
-                            <p class="font-black text-gray-800 text-base">Miths Holidays</p>
-                            <p class="text-gray-500 text-xs mt-0.5">101 Nr Trikon bagh Rajkot · Gujarat</p>
+                            <p class="font-black text-gray-800 text-base">{{ $agentName }}</p>
+                            <p class="text-gray-500 text-xs mt-0.5">{{ $agentRegion }}</p>
                         </div>
                         <div class="flex items-center gap-0.5">
                             @for($s = 0; $s < 5; $s++)
                                 <svg width="13" height="13" fill="{{ $s < 4 ? '#f97316' : '#e5e7eb' }}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                             @endfor
-                            <span class="text-sm font-bold text-gray-700 ml-1">4.2</span>
+                            <span class="text-sm font-bold text-gray-700 ml-1">4.8</span>
                         </div>
                     </div>
 
                     <div class="space-y-2.5 text-sm text-gray-600">
                         <div class="flex items-center gap-2.5">
                             <svg class="shrink-0" width="15" height="15" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                            <span>www.mithstour.com</span>
+                            <span>www.{{ strtolower(str_replace(' ', '', $agentName)) }}.com</span>
                         </div>
                         <div class="flex items-center gap-2.5">
                             <svg class="shrink-0" width="15" height="15" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
-                            <span>+91 00000 00000</span>
+                            <span>{{ $agentPhone }}</span>
                         </div>
                         <div class="flex items-center gap-2.5">
                             <svg class="shrink-0" width="15" height="15" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            <span>mithstravel@gmail.com</span>
+                            <span>{{ $agentEmail }}</span>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 pt-1">
-                        <a href="https://wa.me/910000000000" class="py-2.5 bg-green-500 hover:bg-green-600 text-white text-center text-xs font-black rounded-xl transition-colors">Whatsapp</a>
-                        <a href="mailto:mithstravel@gmail.com" class="py-2.5 bg-primary hover:bg-primary/90 text-white text-center text-xs font-black rounded-xl transition-colors">Email</a>
-                        <a href="{{ url('/') }}" class="py-2.5 border border-border-soft text-foreground text-center text-xs font-black rounded-xl hover:bg-gray-50 transition-colors">Other Packages</a>
-                        <a href="#" class="py-2.5 bg-foreground hover:opacity-90 text-white text-center text-xs font-black rounded-xl transition-colors">See Profile</a>
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" class="py-2.5 bg-green-500 hover:bg-green-600 text-white text-center text-xs font-black rounded-xl transition-colors">Whatsapp</a>
+                        <a href="mailto:{{ $agentEmail }}" class="py-2.5 bg-primary hover:bg-primary/90 text-white text-center text-xs font-black rounded-xl transition-colors">Email</a>
+                        <a href="{{ $agentRedirectUrl }}" class="py-2.5 border border-border-soft text-foreground text-center text-xs font-black rounded-xl hover:bg-gray-50 transition-colors">Other Packages</a>
+                        <a href="{{ $agentRedirectUrl }}" class="py-2.5 bg-foreground hover:opacity-90 text-white text-center text-xs font-black rounded-xl transition-colors">See Profile</a>
                     </div>
                 </div>
 

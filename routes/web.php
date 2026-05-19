@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [UserController::class, 'home'])->name('home');
 Route::get('/listing', [ListingController::class, 'index']);
+Route::get('/listing/holiday-list', [ListingController::class, 'index'])->name('listing.holiday-list');
 Route::get('/discover', [ListingController::class, 'index'])->name('discover');
 
 // Static pages (keep original behaviour)
@@ -41,11 +42,21 @@ Route::get('/profile/cancel-booking/{id}', [UserController::class, 'cancelBookin
 Route::get('/profile/notification/read/{id}', [UserController::class, 'markNotificationRead'])->name('notification.read');
 Route::post('/profile/review', [UserController::class, 'submitReview'])->name('review.submit');
 
-// ─── LOGIN ROUTE ─────────────────────────────────────────────────────────────
+// ─── LOGIN & SIGNUP ROUTES ─────────────────────────────────────────────────────────────
 Route::get('/login', function() {
     $type = request('tab') == 'agent' ? 'agent' : 'customer';
     return view('admin.login', compact('type'));
 })->name('login');
+
+Route::get('/signup', function() {
+    $type = request('tab') == 'agent' ? 'agent' : 'customer';
+    return view('admin.signup', compact('type'));
+})->name('signup');
+
+Route::post('/signup/submit', [UserController::class, 'signupSubmit'])->name('signup.submit');
+
+Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('login.submit');
+Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 
 // ─── ADMIN ROUTES ────────────────────────────────────────────────────────────
 Route::prefix('admin')->group(function () {
@@ -178,6 +189,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/subscribers/toggle/{id}', [AdminController::class, 'toggleSubscriber']);
 
     Route::post('/settings/update', [AdminController::class, 'updateSettings']);
+    Route::get('/profile', [AdminController::class, 'adminProfile']);
     Route::post('/profile/update', [AdminController::class, 'updateProfile']);
 });
 

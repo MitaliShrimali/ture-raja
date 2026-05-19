@@ -58,17 +58,34 @@
                     <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">{{ $subtext }}</p>
                 </div>
 
+                <!-- Flash Messages -->
+                @if(session('error'))
+                    <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 font-bold text-xs flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                @endif
+                @if(session('success'))
+                    <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-xs flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <span>{{ session('success') }}</span>
+                    </div>
+                @endif
+
                 <!-- Main Form -->
-                <form action="{{ $actionUrl }}" class="space-y-8">
+                <form action="{{ url('/login/submit') }}" method="POST" class="space-y-8">
+                    @csrf
+                    <input type="hidden" name="type" value="{{ $type }}" />
+                    
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
-                        <input type="email" value="{{ $defaultEmail }}" placeholder="{{ $defaultEmail }}" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
+                        <input required type="email" name="email" value="{{ old('email', $defaultEmail) }}" placeholder="{{ $defaultEmail }}" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
                     </div>
                     
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Password<span class="text-primary">*</span></label>
                         <div class="relative">
-                            <input :type="showPassword ? 'text' : 'password'" value="password123" placeholder="Enter password" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 pr-14 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
+                            <input required :type="showPassword ? 'text' : 'password'" name="password" value="password123" placeholder="Enter password" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 pr-14 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
                             <button @click="showPassword = !showPassword" type="button" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-muted-text hover:text-primary transition-colors">
                                 <!-- Eye Open SVG -->
                                 <template x-if="!showPassword">
@@ -93,6 +110,10 @@
                     <button type="submit" class="w-full bg-[#E8460A] hover:bg-primary-hover text-white rounded-2xl py-5 font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1">
                         {{ $btnText }}
                     </button>
+
+                    <p class="text-xs font-bold text-muted-text text-center mt-6">
+                        Don't have an account? <a href="{{ url('/signup?tab=' . $type) }}" class="text-primary hover:underline">Sign Up</a>
+                    </p>
                 </form>
 
                 <div class="pt-12">

@@ -250,13 +250,12 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Removed from wishlist.');
     }
 
-    // ─── PROFILE PAGE ────────────────────────────────────────────────
     public function profile()
     {
         $userId = $this->userId();
 
         try {
-            $user    = DB::table('users')->find($userId);
+            $user = DB::table('users')->find($userId);
             $profile = DB::table('user_profiles')->where('user_id', $userId)->first();
             $wishlist = DB::table('user_wishlists')
                           ->where('user_id', $userId)
@@ -427,5 +426,82 @@ class UserController extends Controller
         }
 
         return redirect()->back()->with('success', 'Your review has been submitted and is pending approval. Thank you! ⭐');
+    }
+    // ─── SIGN UP ──────────────────────────────────────────────────────
+    public function signupSubmit(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8'
+        ]);
+
+        $name = $request->first_name . ' ' . $request->last_name;
+        
+        // Dynamic avatar generation based on name
+        $avatar = 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($name);
+
+        $userId = DB::table('users')->insertGetId([
+            'name' => $name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => $request->type == 'agent' ? 'Agent' : 'Customer',
+            'avatar' => $avatar,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        // Create empty profile
+        DB::table('user_profiles')->insert([
+            'user_id' => $userId,
+            'username' => strtolower($request->first_name . '_' . $request->last_name),
+            'avatar' => $avatar,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        Auth::loginUsingId($userId);
+
+        if ($request->type == 'admin' || $request->type == 'agent') {
+            return redirect('/admin/dashboard')->with('success', 'Account created successfully! Welcome, ' . $name);
+        }
+        
+        return redirect('/profile')->with('success', 'Account created successfully! Welcome, ' . $name);
+    }
+
+    public function loginSubmit(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        $user = DB::table('users')->where('email', $request->email)->first();
+
+        if (!$user) {
+            return redirect()->back()->with('error', 'user not exist')->withInput();
+        }
+
+        if (Hash::check($request->password, $user->password)) {
+            Auth::loginUsingId($user->id);
+            
+            // Check if user is an administrator
+            if (in_array(strtoupper($user->role ?? ''), ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR'])) {
+                return redirect('/admin/dashboard')->with('success', 'Logged in as Admin successfully! Welcome, ' . $user->name);
+            }
+            
+            return redirect('/profile')->with('success', 'Logged in successfully! Welcome, ' . $user->name);
+        }
+
+        return redirect()->back()->with('error', 'Invalid password. Please try again.')->withInput();
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+        return redirect('/login')->with('success', 'Logged out successfully.');
     }
 }

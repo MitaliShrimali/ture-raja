@@ -195,6 +195,63 @@
 
             <!-- Main Content -->
             <div class="flex-1 space-y-8">
+                @if(isset($agent))
+                    <div class="bg-gradient-to-r from-orange-600 via-primary to-orange-500 rounded-[40px] p-8 md:p-10 shadow-premium border border-primary/20 text-white flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden animate-in fade-in slide-in-from-top-6 duration-500">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                        <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -ml-20 -mb-20"></div>
+                        
+                        <div class="flex flex-col md:flex-row items-center gap-6 md:gap-8 relative z-10 text-center md:text-left">
+                            <div class="w-24 h-24 rounded-[32px] bg-white p-1.5 shadow-xl shrink-0 flex items-center justify-center">
+                                @php
+                                    $agentInit = strtoupper(substr($agent->name ?? 'A', 0, 1));
+                                    $agentLogoUrl = 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agent->name ?? 'Agent');
+                                @endphp
+                                <img src="{{ $agentLogoUrl }}" alt="{{ $agent->name }}" class="w-full h-full object-cover rounded-[24px]">
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2.5">
+                                    <span class="px-3.5 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10">
+                                        {{ $agent->tier ?? 'Premium' }} Partner
+                                    </span>
+                                    <span class="px-3.5 py-1 bg-green-500/30 backdrop-blur-md rounded-full text-[10px] font-black text-green-200 uppercase tracking-widest border border-green-500/20 flex items-center gap-1">
+                                        <i data-lucide="verified" size="12"></i> Verified Operator
+                                    </span>
+                                </div>
+                                <h2 class="text-3xl md:text-4xl font-black tracking-tight" style="font-family: 'Syne', sans-serif;">{{ $agent->name }}</h2>
+                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 text-white/80 text-xs font-medium">
+                                    @if($agent->phone)
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="phone" size="14"></i>
+                                            <span>{{ $agent->phone }}</span>
+                                        </div>
+                                    @endif
+                                    @if($agent->email)
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="mail" size="14"></i>
+                                            <span>{{ $agent->email }}</span>
+                                        </div>
+                                    @endif
+                                    @if($agent->region)
+                                        <div class="flex items-center gap-2">
+                                            <i data-lucide="map-pin" size="14"></i>
+                                            <span>{{ $agent->region }}</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="shrink-0 relative z-10 flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agent->phone ?? '') }}" target="_blank" class="w-full sm:w-auto px-6 py-4 bg-green-500 hover:bg-green-600 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-green-500/20 text-center flex items-center justify-center gap-2">
+                                <i data-lucide="message-circle" size="16"></i> Chat on WhatsApp
+                            </a>
+                            <a href="mailto:{{ $agent->email }}" class="w-full sm:w-auto px-6 py-4 bg-white text-primary hover:bg-gray-50 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg text-center flex items-center justify-center gap-2">
+                                <i data-lucide="mail" size="16"></i> Email Agent
+                            </a>
+                        </div>
+                    </div>
+                @endif
+
                 <!-- Mobile Search Input (Visible only on mobile/tablet) -->
                 <div class="relative group lg:hidden w-full">
                     <input 
