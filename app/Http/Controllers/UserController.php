@@ -78,7 +78,8 @@ class UserController extends Controller
         }
 
         // Redirect to discover/listing page with the search term
-        return redirect()->route('discover', ['search' => $destination]);
+        $searchTerm = !empty($destination) ? $destination : $fromCity;
+        return redirect()->route('discover', ['search' => $searchTerm]);
     }
 
     // ─── NEWSLETTER SUBSCRIBE ─────────────────────────────────────────
@@ -274,9 +275,20 @@ class UserController extends Controller
                                    ->orderByDesc('created_at')
                                    ->limit(10)
                                    ->get();
+
+            // Query plans and payments based on logged-in user email!
+            $activePlan = DB::table('user_plans')
+                            ->where('email', $user->email)
+                            ->first();
+
+            $userPayments = DB::table('payments')
+                              ->where('email', $user->email)
+                              ->orderByDesc('date')
+                              ->get();
         } catch (\Exception $e) {
             $user = null; $profile = null; $wishlist = collect(); $bookings = collect();
             $unreadCount = 0; $userNotifications = collect();
+            $activePlan = null; $userPayments = collect();
         }
 
         // Fallback static packages for wishlist when DB not available
@@ -284,7 +296,8 @@ class UserController extends Controller
 
         return view('profile', compact(
             'user', 'profile', 'wishlist', 'bookings',
-            'packages', 'unreadCount', 'userNotifications'
+            'packages', 'unreadCount', 'userNotifications',
+            'activePlan', 'userPayments'
         ));
     }
 

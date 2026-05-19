@@ -15,12 +15,12 @@
     <!-- Metrics Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         @foreach([
-            ['title' => 'Total Revenue', 'value' => $data['metrics']['totalRevenue'], 'growth' => $data['metrics']['revenueGrowth'], 'icon' => 'bar-chart-3', 'color' => 'primary'],
-            ['title' => 'Verified Agents', 'value' => $data['metrics']['activeAgents'], 'growth' => $data['metrics']['agentGrowth'], 'icon' => 'users', 'color' => 'blue-500'],
-            ['title' => 'Active Packages', 'value' => $data['metrics']['activePackages'], 'growth' => $data['metrics']['packageGrowth'], 'icon' => 'package', 'color' => 'green-500'],
-            ['title' => 'Total Subscribers', 'value' => $data['metrics']['totalSubscribers'], 'growth' => $data['metrics']['subscriberGrowth'], 'icon' => 'globe', 'color' => 'orange-500'],
+            ['title' => 'Total Revenue', 'value' => $data['metrics']['totalRevenue'], 'growth' => $data['metrics']['revenueGrowth'], 'icon' => 'bar-chart-3', 'color' => 'primary', 'link' => url('/admin/payments')],
+            ['title' => 'Verified Agents', 'value' => $data['metrics']['activeAgents'], 'growth' => $data['metrics']['agentGrowth'], 'icon' => 'users', 'color' => 'blue-500', 'link' => url('/admin/agents')],
+            ['title' => 'Active Packages', 'value' => $data['metrics']['activePackages'], 'growth' => $data['metrics']['packageGrowth'], 'icon' => 'package', 'color' => 'green-500', 'link' => url('/admin/packages')],
+            ['title' => 'Total Subscribers', 'value' => $data['metrics']['totalSubscribers'], 'growth' => $data['metrics']['subscriberGrowth'], 'icon' => 'globe', 'color' => 'orange-500', 'link' => url('/admin/subscribers')],
         ] as $metric)
-            <div class="bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4">
+            <a href="{{ $metric['link'] }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
                 <div class="flex items-center justify-between">
                     <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-{{ $metric['color'] }}">
                         <i data-lucide="{{ $metric['icon'] }}" size="18"></i>
@@ -31,7 +31,7 @@
                     <p class="text-xs font-black text-muted-text uppercase tracking-widest">{{ $metric['title'] }}</p>
                     <h3 class="text-3xl font-black font-syne text-foreground">{{ $metric['value'] }}</h3>
                 </div>
-            </div>
+            </a>
         @endforeach
     </div>
 
@@ -129,9 +129,9 @@
                 @endforeach
             </div>
 
-            <button class="w-full py-4 rounded-2xl bg-gray-50 text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+            <a href="{{ url('/admin/reports') }}" class="w-full py-4 rounded-2xl bg-gray-50 text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
                 View All Reports <i data-lucide="external-link" size="14"></i>
-            </button>
+            </a>
         </div>
     </div>
 </div>

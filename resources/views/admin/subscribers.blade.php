@@ -16,9 +16,9 @@
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="p-8 border-b border-border-soft flex items-center justify-between">
             <h3 class="text-xl font-black">Subscriber Directory</h3>
-            <button class="flex items-center gap-2 px-6 py-2.5 bg-gray-50 rounded-xl text-[10px] font-black text-muted-text uppercase tracking-widest hover:bg-gray-100 transition-all">
+            <a href="{{ url('/admin/reports/subscribers/download') }}" class="flex items-center gap-2 px-6 py-2.5 bg-gray-50 rounded-xl text-[10px] font-black text-muted-text uppercase tracking-widest hover:bg-gray-100 transition-all">
                 <i data-lucide="download" size="16"></i> Export
-            </button>
+            </a>
         </div>
 
         <div class="admin-table-container">

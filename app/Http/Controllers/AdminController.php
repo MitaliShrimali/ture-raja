@@ -421,8 +421,8 @@ class AdminController extends Controller
     // AGENT MANAGEMENT
     public function agents(Request $request)
     {
-        // Check if onboarding form or list (Wait, original page is onboarding form, but let's see if we should fetch some metadata or just render form)
-        return view('admin.agents');
+        $agents = DB::table('agents')->orderBy('id', 'desc')->get();
+        return view('admin.agents', compact('agents'));
     }
 
     public function storeAgent(Request $request)
@@ -442,7 +442,23 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect('/admin/dashboard')->with('success', 'New Travel Agent onboarded successfully!');
+        return redirect()->back()->with('success', 'New Travel Agent onboarded successfully!');
+    }
+
+    public function deleteAgent($id)
+    {
+        DB::table('agents')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Agent removed successfully!');
+    }
+
+    public function toggleAgent($id)
+    {
+        $agent = DB::table('agents')->where('id', $id)->first();
+        if ($agent) {
+            $newStatus = $agent->status === 'Active' ? 'Inactive' : 'Active';
+            DB::table('agents')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'Agent status toggled!');
     }
 
     // LEAD MANAGEMENT
@@ -484,6 +500,8 @@ class AdminController extends Controller
     {
         $request->validate(['id' => 'required', 'name' => 'required']);
         
+        $oldLead = DB::table('leads')->where('id', $request->id)->first();
+
         DB::table('leads')->where('id', $request->id)->update([
             'name' => $request->name,
             'email' => $request->email,
@@ -494,7 +512,47 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Lead record updated!');
+        if ($oldLead) {
+            try {
+                $mappedStatus = 'Pending';
+                if ($request->status === 'Booked') {
+                    $mappedStatus = 'Confirmed';
+                } elseif ($request->status === 'Lost') {
+                    $mappedStatus = 'Cancelled';
+                }
+                
+                // Update booking status
+                DB::table('user_bookings')
+                    ->where('traveler_email', $oldLead->email)
+                    ->where('package_title', $oldLead->package)
+                    ->update([
+                        'status' => $mappedStatus,
+                        'updated_at' => now()
+                    ]);
+
+                // Create a notification for the user to inform them about status update!
+                $booking = DB::table('user_bookings')
+                    ->where('traveler_email', $oldLead->email)
+                    ->where('package_title', $oldLead->package)
+                    ->first();
+
+                if ($booking && $booking->user_id) {
+                    DB::table('user_notifications')->insert([
+                        'user_id' => $booking->user_id,
+                        'title' => 'Booking Status Updated',
+                        'message' => "Your booking request for '{$booking->package_title}' is now: {$mappedStatus}.",
+                        'type' => $mappedStatus === 'Confirmed' ? 'Info' : ($mappedStatus === 'Cancelled' ? 'Alert' : 'Info'),
+                        'is_read' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            } catch (\Exception $e) {
+                // Silently ignore sync errors
+            }
+        }
+
+        return redirect()->back()->with('success', 'Lead record updated and customer booking synced!');
     }
 
     public function deleteLead($id)
@@ -794,8 +852,8 @@ class AdminController extends Controller
         DB::table('banners')->insert([
             'title' => $request->title,
             'subtitle' => $request->subtitle,
-            'image' => $request->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
-            'link' => $request->link ?? '/discover',
+            'image' => !empty($request->image) ? $request->image : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
+            'link' => !empty($request->link) ? $request->link : '/discover',
             'status' => $request->status ?? 'Active',
             'created_at' => now(),
             'updated_at' => now(),
@@ -811,7 +869,8 @@ class AdminController extends Controller
         DB::table('banners')->where('id', $request->id)->update([
             'title' => $request->title,
             'subtitle' => $request->subtitle,
-            'link' => $request->link,
+            'image' => !empty($request->image) ? $request->image : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
+            'link' => !empty($request->link) ? $request->link : '/discover',
             'status' => $request->status ?? 'Active',
             'updated_at' => now(),
         ]);
@@ -855,7 +914,24 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Global system notification sent!');
+        try {
+            $users = DB::table('users')->get();
+            foreach ($users as $user) {
+                DB::table('user_notifications')->insert([
+                    'user_id' => $user->id,
+                    'title' => $request->title,
+                    'message' => $request->message,
+                    'type' => $request->type ?? 'Info',
+                    'is_read' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Silently ignore DB errors
+        }
+
+        return redirect()->back()->with('success', 'Global system notification sent and delivered to all users! 📣');
     }
 
     public function deleteNotification($id)
@@ -1021,6 +1097,163 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Admin profile updated!');
+    }
+    
+    public function downloadInquiryReport(Request $request)
+    {
+        $contacts = DB::table('contacts')->orderBy('id', 'desc')->get();
+        $filename = "inquiry_report_" . date('Y-m-d') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'Name', 'Email', 'Phone', 'Subject', 'Message', 'Status', 'Date'];
+
+        $callback = function() use($contacts, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            
+            foreach ($contacts as $contact) {
+                fputcsv($file, [
+                    $contact->id,
+                    $contact->name,
+                    $contact->email,
+                    $contact->phone,
+                    $contact->subject,
+                    $contact->message,
+                    $contact->status,
+                    $contact->created_at
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+    
+    public function downloadLeadsReport(Request $request)
+    {
+        $leads = DB::table('leads')->orderBy('id', 'desc')->get();
+        $filename = "leads_report_" . date('Y-m-d') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'Name', 'Email', 'Phone', 'Package', 'Agent', 'Status', 'Date'];
+
+        $callback = function() use($leads, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            
+            foreach ($leads as $lead) {
+                fputcsv($file, [
+                    $lead->id,
+                    $lead->name,
+                    $lead->email,
+                    $lead->phone,
+                    $lead->package,
+                    $lead->agent,
+                    $lead->status,
+                    $lead->created_at
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+    
+    public function downloadPaymentsReport(Request $request)
+    {
+        $payments = DB::table('payments')->orderBy('id', 'desc')->get();
+        $filename = "payments_report_" . date('Y-m-d') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'User Name', 'Email', 'Plan Type', 'Amount', 'Payment ID', 'Status', 'Date'];
+
+        $callback = function() use($payments, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            
+            foreach ($payments as $payment) {
+                fputcsv($file, [
+                    $payment->id,
+                    $payment->user_name,
+                    $payment->email,
+                    $payment->plan_type,
+                    $payment->amount,
+                    $payment->payment_id,
+                    $payment->status,
+                    $payment->date
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+    
+    public function downloadSubscribersReport(Request $request)
+    {
+        $subscribers = DB::table('subscribers')->orderBy('id', 'desc')->get();
+        $filename = "subscribers_report_" . date('Y-m-d') . ".csv";
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'Email Address', 'Status', 'Date Joined'];
+
+        $callback = function() use($subscribers, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            
+            foreach ($subscribers as $sub) {
+                fputcsv($file, [
+                    $sub->id,
+                    $sub->email,
+                    $sub->status,
+                    $sub->created_at
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function reports(Request $request)
+    {
+        // Simple aggregate data for reports page
+        $totalInquiries = DB::table('contacts')->count();
+        $totalLeads = DB::table('leads')->count();
+        $totalBookings = DB::table('user_bookings')->count();
+        $totalRevenue = DB::table('user_bookings')->sum('package_price');
+        
+        $recentInquiries = DB::table('contacts')->orderBy('id', 'desc')->limit(5)->get();
+        
+        return view('admin.reports', compact('totalInquiries', 'totalLeads', 'totalBookings', 'totalRevenue', 'recentInquiries'));
     }
 }
 

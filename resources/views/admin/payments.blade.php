@@ -8,9 +8,9 @@
             <h2 class="font-black text-foreground tracking-tight">Payments</h2>
             <p class="text-muted-text font-medium">Monitoring platform revenue and transaction history.</p>
         </div>
-        <button class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">
+        <a href="{{ url('/admin/reports/payments/download') }}" class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">
             <i data-lucide="download" size="20"></i> Export Reports
-        </button>
+        </a>
     </div>
 
     <!-- Financial Overview Metrics -->

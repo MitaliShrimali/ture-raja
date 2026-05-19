@@ -15,9 +15,9 @@
                 <button @click="showAddModal = true" class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">
                     <i data-lucide="plus" size="16"></i> Add New Lead
                 </button>
-                <button class="flex items-center gap-2 px-6 py-3 bg-white border border-border-soft rounded-2xl text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-50 transition-all">
+                <a href="{{ url('/admin/reports/leads/download') }}" class="flex items-center gap-2 px-6 py-3 bg-white border border-border-soft rounded-2xl text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-50 transition-all">
                     <i data-lucide="download" size="16"></i> Export List
-                </button>
+                </a>
             </div>
         </div>
     </div>

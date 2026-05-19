@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editBanner: { id: '', title: '', subtitle: '', image: '', link: '', status: '' } }">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, viewType: 'desktop', editBanner: { id: '', title: '', subtitle: '', image: '', link: '', status: '' } }">
     <div class="space-y-4">
         <div class="flex items-center gap-2 text-[10px] font-black text-muted-text uppercase tracking-widest">
             <span>Management</span>
@@ -134,22 +134,24 @@
                     <h3 class="text-2xl font-black text-foreground tracking-tight">Live Preview</h3>
                 </div>
                 <div class="flex items-center gap-2 bg-gray-100 p-1.5 rounded-xl">
-                    <button class="p-2 bg-white rounded-lg shadow-sm text-primary"><i data-lucide="monitor" size="18"></i></button>
-                    <button class="p-2 text-muted-text hover:text-foreground transition-all"><i data-lucide="smartphone" size="18"></i></button>
+                    <button type="button" @click="viewType = 'desktop'" :class="viewType === 'desktop' ? 'bg-white rounded-lg shadow-sm text-primary' : 'text-muted-text hover:text-foreground'" class="p-2 transition-all"><i data-lucide="monitor" size="18"></i></button>
+                    <button type="button" @click="viewType = 'mobile'" :class="viewType === 'mobile' ? 'bg-white rounded-lg shadow-sm text-primary' : 'text-muted-text hover:text-foreground'" class="p-2 transition-all"><i data-lucide="smartphone" size="18"></i></button>
                 </div>
             </div>
 
             @if($banners->count() > 0)
-                <div class="relative rounded-[32px] overflow-hidden aspect-[16/7] shadow-2xl">
-                    <img src="{{ $banners[0]->image }}" alt="Preview" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/40 flex items-center px-16">
-                        <div class="max-w-md space-y-6">
-                            <span class="bg-primary px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Active Slide</span>
-                            <h2 class="font-black text-white leading-tight">{{ $banners[0]->title }}</h2>
-                            <p class="text-white/80 font-medium">{{ $banners[0]->subtitle }}</p>
-                            <a href="{{ $banners[0]->link }}" class="inline-block bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-primary transition-all">
-                                Explore
-                            </a>
+                <div class="flex justify-center transition-all duration-300">
+                    <div :class="viewType === 'mobile' ? 'w-[360px] aspect-[9/16]' : 'w-full aspect-[16/7]'" class="relative rounded-[32px] overflow-hidden shadow-2xl transition-all duration-300">
+                        <img src="{{ $banners[0]->image }}" alt="Preview" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/40 flex items-center px-8 md:px-16">
+                            <div class="max-w-md space-y-6">
+                                <span class="bg-primary px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Active Slide</span>
+                                <h2 :class="viewType === 'mobile' ? 'text-2xl' : 'text-4xl md:text-5xl'" class="font-black text-white leading-tight">{{ $banners[0]->title }}</h2>
+                                <p class="text-white/80 font-medium text-sm">{{ $banners[0]->subtitle }}</p>
+                                <a href="{{ $banners[0]->link }}" class="inline-block bg-foreground text-white px-6 py-3 md:px-8 md:py-4 rounded-2xl font-black text-xs md:text-sm uppercase tracking-widest hover:bg-primary transition-all">
+                                    Explore
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

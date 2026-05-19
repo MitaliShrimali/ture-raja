@@ -80,6 +80,10 @@ Route::prefix('admin')->group(function () {
     Route::get('/home-editor', [AdminController::class, 'homeEditor']);
     Route::get('/notifications', [AdminController::class, 'notifications']);
     Route::get('/cms', [AdminController::class, 'cms']);
+    Route::get('/reports', [AdminController::class, 'reports']);
+    Route::get('/reports/inquiries/download', [AdminController::class, 'downloadInquiryReport']);
+    Route::get('/reports/leads/download', [AdminController::class, 'downloadLeadsReport']);
+    Route::get('/reports/payments/download', [AdminController::class, 'downloadPaymentsReport']);
     Route::get('/contact', [AdminController::class, 'contact']);
     Route::get('/subscribers', [AdminController::class, 'subscribers']);
     Route::get('/settings', [AdminController::class, 'settings']);
@@ -151,6 +155,11 @@ Route::prefix('admin')->group(function () {
     Route::post('/banners/update', [AdminController::class, 'updateBanner']);
     Route::get('/banners/delete/{id}', [AdminController::class, 'deleteBanner']);
     Route::get('/banners/toggle/{id}', [AdminController::class, 'toggleBanner']);
+
+    Route::post('/home-editor/store', [AdminController::class, 'storeBanner']);
+    Route::post('/home-editor/update', [AdminController::class, 'updateBanner']);
+    Route::get('/home-editor/delete/{id}', [AdminController::class, 'deleteBanner']);
+    Route::get('/home-editor/toggle/{id}', [AdminController::class, 'toggleBanner']);
 
     Route::post('/notifications/store', [AdminController::class, 'storeNotification']);
     Route::get('/notifications/delete/{id}', [AdminController::class, 'deleteNotification']);

@@ -1,18 +1,27 @@
+@props(['banners' => null])
+
 <section class="relative min-h-screen flex items-center justify-center py-24 lg:py-32 overflow-hidden">
     <!-- Background Slider -->
     <div class="absolute inset-0 z-0 overflow-hidden bg-[#1A1A24]">
         <div class="hero-slider-container" id="heroSlider" style="display: flex; width: 100%; height: 100%; transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); will-change: transform;">@php
-                $slides = [
-                    'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1920&q=80',
-                    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1920&q=80',
-                    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1920&q=80',
-                    'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1920&q=80',
-                    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80',
-                ];
+                $dbBanners = $banners && $banners->isNotEmpty() ? $banners->toArray() : [];
+                $slides = [];
+                if (!empty($dbBanners)) {
+                    foreach ($dbBanners as $b) {
+                        $slides[] = $b->image;
+                    }
+                } else {
+                    $slides = [
+                        'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1920&q=80',
+                        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1920&q=80',
+                        'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1920&q=80',
+                        'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1920&q=80',
+                        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80',
+                    ];
+                }
             @endphp @foreach($slides as $index => $url)<div class="hero-slide" style="background-image: url('{{ $url }}'); width: 100%; height: 100%; flex: 0 0 100%; background-size: cover; background-position: center;"></div>@endforeach</div>
         
         <!-- Original Cinematic Overlay Gradient -->
-         
         <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-background z-10 pointer-events-none"></div>
     </div>
 
@@ -34,8 +43,8 @@
     </div>
 
     <!-- Content -->
-    <div class="container-custom relative z-30 text-center text-white pointer-events-none">
-        <div class="max-w-5xl mx-auto flex flex-col items-center gap-8 md:gap-10 pointer-events-auto">
+    <div class="container-custom relative z-30 text-center text-white">
+        <div class="max-w-5xl mx-auto flex flex-col items-center gap-8 md:gap-10">
             <!-- Top Badge -->
             <div class="animate-fade-in [animation-delay:200ms]">
                 <span class="inline-block px-5 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] md:text-xs font-black tracking-[0.2em] uppercase">

@@ -7,9 +7,9 @@
             <h2 class="font-black text-foreground tracking-tight">Contact Inquiries</h2>
             <p class="text-muted-text font-medium">Manage traveler queries and support tickets efficiently.</p>
         </div>
-        <button class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">
+        <a href="{{ url('/admin/reports/inquiries/download') }}" class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">
             <i data-lucide="download" size="20"></i> Download Inquiry Report
-        </button>
+        </a>
     </div>
 
     <!-- Inquiries Table -->

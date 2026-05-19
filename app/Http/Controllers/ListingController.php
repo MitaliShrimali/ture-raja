@@ -15,8 +15,19 @@ class ListingController extends Controller
             $dbPackages = [];
         }
 
-        // Use DB packages if available, otherwise fall back to static list
-        $packages = collect(!empty($dbPackages) ? $dbPackages : $this->getStaticPackages());
+        // Use DB packages and merge with static list to ensure fallback and demo packages are searchable and viewable!
+        $static = $this->getStaticPackages();
+        $merged = $dbPackages;
+        $dbTitles = array_map(fn($p) => strtolower($p['title'] ?? ''), $dbPackages);
+        $dbSlugs = array_map(fn($p) => strtolower($p['slug'] ?? ''), $dbPackages);
+        
+        foreach ($static as $sPkg) {
+            if (!in_array(strtolower($sPkg['title'] ?? ''), $dbTitles) && !in_array(strtolower($sPkg['slug'] ?? ''), $dbSlugs)) {
+                $merged[] = $sPkg;
+            }
+        }
+
+        $packages = collect($merged);
 
         // ── Search by destination / title ──────────────────────────
         if ($request->filled('search')) {

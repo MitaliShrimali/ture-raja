@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-hero />
+    <x-hero :banners="$heroBanners ?? collect()" />
 
     <!-- Section 1: Browse Popular Transits -->
     <section class="py-12 bg-white border-b border-border-soft/30 animate-fade-up">

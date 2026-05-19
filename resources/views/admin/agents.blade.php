@@ -140,5 +140,59 @@
             </div>
         </div>
     </form>
+
+    <!-- Existing Agents List -->
+    <div class="mt-16 space-y-6">
+        <div class="flex items-center justify-between">
+            <h3 class="text-2xl font-black text-foreground">Registered Agents</h3>
+            <p class="text-sm text-muted-text font-medium">Viewing all active and inactive partners</p>
+        </div>
+
+        <div class="bg-white rounded-[32px] shadow-soft border border-border-soft overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-gray-50 border-b border-border-soft">
+                    <tr>
+                        <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Agent Name</th>
+                        <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Region & Tier</th>
+                        <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Status</th>
+                        <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border-soft">
+                    @forelse($agents ?? [] as $agent)
+                        <tr class="hover:bg-gray-50/50 transition-colors">
+                            <td class="py-5 px-8">
+                                <p class="text-sm font-bold text-foreground">{{ $agent->name }}</p>
+                                <p class="text-[10px] text-muted-text font-medium">{{ $agent->email }} • {{ $agent->phone }}</p>
+                            </td>
+                            <td class="py-5 px-8">
+                                <p class="text-sm font-bold text-foreground">{{ $agent->region }}</p>
+                                <p class="text-[10px] text-primary font-black uppercase tracking-wider">{{ $agent->tier }}</p>
+                            </td>
+                            <td class="py-5 px-8">
+                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ $agent->status === 'Active' ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500' }}">
+                                    {{ $agent->status }}
+                                </span>
+                            </td>
+                            <td class="py-5 px-8">
+                                <div class="flex items-center gap-3">
+                                    <a href="{{ url('/admin/agents/toggle/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-muted-text hover:text-primary transition-colors">
+                                        <i data-lucide="power" size="14"></i>
+                                    </a>
+                                    <a href="{{ url('/admin/agents/delete/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-400 hover:text-red-500 transition-colors" onclick="return confirm('Are you sure you want to remove this agent?');">
+                                        <i data-lucide="trash-2" size="14"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="py-10 text-center text-sm font-bold text-muted-text">No agents registered yet.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 @endsection

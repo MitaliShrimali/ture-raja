@@ -105,6 +105,13 @@
                         <i data-lucide="settings" size="22"></i>
                         <span>Settings</span>
                     </button>
+                    <button @click="activeTab = 'membership'" :class="activeTab === 'membership' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-400 hover:text-primary hover:bg-primary/5'" class="flex items-center gap-4 p-5 rounded-[20px] font-bold transition-all">
+                        <i data-lucide="award" size="22"></i>
+                        <span>Membership & Payments</span>
+                        @if($activePlan)
+                            <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-green-500 text-white uppercase tracking-wider">Active</span>
+                        @endif
+                    </button>
                     <hr class="my-4 border-gray-100" />
                     <a href="{{ route('login') }}" class="flex items-center gap-4 p-5 rounded-[20px] font-bold text-red-500 hover:bg-red-50 transition-all">
                         <i data-lucide="log-out" size="22"></i>
@@ -359,6 +366,108 @@
                             </button>
                         </form>
                         <p class="text-xs text-gray-400 font-bold">No spam. Exclusive travel deals only.</p>
+                    </div>
+                </div>
+
+                <!-- ═══════════ MEMBERSHIP & PAYMENTS TAB ═══════════ -->
+                <div x-show="activeTab === 'membership'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-3xl font-black text-foreground font-syne">Membership & Billing</h2>
+                    </div>
+
+                    @if($activePlan)
+                        <!-- Active Plan Premium Card -->
+                        <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white rounded-[32px] p-8 md:p-10 shadow-lg">
+                            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+                            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                                <div class="space-y-4">
+                                    <span class="inline-block px-4 py-1.5 bg-primary/20 border border-primary/30 rounded-full text-xs font-black text-primary uppercase tracking-widest">
+                                        Active Plan
+                                    </span>
+                                    <h3 class="text-3xl font-black font-syne">{{ $activePlan->plan_name }}</h3>
+                                    <div class="flex items-center gap-6 text-white/75 font-medium text-sm">
+                                        <div class="flex items-center gap-1.5">
+                                            <i data-lucide="check-circle" size="16" class="text-green-400"></i>
+                                            <span>Price: ₹{{ number_format($activePlan->price) }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <i data-lucide="calendar" size="16"></i>
+                                            <span>Duration: {{ $activePlan->duration }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                                            <span>Status: {{ $activePlan->status }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10 shrink-0">
+                                    <i data-lucide="crown" class="text-primary animate-bounce" size="32"></i>
+                                </div>
+                            </div>
+                        </div>
+                    @else
+                        <!-- No Active Plan - VIP Pitch Card -->
+                        <div class="relative overflow-hidden bg-gradient-to-r from-slate-950 via-slate-800 to-slate-950 text-white rounded-[32px] p-8 md:p-10 shadow-lg">
+                            <div class="absolute inset-0 bg-cover bg-center opacity-10" style="background-image: url('{{ asset('tourex/hero-bg.png') }}')"></div>
+                            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+                                <div class="space-y-4">
+                                    <h3 class="text-3xl font-black font-syne">Unlock the TourRaja VIP Club</h3>
+                                    <p class="text-white/70 max-w-lg text-sm leading-relaxed font-medium">
+                                        Get access to customized travel plans, premium local tour guides, zero booking fees, and 24/7 dedicated travel advisor support!
+                                    </p>
+                                    <div class="flex items-center gap-4 text-xs font-bold text-white/50 uppercase tracking-wider">
+                                        <span>✓ Zero Booking Fees</span>
+                                        <span>✓ 24/7 Support</span>
+                                        <span>✓ Exclusive Discounts</span>
+                                    </div>
+                                </div>
+                                <a href="{{ route('discover') }}" class="px-8 py-4 bg-primary hover:bg-primary-hover text-white rounded-full font-black text-sm uppercase tracking-wider transition-all shrink-0">
+                                    Explore Packages
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Payment Logs / Transaction History -->
+                    <div class="bg-white rounded-[32px] p-8 md:p-10 shadow-soft border border-gray-50 space-y-6">
+                        <h3 class="text-2xl font-black text-foreground font-syne">Transaction History</h3>
+                        
+                        @if(count($userPayments) > 0)
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="border-b border-gray-100 pb-4">
+                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Transaction ID</th>
+                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Plan / Service</th>
+                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Amount</th>
+                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Date</th>
+                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-50">
+                                        @foreach($userPayments as $pay)
+                                            <tr>
+                                                <td class="py-4 font-mono font-bold text-sm text-foreground">{{ $pay->payment_id }}</td>
+                                                <td class="py-4 font-bold text-sm text-foreground">{{ $pay->plan_type }}</td>
+                                                <td class="py-4 font-black text-sm text-primary">₹{{ number_format($pay->amount, 2) }}</td>
+                                                <td class="py-4 text-sm text-gray-400 font-medium">{{ \Carbon\Carbon::parse($pay->date)->format('d M Y') }}</td>
+                                                <td class="py-4">
+                                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider
+                                                        {{ $pay->status === 'Completed' ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600' }}">
+                                                        {{ $pay->status }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-8 text-gray-400 font-medium text-sm">
+                                <i data-lucide="receipt" class="mx-auto text-gray-300 mb-3" size="32"></i>
+                                <p>No billing or payment history available.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
 
