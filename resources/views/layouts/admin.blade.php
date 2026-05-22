@@ -35,11 +35,8 @@
         >
             <!-- Logo Area -->
             <div class="h-24 px-8 flex items-center justify-between border-b border-border-soft shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                        <span class="text-white font-black text-xl">TR</span>
-                    </div>
-                    <span class="text-2xl font-black tracking-tight text-foreground uppercase">TOURRAJA</span>
+                <div class="flex items-center">
+                    <x-logo class="h-10 w-auto text-foreground" />
                 </div>
                 <!-- Close Button (Mobile) -->
                 <button @click="sidebarOpen = false" class="p-2 hover:bg-gray-50 rounded-xl lg:hidden text-text-muted">

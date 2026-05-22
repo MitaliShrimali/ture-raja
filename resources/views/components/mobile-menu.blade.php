@@ -31,13 +31,8 @@
     >
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
-            <a href="{{ url('/') }}" class="flex items-center gap-2">
-                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl">
-                    T
-                </div>
-                <span class="text-2xl font-bold tracking-tight font-heading text-foreground">
-                    Tour<span class="text-primary">Raja</span>
-                </span>
+            <a href="{{ url('/') }}" class="flex items-center">
+                <x-logo class="h-8 sm:h-10 w-auto text-foreground" />
             </a>
             <button 
                 @click="isMobileMenuOpen = false"

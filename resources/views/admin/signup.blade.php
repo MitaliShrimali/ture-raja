@@ -101,12 +101,9 @@
             <div class="text-center space-y-4">
                 <!-- Large Logo -->
                 <div class="flex items-center justify-center">
-                    <h2 class="font-black text-white tracking-tighter flex items-center gap-2">
-                        tourraja
-                        <div class="relative -top-6">
-                            <i data-lucide="crown" class="text-white" size="32" stroke-width="3"></i>
-                        </div>
-                    </h2>
+                    <div class="bg-white px-8 py-6 rounded-3xl shadow-2xl">
+                        <x-logo class="h-12 sm:h-16 w-auto text-foreground" />
+                    </div>
                 </div>
             </div>
 

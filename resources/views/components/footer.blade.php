@@ -7,13 +7,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
             <!-- Brand Column -->
             <div class="space-y-8">
-                <a href="{{ url('/') }}" class="flex items-center gap-2 group">
-                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary font-bold text-2xl shadow-xl transition-transform group-hover:rotate-6">
-                        T
-                    </div>
-                    <span class="text-3xl font-bold tracking-tight font-heading text-white">
-                        Tour<span class="text-white/80">Raja</span>
-                    </span>
+                <a href="{{ url('/') }}" class="flex items-center group">
+                    <x-logo class="h-10 sm:h-12 w-auto text-white" />
                 </a>
                 <p class="text-white/80 leading-relaxed font-medium">
                     Experience the world like never before. We curate premium travel experiences tailored to your desires. Your global adventure starts with TourRaja.

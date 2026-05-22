@@ -4,16 +4,8 @@
 >
     <div class="container-custom flex items-center justify-between">
         <!-- Logo -->
-        <a href="{{ url('/') }}" class="flex items-center gap-2 group">
-            <div class="relative">
-                <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-glow group-hover:rotate-12 transition-transform duration-300">
-                    T
-                </div>
-                <div class="absolute -top-1 -right-1 w-3 h-3 bg-[#FF6B2C] rounded-full border-2 border-white"></div>
-            </div>
-            <span :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'" class="text-2xl font-bold tracking-tight font-heading transition-colors duration-300">
-                Tour<span class="text-primary">Raja</span>
-            </span>
+        <a href="{{ url('/') }}" class="flex items-center group">
+            <x-logo :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'" class="h-8 sm:h-10 md:h-12 w-auto transition-colors duration-300" />
         </a>
 
         <!-- Centered Menu -->
