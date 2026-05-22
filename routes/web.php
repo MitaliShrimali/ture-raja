@@ -43,15 +43,9 @@ Route::get('/profile/notification/read/{id}', [UserController::class, 'markNotif
 Route::post('/profile/review', [UserController::class, 'submitReview'])->name('review.submit');
 
 // ─── LOGIN & SIGNUP ROUTES ─────────────────────────────────────────────────────────────
-Route::get('/login', function() {
-    $type = request('tab') == 'agent' ? 'agent' : 'customer';
-    return view('admin.login', compact('type'));
-})->name('login');
 
-Route::get('/signup', function() {
-    $type = request('tab') == 'agent' ? 'agent' : 'customer';
-    return view('admin.signup', compact('type'));
-})->name('signup');
+Route::get('/login', [UserController::class, 'login'])->name('login');
+Route::get('/signup', [UserController::class, 'signup'])->name('signup');
 
 Route::post('/signup/submit', [UserController::class, 'signupSubmit'])->name('signup.submit');
 
@@ -64,7 +58,7 @@ Route::prefix('admin')->group(function () {
         return view('admin.login', ['type' => 'admin']);
     });
     Route::get('/signup', function () {
-        return view('admin.signup');
+        return view('admin.signup', ['type' => 'admin']);
     });
     Route::get('/dashboard', [AdminController::class, 'dashboard']);
     

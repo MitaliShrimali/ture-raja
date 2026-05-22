@@ -32,10 +32,11 @@
         <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-32 pb-12">
             <div class="max-w-md w-full mx-auto space-y-10">
                 @php
-                    $type = $type ?? request('tab', 'customer');
+                    $type = $type ?? 'admin';
                     $title = 'Sign Up';
                     if ($type === 'agent') $title = 'Agent Sign Up';
                     elseif ($type === 'customer') $title = 'Customer Sign Up';
+                    elseif ($type === 'admin') $title = 'Admin Sign Up';
                 @endphp
                 <div class="space-y-4">
                     <h2 class="font-black text-foreground tracking-tight">{{ $title }}</h2>

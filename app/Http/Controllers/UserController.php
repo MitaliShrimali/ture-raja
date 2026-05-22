@@ -446,7 +446,7 @@ class UserController extends Controller
             'name' => $name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->type == 'agent' ? 'Agent' : 'Customer',
+            'role' => $request->type == 'admin' ? 'SUPER ADMIN' : ($request->type == 'agent' ? 'Agent' : 'Customer'),
             'avatar' => $avatar,
             'created_at' => now(),
             'updated_at' => now()
@@ -461,13 +461,22 @@ class UserController extends Controller
             'updated_at' => now()
         ]);
 
-        Auth::loginUsingId($userId);
+            // If the user is signing up as an admin, do not log them in automatically.
+            if ($request->type == 'admin') {
+                return redirect('/admin/login')
+                    ->with('success', 'Admin account created successfully! Please log in.');
+            }
 
-        if ($request->type == 'admin' || $request->type == 'agent') {
-            return redirect('/admin/dashboard')->with('success', 'Account created successfully! Welcome, ' . $name);
-        }
-        
-        return redirect('/profile')->with('success', 'Account created successfully! Welcome, ' . $name);
+            // For agents and customers, log them in automatically.
+            Auth::loginUsingId($userId);
+
+            if ($request->type == 'agent') {
+                return redirect('/admin/dashboard')
+                    ->with('success', 'Account created successfully! Welcome, ' . $name);
+            }
+
+            return redirect('/profile')
+                ->with('success', 'Account created successfully! Welcome, ' . $name);
     }
 
     public function loginSubmit(Request $request)
@@ -502,6 +511,21 @@ class UserController extends Controller
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
-        return redirect('/login')->with('success', 'Logged out successfully.');
+        return redirect('/login')
+            ->with('success', 'Logged out successfully.');
     }
+
+        // ─── SIGNUP METHOD ──────────────────────────────────────────────────────
+        public function signup(Request $request)
+        {
+            // Determine the signup type from query parameter 'tab'
+            $type = $request->query('tab', 'customer');
+            if ($type === 'admin') {
+                // Render the admin signup view
+                return view('admin.signup', ['type' => 'admin']);
+            }
+            // Render a generic signup view for customers/agents if it exists
+            return view('signup', ['type' => $type]);
+        }
+
 }

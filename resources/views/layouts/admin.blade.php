@@ -141,10 +141,10 @@
 
                 <div class="flex items-center gap-4 lg:gap-8">
                     <!-- Notifications -->
-                    <button class="relative p-2.5 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full transition-all">
-                        <i data-lucide="bell" size="22"></i>
-                        <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white shadow-sm"></span>
-                    </button>
+                    <a href="{{ url('/admin/notifications') }}" class="relative p-2.5 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full transition-all">
+    <i data-lucide="bell" size="22"></i>
+    <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white shadow-sm"></span>
+</a>
 
                     <!-- Session Notifications -->
                     @if(session('success') || session('error'))
@@ -182,7 +182,7 @@
                         ]);
                         $adminAvatar = ($activeAdmin && !empty($activeAdmin->avatar)) ? $activeAdmin->avatar : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($activeAdmin->name ?? 'Admin');
                     @endphp
-                    <a href="{{ url('/admin/login') }}" class="flex items-center gap-4 pl-4 border-l border-border-soft hover:opacity-80 transition-all">
+                    <a href="{{ url('/admin/settings') }}" class="flex items-center gap-4 pl-4 border-l border-border-soft hover:opacity-80 transition-all">
                         <div class="text-right hidden md:block">
                             <p class="text-sm font-black text-foreground leading-none">{{ $activeAdmin->name }}</p>
                             <p class="text-[10px] font-black text-primary uppercase tracking-widest mt-1">{{ $activeAdmin->role }}</p>
