@@ -69,7 +69,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/holiday-types', [AdminController::class, 'holidayTypes']);
     Route::get('/activities', [AdminController::class, 'activities']);
 
-    // Admin Central
+    Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('admin.login.submit');
     Route::get('/users', [AdminController::class, 'users']);
     Route::get('/agents', [AdminController::class, 'agents']);
     Route::get('/leads', [AdminController::class, 'leads']);

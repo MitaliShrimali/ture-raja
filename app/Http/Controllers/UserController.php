@@ -35,6 +35,12 @@ class UserController extends Controller
         ];
     }
 
+    public function login()
+    {
+        return view('login');
+    }
+    
+
     // ─── HOME PAGE ────────────────────────────────────────────────────
     public function home()
     {
@@ -475,7 +481,7 @@ class UserController extends Controller
                     ->with('success', 'Account created successfully! Welcome, ' . $name);
             }
 
-            return redirect('/profile')
+            return redirect('/')
                 ->with('success', 'Account created successfully! Welcome, ' . $name);
     }
 
@@ -499,8 +505,9 @@ class UserController extends Controller
             if (in_array(strtoupper($user->role ?? ''), ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR'])) {
                 return redirect('/admin/dashboard')->with('success', 'Logged in as Admin successfully! Welcome, ' . $user->name);
             }
-            
-            return redirect('/profile')->with('success', 'Logged in successfully! Welcome, ' . $user->name);
+
+            // Normal user login redirects to home page
+            return redirect('/')->with('success', 'Logged in successfully! Welcome, ' . $user->name);
         }
 
         return redirect()->back()->with('error', 'Invalid password. Please try again.')->withInput();
@@ -508,9 +515,17 @@ class UserController extends Controller
 
     public function logout()
     {
+        // Capture role before logging out
+        $role = Auth::check() ? Auth::user()->role : null;
         Auth::logout();
         session()->invalidate();
         session()->regenerateToken();
+        // If admin role (any case) redirect to admin login
+        if ($role && stripos($role, 'admin') !== false) {
+            return redirect('/admin/login')
+                ->with('success', 'Logged out successfully.');
+        }
+        // Default user logout redirects to public login
         return redirect('/login')
             ->with('success', 'Logged out successfully.');
     }

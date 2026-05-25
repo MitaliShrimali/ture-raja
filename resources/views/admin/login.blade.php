@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - TourRaja</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -73,7 +76,7 @@
                 @endif
 
                 <!-- Main Form -->
-                <form action="{{ url('/login/submit') }}" method="POST" class="space-y-8">
+                <form action="{{ route('admin.login.submit') }}" method="POST" class="space-y-8">
                     @csrf
                     <input type="hidden" name="type" value="{{ $type }}" />
                     
@@ -114,7 +117,15 @@
                     <p class="text-xs font-bold text-muted-text text-center mt-6">
                         Don't have an account? <a href="{{ url('/signup?tab=' . $type) }}" class="text-primary hover:underline">Sign Up</a>
                     </p>
-                </form>
+                <script>
+        // If the page was loaded from the browser's back‑forward cache (bfcache),
+        // force a reload so Laravel generates a fresh CSRF token.
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+    </script>
 
                 <div class="pt-12">
                     <p class="text-[10px] font-medium text-muted-text leading-loose">

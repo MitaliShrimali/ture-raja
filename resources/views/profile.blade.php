@@ -2,497 +2,778 @@
 
 @section('content')
 @php
-    $userData = $user ?? null;
-    $profileData = $profile ?? null;
-    $displayName = $userData ? $userData->name : 'Guest User';
-    $displayEmail = $userData ? $userData->email : '';
-    $displayPhone = $profileData ? ($profileData->phone ?? '') : '';
-    $displayCity = $profileData ? ($profileData->city ?? 'Mumbai') : 'Mumbai';
-    $displayCountry = $profileData ? ($profileData->country ?? 'India') : 'India';
-    $displayDOB = $profileData ? ($profileData->date_of_birth ?? '') : '';
-    $displayGender = $profileData ? ($profileData->gender ?? '') : '';
-    $avatarUrl = ($profileData && $profileData->avatar) 
-        ? asset('storage/' . $profileData->avatar) 
-        : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($displayName);
-    $joinedDate = $userData ? \Carbon\Carbon::parse($userData->created_at)->format('F Y') : 'Recently';
-    
-    $wishlistItems = (isset($wishlist) && $wishlist) ? $wishlist : collect();
-    $bookingItems  = (isset($bookings) && $bookings) ? $bookings : collect();
-    $notifItems    = (isset($userNotifications)) ? $userNotifications : collect();
-    $unread        = $unreadCount ?? 0;
+    $userData       = $user ?? null;
+    $profileData    = $profile ?? null;
+    $displayName    = $userData ? $userData->name  : 'Guest User';
+    $displayEmail   = $userData ? $userData->email : '';
+    $displayPhone   = $profileData ? ($profileData->phone         ?? '') : '';
+    $displayCity    = $profileData ? ($profileData->city          ?? '') : '';
+    $displayCountry = $profileData ? ($profileData->country       ?? '') : '';
+    $displayDOB     = $profileData ? ($profileData->date_of_birth ?? '') : '';
+    $displayGender  = $profileData ? ($profileData->gender        ?? '') : '';
+    $displayAddress = trim($displayCity . ($displayCountry ? ', '.$displayCountry : ''));
+    $avatarUrl      = ($profileData && $profileData->avatar)
+        ? asset('storage/'.$profileData->avatar)
+        : 'https://api.dicebear.com/7.x/avataaars/svg?seed='.urlencode($displayName);
+    $wishlistItems  = (isset($wishlist) && $wishlist)  ? $wishlist  : collect();
+    $bookingItems   = (isset($bookings) && $bookings)  ? $bookings  : collect();
+    $activePlan     = $activePlan ?? null;
+    $userPayments   = $userPayments ?? [];
 @endphp
 
-<div x-data="{ activeTab: '{{ request('tab', 'wishlist') }}' }">
-    <!-- Profile Header -->
-    <div class="relative pt-32 pb-48 bg-foreground overflow-hidden">
-        <div class="absolute inset-0 z-0 opacity-30">
-            <img src="{{ asset('tourex/hero-bg.png') }}" alt="Profile Cover" class="w-full h-full object-cover" />
-        </div>
-        <div class="container-custom relative z-10 flex flex-col items-center text-center text-white">
-            <div class="relative mb-6">
-                <a href="{{ url('/profile') }}" class="block w-32 h-32 md:w-40 md:h-40 rounded-[40px] border-4 border-white overflow-hidden shadow-2xl hover:scale-105 transition-all">
-                    <img src="{{ $avatarUrl }}" alt="Avatar" class="w-full h-full object-cover bg-white" id="avatar-preview" />
-                </a>
-                <label for="avatar-upload" class="absolute bottom-2 right-2 w-10 h-10 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg hover:bg-primary-hover transition-colors cursor-pointer">
-                    <i data-lucide="camera" size="20"></i>
-                </label>
+@if(session('success'))
+<div class="pf-toast pf-toast--ok">{{ session('success') }}</div>
+@endif
+@if(session('error'))
+<div class="pf-toast pf-toast--err">{{ session('error') }}</div>
+@endif
+
+<div x-data="{ tab: 'account' }" class="pf-page">
+
+  {{-- ══════════ HERO ══════════ --}}
+  <div class="pf-hero">
+    <div class="pf-hero-bg">
+      <img src="{{ asset('tourex/hero-bg.png') }}" alt="cover">
+    </div>
+    <div class="pf-hero-overlay"></div>
+    <div class="pf-hero-inner">
+      {{-- "Profile" label top-left --}}
+      <h1 class="pf-hero-label">Profile</h1>
+
+      {{-- Avatar block centred --}}
+      <div class="pf-hero-user">
+        <form action="{{ route('profile.update') }}" method="POST"
+              enctype="multipart/form-data" id="pf-av-form">
+          @csrf
+          <label for="pf-av-input" class="pf-avatar-wrap">
+            <img src="{{ $avatarUrl }}" alt="avatar" id="pf-av-img">
+            <span class="pf-avatar-cam">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                   stroke="#fff" stroke-width="2.5">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2
+                         0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+            </span>
+          </label>
+          <input type="file" id="pf-av-input" name="avatar"
+                 accept="image/*" style="display:none"
+                 onchange="pfUploadAvatar(this)">
+        </form>
+        <p class="pf-hero-name">{{ $displayName }}</p>
+        <p class="pf-hero-email">{{ $displayEmail }}</p>
+      </div>
+    </div>
+  </div>{{-- /hero --}}
+
+  {{-- ══════════ TAB BAR ══════════ --}}
+  <div class="pf-tabbar">
+    <div class="pf-tabs-inner">
+      <button @click="tab='account'"
+              :class="tab==='account' ? 'pf-tab-on' : ''"
+              class="pf-tab">Account</button>
+      <button @click="tab='history'"
+              :class="tab==='history' ? 'pf-tab-on' : ''"
+              class="pf-tab">History</button>
+      <button @click="tab='payment'"
+              :class="tab==='payment' ? 'pf-tab-on' : ''"
+              class="pf-tab">Wishlist</button>
+    </div>
+  </div>
+
+  {{-- ══════════ CONTENT ══════════ --}}
+  <div class="pf-content">
+
+    {{-- ── ACCOUNT TAB ── --}}
+    <div x-show="tab==='account'" x-transition.opacity.duration.200ms>
+
+      {{-- Account fields --}}
+      <section class="pf-section">
+        <h2 class="pf-sec-h">Account</h2>
+
+        <form action="{{ route('profile.update') }}" method="POST"
+              enctype="multipart/form-data" id="pf-form">
+          @csrf
+          <div class="pf-fields-box">
+
+            {{-- Name --}}
+            <div class="pf-row" x-data="{open:false}">
+              <div class="pf-row-left">
+                <span class="pf-lbl">Name</span>
+                <span class="pf-val" x-show="!open">{{ $displayName }}</span>
+                <input x-show="open" x-ref="fi" type="text" name="name"
+                       value="{{ $displayName }}" class="pf-inp">
+              </div>
+              <button type="button" class="pf-edit"
+                      @click="open=!open;if(open)$nextTick(()=>$refs.fi.focus())">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2
+                           0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1
+                           1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
             </div>
-            <h1 class="text-4xl font-black mb-2 font-syne text-white drop-shadow-md" style="color: white !important;">{{ $displayName }}</h1>
-            <div class="flex items-center gap-4 text-white/60 font-medium">
-                <div class="flex items-center gap-1">
-                    <i data-lucide="map-pin" size="16"></i>
-                    <span>{{ $displayCity }}, {{ $displayCountry }}</span>
-                </div>
-                <div class="w-1 h-1 bg-white/20 rounded-full"></div>
-                <div class="flex items-center gap-1">
-                    <i data-lucide="calendar" size="16"></i>
-                    <span>Joined {{ $joinedDate }}</span>
-                </div>
+
+            {{-- Email --}}
+            <div class="pf-row" x-data="{open:false}">
+              <div class="pf-row-left">
+                <span class="pf-lbl">Email</span>
+                <span class="pf-val" x-show="!open">{{ $displayEmail }}</span>
+                <input x-show="open" x-ref="fi" type="email" name="email"
+                       value="{{ $displayEmail }}" class="pf-inp">
+              </div>
+              <button type="button" class="pf-edit"
+                      @click="open=!open;if(open)$nextTick(()=>$refs.fi.focus())">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2
+                           0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1
+                           1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
             </div>
+
+            {{-- Password --}}
+            <div class="pf-row" x-data="{open:false}">
+              <div class="pf-row-left">
+                <span class="pf-lbl">Password</span>
+                <span class="pf-val" x-show="!open">••••••••••••••</span>
+                <input x-show="open" x-ref="fi" type="password"
+                       name="new_password" placeholder="New password"
+                       class="pf-inp">
+              </div>
+              <button type="button" class="pf-edit"
+                      @click="open=!open;if(open)$nextTick(()=>$refs.fi.focus())">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2
+                           0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1
+                           1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
+            </div>
+
+            {{-- Phone --}}
+            <div class="pf-row" x-data="{open:false}">
+              <div class="pf-row-left">
+                <span class="pf-lbl">Phone number</span>
+                <span class="pf-val" x-show="!open">{{ $displayPhone ?: '—' }}</span>
+                <input x-show="open" x-ref="fi" type="text" name="phone"
+                       value="{{ $displayPhone }}" placeholder="+91 99999 00000"
+                       class="pf-inp">
+              </div>
+              <button type="button" class="pf-edit"
+                      @click="open=!open;if(open)$nextTick(()=>$refs.fi.focus())">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2
+                           0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1
+                           1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
+            </div>
+
+            {{-- Address --}}
+            <div class="pf-row" x-data="{open:false}">
+              <div class="pf-row-left">
+                <span class="pf-lbl">Address</span>
+                <span class="pf-val" x-show="!open">{{ $displayAddress ?: '—' }}</span>
+                <div x-show="open" class="pf-inp-row">
+                  <input x-ref="fi" type="text" name="city"
+                         value="{{ $displayCity }}" placeholder="City" class="pf-inp">
+                  <input type="text" name="country"
+                         value="{{ $displayCountry }}" placeholder="Country" class="pf-inp">
+                </div>
+              </div>
+              <button type="button" class="pf-edit"
+                      @click="open=!open;if(open)$nextTick(()=>$refs.fi.focus())">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2
+                           0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1
+                           1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
+            </div>
+
+            {{-- Date of birth --}}
+            <div class="pf-row" x-data="{open:false}">
+              <div class="pf-row-left">
+                <span class="pf-lbl">Date of birth</span>
+                <span class="pf-val" x-show="!open">
+                  {{ $displayDOB
+                       ? \Carbon\Carbon::parse($displayDOB)->format('m-d-Y')
+                       : '—' }}
+                </span>
+                <input x-show="open" x-ref="fi" type="date"
+                       name="date_of_birth" value="{{ $displayDOB }}"
+                       class="pf-inp">
+              </div>
+              <button type="button" class="pf-edit"
+                      @click="open=!open;if(open)$nextTick(()=>$refs.fi.focus())">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2
+                           0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1
+                           1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </button>
+            </div>
+
+          </div>{{-- /pf-fields-box --}}
+
+          <div class="pf-save-row">
+            <button type="submit" class="pf-save-btn">Save Changes</button>
+          </div>
+        </form>
+      </section>
+
+      {{-- ── Your History / Searches ── --}}
+      <section class="pf-section pf-hist-section">
+        <div class="pf-hist-head">
+          <div>
+            <h2 class="pf-hist-title">Your History/Searches</h2>
+            <p class="pf-hist-sub">Favourite destinations based on customer reviews</p>
+          </div>
+          <div class="pf-filters">
+            <button class="pf-flt">Categories
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="pf-flt">Duration
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="pf-flt">Reviews / Rating
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="pf-flt">Price range
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
         </div>
+
+        <div class="pf-dest-grid">
+          @forelse($bookingItems->take(4) as $bk)
+          <a href="/packages/{{ Str::slug($bk->package_title) }}" class="pf-dest-card">
+            <div class="pf-dest-img">
+              <img src="{{ $bk->package_image ?? 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=400&q=80' }}"
+                   alt="{{ $bk->package_title }}">
+            </div>
+            <div class="pf-dest-body">
+              <p class="pf-dest-name">{{ Str::limit($bk->package_title, 14) }}</p>
+              <p class="pf-dest-meta">{{ $bk->guests }}k Tours, 24k Activities</p>
+            </div>
+            <div class="pf-dest-arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </a>
+          @empty
+          @php
+            $demos = [
+              ['Venice',    'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=400&q=80'],
+              ['Amsterdam', 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=400&q=80'],
+              ['Budapest',  'https://images.unsplash.com/photo-1551867633-194f125bddfa?auto=format&fit=crop&w=400&q=80'],
+              ['Lisbon',    'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=400&q=80'],
+            ];
+          @endphp
+          @foreach($demos as [$dname, $dimg])
+          <a href="{{ route('discover') }}" class="pf-dest-card">
+            <div class="pf-dest-img"><img src="{{ $dimg }}" alt="{{ $dname }}"></div>
+            <div class="pf-dest-body">
+              <p class="pf-dest-name">{{ $dname }}</p>
+              <p class="pf-dest-meta">86k Tours, 24k Activities</p>
+            </div>
+            <div class="pf-dest-arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </a>
+          @endforeach
+          @endforelse
+        </div>
+      </section>
+
+      {{-- ── Newsletter ── --}}
+      <section class="pf-section">
+        <div class="pf-news">
+          <div class="pf-news-left">
+            <span class="pf-news-tag">Join our newsletter</span>
+            <h3 class="pf-news-heading">Subscribe to see secret deals<br>prices drop the moment you sign up!</h3>
+            <form action="{{ route('newsletter.subscribe') }}" method="POST" class="pf-news-form">
+              @csrf
+              <input type="email" name="email" value="{{ $displayEmail }}"
+                     placeholder="Your Email" class="pf-news-input">
+              <button type="submit" class="pf-news-btn">Subscribe</button>
+            </form>
+            <p class="pf-news-note">No ads. No tricks. No commitments.</p>
+          </div>
+          <div class="pf-news-img">
+            <img src="https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?auto=format&fit=crop&w=600&q=80" alt="Newsletter">
+          </div>
+        </div>
+      </section>
+
+    </div>{{-- /account tab --}}
+
+    {{-- ── HISTORY TAB ── --}}
+    <div x-show="tab==='history'" x-transition.opacity.duration.200ms>
+      <section class="pf-section">
+        <h2 class="pf-sec-h">Booking History</h2>
+        @forelse($bookingItems as $bk)
+        <div class="pf-bk-card">
+          <div class="pf-bk-img">
+            <img src="{{ $bk->package_image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80' }}"
+                 alt="{{ $bk->package_title }}">
+          </div>
+          <div class="pf-bk-info">
+            <h4>{{ $bk->package_title }}</h4>
+            <p>{{ $bk->guests }} Guest(s) · ₹{{ number_format($bk->package_price) }}</p>
+            <span class="pf-badge pf-badge--{{ strtolower($bk->status) }}">{{ $bk->status }}</span>
+          </div>
+          <a href="/packages/{{ Str::slug($bk->package_title) }}" class="pf-bk-link">View →</a>
+        </div>
+        @empty
+        <div class="pf-empty">
+          <p>No bookings yet.</p>
+          <a href="{{ route('discover') }}" class="pf-empty-btn">Browse Packages</a>
+        </div>
+        @endforelse
+      </section>
     </div>
 
-    <!-- Flash Messages (Toast Style) -->
-    @if(session('success'))
-        <div class="fixed top-24 right-8 z-50 animate-in slide-in-from-right-8 fade-in duration-500">
-            <div class="p-4 bg-green-500 border border-green-600 rounded-2xl text-white font-bold text-sm flex items-center gap-3 shadow-2xl">
-                <i data-lucide="check-circle" size="20"></i>
-                {{ session('success') }}
-            </div>
+    {{-- ── PAYMENT METHODS TAB ── --}}
+    <div x-show="tab==='payment'" x-transition.opacity.duration.200ms>
+      <section class="pf-section">
+        <h2 class="pf-sec-h">Payment Methods</h2>
+
+        @if($activePlan)
+        <div class="pf-plan">
+          <span class="pf-plan-badge">Active Plan</span>
+          <h3 class="pf-plan-name">{{ $activePlan->plan_name }}</h3>
+          <div class="pf-plan-meta">
+            <span>₹{{ number_format($activePlan->price) }}</span>
+            <span>{{ $activePlan->duration }}</span>
+            <span style="color:#4ade80">{{ $activePlan->status }}</span>
+          </div>
         </div>
-    @endif
-    @if(session('error'))
-        <div class="fixed top-24 right-8 z-50 animate-in slide-in-from-right-8 fade-in duration-500">
-            <div class="p-4 bg-red-500 border border-red-600 rounded-2xl text-white font-bold text-sm flex items-center gap-3 shadow-2xl">
-                <i data-lucide="alert-circle" size="20"></i>
-                {{ session('error') }}
-            </div>
+        @endif
+
+        @if(count($userPayments) > 0)
+        <div class="pf-pay-tbl-wrap">
+          <table class="pf-pay-tbl">
+            <thead>
+              <tr>
+                <th>Transaction ID</th><th>Plan / Service</th>
+                <th>Amount</th><th>Date</th><th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach($userPayments as $p)
+              <tr>
+                <td class="mono">{{ $p->payment_id }}</td>
+                <td>{{ $p->plan_type }}</td>
+                <td style="color:#e8663a;font-weight:800">₹{{ number_format($p->amount,2) }}</td>
+                <td>{{ \Carbon\Carbon::parse($p->date)->format('d M Y') }}</td>
+                <td><span class="pf-badge pf-badge--{{ strtolower($p->status) }}">{{ $p->status }}</span></td>
+              </tr>
+              @endforeach
+            </tbody>
+          </table>
         </div>
-    @endif
-
-    <!-- Main Dashboard -->
-    <div class="container-custom -mt-24 pb-20 relative z-20">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <!-- Sidebar Tabs -->
-            <div class="lg:w-1/4 shrink-0">
-                <div class="bg-white rounded-[32px] p-4 shadow-soft border border-gray-50 flex flex-col">
-                    <button @click="activeTab = 'profile'" :class="activeTab === 'profile' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-400 hover:text-primary hover:bg-primary/5'" class="flex items-center gap-4 p-5 rounded-[20px] font-bold transition-all">
-                        <i data-lucide="user" size="22"></i>
-                        <span>Personal Info</span>
-                    </button>
-                    <button @click="activeTab = 'wishlist'" :class="activeTab === 'wishlist' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-400 hover:text-primary hover:bg-primary/5'" class="flex items-center gap-4 p-5 rounded-[20px] font-bold transition-all">
-                        <i data-lucide="heart" size="22"></i>
-                        <span>My Wishlist</span>
-                        @if($wishlistItems->count() > 0)
-                            <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-primary/10 text-primary">{{ $wishlistItems->count() }}</span>
-                        @endif
-                    </button>
-                    <button @click="activeTab = 'history'" :class="activeTab === 'history' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-400 hover:text-primary hover:bg-primary/5'" class="flex items-center gap-4 p-5 rounded-[20px] font-bold transition-all">
-                        <i data-lucide="history" size="22"></i>
-                        <span>Booking History</span>
-                        @if($bookingItems->count() > 0)
-                            <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-primary/10 text-primary">{{ $bookingItems->count() }}</span>
-                        @endif
-                    </button>
-                    <button @click="activeTab = 'notifications'" :class="activeTab === 'notifications' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-400 hover:text-primary hover:bg-primary/5'" class="flex items-center gap-4 p-5 rounded-[20px] font-bold transition-all">
-                        <i data-lucide="bell" size="22"></i>
-                        <span>Notifications</span>
-                        @if($unread > 0)
-                            <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-red-500 text-white">{{ $unread }}</span>
-                        @endif
-                    </button>
-                    <button @click="activeTab = 'settings'" :class="activeTab === 'settings' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-400 hover:text-primary hover:bg-primary/5'" class="flex items-center gap-4 p-5 rounded-[20px] font-bold transition-all">
-                        <i data-lucide="settings" size="22"></i>
-                        <span>Settings</span>
-                    </button>
-                    <button @click="activeTab = 'membership'" :class="activeTab === 'membership' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-gray-400 hover:text-primary hover:bg-primary/5'" class="flex items-center gap-4 p-5 rounded-[20px] font-bold transition-all">
-                        <i data-lucide="award" size="22"></i>
-                        <span>Membership & Payments</span>
-                        @if($activePlan)
-                            <span class="ml-auto text-[10px] font-black px-2 py-0.5 rounded-full bg-green-500 text-white uppercase tracking-wider">Active</span>
-                        @endif
-                    </button>
-                    <hr class="my-4 border-gray-100" />
-                    <a href="{{ url('/logout') }}" class="flex items-center gap-4 p-5 rounded-[20px] font-bold text-red-500 hover:bg-red-50 transition-all">
-                        <i data-lucide="log-out" size="22"></i>
-                        <span>Sign Out</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Tab Content -->
-            <div class="flex-1 space-y-8">
-
-                <!-- ═══════════ WISHLIST TAB ═══════════ -->
-                <div x-show="activeTab === 'wishlist'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Saved Packages</h2>
-                        <span class="bg-primary/10 text-primary px-4 py-1.5 rounded-full font-bold text-sm">
-                            {{ $wishlistItems->count() }} Saved
-                        </span>
-                    </div>
-
-                    @if($wishlistItems->count() > 0)
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            @foreach($wishlistItems as $item)
-                                <div class="bg-white rounded-[32px] overflow-hidden shadow-soft border border-gray-50 group hover:shadow-card transition-all">
-                                    <div class="relative h-48 overflow-hidden">
-                                        <img src="{{ $item->package_image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=600' }}" 
-                                             alt="{{ $item->package_title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                        <a href="{{ route('wishlist.remove', $item->package_id) }}" 
-                                           onclick="return confirm('Remove from wishlist?');"
-                                           class="absolute top-3 right-3 w-9 h-9 bg-white/90 rounded-full flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all">
-                                            <i data-lucide="heart" size="16" class="fill-current"></i>
-                                        </a>
-                                    </div>
-                                    <div class="p-6 space-y-3">
-                                        <h4 class="text-lg font-black text-foreground">{{ $item->package_title }}</h4>
-                                        <p class="text-primary font-black text-xl">₹{{ number_format($item->package_price) }}</p>
-                                        <a href="/packages/{{ Str::slug($item->package_title) }}" class="block w-full text-center py-3 bg-primary/10 hover:bg-primary hover:text-white text-primary rounded-xl font-bold text-sm transition-all">
-                                            View Package
-                                        </a>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        {{-- Pagination --}}
-                        @if(method_exists($wishlistItems, 'links'))
-                            <div class="mt-8">{{ $wishlistItems->links() }}</div>
-                        @endif
-                    @else
-                        <div class="bg-white rounded-[32px] p-16 shadow-soft border border-gray-50 text-center space-y-4">
-                            <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center text-gray-300">
-                                <i data-lucide="heart" size="40"></i>
-                            </div>
-                            <h4 class="text-xl font-black text-foreground">No saved packages yet</h4>
-                            <p class="text-gray-400 font-medium">Browse our packages and save the ones you love!</p>
-                            <a href="{{ route('discover') }}" class="inline-block mt-4 bg-primary text-white px-8 py-4 rounded-full font-black text-sm hover:bg-primary-hover transition-all">
-                                Browse Packages
-                            </a>
-                        </div>
-                    @endif
-                </div>
-
-                <!-- ═══════════ PERSONAL INFO TAB ═══════════ -->
-                <div x-show="activeTab === 'profile'" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="bg-white rounded-[32px] p-8 md:p-12 shadow-soft border border-gray-50 space-y-10">
-                        <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Personal Information</h2>
-                        
-                        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
-                            @csrf
-                            {{-- Hidden avatar field --}}
-                            <input type="file" name="avatar" id="avatar-upload" class="hidden" accept="image/*"
-                                   onchange="previewAvatar(event)">
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">Full Name<span class="text-primary">*</span></label>
-                                    <input type="text" name="name" required value="{{ $displayName }}" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">Email Address<span class="text-primary">*</span></label>
-                                    <input type="email" name="email" required value="{{ $displayEmail }}" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">Phone Number</label>
-                                    <input type="text" name="phone" value="{{ $displayPhone }}" placeholder="+91 99999 00000" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">Date of Birth</label>
-                                    <input type="date" name="date_of_birth" value="{{ $displayDOB }}" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">City</label>
-                                    <input type="text" name="city" value="{{ $displayCity }}" placeholder="Mumbai" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">Country</label>
-                                    <input type="text" name="country" value="{{ $displayCountry }}" placeholder="India" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">Gender</label>
-                                    <select name="gender" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                                        <option value="">Select Gender</option>
-                                        <option value="Male" {{ $displayGender === 'Male' ? 'selected' : '' }}>Male</option>
-                                        <option value="Female" {{ $displayGender === 'Female' ? 'selected' : '' }}>Female</option>
-                                        <option value="Other" {{ $displayGender === 'Other' ? 'selected' : '' }}>Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <button type="submit" class="bg-primary hover:bg-primary-hover text-white px-10 py-4 rounded-full font-bold transition-all shadow-lg shadow-primary/20">
-                                Save Changes
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- ═══════════ BOOKING HISTORY TAB ═══════════ -->
-                <div x-show="activeTab === 'history'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Booking History</h2>
-                    <div class="space-y-6">
-                        @forelse($bookingItems as $booking)
-                            <div class="bg-white rounded-[32px] p-6 shadow-soft border border-gray-50 flex flex-col md:flex-row items-center gap-6 hover:shadow-card transition-all">
-                                <div class="w-full md:w-48 h-32 rounded-2xl overflow-hidden shrink-0">
-                                    <img src="{{ $booking->package_image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=400' }}" 
-                                         alt="{{ $booking->package_title }}" class="w-full h-full object-cover" />
-                                </div>
-                                <div class="flex-1 space-y-1 text-left">
-                                    <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
-                                        <span class="font-bold text-xs uppercase tracking-widest px-3 py-1 rounded-full
-                                            {{ $booking->status === 'Confirmed' ? 'bg-green-50 text-green-600' : 
-                                               ($booking->status === 'Cancelled' ? 'bg-red-50 text-red-500' : 
-                                                ($booking->status === 'Completed' ? 'bg-blue-50 text-blue-600' : 'bg-yellow-50 text-yellow-600')) }}">
-                                            {{ $booking->status }}
-                                        </span>
-                                        <span class="text-gray-400 text-sm font-medium">
-                                            Travel: {{ \Carbon\Carbon::parse($booking->travel_date)->format('d M Y') }}
-                                        </span>
-                                    </div>
-                                    <h4 class="text-xl font-bold">{{ $booking->package_title }}</h4>
-                                    <p class="text-gray-400 font-medium">
-                                        ₹{{ number_format($booking->package_price) }} · {{ $booking->guests }} Guest(s)
-                                    </p>
-                                    <p class="text-xs text-gray-400">Booked {{ \Carbon\Carbon::parse($booking->created_at)->diffForHumans() }}</p>
-                                </div>
-                                <div class="flex flex-col gap-2 shrink-0">
-                                    <a href="/packages/{{ Str::slug($booking->package_title) }}" class="px-6 py-3 bg-foreground text-white rounded-xl font-bold hover:bg-black transition-colors text-sm text-center">
-                                        View Details
-                                    </a>
-                                    @if(in_array($booking->status, ['Pending']))
-                                        <a href="{{ route('booking.cancel', $booking->id) }}" 
-                                           onclick="return confirm('Cancel this booking?');"
-                                           class="px-6 py-3 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-xl font-bold transition-colors text-sm text-center">
-                                            Cancel
-                                        </a>
-                                    @endif
-                                </div>
-                            </div>
-                        @empty
-                            <div class="bg-white rounded-[32px] p-16 shadow-soft border border-gray-50 text-center space-y-4">
-                                <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center text-gray-300">
-                                    <i data-lucide="calendar-x" size="40"></i>
-                                </div>
-                                <h4 class="text-xl font-black text-foreground">No bookings yet</h4>
-                                <p class="text-gray-400 font-medium">Start planning your next adventure!</p>
-                                <a href="{{ route('discover') }}" class="inline-block mt-4 bg-primary text-white px-8 py-4 rounded-full font-black text-sm hover:bg-primary-hover transition-all">
-                                    Browse Packages
-                                </a>
-                            </div>
-                        @endforelse
-                    </div>
-
-                    @if(method_exists($bookingItems, 'links'))
-                        <div class="mt-4">{{ $bookingItems->links() }}</div>
-                    @endif
-                </div>
-
-                <!-- ═══════════ NOTIFICATIONS TAB ═══════════ -->
-                <div x-show="activeTab === 'notifications'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Notifications</h2>
-                        @if($unread > 0)
-                            <span class="bg-red-50 text-red-500 px-4 py-1.5 rounded-full font-bold text-sm">{{ $unread }} Unread</span>
-                        @endif
-                    </div>
-                    <div class="space-y-4">
-                        @forelse($notifItems as $notif)
-                            <div class="bg-white rounded-[24px] p-6 shadow-soft border {{ !$notif->is_read ? 'border-primary/20 bg-primary/5' : 'border-gray-50' }} flex items-start gap-4 transition-all">
-                                <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0
-                                    {{ $notif->type === 'Alert' ? 'bg-red-50 text-red-500' : 
-                                       ($notif->type === 'Promo' ? 'bg-orange-50 text-orange-500' : 'bg-blue-50 text-blue-500') }}">
-                                    <i data-lucide="{{ $notif->type === 'Alert' ? 'alert-triangle' : ($notif->type === 'Promo' ? 'tag' : 'bell') }}" size="20"></i>
-                                </div>
-                                <div class="flex-1 space-y-1">
-                                    <div class="flex items-center justify-between gap-2 flex-wrap">
-                                        <p class="font-black text-foreground">{{ $notif->title }}</p>
-                                        <span class="text-xs text-gray-400">{{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}</span>
-                                    </div>
-                                    <p class="text-sm text-gray-500 font-medium">{{ $notif->message }}</p>
-                                </div>
-                                @if(!$notif->is_read)
-                                    <a href="{{ route('notification.read', $notif->id) }}" class="shrink-0 p-2 text-primary hover:bg-primary hover:text-white rounded-xl transition-all" title="Mark as read">
-                                        <i data-lucide="check" size="16"></i>
-                                    </a>
-                                @endif
-                            </div>
-                        @empty
-                            <div class="bg-white rounded-[32px] p-16 shadow-soft border border-gray-50 text-center space-y-4">
-                                <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center text-gray-300">
-                                    <i data-lucide="bell-off" size="40"></i>
-                                </div>
-                                <h4 class="text-xl font-black text-foreground">No notifications yet</h4>
-                                <p class="text-gray-400 font-medium">We'll notify you of offers, booking updates, and more!</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </div>
-
-                <!-- ═══════════ SETTINGS TAB ═══════════ -->
-                <div x-show="activeTab === 'settings'" class="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-8">
-                    <!-- Change Password -->
-                    <div class="bg-white rounded-[32px] p-8 md:p-12 shadow-soft border border-gray-50 space-y-8">
-                        <h2 class="text-3xl font-black font-syne">Change Password</h2>
-                        <form action="{{ route('profile.password') }}" method="POST" class="space-y-6">
-                            @csrf
-                            <div class="space-y-2">
-                                <label class="text-xs font-bold uppercase tracking-widest text-gray-400">Current Password</label>
-                                <input type="password" name="current_password" required placeholder="••••••••" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                            </div>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">New Password</label>
-                                    <input type="password" name="new_password" required placeholder="Min 8 characters" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-xs font-bold uppercase tracking-widest text-gray-400">Confirm New Password</label>
-                                    <input type="password" name="new_password_confirmation" required placeholder="Re-enter password" class="w-full bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
-                                </div>
-                            </div>
-                            <button type="submit" class="bg-foreground hover:bg-black text-white px-10 py-4 rounded-full font-bold transition-all shadow-lg">
-                                Update Password
-                            </button>
-                        </form>
-                    </div>
-                    
-                    <!-- Newsletter Preference -->
-                    <div class="bg-white rounded-[32px] p-8 md:p-12 shadow-soft border border-gray-50 space-y-6">
-                        <h2 class="text-3xl font-black font-syne">Newsletter</h2>
-                        <form action="{{ route('newsletter.subscribe') }}" method="POST" class="flex flex-col sm:flex-row gap-4">
-                            @csrf
-                            <input type="email" name="email" value="{{ $displayEmail }}" placeholder="your@email.com" class="flex-1 bg-background border border-gray-100 rounded-2xl py-4 px-6 font-bold focus:ring-2 focus:ring-primary/20 transition-all" />
-                            <button type="submit" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg shadow-primary/20 shrink-0">
-                                Subscribe
-                            </button>
-                        </form>
-                        <p class="text-xs text-gray-400 font-bold">No spam. Exclusive travel deals only.</p>
-                    </div>
-                </div>
-
-                <!-- ═══════════ MEMBERSHIP & PAYMENTS TAB ═══════════ -->
-                <div x-show="activeTab === 'membership'" class="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-3xl font-black text-white drop-shadow-md font-syne" style="color: white !important;">Membership & Billing</h2>
-                    </div>
-
-                    @if($activePlan)
-                        <!-- Active Plan Premium Card -->
-                        <div class="relative overflow-hidden bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white rounded-[32px] p-8 md:p-10 shadow-lg">
-                            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-                            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                                <div class="space-y-4">
-                                    <span class="inline-block px-4 py-1.5 bg-primary/20 border border-primary/30 rounded-full text-xs font-black text-primary uppercase tracking-widest">
-                                        Active Plan
-                                    </span>
-                                    <h3 class="text-3xl font-black font-syne">{{ $activePlan->plan_name }}</h3>
-                                    <div class="flex items-center gap-6 text-white/75 font-medium text-sm">
-                                        <div class="flex items-center gap-1.5">
-                                            <i data-lucide="check-circle" size="16" class="text-green-400"></i>
-                                            <span>Price: ₹{{ number_format($activePlan->price) }}</span>
-                                        </div>
-                                        <div class="flex items-center gap-1.5">
-                                            <i data-lucide="calendar" size="16"></i>
-                                            <span>Duration: {{ $activePlan->duration }}</span>
-                                        </div>
-                                        <div class="flex items-center gap-1.5">
-                                            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                                            <span>Status: {{ $activePlan->status }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center border border-white/10 shrink-0">
-                                    <i data-lucide="crown" class="text-primary animate-bounce" size="32"></i>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <!-- No Active Plan - VIP Pitch Card -->
-                        <div class="relative overflow-hidden bg-white border border-gray-100 rounded-[32px] p-8 md:p-10 shadow-premium">
-                            <!-- Attractive VIP Landscape Background -->
-                            <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image: url('{{ asset('tourex/hero-bg.png') }}')"></div>
-                            <!-- Glassmorphism overlay to ensure black text readability -->
-                            <div class="absolute inset-0 bg-white/80 backdrop-blur-[2px] z-0"></div>
-                            <div class="absolute right-0 top-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -mr-20 -mt-20 z-0"></div>
-                            <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-                                <div class="space-y-4">
-                                    <h3 class="text-3xl font-black font-syne text-foreground">Unlock the TourRaja VIP Club</h3>
-                                    <p class="text-muted-text max-w-lg text-sm leading-relaxed font-medium">
-                                        Get access to customized travel plans, premium local tour guides, zero booking fees, and 24/7 dedicated travel advisor support!
-                                    </p>
-                                    <div class="flex items-center gap-4 text-xs font-bold text-foreground/70 uppercase tracking-wider">
-                                        <span class="flex items-center gap-1"><i data-lucide="check" size="14" class="text-primary"></i> Zero Booking Fees</span>
-                                        <span class="flex items-center gap-1"><i data-lucide="check" size="14" class="text-primary"></i> 24/7 Support</span>
-                                        <span class="flex items-center gap-1"><i data-lucide="check" size="14" class="text-primary"></i> Exclusive Discounts</span>
-                                    </div>
-                                </div>
-                                <a href="{{ route('discover') }}" class="px-8 py-4 bg-primary hover:bg-primary-hover text-white rounded-full font-black text-sm uppercase tracking-wider transition-all shrink-0 shadow-lg shadow-primary/20">
-                                    Explore Packages
-                                </a>
-                            </div>
-                        </div>
-                    @endif
-
-                    <!-- Payment Logs / Transaction History -->
-                    <div class="bg-white rounded-[32px] p-8 md:p-10 shadow-soft border border-gray-50 space-y-6">
-                        <h3 class="text-2xl font-black text-foreground font-syne">Transaction History</h3>
-                        
-                        @if(count($userPayments) > 0)
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left">
-                                    <thead>
-                                        <tr class="border-b border-gray-100 pb-4">
-                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Transaction ID</th>
-                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Plan / Service</th>
-                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Amount</th>
-                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Date</th>
-                                            <th class="text-xs font-bold uppercase tracking-widest text-gray-400 py-4">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-50">
-                                        @foreach($userPayments as $pay)
-                                            <tr>
-                                                <td class="py-4 font-mono font-bold text-sm text-foreground">{{ $pay->payment_id }}</td>
-                                                <td class="py-4 font-bold text-sm text-foreground">{{ $pay->plan_type }}</td>
-                                                <td class="py-4 font-black text-sm text-primary">₹{{ number_format($pay->amount, 2) }}</td>
-                                                <td class="py-4 text-sm text-gray-400 font-medium">{{ \Carbon\Carbon::parse($pay->date)->format('d M Y') }}</td>
-                                                <td class="py-4">
-                                                    <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider
-                                                        {{ $pay->status === 'Completed' ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600' }}">
-                                                        {{ $pay->status }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="text-center py-8 text-gray-400 font-medium text-sm">
-                                <i data-lucide="receipt" class="mx-auto text-gray-300 mb-3" size="32"></i>
-                                <p>No billing or payment history available.</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-            </div><!-- /tab content -->
-        </div>
+        @else
+        <div class="pf-empty"><p>No payment history.</p></div>
+        @endif
+      </section>
     </div>
-</div>
+
+  </div>{{-- /pf-content --}}
+</div>{{-- /pf-page --}}
 
 @push('scripts')
 <script>
-function previewAvatar(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        document.getElementById('avatar-preview').src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-    // Auto-submit the profile form when a new avatar is selected
-    event.target.closest('form') && event.target.closest('form').submit();
+function pfUploadAvatar(input) {
+  if (!input.files || !input.files[0]) return;
+  const r = new FileReader();
+  r.onload = e => document.getElementById('pf-av-img').src = e.target.result;
+  r.readAsDataURL(input.files[0]);
+  document.getElementById('pf-av-form').submit();
 }
+// Auto-hide toasts
+document.querySelectorAll('.pf-toast').forEach(t => {
+  setTimeout(() => t.style.opacity = '0', 3500);
+  setTimeout(() => t.remove(), 4000);
+});
 </script>
 @endpush
+
+<style>
+/* ══════════════════════════════════
+   PROFILE PAGE — pixel-exact
+══════════════════════════════════ */
+.pf-page { background:#f5f6f8; min-height:100vh; }
+
+/* ── Hero ── */
+.pf-hero {
+  position:relative;
+  height:240px;
+  overflow:hidden;
+}
+.pf-hero-bg {
+  position:absolute; inset:0;
+}
+.pf-hero-bg img {
+  width:100%; height:100%; object-fit:cover; object-position:center 40%;
+}
+.pf-hero-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgba(0,0,0,.30) 0%, rgba(0,0,0,.52) 100%);
+}
+.pf-hero-inner {
+  position:relative; z-index:2;
+  max-width:900px; margin:0 auto;
+  padding:28px 28px 0;
+  height:100%;
+  display:flex; flex-direction:column;
+}
+/* "Profile" title — top-left */
+.pf-hero-label {
+  font-size:2rem; font-weight:900; color:#fff;
+  font-family:'Syne',sans-serif; letter-spacing:-.02em;
+  margin:0; text-shadow:0 2px 8px rgba(0,0,0,.35);
+  align-self:flex-start;
+}
+/* Avatar block — centered */
+.pf-hero-user {
+  display:flex; flex-direction:column; align-items:center;
+  margin-top:auto;
+  transform:translateY(52px);
+}
+.pf-avatar-wrap {
+  position:relative; display:block;
+  width:92px; height:92px;
+  border-radius:50%;
+  border:3px solid #fff;
+  overflow:visible;
+  cursor:pointer;
+  margin-bottom:10px;
+}
+.pf-avatar-wrap img {
+  width:92px; height:92px;
+  border-radius:50%; object-fit:cover; background:#fff; display:block;
+}
+.pf-avatar-cam {
+  position:absolute; bottom:2px; right:2px;
+  width:26px; height:26px;
+  background:#e8663a; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  border:2px solid #fff; z-index:3;
+}
+.pf-hero-name {
+  font-size:1.1rem; font-weight:800; color:#fff;
+  font-family:'Syne',sans-serif; margin:0 0 3px;
+}
+.pf-hero-email {
+  font-size:.78rem; color:rgba(255,255,255,.72); margin:0;
+}
+
+/* ── Tab Bar ── */
+.pf-tabbar {
+  background:#fff;
+  border-bottom:1.5px solid #e5e7eb;
+  margin-top:56px;          /* push down past avatar overlap */
+  position:sticky; top:0; z-index:30;
+  box-shadow:0 2px 6px rgba(0,0,0,.04);
+}
+.pf-tabs-inner {
+  display:flex;
+  max-width:900px; margin:0 auto;
+  padding:0 28px;
+}
+.pf-tab {
+  padding:16px 26px 14px;
+  font-size:.88rem; font-weight:600;
+  color:#9ca3af;
+  background:none; border:none;
+  border-bottom:2.5px solid transparent;
+  cursor:pointer; white-space:nowrap;
+  transition:color .18s, border-color .18s;
+}
+.pf-tab:hover { color:#e8663a; }
+.pf-tab-on {
+  color:#e8663a !important;
+  border-bottom-color:#e8663a !important;
+}
+
+/* ── Content container ── */
+.pf-content {
+  max-width:900px; margin:0 auto;
+  padding:36px 28px 64px;
+}
+.pf-section { margin-bottom:48px; }
+.pf-sec-h {
+  font-size:1.25rem; font-weight:800; color:#111827;
+  font-family:'Syne',sans-serif; margin:0 0 18px;
+}
+
+/* ── Account field rows ── */
+.pf-fields-box {
+  border:1.5px solid #e5e7eb;
+  border-radius:12px; overflow:hidden; background:#fff;
+}
+.pf-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; gap:12px;
+  border-bottom:1.5px solid #f3f4f6;
+}
+.pf-row:last-child { border-bottom:none; }
+.pf-row-left {
+  flex:1; min-width:0;
+  display:flex; flex-direction:column; gap:3px;
+}
+.pf-lbl {
+  font-size:.68rem; font-weight:700; color:#9ca3af;
+  text-transform:uppercase; letter-spacing:.06em;
+}
+.pf-val {
+  font-size:.93rem; font-weight:500; color:#111827;
+}
+.pf-inp {
+  font-size:.9rem; font-weight:500; color:#111827;
+  border:1.5px solid #e8663a; border-radius:8px;
+  padding:7px 12px; background:#fff8f5; outline:none;
+  width:100%; max-width:280px;
+  transition:box-shadow .18s;
+}
+.pf-inp:focus { box-shadow:0 0 0 3px rgba(232,102,58,.18); }
+.pf-inp-row { display:flex; gap:8px; flex-wrap:wrap; }
+.pf-edit {
+  display:flex; align-items:center; gap:5px;
+  padding:6px 14px;
+  font-size:.74rem; font-weight:600; color:#555;
+  background:#fff; border:1.5px solid #d1d5db;
+  border-radius:8px; cursor:pointer; white-space:nowrap; flex-shrink:0;
+  transition:all .15s;
+}
+.pf-edit:hover { background:#e8663a; color:#fff; border-color:#e8663a; }
+.pf-save-row { margin-top:16px; text-align:right; }
+.pf-save-btn {
+  background:#e8663a; color:#fff;
+  padding:11px 28px; border-radius:999px;
+  font-weight:700; font-size:.88rem; border:none; cursor:pointer;
+  box-shadow:0 4px 14px rgba(232,102,58,.3);
+  transition:background .18s, transform .1s;
+}
+.pf-save-btn:hover { background:#d04e1f; transform:translateY(-1px); }
+
+/* ── History/Searches section ── */
+.pf-hist-head {
+  display:flex; justify-content:space-between;
+  align-items:flex-start; flex-wrap:wrap; gap:14px;
+  margin-bottom:20px;
+}
+.pf-hist-title {
+  font-size:1.65rem; font-weight:900; color:#111827;
+  font-family:'Syne',sans-serif; margin:0 0 4px;
+}
+.pf-hist-sub { font-size:.78rem; color:#9ca3af; margin:0; }
+.pf-filters { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.pf-flt {
+  display:flex; align-items:center; gap:4px;
+  padding:6px 12px; font-size:.73rem; font-weight:600; color:#555;
+  background:#fff; border:1px solid #d1d5db; border-radius:999px;
+  cursor:pointer; transition:all .15s;
+}
+.pf-flt:hover { border-color:#e8663a; color:#e8663a; }
+
+/* destination cards — 4-col grid */
+.pf-dest-grid {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+}
+.pf-dest-card {
+  background:#fff; border-radius:12px; overflow:hidden;
+  border:1px solid #f0f0f0;
+  box-shadow:0 1px 5px rgba(0,0,0,.05);
+  text-decoration:none; color:inherit;
+  display:flex; flex-direction:column;
+  transition:transform .2s, box-shadow .2s;
+}
+.pf-dest-card:hover { transform:translateY(-4px); box-shadow:0 8px 22px rgba(0,0,0,.1); }
+.pf-dest-img { height:120px; overflow:hidden; }
+.pf-dest-img img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
+.pf-dest-card:hover .pf-dest-img img { transform:scale(1.07); }
+.pf-dest-body { padding:10px 12px 2px; flex:1; }
+.pf-dest-name { font-size:.88rem; font-weight:700; color:#111827; margin:0 0 3px; }
+.pf-dest-meta { font-size:.7rem; color:#9ca3af; margin:0; }
+.pf-dest-arrow {
+  padding:6px 12px 10px;
+  display:flex; align-items:center; justify-content:flex-end;
+  color:#d1d5db; transition:color .15s;
+}
+.pf-dest-card:hover .pf-dest-arrow { color:#e8663a; }
+
+/* ── Newsletter ── */
+.pf-news {
+  background:#e5eef8;
+  border-radius:16px; overflow:hidden;
+  display:flex; min-height:190px;
+}
+.pf-news-left {
+  flex:1; padding:32px 36px;
+  display:flex; flex-direction:column; justify-content:center;
+}
+.pf-news-tag {
+  display:inline-block;
+  background:#e8663a; color:#fff;
+  font-size:.72rem; font-weight:700;
+  padding:5px 14px; border-radius:999px;
+  margin-bottom:12px; width:fit-content;
+}
+.pf-news-heading {
+  font-size:1.1rem; font-weight:800; color:#111827;
+  line-height:1.45; margin:0 0 16px; max-width:300px;
+}
+.pf-news-form { display:flex; gap:8px; flex-wrap:wrap; }
+.pf-news-input {
+  flex:1; min-width:150px;
+  padding:9px 14px; border:1.5px solid #c8d6e5;
+  border-radius:8px; font-size:.83rem; outline:none; background:#fff;
+}
+.pf-news-input:focus { border-color:#e8663a; }
+.pf-news-btn {
+  background:#111827; color:#fff;
+  padding:9px 18px; border-radius:8px;
+  font-weight:700; font-size:.83rem; border:none; cursor:pointer;
+  transition:background .18s;
+}
+.pf-news-btn:hover { background:#374151; }
+.pf-news-note { font-size:.7rem; color:#9ca3af; margin:10px 0 0; }
+.pf-news-img { width:220px; flex-shrink:0; }
+.pf-news-img img { width:100%; height:100%; object-fit:cover; }
+
+/* ── Booking cards ── */
+.pf-bk-card {
+  display:flex; align-items:center; gap:16px;
+  background:#fff; border:1px solid #f0f0f0;
+  border-radius:12px; padding:14px 18px;
+  margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+  transition:box-shadow .2s;
+}
+.pf-bk-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
+.pf-bk-img { width:80px; height:60px; border-radius:8px; overflow:hidden; flex-shrink:0; }
+.pf-bk-img img { width:100%; height:100%; object-fit:cover; }
+.pf-bk-info { flex:1; min-width:0; }
+.pf-bk-info h4 { font-size:.93rem; font-weight:700; color:#111827; margin:0 0 4px; }
+.pf-bk-info p { font-size:.79rem; color:#6b7280; margin:0 0 6px; }
+.pf-bk-link { font-size:.8rem; font-weight:600; color:#e8663a; white-space:nowrap; text-decoration:none; }
+
+/* ── Status badges ── */
+.pf-badge {
+  display:inline-block; font-size:.67rem; font-weight:700;
+  padding:2px 10px; border-radius:999px; text-transform:uppercase; letter-spacing:.04em;
+}
+.pf-badge--confirmed,.pf-badge--completed { background:#dcfce7; color:#16a34a; }
+.pf-badge--pending  { background:#fef9c3; color:#ca8a04; }
+.pf-badge--cancelled { background:#fee2e2; color:#dc2626; }
+
+/* ── Payment plan card ── */
+.pf-plan {
+  background:linear-gradient(135deg,#1e1e3f,#312e81);
+  border-radius:14px; padding:26px 30px; color:#fff; margin-bottom:22px;
+}
+.pf-plan-badge {
+  font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  background:rgba(232,102,58,.2); border:1px solid rgba(232,102,58,.4);
+  color:#fbbf24; padding:3px 12px; border-radius:999px;
+  display:inline-block; margin-bottom:10px;
+}
+.pf-plan-name { font-size:1.7rem; font-weight:900; margin:0 0 12px; font-family:'Syne',sans-serif; }
+.pf-plan-meta { display:flex; gap:18px; font-size:.85rem; color:rgba(255,255,255,.7); }
+
+/* ── Payments table ── */
+.pf-pay-tbl-wrap { overflow-x:auto; background:#fff; border:1px solid #f0f0f0; border-radius:12px; }
+.pf-pay-tbl { width:100%; border-collapse:collapse; }
+.pf-pay-tbl th {
+  text-align:left; font-size:.68rem; font-weight:700; text-transform:uppercase;
+  letter-spacing:.05em; color:#9ca3af; padding:13px 16px;
+  border-bottom:1.5px solid #f0f0f0;
+}
+.pf-pay-tbl td { padding:13px 16px; font-size:.86rem; color:#111827; border-bottom:1px solid #f9fafb; }
+.pf-pay-tbl tr:last-child td { border-bottom:none; }
+.mono { font-family:monospace; font-weight:700; }
+
+/* ── Empty state ── */
+.pf-empty {
+  text-align:center; padding:48px 24px;
+  background:#fff; border-radius:12px; border:1px solid #f0f0f0;
+}
+.pf-empty p { font-size:.95rem; font-weight:600; color:#9ca3af; margin:0 0 14px; }
+.pf-empty-btn {
+  display:inline-block; background:#e8663a; color:#fff;
+  padding:10px 24px; border-radius:999px;
+  font-weight:700; font-size:.85rem; text-decoration:none;
+  transition:background .18s;
+}
+.pf-empty-btn:hover { background:#d04e1f; }
+
+/* ── Toast ── */
+.pf-toast {
+  position:fixed; top:84px; right:18px; z-index:9999;
+  padding:12px 20px; border-radius:10px;
+  font-size:.85rem; font-weight:600; color:#fff;
+  box-shadow:0 6px 20px rgba(0,0,0,.15);
+  transition:opacity .5s;
+  animation:pfToastIn .35s ease;
+}
+.pf-toast--ok  { background:#16a34a; }
+.pf-toast--err { background:#dc2626; }
+@keyframes pfToastIn {
+  from { opacity:0; transform:translateX(30px); }
+  to   { opacity:1; transform:translateX(0);    }
+}
+
+/* ── Responsive ── */
+@media (max-width:768px) {
+  .pf-hero { height:210px; }
+  .pf-hero-label { font-size:1.5rem; }
+  .pf-dest-grid { grid-template-columns:repeat(2,1fr); }
+  .pf-news { flex-direction:column; }
+  .pf-news-img { width:100%; height:150px; }
+  .pf-hist-head { flex-direction:column; }
+  .pf-hist-title { font-size:1.35rem; }
+}
+@media (max-width:520px) {
+  .pf-tabs-inner { overflow-x:auto; padding:0 12px; }
+  .pf-tab  { padding:14px 14px; font-size:.8rem; }
+  .pf-content { padding:28px 14px 52px; }
+  .pf-row { flex-direction:column; align-items:flex-start; }
+  .pf-edit { align-self:flex-end; }
+  .pf-news-left { padding:22px 22px; }
+  .pf-news-heading { font-size:.95rem; }
+  .pf-hero-user { transform:translateY(46px); }
+}
+@media (max-width:380px) {
+  .pf-dest-grid { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+
 @endsection

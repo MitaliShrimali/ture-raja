@@ -211,7 +211,17 @@ h6 {
   height: 100%;
 }
 
-.hero-slide {
+
+/* Ensure video backgrounds fill the slide */
+.hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
   position: relative;
   flex: 0 0 100%;
   width: 100vw;

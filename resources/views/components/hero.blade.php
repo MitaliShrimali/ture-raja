@@ -1,4 +1,5 @@
 @props(['banners' => null])
+@php use Illuminate\Support\Str; @endphp
 
 <section class="relative min-h-screen flex items-center justify-center py-24 lg:py-32 overflow-hidden">
     <!-- Background Slider -->
@@ -19,7 +20,16 @@
                         'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80',
                     ];
                 }
-            @endphp @foreach($slides as $index => $url)<div class="hero-slide" style="background-image: url('{{ $url }}'); width: 100%; height: 100%; flex: 0 0 100%; background-size: cover; background-position: center;"></div>@endforeach</div>
+            @endphp @foreach($slides as $index => $url)
+        <div class="hero-slide" style="{{ Str::endsWith(strtolower($url), '.mp4') ? '' : "background-image: url('{$url}');" }} width: 100%; height: 100%; flex: 0 0 100%; background-size: cover; background-position: center;">
+            @if (Str::endsWith(strtolower($url), '.mp4'))
+                <video autoplay loop muted playsinline class="hero-video">
+                    <source src="{{ $url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            @endif
+        </div>
+    @endforeach</div>
         
         <!-- Original Cinematic Overlay Gradient -->
         <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-background z-10 pointer-events-none"></div>

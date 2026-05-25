@@ -1,4 +1,5 @@
 @extends('layouts.admin')
+@php use Illuminate\Support\Str; @endphp
 
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, viewType: 'desktop', editBanner: { id: '', title: '', subtitle: '', image: '', link: '', status: '' } }">
@@ -26,6 +27,14 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
+<tr>
+    <th class="py-6 px-4"></th>
+    <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">BANNER IMAGE</th>
+    <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">DESCRIPTION & MARKETING</th>
+    <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">TARGET LINK</th>
+    <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">STATUS</th>
+    <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">ACTIONS</th>
+</tr>
                     <tr class="bg-gray-50/50 border-b border-border-soft">
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">BANNER IMAGE</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">DESCRIPTION & MARKETING</th>
@@ -35,11 +44,20 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-soft">
-                    @forelse($banners as $banner)
-                        <tr class="group hover:bg-gray-50/30 transition-colors">
+                    <tbody id="bannersSortable" class="divide-y divide-border-soft" data-url="{{ url('/admin/home-editor/reorder') }}">
+@forelse($banners as $banner)
+                        <tr class="group hover:bg-gray-50/30 transition-colors" data-id="{{ $banner->id }}">
+    <td class="py-8 px-4 cursor-move" title="Drag to reorder"><i data-lucide="move"></i></td>
                             <td class="py-8 px-10">
                                 <div class="w-40 h-24 rounded-2xl overflow-hidden border border-border-soft bg-gray-100 group-hover:scale-105 transition-transform duration-500">
-                                    <img src="{{ $banner->image ?? 'https://images.unsplash.com/photo-1548013146-72479768bbaa?auto=format&fit=crop&q=80&w=400' }}" alt="Banner" class="w-full h-full object-cover">
+                                    @if (Str::endsWith(strtolower($banner->image ?? ''), '.mp4'))
+    <video autoplay loop muted playsinline class="w-full h-full object-cover">
+        <source src="{{ $banner->image }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+@else
+    <img src="{{ $banner->image ?? 'https://images.unsplash.com/photo-1548013146-72479768bbaa?auto=format&fit=crop&q=80&w=400' }}" alt="Banner" class="w-full h-full object-cover">
+@endif
                                 </div>
                             </td>
                             <td class="py-8 px-10">
@@ -142,7 +160,14 @@
             @if($banners->count() > 0)
                 <div class="flex justify-center transition-all duration-300">
                     <div :class="viewType === 'mobile' ? 'w-[360px] aspect-[9/16]' : 'w-full aspect-[16/7]'" class="relative rounded-[32px] overflow-hidden shadow-2xl transition-all duration-300">
-                        <img src="{{ $banners[0]->image }}" alt="Preview" class="w-full h-full object-cover">
+                        @if (isset($banners[0]) && Str::endsWith(strtolower($banners[0]->image ?? ''), '.mp4'))
+    <video autoplay loop muted playsinline class="w-full h-full object-cover">
+        <source src="{{ $banners[0]->image }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+@else
+    <img src="{{ $banners[0]->image }}" alt="Preview" class="w-full h-full object-cover">
+@endif
                         <div class="absolute inset-0 bg-black/40 flex items-center px-8 md:px-16">
                             <div class="max-w-md space-y-6">
                                 <span class="bg-primary px-4 py-1.5 rounded-full text-[10px] font-black text-white uppercase tracking-widest">Active Slide</span>
