@@ -235,7 +235,15 @@
 
           </div>{{-- /pf-fields-box --}}
 
-          <div class="pf-save-row">
+          <div class="pf-save-row" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="{{ route('logout') }}" class="text-red-500 hover:text-red-600 hover:bg-red-50 font-semibold px-4 py-2 rounded-lg transition-colors" style="display: inline-flex; align-items: center; gap: 6px; text-decoration: none; border: 1px solid #fee2e2; background-color: #fef2f2;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              Logout
+            </a>
             <button type="submit" class="pf-save-btn">Save Changes</button>
           </div>
         </form>
@@ -1017,8 +1025,8 @@ document.addEventListener('DOMContentLoaded', () => {
 @media (max-width:520px) {
   .pf-tab { font-size:.82rem; padding:16px 0 14px; }
   .pf-content { padding:28px 14px 52px; }
-  .pf-row { flex-direction:column; align-items:flex-start; }
-  .pf-edit { align-self:flex-end; }
+  .pf-row { flex-direction:row; align-items:center; }
+  .pf-edit { align-self:auto; }
   .pf-news-left { padding:22px 22px; }
   .pf-news-heading { font-size:.95rem; }
   .pf-hero-user { transform:translateY(46px); }

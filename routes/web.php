@@ -71,6 +71,8 @@ Route::prefix('admin')->group(function () {
 
     Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('admin.login.submit');
     Route::get('/users', [AdminController::class, 'users']);
+    Route::get('/customers', [AdminController::class, 'customers']);
+    Route::get('/customers/delete/{id}', [AdminController::class, 'deleteCustomer']);
     Route::get('/agents', [AdminController::class, 'agents']);
     Route::get('/leads', [AdminController::class, 'leads']);
 

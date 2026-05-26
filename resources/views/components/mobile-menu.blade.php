@@ -73,25 +73,47 @@
 
         <!-- Actions -->
         <div class="space-y-4">
-            <a href="{{ url('/login') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-foreground hover:bg-gray-50 transition-colors">
-                <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                    <i data-lucide="user" size="24"></i>
-                </div>
-                Sign In
-            </a>
-            <a href="{{ url('/login') }}?tab=agent" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-foreground hover:bg-gray-50 transition-colors">
-                <div class="w-12 h-12 bg-foreground/5 rounded-full flex items-center justify-center text-foreground">
-                    <i data-lucide="briefcase" size="24"></i>
-                </div>
-                Agent Portal
-            </a>
-            <a href="{{ url('/admin/login') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-foreground text-white shadow-premium font-bold hover:bg-black transition-all">
-                <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white">
-                    <i data-lucide="shield" size="24"></i>
-                </div>
-                Admin Login
-            </a>
-
+            @auth
+                <a href="{{ url('/profile') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-foreground hover:bg-gray-50 transition-colors">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                        <i data-lucide="user" size="24"></i>
+                    </div>
+                    My Profile
+                </a>
+                <a href="{{ url('/logout') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-red-500 hover:bg-red-50 transition-colors">
+                    <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-500">
+                        <i data-lucide="log-out" size="24"></i>
+                    </div>
+                    Sign Out
+                </a>
+                @if(in_array(auth()->user()->role, ['SUPER ADMIN', 'MANAGER', 'EDITOR']))
+                    <a href="{{ url('/admin/dashboard') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-foreground text-white shadow-premium font-bold hover:bg-black transition-all">
+                        <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white">
+                            <i data-lucide="shield" size="24"></i>
+                        </div>
+                        Admin Dashboard
+                    </a>
+                @endif
+            @else
+                <a href="{{ url('/login') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-foreground hover:bg-gray-50 transition-colors">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+                        <i data-lucide="user" size="24"></i>
+                    </div>
+                    Sign In
+                </a>
+                <a href="{{ url('/login') }}?tab=agent" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-foreground hover:bg-gray-50 transition-colors">
+                    <div class="w-12 h-12 bg-foreground/5 rounded-full flex items-center justify-center text-foreground">
+                        <i data-lucide="briefcase" size="24"></i>
+                    </div>
+                    Agent Portal
+                </a>
+                <a href="{{ url('/admin/login') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-foreground text-white shadow-premium font-bold hover:bg-black transition-all">
+                    <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white">
+                        <i data-lucide="shield" size="24"></i>
+                    </div>
+                    Admin Login
+                </a>
+            @endauth
         </div>
 
         <!-- Footer -->

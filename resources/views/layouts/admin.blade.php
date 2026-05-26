@@ -52,6 +52,7 @@
                             'label' => 'ADMIN CENTRAL',
                             'items' => [
                                 ['name' => 'Global Dashboard', 'icon' => 'layout-dashboard', 'href' => '/admin/dashboard'],
+                                ['name' => 'Customers', 'icon' => 'user', 'href' => '/admin/customers'],
                                 ['name' => 'Admin User', 'icon' => 'user-round', 'href' => '/admin/users'],
                                 ['name' => 'Agent Management', 'icon' => 'users', 'href' => '/admin/agents'],
                                 ['name' => 'Lead Management', 'icon' => 'target', 'href' => '/admin/leads'],

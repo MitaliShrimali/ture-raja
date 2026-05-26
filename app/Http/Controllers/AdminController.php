@@ -355,15 +355,41 @@ class AdminController extends Controller
     public function users(Request $request)
     {
         $search = $request->input('search');
-        $query = DB::table('users');
+        $query = DB::table('users')->whereIn('role', ['SUPER ADMIN', 'MANAGER', 'EDITOR']);
 
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%");
+            });
         }
 
         $users = $query->orderBy('id', 'asc')->paginate(5)->withQueryString();
         return view('admin.users', compact('users', 'search'));
+    }
+
+    // CUSTOMERS (Normal Users)
+    public function customers(Request $request)
+    {
+        $search = $request->input('search');
+        // Assuming normal users don't have the admin roles, or their role is 'USER'
+        $query = DB::table('users')->whereNotIn('role', ['SUPER ADMIN', 'MANAGER', 'EDITOR'])->orWhereNull('role');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $customers = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
+        return view('admin.customers', compact('customers', 'search'));
+    }
+
+    public function deleteCustomer($id)
+    {
+        DB::table('users')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Customer account removed!');
     }
 
     public function storeUser(Request $request)
