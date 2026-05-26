@@ -139,13 +139,8 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-4 lg:gap-8">
-                    <!-- Notifications -->
-                    <a href="{{ url('/admin/notifications') }}" class="relative p-2.5 text-text-muted hover:text-primary hover:bg-primary/5 rounded-full transition-all">
-    <i data-lucide="bell" size="22"></i>
-    <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-primary rounded-full border-2 border-white shadow-sm"></span>
-</a>
-
+                <div class="flex items-center gap-4">
+                    
                     <!-- Session Notifications -->
                     @if(session('success') || session('error'))
                         <div 
@@ -173,26 +168,47 @@
                         </div>
                     @endif
 
-                    <!-- User Profile -->
-                    @php
-                        $activeAdmin = Auth::check() ? Auth::user() : (\DB::table('users')->where('id', 1)->first() ?? (object)[
-                            'name' => 'Super Admin',
-                            'role' => 'SUPER ADMIN',
-                            'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
-                        ]);
-                        $adminAvatar = ($activeAdmin && !empty($activeAdmin->avatar)) ? $activeAdmin->avatar : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($activeAdmin->name ?? 'Admin');
-                    @endphp
-                    <a href="{{ url('/admin/settings') }}" class="flex items-center gap-4 pl-4 border-l border-border-soft hover:opacity-80 transition-all">
-                        <div class="text-right hidden md:block">
-                            <p class="text-sm font-black text-foreground leading-none">{{ $activeAdmin->name }}</p>
-                            <p class="text-[10px] font-black text-primary uppercase tracking-widest mt-1">{{ $activeAdmin->role }}</p>
-                        </div>
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-primary to-orange-400 p-[2px] shadow-lg shadow-primary/20">
-                            <div class="w-full h-full rounded-[9px] bg-white p-0.5 overflow-hidden">
-                                <img src="{{ $adminAvatar }}" alt="Avatar" class="w-full h-full object-cover rounded-[7px]">
+                    <!-- Pill Container for Search, Icons, and Profile -->
+                    <div class="flex items-center bg-white rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05),0_10px_20px_-2px_rgba(0,0,0,0.02)] p-1.5 pl-3 gap-3 md:gap-5 border border-gray-50">
+                        
+                        <!-- Search -->
+                        <div class="flex items-center bg-white border border-gray-200 rounded-full w-24 sm:w-32 md:w-56 overflow-hidden focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                            <div class="pl-3 flex items-center justify-center text-gray-400 pointer-events-none">
+                                <i data-lucide="search" size="14"></i>
                             </div>
+                            <input 
+                                type="text" 
+                                placeholder="Type" 
+                                class="w-full bg-transparent border-none py-1.5 pl-2 pr-3 text-sm font-semibold text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-0"
+                            >
                         </div>
-                    </a>
+
+                        <!-- Icons -->
+                        <div class="flex items-center gap-1 md:gap-2">
+                            <a href="{{ url('/admin/notifications') }}" class="relative p-2 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
+                                <i data-lucide="bell" size="20"></i>
+                            </a>
+                            <a href="{{ url('/admin/settings') }}" class="p-2 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
+                                <i data-lucide="settings" size="20"></i>
+                            </a>
+                            <button type="button" class="p-2 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
+                                <i data-lucide="info" size="20"></i>
+                            </button>
+                        </div>
+
+                        <!-- User Profile Avatar -->
+                        @php
+                            $activeAdmin = Auth::check() ? Auth::user() : (\DB::table('users')->where('id', 1)->first() ?? (object)[
+                                'name' => 'Super Admin',
+                                'role' => 'SUPER ADMIN',
+                                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'
+                            ]);
+                            $adminAvatar = ($activeAdmin && !empty($activeAdmin->avatar)) ? $activeAdmin->avatar : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($activeAdmin->name ?? 'Admin');
+                        @endphp
+                        <a href="{{ url('/admin/settings') }}" class="block shrink-0">
+                            <img src="{{ $adminAvatar }}" alt="Profile" class="w-10 h-10 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
+                        </a>
+                    </div>
                 </div>
             </header>
 

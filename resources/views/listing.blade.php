@@ -161,7 +161,7 @@
             >
                 <!-- Mobile Drawer Header -->
                 <div class="flex items-center justify-between lg:hidden border-b border-gray-100 pb-4 mb-6">
-                    <h3 class="text-lg font-black">Filters</h3>
+                    <h3 class="text-sm font-black">Filters</h3>
                     <div class="flex items-center gap-4">
                         <button type="button" onclick="clearAllFilters()" class="text-xs font-black text-primary hover:text-primary-hover bg-primary/10 px-3 py-1.5 rounded-full transition-colors">
                             Clear All

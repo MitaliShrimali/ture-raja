@@ -11,14 +11,14 @@
             <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4 lg:gap-3">
                 @php
                     $transits = [
-                        ['label' => 'Flight Package', 'gif' => 'https://s13.gifyu.com/images/b7YmN.gif'],
-                        ['label' => 'Train Package', 'gif' => 'https://s13.gifyu.com/images/b7Yms.gif'],
-                        ['label' => 'Bus Package', 'gif' => 'https://s13.gifyu.com/images/b7YmK.gif'],
-                        ['label' => 'Bullet Ride', 'gif' => 'https://s13.gifyu.com/images/b7YmH.gif'],
-                        ['label' => 'Cruise Package', 'gif' => 'https://s13.gifyu.com/images/b7Ymx.gif'],
-                        ['label' => 'Land Package', 'gif' => 'https://s13.gifyu.com/images/b7Ymw.gif'],
-                        ['label' => 'Tracking', 'gif' => 'https://s13.gifyu.com/images/b7YmT.gif'],
-                        ['label' => 'Helicopter Package', 'gif' => 'https://s13.gifyu.com/images/b7Ym3.gif'],
+                        ['label' => 'Flight Package', 'gif' => 'https://s13.gifyu.com/images/bIHxe.gif'],
+                        ['label' => 'Train Package', 'gif' => 'https://s13.gifyu.com/images/bIHxG.gif'],
+                        ['label' => 'Bus Package', 'gif' => 'https://s13.gifyu.com/images/bIHxJ.gif'],
+                        ['label' => 'Bullet Ride', 'gif' => 'https://s13.gifyu.com/images/bIHxP.gif'],
+                        ['label' => 'Cruise Package', 'gif' => 'https://s13.gifyu.com/images/bIHxX.gif'],
+                        ['label' => 'Land Package', 'gif' => 'https://s13.gifyu.com/images/bIHHY.png'],
+                        ['label' => 'Tracking', 'gif' => 'https://s13.gifyu.com/images/bIHHt.png'],
+                        ['label' => 'Helicopter Package', 'gif' => 'https://s13.gifyu.com/images/bIHH5.png'],
                     ];
                 @endphp
 

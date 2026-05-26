@@ -75,8 +75,8 @@
       <button @click="tab='history'"
               :class="tab==='history' ? 'pf-tab-on' : ''"
               class="pf-tab">History</button>
-      <button @click="tab='payment'"
-              :class="tab==='payment' ? 'pf-tab-on' : ''"
+      <button @click="tab='wishlist'"
+              :class="tab==='wishlist' ? 'pf-tab-on' : ''"
               class="pf-tab">Wishlist</button>
     </div>
   </div>
@@ -241,74 +241,7 @@
         </form>
       </section>
 
-      {{-- ── Your History / Searches ── --}}
-      <section class="pf-section pf-hist-section">
-        <div class="pf-hist-head">
-          <div>
-            <h2 class="pf-hist-title">Your History/Searches</h2>
-            <p class="pf-hist-sub">Favourite destinations based on customer reviews</p>
-          </div>
-          <div class="pf-filters">
-            <button class="pf-flt">Categories
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button class="pf-flt">Duration
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button class="pf-flt">Reviews / Rating
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button class="pf-flt">Price range
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-          </div>
-        </div>
 
-        <div class="pf-dest-grid">
-          @forelse($bookingItems->take(4) as $bk)
-          <a href="/packages/{{ Str::slug($bk->package_title) }}" class="pf-dest-card">
-            <div class="pf-dest-img">
-              <img src="{{ $bk->package_image ?? 'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=400&q=80' }}"
-                   alt="{{ $bk->package_title }}">
-            </div>
-            <div class="pf-dest-body">
-              <p class="pf-dest-name">{{ Str::limit($bk->package_title, 14) }}</p>
-              <p class="pf-dest-meta">{{ $bk->guests }}k Tours, 24k Activities</p>
-            </div>
-            <div class="pf-dest-arrow">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-          </a>
-          @empty
-          @php
-            $demos = [
-              ['Venice',    'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=400&q=80'],
-              ['Amsterdam', 'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=400&q=80'],
-              ['Budapest',  'https://images.unsplash.com/photo-1551867633-194f125bddfa?auto=format&fit=crop&w=400&q=80'],
-              ['Lisbon',    'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=400&q=80'],
-            ];
-          @endphp
-          @foreach($demos as [$dname, $dimg])
-          <a href="{{ route('discover') }}" class="pf-dest-card">
-            <div class="pf-dest-img"><img src="{{ $dimg }}" alt="{{ $dname }}"></div>
-            <div class="pf-dest-body">
-              <p class="pf-dest-name">{{ $dname }}</p>
-              <p class="pf-dest-meta">86k Tours, 24k Activities</p>
-            </div>
-            <div class="pf-dest-arrow">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-          </a>
-          @endforeach
-          @endforelse
-        </div>
-      </section>
 
       {{-- ── Newsletter ── --}}
       <section class="pf-section">
@@ -334,6 +267,143 @@
 
     {{-- ── HISTORY TAB ── --}}
     <div x-show="tab==='history'" x-transition.opacity.duration.200ms>
+
+      {{-- ── Your History / Searches ── --}}
+      <section class="pf-section pf-hist-section">
+        <div class="pf-hist-head">
+          <div>
+            <h2 class="pf-hist-title">Your History/Searches</h2>
+            <p class="pf-hist-sub">Favourite destinations based on customer reviews</p>
+          </div>
+          <div class="pf-filters">
+            <button class="pf-flt">Categories
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="pf-flt">Duration
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="pf-flt">Review / Rating
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <button class="pf-flt">Price range
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+        </div>
+
+        @php
+          /* ── Build destination list dynamically ──
+             1. Pull unique destinations the user searched for
+             2. For each, try to find a matching package (by location or title)
+             3. Fall back to curated demo destinations if no searches exist
+          */
+          $searchedDests = isset($searchHistory) ? $searchHistory : collect();
+
+          // Map each searched destination to a package image + slug
+          $destCards = $searchedDests->map(function($s) use ($packages) {
+            $term = $s->destination ?: $s->from_city;
+            if (!$term) return null;
+            // Try to match a package by location or title
+            $pkg = $packages->first(function($p) use ($term) {
+              $loc   = is_array($p) ? ($p['location'] ?? '') : ($p->location ?? '');
+              $title = is_array($p) ? ($p['title']    ?? '') : ($p->title    ?? '');
+              return stripos($loc, $term) !== false || stripos($title, $term) !== false
+                  || stripos($term, $loc) !== false;
+            });
+            $img  = $pkg ? (is_array($pkg) ? $pkg['image']    : $pkg->image)    : null;
+            $slug = $pkg ? (is_array($pkg) ? ($pkg['slug'] ?? Str::slug($pkg['title'])) : Str::slug($pkg->title)) : null;
+            // If image looks like a relative path, wrap with asset()
+            if ($img && !str_starts_with($img, 'http')) {
+              $img = asset($img);
+            }
+            if (!$img) {
+              // Generic Unsplash for the searched city
+              $img = 'https://source.unsplash.com/400x300/?' . urlencode($term) . ',city,travel';
+            }
+            return ['name' => ucwords($term), 'image' => $img, 'slug' => $slug, 'count' => rand(80,400)];
+          })->filter()->unique('name')->take(7)->values();
+
+          // Also pull package locations from packages list to enrich
+          $pkgLocations = $packages->map(function($p) {
+            $img  = is_array($p) ? ($p['image'] ?? '') : ($p->image ?? '');
+            $loc  = is_array($p) ? ($p['location'] ?? '') : ($p->location ?? '');
+            $slug = is_array($p) ? ($p['slug']   ?? Str::slug($p['title'] ?? '')) : Str::slug($p->title ?? '');
+            if ($img && !str_starts_with($img, 'http')) $img = asset($img);
+            return ['name' => $loc, 'image' => $img, 'slug' => $slug, 'count' => rand(100,500)];
+          })->filter(fn($x) => !empty($x['name']))->unique('name');
+
+          // If fewer than 7 from search history, pad with package locations not already shown
+          if ($destCards->count() < 7) {
+            $existing = $destCards->pluck('name')->map('strtolower')->toArray();
+            $extra = $pkgLocations->filter(fn($x) => !in_array(strtolower($x['name']), $existing))
+                                  ->take(7 - $destCards->count())->values();
+            $destCards = $destCards->concat($extra);
+          }
+
+          // Final fallback if still empty
+          if ($destCards->isEmpty()) {
+            $destCards = collect([
+              ['name'=>'Venice',    'image'=>'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=400&q=80', 'slug'=>'venice',    'count'=>386],
+              ['name'=>'Amsterdam', 'image'=>'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=400&q=80', 'slug'=>'amsterdam', 'count'=>356],
+              ['name'=>'Budapest',  'image'=>'https://images.unsplash.com/photo-1551867633-194f125bddfa?auto=format&fit=crop&w=400&q=80', 'slug'=>'budapest',  'count'=>356],
+              ['name'=>'Lisbon',    'image'=>'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=400&q=80', 'slug'=>'lisbon',    'count'=>356],
+              ['name'=>'London',    'image'=>'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=400&q=80', 'slug'=>'london',    'count'=>356],
+              ['name'=>'Ottawa',    'image'=>'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&w=400&q=80', 'slug'=>'ottawa',    'count'=>356],
+              ['name'=>'Paris',     'image'=>'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=80', 'slug'=>'paris',     'count'=>356],
+            ]);
+          }
+
+          $firstRow  = $destCards->take(4);
+          $secondRow = $destCards->skip(4)->take(3);
+        @endphp
+
+        {{-- Row 1: 4 cards --}}
+        <div class="pf-dest-grid pf-dest-grid--4">
+          @foreach($firstRow as $dc)
+          <a href="{{ route('discover', ['search' => $dc['name']]) }}" class="pf-dest-card">
+            <div class="pf-dest-img">
+              <img src="{{ $dc['image'] }}" alt="{{ $dc['name'] }}" loading="lazy">
+            </div>
+            <div class="pf-dest-body">
+              <p class="pf-dest-name">{{ $dc['name'] }}</p>
+              <p class="pf-dest-meta">{{ $dc['count'] }}k Tours, 24k Activities</p>
+            </div>
+            <div class="pf-dest-arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </a>
+          @endforeach
+        </div>
+
+        {{-- Row 2: 3 cards + CTA card --}}
+        <div class="pf-dest-grid pf-dest-grid--4" style="margin-top:16px">
+          @foreach($secondRow as $dc)
+          <a href="{{ route('discover', ['search' => $dc['name']]) }}" class="pf-dest-card">
+            <div class="pf-dest-img">
+              <img src="{{ $dc['image'] }}" alt="{{ $dc['name'] }}" loading="lazy">
+            </div>
+            <div class="pf-dest-body">
+              <p class="pf-dest-name">{{ $dc['name'] }}</p>
+              <p class="pf-dest-meta">{{ $dc['count'] }}k Tours, 24k Activities</p>
+            </div>
+            <div class="pf-dest-arrow">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </a>
+          @endforeach
+          {{-- CTA card --}}
+          <div class="pf-dest-cta">
+            <p class="pf-dest-cta-title">Crafting Your<br>Perfect Travel<br>Experience</p>
+            <a href="{{ route('discover') }}" class="pf-dest-cta-btn">
+              Browse
+              <span>All destinations</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {{-- ── Booking History List ── --}}
       <section class="pf-section">
         <h2 class="pf-sec-h">Booking History</h2>
         @forelse($bookingItems as $bk)
@@ -347,61 +417,62 @@
             <p>{{ $bk->guests }} Guest(s) · ₹{{ number_format($bk->package_price) }}</p>
             <span class="pf-badge pf-badge--{{ strtolower($bk->status) }}">{{ $bk->status }}</span>
           </div>
-          <a href="/packages/{{ Str::slug($bk->package_title) }}" class="pf-bk-link">View →</a>
+          <a href="{{ route('discover', ['search' => $bk->package_title]) }}" class="pf-bk-link">View →</a>
         </div>
         @empty
         <div class="pf-empty">
-          <p>No bookings yet.</p>
+          <p>No bookings yet. Start exploring!</p>
           <a href="{{ route('discover') }}" class="pf-empty-btn">Browse Packages</a>
         </div>
         @endforelse
       </section>
+
     </div>
 
-    {{-- ── PAYMENT METHODS TAB ── --}}
-    <div x-show="tab==='payment'" x-transition.opacity.duration.200ms>
-      <section class="pf-section">
-        <h2 class="pf-sec-h">Payment Methods</h2>
+    {{-- ── WISHLIST TAB ── --}}
+    <div x-show="tab==='wishlist'" x-transition.opacity.duration.200ms>
 
-        @if($activePlan)
-        <div class="pf-plan">
-          <span class="pf-plan-badge">Active Plan</span>
-          <h3 class="pf-plan-name">{{ $activePlan->plan_name }}</h3>
-          <div class="pf-plan-meta">
-            <span>₹{{ number_format($activePlan->price) }}</span>
-            <span>{{ $activePlan->duration }}</span>
-            <span style="color:#4ade80">{{ $activePlan->status }}</span>
+      {{-- Header (shown when items exist) --}}
+      <div class="pf-wl-header" id="pf-wl-has-items" style="display:none">
+        <div>
+          <h2 class="pf-wl-title">My Wishlist</h2>
+          <p class="pf-wl-sub" id="pf-wl-count-label">0 saved packages</p>
+        </div>
+        <a href="{{ route('discover') }}" class="pf-wl-browse-btn">+ Explore More</a>
+      </div>
+
+      {{-- Wishlist grid (JS-rendered) --}}
+      <div class="pf-wl-grid" id="pf-wl-grid"></div>
+
+      {{-- Empty state --}}
+      <div class="pf-wl-empty" id="pf-wl-empty" style="display:none">
+        <img src="{{ asset('tourex/travel-sticker.png') }}"
+             onerror="this.src='https://illustrations.popsy.co/amber/traveling.svg'"
+             alt="No wishlist items" class="pf-wl-empty-img">
+        <p class="pf-wl-empty-text">You don't have any tickets yet. Start planning your next trip!</p>
+      </div>
+
+      {{-- Newsletter (shown when wishlist empty) --}}
+      <section class="pf-section" id="pf-wl-newsletter" style="display:none">
+        <div class="pf-news">
+          <div class="pf-news-left">
+            <span class="pf-news-tag">Join our newsletter</span>
+            <h3 class="pf-news-heading">Subscribe to see secret deals<br>prices drop the moment you sign up!</h3>
+            <form action="{{ route('newsletter.subscribe') }}" method="POST" class="pf-news-form">
+              @csrf
+              <input type="email" name="email" value="{{ $displayEmail }}"
+                     placeholder="Your Email" class="pf-news-input">
+              <button type="submit" class="pf-news-btn">Subscribe</button>
+            </form>
+            <p class="pf-news-note">No ads. No trails. No commitments.</p>
+          </div>
+          <div class="pf-news-img">
+            <img src="https://images.unsplash.com/photo-1540541338287-41700207dee6?auto=format&fit=crop&w=600&q=80" alt="Newsletter">
           </div>
         </div>
-        @endif
-
-        @if(count($userPayments) > 0)
-        <div class="pf-pay-tbl-wrap">
-          <table class="pf-pay-tbl">
-            <thead>
-              <tr>
-                <th>Transaction ID</th><th>Plan / Service</th>
-                <th>Amount</th><th>Date</th><th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($userPayments as $p)
-              <tr>
-                <td class="mono">{{ $p->payment_id }}</td>
-                <td>{{ $p->plan_type }}</td>
-                <td style="color:#e8663a;font-weight:800">₹{{ number_format($p->amount,2) }}</td>
-                <td>{{ \Carbon\Carbon::parse($p->date)->format('d M Y') }}</td>
-                <td><span class="pf-badge pf-badge--{{ strtolower($p->status) }}">{{ $p->status }}</span></td>
-              </tr>
-              @endforeach
-            </tbody>
-          </table>
-        </div>
-        @else
-        <div class="pf-empty"><p>No payment history.</p></div>
-        @endif
       </section>
-    </div>
+
+    </div>{{-- /wishlist tab --}}
 
   </div>{{-- /pf-content --}}
 </div>{{-- /pf-page --}}
@@ -419,6 +490,74 @@ function pfUploadAvatar(input) {
 document.querySelectorAll('.pf-toast').forEach(t => {
   setTimeout(() => t.style.opacity = '0', 3500);
   setTimeout(() => t.remove(), 4000);
+});
+
+// ── Render wishlist from localStorage ──────────────────────────────────────
+function pfRenderWishlist() {
+  const wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
+  const grid       = document.getElementById('pf-wl-grid');
+  const header     = document.getElementById('pf-wl-has-items');
+  const emptyState = document.getElementById('pf-wl-empty');
+  const newsletter = document.getElementById('pf-wl-newsletter');
+  const countLabel = document.getElementById('pf-wl-count-label');
+
+  if (!grid) return;
+
+  if (wishlist.length === 0) {
+    grid.innerHTML        = '';
+    header.style.display  = 'none';
+    emptyState.style.display  = 'flex';
+    newsletter.style.display  = 'block';
+  } else {
+    header.style.display  = 'flex';
+    emptyState.style.display  = 'none';
+    newsletter.style.display  = 'none';
+    countLabel.textContent = wishlist.length + ' saved ' + (wishlist.length === 1 ? 'package' : 'packages');
+
+    grid.innerHTML = wishlist.map((item, idx) => `
+      <a href="/packages/${item.slug}" class="pf-wl-card" style="text-decoration:none">
+        <div class="pf-wl-thumb">
+          <img src="${item.image || 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=200&q=80'}"
+               alt="${item.title}"
+               onerror="this.src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=200&q=80'"
+               loading="lazy">
+        </div>
+        <div class="pf-wl-info">
+          <h4>${item.title}</h4>
+          <p class="pf-wl-price-line">
+            <span class="pf-wl-price">₹${Number(item.price).toLocaleString('en-IN')}</span>
+            <span class="pf-wl-per">/ person</span>
+          </p>
+        </div>
+        <div class="pf-wl-actions">
+          <span class="pf-wl-view">View →</span>
+          <button class="pf-wl-remove" onclick="event.preventDefault();event.stopPropagation();pfRemoveWishlist('${item.slug}')" title="Remove">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </a>
+    `).join('');
+  }
+}
+
+function pfRemoveWishlist(slug) {
+  let wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
+  wishlist = wishlist.filter(item => item.slug !== slug);
+  localStorage.setItem('tourraja_wishlist', JSON.stringify(wishlist));
+  pfRenderWishlist();
+  // Also sync removal to server
+  if (typeof updateWishlistUI === 'function') updateWishlistUI();
+}
+
+// Run on page load + whenever tab switches to wishlist
+document.addEventListener('DOMContentLoaded', () => {
+  pfRenderWishlist();
+  // Re-render when switching to wishlist tab
+  document.querySelectorAll('[\\@click]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setTimeout(pfRenderWishlist, 50);
+    });
+  });
 });
 </script>
 @endpush
@@ -497,22 +636,26 @@ document.querySelectorAll('.pf-toast').forEach(t => {
 .pf-tabbar {
   background:#fff;
   border-bottom:1.5px solid #e5e7eb;
-  margin-top:56px;          /* push down past avatar overlap */
+  margin-top:56px;
   position:sticky; top:0; z-index:30;
   box-shadow:0 2px 6px rgba(0,0,0,.04);
 }
 .pf-tabs-inner {
   display:flex;
   max-width:900px; margin:0 auto;
-  padding:0 28px;
+  padding:0;
+  justify-content:space-evenly;
 }
 .pf-tab {
-  padding:16px 26px 14px;
-  font-size:.88rem; font-weight:600;
+  flex:1;
+  padding:18px 0 16px;
+  font-size:.95rem; font-weight:600;
   color:#9ca3af;
   background:none; border:none;
   border-bottom:2.5px solid transparent;
   cursor:pointer; white-space:nowrap;
+  text-align:center;
+  letter-spacing:.01em;
   transition:color .18s, border-color .18s;
 }
 .pf-tab:hover { color:#e8663a; }
@@ -605,9 +748,9 @@ document.querySelectorAll('.pf-toast').forEach(t => {
 /* destination cards — 4-col grid */
 .pf-dest-grid {
   display:grid;
-  grid-template-columns:repeat(4,1fr);
   gap:16px;
 }
+.pf-dest-grid--4 { grid-template-columns:repeat(4,1fr); }
 .pf-dest-card {
   background:#fff; border-radius:12px; overflow:hidden;
   border:1px solid #f0f0f0;
@@ -629,6 +772,32 @@ document.querySelectorAll('.pf-toast').forEach(t => {
   color:#d1d5db; transition:color .15s;
 }
 .pf-dest-card:hover .pf-dest-arrow { color:#e8663a; }
+
+/* CTA card */
+.pf-dest-cta {
+  background:#f8f9fb;
+  border-radius:12px;
+  border:1px solid #e9eaec;
+  padding:22px 20px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  min-height:180px;
+}
+.pf-dest-cta-title {
+  font-size:.97rem; font-weight:800; color:#111827;
+  font-family:'Syne',sans-serif; line-height:1.45; margin:0 0 20px;
+}
+.pf-dest-cta-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  background:#111827; color:#fff;
+  border-radius:999px;
+  padding:10px 18px 10px 20px;
+  font-size:.78rem; font-weight:700;
+  text-decoration:none;
+  transition:background .18s;
+  width:fit-content;
+}
+.pf-dest-cta-btn span { font-size:.72rem; opacity:.7; font-weight:500; }
+.pf-dest-cta-btn:hover { background:#e8663a; }
 
 /* ── Newsletter ── */
 .pf-news {
@@ -668,6 +837,89 @@ document.querySelectorAll('.pf-toast').forEach(t => {
 .pf-news-note { font-size:.7rem; color:#9ca3af; margin:10px 0 0; }
 .pf-news-img { width:220px; flex-shrink:0; }
 .pf-news-img img { width:100%; height:100%; object-fit:cover; }
+
+/* ── Wishlist (compact list style, matches booking cards) ── */
+.pf-wl-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:18px; flex-wrap:wrap; gap:12px;
+}
+.pf-wl-title {
+  font-size:1.25rem; font-weight:800; color:#111827;
+  font-family:'Syne',sans-serif; margin:0 0 3px;
+}
+.pf-wl-sub { font-size:.75rem; color:#9ca3af; margin:0; }
+.pf-wl-browse-btn {
+  display:inline-flex; align-items:center;
+  background:#111827; color:#fff;
+  padding:9px 18px; border-radius:999px;
+  font-size:.8rem; font-weight:700; text-decoration:none;
+  transition:background .18s;
+}
+.pf-wl-browse-btn:hover { background:#e8663a; }
+
+/* The grid is now a flex column list */
+.pf-wl-grid {
+  display:flex; flex-direction:column; gap:0;
+}
+
+/* Each card = horizontal row, identical to pf-bk-card */
+.pf-wl-card {
+  display:flex; align-items:center; gap:16px;
+  background:#fff; border:1px solid #f0f0f0;
+  border-radius:12px; padding:14px 18px;
+  margin-bottom:10px;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+  transition:box-shadow .2s, transform .15s;
+  cursor:pointer;
+  color:inherit;
+}
+.pf-wl-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.09); transform:translateY(-1px); }
+
+/* Thumbnail — matches pf-bk-img */
+.pf-wl-thumb {
+  width:80px; height:60px;
+  border-radius:8px; overflow:hidden; flex-shrink:0;
+}
+.pf-wl-thumb img { width:100%; height:100%; object-fit:cover; }
+
+/* Info — matches pf-bk-info */
+.pf-wl-info { flex:1; min-width:0; }
+.pf-wl-info h4 {
+  font-size:.93rem; font-weight:700; color:#111827;
+  margin:0 0 5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.pf-wl-price-line { display:flex; align-items:baseline; gap:4px; margin:0; }
+.pf-wl-price { font-size:.95rem; font-weight:800; color:#e8663a; }
+.pf-wl-per { font-size:.72rem; color:#9ca3af; }
+
+/* Actions (View link + trash) */
+.pf-wl-actions { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.pf-wl-view {
+  font-size:.8rem; font-weight:600; color:#e8663a;
+  white-space:nowrap;
+}
+.pf-wl-remove {
+  background:none; border:none; cursor:pointer;
+  color:#d1d5db; padding:4px;
+  transition:color .15s;
+}
+.pf-wl-remove:hover { color:#dc2626; }
+
+/* Empty wishlist state */
+.pf-wl-empty {
+  display:flex; flex-direction:column; align-items:center;
+  padding:52px 24px 40px;
+}
+.pf-wl-empty-img {
+  width:200px; height:auto;
+  margin-bottom:18px;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.08));
+}
+.pf-wl-empty-text {
+  font-size:.93rem; color:#6b7280; font-weight:500;
+  text-align:center; margin:0 0 32px;
+  max-width:300px; line-height:1.6;
+}
 
 /* ── Booking cards ── */
 .pf-bk-card {
@@ -755,21 +1007,22 @@ document.querySelectorAll('.pf-toast').forEach(t => {
 @media (max-width:768px) {
   .pf-hero { height:210px; }
   .pf-hero-label { font-size:1.5rem; }
-  .pf-dest-grid { grid-template-columns:repeat(2,1fr); }
+  .pf-dest-grid--4 { grid-template-columns:repeat(2,1fr); }
   .pf-news { flex-direction:column; }
   .pf-news-img { width:100%; height:150px; }
   .pf-hist-head { flex-direction:column; }
   .pf-hist-title { font-size:1.35rem; }
+  .pf-wl-grid { grid-template-columns:repeat(2,1fr); }
 }
 @media (max-width:520px) {
-  .pf-tabs-inner { overflow-x:auto; padding:0 12px; }
-  .pf-tab  { padding:14px 14px; font-size:.8rem; }
+  .pf-tab { font-size:.82rem; padding:16px 0 14px; }
   .pf-content { padding:28px 14px 52px; }
   .pf-row { flex-direction:column; align-items:flex-start; }
   .pf-edit { align-self:flex-end; }
   .pf-news-left { padding:22px 22px; }
   .pf-news-heading { font-size:.95rem; }
   .pf-hero-user { transform:translateY(46px); }
+  .pf-dest-grid--4 { grid-template-columns:repeat(2,1fr); }
 }
 @media (max-width:380px) {
   .pf-dest-grid { grid-template-columns:repeat(2,1fr); }

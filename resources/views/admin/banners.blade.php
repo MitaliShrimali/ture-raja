@@ -27,14 +27,14 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead>
-<tr>
+<!-- <tr>
     <th class="py-6 px-4"></th>
     <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">BANNER IMAGE</th>
     <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">DESCRIPTION & MARKETING</th>
     <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">TARGET LINK</th>
     <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">STATUS</th>
     <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">ACTIONS</th>
-</tr>
+</tr> -->
                     <tr class="bg-gray-50/50 border-b border-border-soft">
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">BANNER IMAGE</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">DESCRIPTION & MARKETING</th>
@@ -47,7 +47,7 @@
                     <tbody id="bannersSortable" class="divide-y divide-border-soft" data-url="{{ url('/admin/home-editor/reorder') }}">
 @forelse($banners as $banner)
                         <tr class="group hover:bg-gray-50/30 transition-colors" data-id="{{ $banner->id }}">
-    <td class="py-8 px-4 cursor-move" title="Drag to reorder"><i data-lucide="move"></i></td>
+    <!-- <td class="py-8 px-4 cursor-move" title="Drag to reorder"><i data-lucide="move"></i></td> -->
                             <td class="py-8 px-10">
                                 <div class="w-40 h-24 rounded-2xl overflow-hidden border border-border-soft bg-gray-100 group-hover:scale-105 transition-transform duration-500">
                                     @if (Str::endsWith(strtolower($banner->image ?? ''), '.mp4'))

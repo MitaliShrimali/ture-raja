@@ -181,9 +181,24 @@
                     </div>
                 </div>
 
-                {{-- Includes Tags --}}
+                {{-- Includes Tags & Properties --}}
+                @php
+                    $tags = [];
+                    if (!empty($package['category'])) $tags[] = ucfirst($package['category']);
+                    if (!empty($package['tour_type'])) $tags[] = $package['tour_type'];
+                    if (!empty($package['theme'])) $tags[] = $package['theme'];
+                    if (!empty($package['city'])) $tags[] = 'City: ' . $package['city'];
+                    if (!empty($package['activities'])) {
+                        foreach ((array)$package['activities'] as $act) {
+                            $tags[] = $act;
+                        }
+                    }
+                    if (empty($tags)) {
+                        $tags = ['Land Package']; // Fallback
+                    }
+                @endphp
                 <div class="flex flex-wrap gap-2">
-                    @foreach(['Domestic','Land Package','Starting From Ahmedabad'] as $tag)
+                    @foreach($tags as $tag)
                         <span class="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-gray-200 text-sm font-semibold text-gray-700 shadow-sm">
                             <svg width="13" height="13" fill="none" stroke="#f97316" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                             {{ $tag }}

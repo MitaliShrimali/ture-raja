@@ -263,9 +263,16 @@ class UserController extends Controller
         try {
             $user = DB::table('users')->find($userId);
             $profile = DB::table('user_profiles')->where('user_id', $userId)->first();
-            $wishlist = DB::table('user_wishlists')
-                          ->where('user_id', $userId)
-                          ->orderByDesc('created_at')
+            $wishlist = DB::table('user_wishlists as wl')
+                          ->leftJoin('packages as p', 'p.id', '=', 'wl.package_id')
+                          ->where('wl.user_id', $userId)
+                          ->orderByDesc('wl.created_at')
+                          ->select([
+                              'wl.*',
+                              'p.location as package_location',
+                              'p.rating   as package_rating',
+                              'p.duration as package_duration',
+                          ])
                           ->paginate(6, ['*'], 'wpage');
             $bookings = DB::table('user_bookings')
                           ->where('user_id', $userId)
@@ -290,19 +297,37 @@ class UserController extends Controller
                               ->where('email', $user->email)
                               ->orderByDesc('date')
                               ->get();
+
+            // Pull the user's past search queries (unique destinations, most recent first)
+            $searchHistory = DB::table('user_search_queries')
+                               ->where('user_id', $userId)
+                               ->whereNotNull('destination')
+                               ->where('destination', '!=', '')
+                               ->orderByDesc('created_at')
+                               ->get()
+                               ->unique('destination');
         } catch (\Exception $e) {
             $user = null; $profile = null; $wishlist = collect(); $bookings = collect();
             $unreadCount = 0; $userNotifications = collect();
             $activePlan = null; $userPayments = collect();
+            $searchHistory = collect();
         }
 
         // Fallback static packages for wishlist when DB not available
         $packages = collect($this->getStaticPackages());
 
+        // Merge DB packages if available
+        try {
+            $dbPackages = Package::where('status', 'Active')->get();
+            if ($dbPackages->isNotEmpty()) {
+                $packages = $dbPackages;
+            }
+        } catch (\Exception $e) {}
+
         return view('profile', compact(
             'user', 'profile', 'wishlist', 'bookings',
             'packages', 'unreadCount', 'userNotifications',
-            'activePlan', 'userPayments'
+            'activePlan', 'userPayments', 'searchHistory'
         ));
     }
 

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'TourRaja — Premium Global Travel Experiences')</title>
     <meta name="description" content="@yield('description', 'Discover curated luxury travel packages with TourRaja. Your premium global travel partner.')">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,22 +53,41 @@
             updateWishlistUI();
         });
 
-        // ── Wishlist Logic ──────────────────────────────────────────
+        // ── Wishlist Logic ───────────────────────────────────────────────────
         window.toggleWishlist = function(e, pkg) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             let wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
             const index = wishlist.findIndex(item => item.slug === pkg.slug);
-            
+
             if (index > -1) {
                 wishlist.splice(index, 1);
             } else {
                 wishlist.push(pkg);
             }
-            
+
             localStorage.setItem('tourraja_wishlist', JSON.stringify(wishlist));
             updateWishlistUI();
+
+            // ── Also persist to DB so profile wishlist tab shows items ──
+            const csrf = document.querySelector('meta[name="csrf-token"]');
+            if (csrf) {
+                fetch('/wishlist/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf.getAttribute('content'),
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        package_id:    pkg.slug,
+                        package_title: pkg.title,
+                        package_image: pkg.image,
+                        package_price: pkg.price,
+                    })
+                }).catch(() => {}); // silent fail — localStorage is still the source of truth
+            }
         };
 
         window.updateWishlistUI = function() {
@@ -93,16 +113,16 @@
                     itemsEl.innerHTML = '<p class="text-center text-text-muted text-xs py-8 font-bold">Your wishlist is empty</p>';
                 } else {
                     itemsEl.innerHTML = wishlist.map(item => `
-                        <div class="flex items-center gap-3 group/item">
-                            <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover">
+                        <a href="/packages/${item.slug}" class="flex items-center gap-3 group/item" style="text-decoration:none;color:inherit">
+                            <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
                             <div class="flex-1 min-w-0">
                                 <h5 class="text-xs font-black text-foreground truncate">${item.title}</h5>
                                 <p class="text-[10px] text-primary font-bold">₹${Number(item.price).toLocaleString()}</p>
                             </div>
-                            <button onclick="toggleWishlist(event, {slug: '${item.slug}'})" class="text-gray-300 hover:text-primary transition-colors">
+                            <button onclick="event.preventDefault();event.stopPropagation();toggleWishlist(event,{slug:'${item.slug}'})" class="text-gray-300 hover:text-primary transition-colors flex-shrink-0">
                                 <i data-lucide="trash-2" size="14"></i>
                             </button>
-                        </div>
+                        </a>
                     `).join('');
                 }
             }
@@ -113,16 +133,16 @@
                     itemsElMobile.innerHTML = '<p class="text-xs text-text-muted font-bold italic">No items yet</p>';
                 } else {
                     itemsElMobile.innerHTML = wishlist.map(item => `
-                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-soft">
-                            <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover">
+                        <a href="/packages/${item.slug}" class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-soft" style="text-decoration:none;color:inherit">
+                            <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                             <div class="flex-1 min-w-0">
                                 <h5 class="text-[10px] font-black text-foreground truncate">${item.title}</h5>
                                 <p class="text-[10px] text-primary font-bold">₹${Number(item.price).toLocaleString()}</p>
                             </div>
-                            <button onclick="toggleWishlist(event, {slug: '${item.slug}'})" class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all">
+                            <button onclick="event.preventDefault();event.stopPropagation();toggleWishlist(event,{slug:'${item.slug}'})" class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all flex-shrink-0">
                                 <i data-lucide="trash-2" size="14"></i>
                             </button>
-                        </div>
+                        </a>
                     `).join('');
                 }
             }
