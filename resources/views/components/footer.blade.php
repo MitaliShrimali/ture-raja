@@ -1,80 +1,94 @@
-<footer class="bg-primary pt-24 pb-12 text-white overflow-hidden relative">
-    <!-- Decorative background elements -->
-    <div class="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-    <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2"></div>
+<footer style="background:#e85d26;" class="text-white">
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
 
-    <div class="container-custom relative z-10">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
-            <!-- Brand Column -->
-            <div class="space-y-8">
-                <a href="{{ url('/') }}" class="flex items-center group">
-                    <x-logo class="h-10 sm:h-12 w-auto text-white" />
-                </a>
-                <p class="text-white/80 leading-relaxed font-medium">
-                    Experience the world like never before. We curate premium travel experiences tailored to your desires. Your global adventure starts with TourRaja.
-                </p>
-                <div class="flex items-center gap-5">
-                    <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white text-white hover:text-primary rounded-full flex items-center justify-center transition-all duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                    </a>
-                    <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white text-white hover:text-primary rounded-full flex items-center justify-center transition-all duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                    </a>
-                    <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white text-white hover:text-primary rounded-full flex items-center justify-center transition-all duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
-                    </a>
-                </div>
-            </div>
+      {{-- Col 1: Logo + Become Agent --}}
+      <div class="col-span-2 md:col-span-1 space-y-5">
+        <a href="{{ url('/') }}">
+          <x-logo class="h-9 w-auto text-white" />
+        </a>
+        <a href="{{ url('https://emperorsmartsolutions.com/Tour_Raja_Agent/') }}"
+           class="inline-block border border-white text-white text-xs font-bold px-5 py-2.5 rounded-md hover:bg-white hover:text-[#e85d26] transition-all">
+          Become Agent/Login
+        </a>
+      </div>
 
-            <!-- Company -->
-            <div class="space-y-8">
-                <h4 class="text-xl font-bold font-heading">Company</h4>
-                <ul class="space-y-5 text-white/80 font-medium">
-                    <li><a href="#" class="hover:text-white transition-colors flex items-center gap-2">About Us</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors flex items-center gap-2">Destinations</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors flex items-center gap-2">Our Agents</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors flex items-center gap-2">Contact Us</a></li>
-                </ul>
-            </div>
+      {{-- Col 2: Tour Raja --}}
+      <div>
+        <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">Tour Raja</h4>
+        <ul style="list-style:none; padding:0; margin:0;">
+          <li style="padding:1px 0;"><a href="{{ url('/about') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">About Us</a></li>
+          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Career</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/contact') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Contact Us</a></li>
+          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Privacy Policy</a></li>
+          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Terms of Services</a></li>
+        </ul>
+      </div>
 
-            <!-- Support -->
-            <div class="space-y-8">
-                <h4 class="text-xl font-bold font-heading">Support</h4>
-                <ul class="space-y-5 text-white/80 font-medium">
-                    <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-white transition-colors">Safety Guides</a></li>
-                </ul>
-            </div>
+      {{-- Col 3: Quick Links --}}
+      <div>
+        <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">Quick Links</h4>
+        <ul style="list-style:none; padding:0; margin:0;">
+          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Site Map</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?category=international') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">International Destinations</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?category=domestic') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Domestic Destinations</a></li>
+          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Multi-City Destinations</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Popular Destinations</a></li>
+        </ul>
+      </div>
 
-            <!-- Contact -->
-            <div class="space-y-8">
-                <h4 class="text-xl font-bold font-heading">Get in Touch</h4>
-                <div class="space-y-6">
-                    <div class="flex items-start gap-4">
-                        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
-                            <i data-lucide="map-pin" size="20"></i>
-                        </div>
-                        <p class="text-white/80 font-medium pt-1">123 Travel Suite, <br/>Adventure Bay, World 45678</p>
-                    </div>
-                    <div class="flex items-start gap-4">
-                        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
-                            <i data-lucide="phone" size="20"></i>
-                        </div>
-                        <p class="text-white/80 font-medium pt-2">+1 (234) 567-890</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+      {{-- Col 4: Popular Transits --}}
+      <div>
+        <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">Popular Transits</h4>
+        <ul style="list-style:none; padding:0; margin:0;">
+          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=flight') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Flight Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=train') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Train Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=bus') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Bus Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=bullet') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Bullet Ride Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=cruise') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Cruise Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=land') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Land Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=tracking') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Tracking Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=helicopter') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Helicopter Package</a></li>
+        </ul>
+      </div>
 
-        <div class="pt-12 border-t border-white/20 flex flex-col md:flex-row items-center justify-between gap-6 text-white/60 text-sm font-bold">
-            <p>© {{ date('Y') }} TourRaja Global. All rights reserved.</p>
-            <div class="flex items-center gap-8">
-                <a href="#" class="hover:text-white transition-colors">Privacy</a>
-                <a href="#" class="hover:text-white transition-colors">Terms</a>
-                <a href="#" class="hover:text-white transition-colors">Cookies</a>
-            </div>
-        </div>
+      {{-- Col 5: More Links --}}
+      <div>
+        <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">More Links</h4>
+        <ul style="list-style:none; padding:0; margin:0;">
+          <li style="padding:1px 0;"><a href="{{ url('/profile?tab=history') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Bookings</a></li>
+          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Saved Agent</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/profile') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Account</a></li>
+          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Reviews</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/admin/login') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Admin Login</a></li>
+        </ul>
+      </div>
+
     </div>
+
+    {{-- Bottom bar --}}
+    <div class="mt-10 pt-6 border-t border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p style="color:rgba(255,255,255,0.7); font-size:11px;">
+        Copyright &copy; {{ date('Y') }} Tour Raja Private Limited, India. All rights reserved.
+      </p>
+      <div class="flex items-center gap-4">
+        {{-- Facebook --}}
+        <a href="#" class="text-white/80 hover:text-white transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        {{-- Instagram --}}
+        <a href="#" class="text-white/80 hover:text-white transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+        </a>
+        {{-- X / Twitter --}}
+        <a href="#" class="text-white/80 hover:text-white transition-colors">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.738-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </a>
+        {{-- YouTube --}}
+        <a href="#" class="text-white/80 hover:text-white transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
 </footer>

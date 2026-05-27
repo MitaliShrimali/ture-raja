@@ -1,173 +1,139 @@
 @props(['banners' => null])
 @php use Illuminate\Support\Str; @endphp
 
-<section class="relative min-h-screen flex items-center justify-center py-24 lg:py-32 overflow-hidden">
-    <!-- Background Slider -->
-    <div class="absolute inset-0 z-0 overflow-hidden bg-[#1A1A24]">
-        <div class="hero-slider-container" id="heroSlider" style="display: flex; width: 100%; height: 100%; transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); will-change: transform;">@php
-                $dbBanners = $banners && $banners->isNotEmpty() ? $banners->toArray() : [];
-                $slides = [];
-                if (!empty($dbBanners)) {
-                    foreach ($dbBanners as $b) {
-                        $slides[] = $b->image;
-                    }
-                } else {
-                    $slides = [
-                        'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1920&q=80',
-                        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1920&q=80',
-                        'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1920&q=80',
-                        'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1920&q=80',
-                        'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80',
-                    ];
-                }
-            @endphp @foreach($slides as $index => $url)
-        <div class="hero-slide" style="{{ Str::endsWith(strtolower($url), '.mp4') ? '' : "background-image: url('{$url}');" }} width: 100%; height: 100%; flex: 0 0 100%; background-size: cover; background-position: center;">
-            @if (Str::endsWith(strtolower($url), '.mp4'))
-                <video autoplay loop muted playsinline class="hero-video">
-                    <source src="{{ $url }}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
-            @endif
-        </div>
-    @endforeach</div>
-        
-        <!-- Original Cinematic Overlay Gradient -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/40 to-background z-10 pointer-events-none"></div>
-    </div>
+<section class="relative overflow-hidden" style="height:75vh; min-height:500px; max-height:700px;">
 
-    <!-- Slider Navigation (Corner) -->
-    <div class="absolute bottom-12 right-8 lg:right-16 z-40 flex items-center gap-4 animate-fade-in [animation-delay:1000ms]">
-        <div class="hero-nav-dots flex items-center">
-            <button onclick="prevHeroSlide()" class="text-white/70 hover:text-white transition-colors mr-2">
-                <i data-lucide="arrow-left" size="20"></i>
+  {{-- ── Background Slider ── --}}
+  <div class="absolute inset-0 z-0 bg-[#1A1A24]">
+    <div id="heroSlider" style="display:flex; width:100%; height:100%; transition:transform 1.2s cubic-bezier(0.65,0,0.35,1); will-change:transform;">
+      @php
+        $dbBanners = $banners && $banners->isNotEmpty() ? $banners->toArray() : [];
+        $slides = [];
+        if (!empty($dbBanners)) {
+          foreach ($dbBanners as $b) { $slides[] = $b->image; }
+        } else {
+          $slides = [
+            'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=1920&q=80',
+            'https://images.unsplash.com/photo-1506929562872-bb421503ef21?auto=format&fit=crop&w=1920&q=80',
+            'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1920&q=80',
+            'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80',
+          ];
+        }
+      @endphp
+      @foreach($slides as $index => $url)
+        <div style="flex:0 0 100%; width:100%; height:100%; background-image:url('{{ $url }}'); background-size:cover; background-position:center;"></div>
+      @endforeach
+    </div>
+    {{-- Overlay --}}
+    <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60 pointer-events-none"></div>
+  </div>
+
+  {{-- ── Slide dots ── --}}
+  <div class="absolute bottom-8 right-8 z-30 flex items-center gap-3">
+    <button onclick="prevHeroSlide()" class="text-white/60 hover:text-white transition-colors">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    @foreach($slides as $i => $url)
+      <div class="hero-dot {{ $i===0?'opacity-100':'opacity-40' }}" data-dot="{{ $i }}" onclick="goToHeroSlide({{ $i }})"
+           style="width:8px;height:8px;border-radius:50%;background:#fff;cursor:pointer;transition:opacity .3s;"></div>
+    @endforeach
+    <button onclick="nextHeroSlide()" class="text-white/60 hover:text-white transition-colors">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
+  {{-- ── Hero Content ── --}}
+  <div class="relative z-20 h-full flex flex-col items-center justify-center text-center px-4 pt-16 pb-8">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-snug w-full mb-8 whitespace-nowrap"
+        style="color:#ffffff !important; text-shadow:0 2px 12px rgba(0,0,0,0.5);">
+      Discover Exclusive Travel Packages<br>from Local Agents Near You!
+    </h1>
+
+    {{-- Glassmorphism Search Bar --}}
+    <div class="w-full max-w-3xl">
+      <form action="{{ route('search') }}" method="GET">
+        <div style="background:rgba(255,255,255,0.15); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.25); border-radius:8px;"
+             class="flex flex-row items-center gap-0 overflow-hidden">
+
+          {{-- Destination Field --}}
+          <div class="flex items-center gap-3 flex-1 px-6 py-4" style="border-right: 1px solid rgba(255,255,255,0.2);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" name="destination" placeholder="Search Where You Go !!!"
+                   class="bg-transparent text-white placeholder-white/70 text-sm font-medium outline-none w-full"
+                   value="{{ request('destination') }}">
+          </div>
+
+          {{-- Agent/City Field --}}
+          <div class="flex items-center gap-3 flex-1 px-6 py-4">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input type="text" name="from_city" placeholder="Search agent from your location/near by city"
+                   class="bg-transparent text-white placeholder-white/70 text-[12px] font-medium outline-none w-full"
+                   value="{{ request('from_city') }}">
+          </div>
+
+          {{-- Search Button --}}
+          <div class="px-2 py-2 flex-shrink-0">
+            <button type="submit"
+                    style="background:#e85d26; border-radius:6px;"
+                    class="px-8 py-3 text-white font-bold text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto">
+              Search
             </button>
-            
-            @foreach($slides as $index => $url)
-                <div class="hero-dot {{ $index === 0 ? 'active' : '' }}" data-dot="{{ $index }}" onclick="goToHeroSlide({{ $index }})" style="cursor: pointer; width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.3); margin: 0 4px;"></div>
-            @endforeach
-
-            <button onclick="nextHeroSlide()" class="text-white/70 hover:text-white transition-colors ml-2">
-                <i data-lucide="arrow-right" size="20"></i>
-            </button>
+          </div>
         </div>
+      </form>
     </div>
+  </div>
 
-    <!-- Content -->
-    <div class="container-custom relative z-30 text-center text-white">
-        <div class="max-w-5xl mx-auto flex flex-col items-center gap-8 md:gap-10">
-            <!-- Top Badge -->
-            <div class="animate-fade-in [animation-delay:200ms]">
-                <span class="inline-block px-5 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[10px] md:text-xs font-black tracking-[0.2em] uppercase">
-                    Discover the world with us
-                </span>
-            </div>
+  <script>
+    let currentSlide = 0;
+    const slider    = document.getElementById('heroSlider');
+    const dots      = document.querySelectorAll('.hero-dot');
+    const totalSlides = dots.length;
+    let slideInterval;
 
-            <!-- Main Heading -->
-            <div class="space-y-4">
-                <h1 class="text-4xl md:text-5xl lg:text-7xl font-black leading-[1.1] tracking-tight font-heading animate-fade-in [animation-delay:400ms]" style="color: #ffffff !important;">
-                    Discover Exclusive <br class="hidden sm:block">
-                    <span class="text-primary">Travel Packages</span> <br class="hidden sm:block">
-                    from Local Agents Near You!
-                </h1>
+    function showSlide(i) {
+      if (!slider) return;
+      slider.style.transform = `translateX(-${i * 100}%)`;
+      dots.forEach((d, idx) => d.style.opacity = idx === i ? '1' : '0.4');
+      currentSlide = i;
+    }
+    function nextHeroSlide() { showSlide((currentSlide + 1) % totalSlides); resetHeroInterval(); }
+    function prevHeroSlide() { showSlide((currentSlide - 1 + totalSlides) % totalSlides); resetHeroInterval(); }
+    function goToHeroSlide(i) { showSlide(i); resetHeroInterval(); }
+    function resetHeroInterval() { clearInterval(slideInterval); slideInterval = setInterval(nextHeroSlide, 5000); }
+    document.addEventListener('DOMContentLoaded', () => { slideInterval = setInterval(nextHeroSlide, 5000); });
+  </script>
+  {{-- Bottom fade blur: image fades into white below --}}
+  <div class="absolute bottom-0 left-0 right-0 z-10 pointer-events-none" style="height:80px; background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 60%, #ffffff 100%); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);"></div>
+</section>
 
-                <!-- Subheading -->
-                <p class="text-base md:text-lg lg:text-xl text-white/90 max-w-2xl mx-auto font-medium leading-relaxed animate-fade-in [animation-delay:600ms]">
-                    Experience curated luxury journeys and hidden gems with our premium global travel marketplace.
-                </p>
-            </div>
-
-            <!-- Floating Search Bar — wired to /search route -->
-            <div class="w-full max-w-4xl pt-4 animate-fade-in [animation-delay:800ms]">
-                <form action="{{ route('search') }}" method="GET" id="hero-search-form">
-                    <div class="bg-white/95 backdrop-blur-2xl rounded-3xl lg:rounded-full p-2 lg:p-3 shadow-premium shadow-black/30 flex flex-col lg:flex-row items-center gap-2">
-                        <!-- Destination -->
-                        <div class="flex-1 w-full flex items-center gap-4 px-6 py-4 lg:py-1 border-b lg:border-b-0 lg:border-r border-gray-100">
-                            <i data-lucide="map-pin" class="text-primary shrink-0" size="24"></i>
-                            <div class="text-left flex-1">
-                                <p class="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Destination</p>
-                                <input 
-                                    type="text"
-                                    name="destination"
-                                    id="hero-destination"
-                                    placeholder="Where to go?" 
-                                    value="{{ request('destination') }}"
-                                    autocomplete="off"
-                                    class="w-full bg-transparent text-foreground font-bold focus:outline-none placeholder:text-foreground/30 text-base"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Local City -->
-                        <div class="flex-1 w-full flex items-center gap-4 px-6 py-4 lg:py-1">
-                            <i data-lucide="navigation" class="text-primary shrink-0" size="24"></i>
-                            <div class="text-left flex-1">
-                                <p class="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">From City</p>
-                                <input 
-                                    type="text"
-                                    name="from_city"
-                                    id="hero-from-city"
-                                    placeholder="Search from local city" 
-                                    value="{{ request('from_city') }}"
-                                    autocomplete="off"
-                                    class="w-full bg-transparent text-foreground font-bold focus:outline-none placeholder:text-foreground/30 text-base"
-                                >
-                            </div>
-                        </div>
-
-                        <!-- Search Button -->
-                        <button type="submit" class="w-full lg:w-auto px-10 py-5 bg-primary hover:bg-primary-hover text-white rounded-2xl lg:rounded-full font-black text-sm uppercase tracking-widest transition-all shadow-glow flex items-center justify-center gap-3 group shrink-0">
-                            <i data-lucide="search" size="20" class="group-hover:scale-110 transition-transform"></i>
-                            <span>Search</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+{{-- ── Popular Transits (below hero, white bg) ── --}}
+<section class="bg-white py-12 lg:py-16 border-b border-gray-100">
+  <div class="container-custom">
+    <h2 class="text-3xl md:text-5xl font-black text-foreground tracking-tight font-heading mb-10">Popular Transits</h2>
+    {{-- flex-nowrap = all 8 icons in ONE single horizontal line --}}
+    <div class="flex flex-nowrap items-start justify-between gap-2">
+      @php
+        $transits = [
+          ['label' => "Land / customise\nPackage",   'gif' => 'https://s13.gifyu.com/images/bIHHY.png'],
+          ['label' => "Flight\nPackage",              'gif' => 'https://s13.gifyu.com/images/bIHxe.gif'],
+          ['label' => "Train\nPackage",               'gif' => 'https://s13.gifyu.com/images/bIHxG.gif'],
+          ['label' => "Bus\nPackage",                 'gif' => 'https://s13.gifyu.com/images/bIHxJ.gif'],
+          ['label' => "Bullet Ride\nPackage",         'gif' => 'https://s13.gifyu.com/images/bIHxP.gif'],
+          ['label' => "Cruise\nPackage",              'gif' => 'https://s13.gifyu.com/images/bIHxX.gif'],
+          ['label' => "Tracking\nPackage",            'gif' => 'https://s13.gifyu.com/images/bIHHt.png'],
+          ['label' => "Helicopter\nPackage",          'gif' => 'https://s13.gifyu.com/images/bIHH5.png'],
+        ];
+      @endphp
+      @foreach($transits as $t)
+        <a href="{{ route('search', ['transit' => Str::slug($t['label'])]) }}"
+           class="group flex-1 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity min-w-0">
+          <div class="w-16 h-16 flex items-center justify-center">
+            <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
+          </div>
+          <span class="text-center text-[11px] font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
+        </a>
+      @endforeach
     </div>
-
-    <script>
-        let currentSlide = 0;
-        const slider = document.getElementById('heroSlider');
-        const dots = document.querySelectorAll('.hero-dot');
-        const totalSlides = dots.length;
-        let slideInterval;
-
-        function showSlide(index) {
-            if (!slider) return;
-            slider.style.transform = `translateX(-${index * 100}%)`;
-            
-            dots.forEach((d, i) => {
-                d.classList.toggle('active', i === index);
-            });
-            currentSlide = index;
-        }
-
-        function nextHeroSlide() {
-            let next = (currentSlide + 1) % totalSlides;
-            showSlide(next);
-            resetInterval();
-        }
-
-        function prevHeroSlide() {
-            let prev = (currentSlide - 1 + totalSlides) % totalSlides;
-            showSlide(prev);
-            resetInterval();
-        }
-
-        function goToHeroSlide(index) {
-            showSlide(index);
-            resetInterval();
-        }
-
-        function startInterval() {
-            slideInterval = setInterval(nextHeroSlide, 5000);
-        }
-
-        function resetInterval() {
-            clearInterval(slideInterval);
-            startInterval();
-        }
-
-        document.addEventListener('DOMContentLoaded', startInterval);
-    </script>
+  </div>
 </section>

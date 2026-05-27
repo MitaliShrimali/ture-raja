@@ -26,16 +26,6 @@
 
         <!-- Right Side Icons & Actions -->
         <div class="flex items-center gap-4">
-            <!-- Navigation Actions -->
-            <div class="hidden md:flex items-center gap-6 mr-4">
-                <a href="{{ url('https://emperorsmartsolutions.com/Tour_Raja_Agent/') }}?tab=agent" :class="(isScrolled || !isHome) ? 'text-text-main' : 'text-white/90'" class="text-sm font-bold hover:text-primary transition-colors">
-                    Agent Login
-                </a>
-                <a href="{{ url('/admin/login') }}" :class="(isScrolled || !isHome) ? 'text-text-main' : 'text-white/90'" class="text-sm font-bold hover:text-primary transition-colors">
-                    Admin
-                </a>
-            </div>
-
             <!-- Wishlist -->
             <div class="relative hidden lg:block" x-data="{ open: false }" @click.away="open = false">
                 <button 
