@@ -22,8 +22,9 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body 
-    x-data="{ isScrolled: false, isMobileMenuOpen: false, isHome: {{ request()->is('/') ? 'true' : 'false' }} }" 
+    x-data="{ isScrolled: false, isMobileMenuOpen: false, isHome: {{ request()->is('/') ? 'true' : 'false' }}, showLoginModal: false }" 
     @scroll.window="isScrolled = window.pageYOffset > 50"
+    @open-login-modal.window="showLoginModal = true"
     class="min-h-full flex flex-col font-body bg-background text-text-main"
     :class="{ 'overflow-hidden': isMobileMenuOpen }"
 >
@@ -39,6 +40,9 @@
 
     <!-- Footer Component -->
     <x-footer />
+
+    <!-- Login Modal -->
+    <x-login-modal />
 
     <style>
         .wishlist-btn.active svg {

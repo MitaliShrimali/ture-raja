@@ -551,7 +551,7 @@ class UserController extends Controller
                 ->with('success', 'Logged out successfully.');
         }
         // Default user logout redirects to public login
-        return redirect('/login')
+        return redirect('/')
             ->with('success', 'Logged out successfully.');
     }
 

@@ -52,10 +52,6 @@
                 Top Destinations
                 <i data-lucide="chevron-right" size="20" class="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all"></i>
             </a>
-            <a href="{{ url('/about') }}" class="hover:text-primary transition-colors flex items-center justify-between group">
-                About Us
-                <i data-lucide="chevron-right" size="20" class="text-text-muted group-hover:text-primary group-hover:translate-x-1 transition-all"></i>
-            </a>
             <div class="pt-4 mt-4 border-t border-border-soft flex items-center justify-between">
                 <span class="text-sm font-black text-foreground uppercase tracking-widest">My Wishlist</span>
                 <div class="relative">

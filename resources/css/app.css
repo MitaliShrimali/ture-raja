@@ -222,6 +222,8 @@ h6 {
   object-fit: cover;
   z-index: 1;
 }
+
+.hero-slide {
   position: relative;
   flex: 0 0 100%;
   width: 100vw;

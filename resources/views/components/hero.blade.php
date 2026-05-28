@@ -108,9 +108,9 @@
 </section>
 
 {{-- ── Popular Transits (below hero, white bg) ── --}}
-<section class="bg-white py-12 lg:py-16 border-b border-gray-100">
+<section id="popular-transits-section" class="bg-white py-12 lg:py-16 border-b border-gray-100">
   <div class="container-custom">
-    <h2 class="font-black text-foreground tracking-tight font-heading mb-10" style="font-size: 36px;">Popular Transits</h2>
+    <h2 class="font-black text-foreground tracking-tight font-heading mb-10 text-center" style="font-size: 36px;">Popular Transits</h2>
     <div class="flex flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth items-start justify-around gap-6 md:gap-10 pb-4 md:pb-0 px-2">
       @php
         $transits = [
@@ -136,3 +136,24 @@
     </div>
   </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const section = document.getElementById('popular-transits-section');
+        const navbarTransits = document.getElementById('navbar-transits');
+        
+        if(section && navbarTransits) {
+            window.addEventListener('scroll', function() {
+                // Trigger when scrollY > section end
+                const triggerPoint = section.offsetTop + section.offsetHeight - 80; 
+                if (window.scrollY > triggerPoint) {
+                    navbarTransits.classList.remove('opacity-0', 'pointer-events-none', 'scale-90', 'translate-y-4');
+                    navbarTransits.classList.add('opacity-100', 'scale-100', 'translate-y-0');
+                } else {
+                    navbarTransits.classList.add('opacity-0', 'pointer-events-none', 'scale-90', 'translate-y-4');
+                    navbarTransits.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
+                }
+            });
+        }
+    });
+</script>
