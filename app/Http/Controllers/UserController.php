@@ -520,21 +520,32 @@ class UserController extends Controller
         $user = DB::table('users')->where('email', $request->email)->first();
 
         if (!$user) {
-            return redirect()->back()->with('error', 'user not exist')->withInput();
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Account does not exist. Please create an account.']);
+            }
+            return redirect()->back()->with('error', 'Account does not exist. Please create an account.')->withInput();
         }
 
         if (Hash::check($request->password, $user->password)) {
             Auth::loginUsingId($user->id);
             
-            // Check if user is an administrator
+            $redirect = '/';
             if (in_array(strtoupper($user->role ?? ''), ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR'])) {
-                return redirect('/admin/dashboard')->with('success', 'Logged in as Admin successfully! Welcome, ' . $user->name);
+                $redirect = '/admin/dashboard';
+            }
+
+            if ($request->wantsJson()) {
+                session()->flash('success', 'Logged in successfully! Welcome, ' . $user->name);
+                return response()->json(['success' => true, 'redirect' => $redirect]);
             }
 
             // Normal user login redirects to home page
-            return redirect('/')->with('success', 'Logged in successfully! Welcome, ' . $user->name);
+            return redirect($redirect)->with('success', 'Logged in successfully! Welcome, ' . $user->name);
         }
 
+        if ($request->wantsJson()) {
+            return response()->json(['success' => false, 'message' => 'Invalid password. Please try again.']);
+        }
         return redirect()->back()->with('error', 'Invalid password. Please try again.')->withInput();
     }
 

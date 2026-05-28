@@ -37,7 +37,38 @@
 
         <!-- Form Side (Right) - Taller with shadow and negative margin to overlap image -->
         <div class="bg-white rounded-3xl p-8 md:p-10 relative flex flex-col justify-center h-full max-h-[550px] shadow-[-10px_0_30px_rgba(0,0,0,0.15)] z-10 md:-ml-8 w-full md:w-[58%]" 
-             x-data="{ showPassword: false }">
+             x-data="{ 
+                showPassword: false,
+                loading: false,
+                errorMessage: '',
+                async submitLogin(e) {
+                    this.loading = true;
+                    this.errorMessage = '';
+                    const formData = new FormData(e.target);
+                    try {
+                        const response = await fetch('/login/submit', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+                        const data = await response.json();
+                        if (response.ok && data.success) {
+                            window.location.href = data.redirect || '/';
+                        } else {
+                            if (response.status === 422) {
+                                this.errorMessage = Object.values(data.errors)[0][0];
+                            } else {
+                                this.errorMessage = data.message || 'Login failed.';
+                            }
+                        }
+                    } catch (err) {
+                        this.errorMessage = 'An error occurred. Please try again.';
+                    }
+                    this.loading = false;
+                }
+             }">
             
             <!-- Close Button -->
             <button 
@@ -54,10 +85,12 @@
                     <h2 class="font-extrabold text-black" style="font-size: 28px; line-height: 1.2;">Enter Your Email & Password</h2>
                 </div>
 
-                <form action="/login/submit" method="POST" class="space-y-5">
+                <form @submit.prevent="submitLogin" action="/login/submit" method="POST" class="space-y-5">
                     @csrf
                     <!-- Redirect back to the page they were on -->
                     <input type="hidden" name="redirect" value="{{ request()->fullUrl() }}">
+
+                    <div x-show="errorMessage" x-text="errorMessage" class="bg-red-50 text-red-600 p-3 rounded-lg text-sm font-semibold border border-red-200" style="display: none;"></div>
 
                     <div class="space-y-2">
                         <label class="text-sm font-semibold text-gray-800">Email*</label>
@@ -84,7 +117,10 @@
                     </div>
                     
                     <div class="pt-4">
-                        <button type="submit" class="w-full text-white rounded-lg py-3.5 font-bold text-base shadow-sm transition-colors hover:opacity-90" style="background-color: #E8460A;">Login</button>
+                        <button type="submit" :disabled="loading" class="w-full text-white rounded-lg py-3.5 font-bold text-base shadow-sm transition-colors hover:opacity-90 disabled:opacity-70 flex items-center justify-center gap-2" style="background-color: #E8460A;">
+                            <span x-show="!loading">Login</span>
+                            <span x-show="loading">Logging in...</span>
+                        </button>
                     </div>
                     
                     <p class="text-sm font-medium text-black text-center mt-4">

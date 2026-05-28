@@ -58,10 +58,12 @@
                     Home
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
                 </a>
+                @if(!request()->is('discover'))
                 <a href="{{ url('/discover') }}" class="hover:text-primary transition-colors flex items-center gap-1.5 relative group">
                     <i data-lucide="map-pin" size="18"></i> Top Destinations
                     <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
                 </a>
+                @endif
             </div>
             
             @if(Auth::check())
