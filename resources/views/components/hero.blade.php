@@ -44,19 +44,19 @@
 
   {{-- ── Hero Content ── --}}
   <div class="relative z-20 h-full flex flex-col items-center justify-center text-center px-4 pt-16 pb-8">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-snug w-full mb-8 whitespace-nowrap"
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-snug w-full mb-8"
         style="color:#ffffff !important; text-shadow:0 2px 12px rgba(0,0,0,0.5);">
-      Discover Exclusive Travel Packages<br>from Local Agents Near You!
+      Discover Exclusive Travel Packages<br class="hidden sm:block">from Local Agents Near You!
     </h1>
 
     {{-- Glassmorphism Search Bar --}}
     <div class="w-full max-w-3xl">
       <form action="{{ route('search') }}" method="GET">
         <div style="background:rgba(255,255,255,0.15); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.25); border-radius:8px;"
-             class="flex flex-row items-center gap-0 overflow-hidden">
+             class="flex flex-col md:flex-row items-center gap-0 overflow-hidden">
 
           {{-- Destination Field --}}
-          <div class="flex items-center gap-3 flex-1 px-6 py-4" style="border-right: 1px solid rgba(255,255,255,0.2);">
+          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 border-b border-white/20 md:border-b-0" style="border-right: 1px solid rgba(255,255,255,0.2);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input type="text" name="destination" placeholder="Search Where You Go !!!"
                    class="bg-transparent text-white placeholder-white/70 text-sm font-medium outline-none w-full"
@@ -64,7 +64,7 @@
           </div>
 
           {{-- Agent/City Field --}}
-          <div class="flex items-center gap-3 flex-1 px-6 py-4">
+          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <input type="text" name="from_city" placeholder="Search agent from your location/near by city"
                    class="bg-transparent text-white placeholder-white/70 text-[12px] font-medium outline-none w-full"
@@ -72,7 +72,7 @@
           </div>
 
           {{-- Search Button --}}
-          <div class="px-2 py-2 flex-shrink-0">
+          <div class="px-4 py-3 md:px-2 md:py-2 flex-shrink-0 w-full md:w-auto">
             <button type="submit"
                     style="background:#e85d26; border-radius:6px;"
                     class="px-8 py-3 text-white font-bold text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto">
@@ -110,9 +110,8 @@
 {{-- ── Popular Transits (below hero, white bg) ── --}}
 <section class="bg-white py-12 lg:py-16 border-b border-gray-100">
   <div class="container-custom">
-    <h2 class="text-3xl md:text-5xl font-black text-foreground tracking-tight font-heading mb-10">Popular Transits</h2>
-    {{-- flex-nowrap = all 8 icons in ONE single horizontal line --}}
-    <div class="flex flex-nowrap items-start justify-between gap-2">
+    <h2 class="font-black text-foreground tracking-tight font-heading mb-10" style="font-size: 36px;">Popular Transits</h2>
+    <div class="flex flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth items-start justify-around gap-6 md:gap-10 pb-4 md:pb-0 px-2">
       @php
         $transits = [
           ['label' => "Land / customise\nPackage",   'gif' => 'https://s13.gifyu.com/images/bIHHY.png'],
@@ -127,11 +126,11 @@
       @endphp
       @foreach($transits as $t)
         <a href="{{ route('search', ['transit' => Str::slug($t['label'])]) }}"
-           class="group flex-1 flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity min-w-0">
-          <div class="w-16 h-16 flex items-center justify-center">
+           class="group flex-none md:flex-1 w-28 md:w-auto flex flex-col items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+          <div class="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
             <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
           </div>
-          <span class="text-center text-[11px] font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
+          <span class="text-center text-sm md:text-base font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
         </a>
       @endforeach
     </div>
