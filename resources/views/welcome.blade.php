@@ -84,42 +84,54 @@
     </section>
 
     <!-- Section 3: Why Travel With TourRaja -->
-    <section class="py-20 lg:py-24 bg-white">
-        <div class="container-custom">
-            <x-section-title subtitle="The TourRaja Advantage" align="center">
-                Why Travel With TourRaja?
-                <x-slot:description>The best booking platform you can trust</x-slot:description>
-            </x-section-title>
+    <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
+        <x-section-title subtitle="The TourRaja Advantage" align="center">
+            Why Travel With TourRaja?
+            <x-slot:description>The best booking platform you can trust</x-slot:description>
+        </x-section-title><br>
 
-            <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                @php
-                    $features = [
-                        ['title' => 'Security Assurance', 'desc' => 'Demonstrates commitment to user data security', 'icon' => 'shield-check', 'color' => 'bg-[#FFF9F0]'],
-                        ['title' => 'Best Price Deals', 'desc' => 'Compare and choose the most affordable package', 'icon' => 'badge-percent', 'color' => 'bg-[#F2F4F7]'],
-                        ['title' => 'Direct Agent Contacts', 'desc' => 'No middleman, connect instantly', 'icon' => 'handshake', 'color' => 'bg-[#FFF9F0]'],
-                        ['title' => 'Find Nearby Travel Agent', 'desc' => 'Find the perfect trip without confusion with your local agent', 'icon' => 'map-pinned', 'color' => 'bg-[#F2F4F7]'],
-                    ];
-                @endphp
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Card 1: Security Assurance -->
+            <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
+                <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
+                    <i data-lucide="shield-check" class="text-yellow-500 w-8 h-8"></i>
+                </div>
+                <h4 class="font-extrabold text-black text-[16px] mb-3">Security Assurance</h4>
+                <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Demonstrates commitment to user data security</p>
+                <a href="#" class="mt-auto text-black font-medium text-[13px] flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+            </div>
 
-                @foreach($features as $feature)
-                    <div class="{{ $feature['color'] }} p-10 rounded-[40px] text-center space-y-6 group hover-lift transition-all duration-500 animate-fade-up" style="animation-delay: {{ $loop->index * 100 }}ms">
-                        <div class="w-16 h-16 mx-auto bg-white rounded-2xl flex items-center justify-center shadow-soft group-hover:shadow-glow group-hover:scale-110 transition-all duration-500">
-                            <i data-lucide="{{ $feature['icon'] }}" class="text-primary" size="32"></i>
-                        </div>
-                        <div class="space-y-3">
-                            <h3 class="text-xl font-black text-foreground">{{ $feature['title'] }}</h3>
-                            <p class="text-text-muted text-sm font-medium leading-relaxed">
-                                {{ $feature['desc'] }}
-                            </p>
-                        </div>
-                        <a href="#" class="inline-flex items-center gap-2 text-foreground font-black text-xs uppercase tracking-widest hover:text-primary transition-colors">
-                            Learn More <i data-lucide="arrow-right" size="14"></i>
-                        </a>
-                    </div>
-                @endforeach
+            <!-- Card 2: Best Price Deals -->
+            <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
+                <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
+                    <i data-lucide="headset" class="text-orange-500 w-8 h-8"></i>
+                </div>
+                <h4 class="font-extrabold text-black text-[16px] mb-3">Best Price Deals</h4>
+                <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Compare and choose the most affordable package</p>
+                <a href="#" class="mt-auto text-black font-medium text-[13px] flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+            </div>
+
+            <!-- Card 3: Direct Agent Contacts -->
+            <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
+                <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
+                    <i data-lucide="handshake" class="text-blue-500 w-8 h-8"></i>
+                </div>
+                <h4 class="font-extrabold text-black text-[16px] mb-3">Direct Agent Contacts</h4>
+                <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">No middleman, connect instantly</p>
+                <a href="#" class="mt-auto text-black font-medium text-[13px] flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+            </div>
+
+            <!-- Card 4: Find Nearby Travel Agent -->
+            <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
+                <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
+                    <i data-lucide="map" class="text-teal-400 w-8 h-8"></i>
+                </div>
+                <h4 class="font-extrabold text-black text-[16px] mb-3">Find Nearby Travel Agent</h4>
+                <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Find the perfect trip without confusion with your local agent</p>
+                <a href="#" class="mt-auto text-black font-medium text-[13px] flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
             </div>
         </div>
-    </section>
+    </div>
 
     <!-- Section 6: Browse by Travel Theme -->
     <section class="py-16 bg-white border-t border-border-soft/30 animate-fade-up">

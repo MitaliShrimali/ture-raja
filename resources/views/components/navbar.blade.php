@@ -41,10 +41,10 @@
             <div id="navbar-transits" class="pointer-events-auto flex w-full lg:w-auto overflow-x-auto hide-scrollbar lg:overflow-visible items-center justify-start lg:justify-center gap-4 xl:gap-8 px-4 lg:px-0 transition-all duration-500 {{ $isHome ? 'opacity-0 pointer-events-none scale-90 translate-y-4' : 'opacity-100 scale-100 translate-y-0' }}">
                 @foreach($headerTransits as $t)
                   <a href="{{ route('search', ['transit' => Str::slug($t['label'])]) }}" class="flex flex-col items-center group flex-shrink-0">
-                     <div class="w-16 h-16 xl:w-20 xl:h-20 flex items-center justify-center">
+                     <div class="w-10 h-10 xl:w-12 xl:h-12 flex items-center justify-center">
                         <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
-                     <span class="text-xs xl:text-sm font-bold text-gray-800 group-hover:text-primary transition-colors mt-0.5">{{ $t['label'] }}</span>
+                     <span class="text-[10px] xl:text-xs font-bold text-gray-800 group-hover:text-primary transition-colors mt-0.5">{{ $t['label'] }}</span>
                   </a>
                 @endforeach
             </div>
