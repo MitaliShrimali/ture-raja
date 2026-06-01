@@ -18,7 +18,7 @@
         <!-- Logo -->
         <div class="flex items-center justify-start flex-shrink-0 z-10">
             <a href="{{ url('/') }}" class="flex items-center group">
-                <x-logo :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'" class="h-8 sm:h-10 md:h-12 w-auto transition-colors duration-300" />
+                <x-logo x-bind:class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'" class="h-8 sm:h-10 md:h-12 w-auto transition-colors duration-300" />
             </a>
         </div>
 

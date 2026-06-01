@@ -437,3 +437,5 @@ Route::get('/packages/{slug}', function ($slug) {
 
     return view('packages.show', ['package' => $allPackages[$slug]]);
 })->name('packages.show');
+
+Route::get('/audio/bg_music.mp3', function () { return response()->file(public_path('audio/bg_music.mp3')); });

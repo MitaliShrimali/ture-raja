@@ -20,16 +20,41 @@
           ];
         }
       @endphp
+      @php
+        $hasVideo = false;
+      @endphp
       @foreach($slides as $index => $url)
-        <div style="flex:0 0 100%; width:100%; height:100%; background-image:url('{{ $url }}'); background-size:cover; background-position:center;"></div>
+        @php
+          $isVideo = \Illuminate\Support\Str::endsWith(strtolower($url), ['.mp4', '.webm', '.ogg']);
+          if($isVideo) $hasVideo = true;
+        @endphp
+        <div style="flex:0 0 100%; width:100%; height:100%; position:relative; overflow:hidden;">
+          @if($isVideo)
+            <video class="hero-video" src="{{ $url }}" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"></video>
+          @else
+            <div style="width:100%; height:100%; background-image:url('{{ $url }}'); background-size:cover; background-position:center;"></div>
+          @endif
+        </div>
       @endforeach
     </div>
     {{-- Overlay --}}
     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60 pointer-events-none"></div>
+    {{-- Background Music --}}
+    <audio id="heroBgMusic" src="/public/audio/destroyer_of_all.mp3?v={{ time() }}" loop></audio>
   </div>
 
-  {{-- ── Slide dots ── --}}
-  <div class="absolute bottom-8 right-8 z-30 flex items-center gap-3">
+  {{-- ── Sound Toggle (Bottom Right Corner) ── --}}
+  @if($hasVideo)
+  <button onclick="toggleHeroSound()" id="heroSoundToggle" class="absolute bottom-8 right-8 z-40 bg-black/40 hover:bg-black/60 p-3 rounded-full text-white transition-all cursor-pointer backdrop-blur-sm" title="Toggle Sound">
+    <!-- Muted Icon -->
+    <svg id="icon-muted" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+    <!-- Unmuted Icon -->
+    <svg id="icon-unmuted" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="hidden"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+  </button>
+  @endif
+
+  {{-- ── Slide dots (Centered) ── --}}
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm">
     <button onclick="prevHeroSlide()" class="text-white/60 hover:text-white transition-colors">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
@@ -88,21 +113,39 @@
 
   <script>
     let currentSlide = 0;
-    const slider    = document.getElementById('heroSlider');
-    const dots      = document.querySelectorAll('.hero-dot');
-    const totalSlides = dots.length;
+    const totalSlides = {{ count($slides) }};
+    const heroSlider = document.getElementById('heroSlider');
     let slideInterval;
 
-    function showSlide(i) {
-      if (!slider) return;
-      slider.style.transform = `translateX(-${i * 100}%)`;
-      dots.forEach((d, idx) => d.style.opacity = idx === i ? '1' : '0.4');
-      currentSlide = i;
+    function showSlide(index) {
+      currentSlide = index;
+      heroSlider.style.transform = `translateX(-${index * 100}%)`;
+      document.querySelectorAll('.hero-dot').forEach((dot, i) => {
+        dot.classList.toggle('opacity-100', i === index);
+        dot.classList.toggle('opacity-40', i !== index);
+      });
     }
     function nextHeroSlide() { showSlide((currentSlide + 1) % totalSlides); resetHeroInterval(); }
     function prevHeroSlide() { showSlide((currentSlide - 1 + totalSlides) % totalSlides); resetHeroInterval(); }
     function goToHeroSlide(i) { showSlide(i); resetHeroInterval(); }
     function resetHeroInterval() { clearInterval(slideInterval); slideInterval = setInterval(nextHeroSlide, 5000); }
+    
+    function toggleHeroSound() {
+      const bgMusic = document.getElementById('heroBgMusic');
+      const iconMuted = document.getElementById('icon-muted');
+      const iconUnmuted = document.getElementById('icon-unmuted');
+      
+      if(bgMusic.paused) {
+        bgMusic.play().catch(e => console.log('Audio play failed:', e));
+        iconMuted.classList.add('hidden');
+        iconUnmuted.classList.remove('hidden');
+      } else {
+        bgMusic.pause();
+        iconMuted.classList.remove('hidden');
+        iconUnmuted.classList.add('hidden');
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => { slideInterval = setInterval(nextHeroSlide, 5000); });
   </script>
   {{-- Bottom fade blur: image fades into white below --}}
