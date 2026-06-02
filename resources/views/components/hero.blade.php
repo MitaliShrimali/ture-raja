@@ -40,7 +40,7 @@
     {{-- Overlay --}}
     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60 pointer-events-none"></div>
     {{-- Background Music --}}
-    <audio id="heroBgMusic" src="{{ asset('audio/destroyer_of_all.mp3') }}?v={{ time() }}" loop></audio>
+    <audio id="heroBgMusic" src="{{ asset('audio/bg_music.mp3') }}?v={{ time() }}" loop></audio>
   </div>
 
   {{-- ── Sound Toggle (Bottom Right Corner) ── --}}

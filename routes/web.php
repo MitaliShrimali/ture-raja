@@ -168,6 +168,7 @@ Route::prefix('admin')->group(function () {
 
     Route::post('/home-editor/store', [AdminController::class, 'storeBanner']);
     Route::post('/home-editor/update', [AdminController::class, 'updateBanner']);
+    Route::post('/home-editor/upload-music', [AdminController::class, 'uploadMusic']);
     Route::get('/home-editor/delete/{id}', [AdminController::class, 'deleteBanner']);
     Route::get('/home-editor/toggle/{id}', [AdminController::class, 'toggleBanner']);
 

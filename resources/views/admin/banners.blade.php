@@ -22,6 +22,23 @@
         </div>
     </div>
 
+    <!-- Background Music Section -->
+    <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden p-8 mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div class="space-y-1">
+                <h3 class="text-xl font-black text-foreground">Background Music</h3>
+                <p class="text-xs text-muted-text font-medium">Upload a global background music file (.mp3) for the home page hero section.</p>
+            </div>
+        </div>
+        <form action="{{ url('/admin/home-editor/upload-music') }}" method="POST" enctype="multipart/form-data" class="flex flex-col md:flex-row items-start md:items-center gap-4">
+            @csrf
+            <input type="file" name="music_file" accept=".mp3,audio/mpeg" required class="block w-full text-sm text-muted-text file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-widest file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all cursor-pointer">
+            <button type="submit" class="bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-primary/20 whitespace-nowrap">
+                Upload Music
+            </button>
+        </form>
+    </div>
+
     <!-- Banner List -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="overflow-x-auto">

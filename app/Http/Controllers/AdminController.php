@@ -922,6 +922,21 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Banner status toggled!');
     }
 
+    public function uploadMusic(Request $request)
+    {
+        $request->validate([
+            'music_file' => 'required|file|max:15360', // Max 15MB
+        ]);
+
+        if ($request->hasFile('music_file')) {
+            $file = $request->file('music_file');
+            $file->move(public_path('audio'), 'bg_music.mp3');
+            return redirect()->back()->with('success', 'Background music updated successfully!');
+        }
+
+        return redirect()->back()->with('error', 'Failed to upload music.');
+    }
+
     // NOTIFICATIONS
     public function notifications(Request $request)
     {
