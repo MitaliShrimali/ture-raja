@@ -26,7 +26,15 @@
         $oldPrice = $pkgArr['oldPrice'] ?? $oldPrice;
         $badge    = $pkgArr['badge']    ?? $badge;
         $slug     = $pkgArr['slug']     ?? \Illuminate\Support\Str::slug($title ?? '') ?: $slug;
+        $agentObj = $pkgArr['agent']    ?? null;
     }
+    
+    if (is_object($agentObj)) {
+        $agentObj = (array) $agentObj;
+    }
+    $agentName = $agentObj['name'] ?? 'Travel Agent Name';
+    $agentLogo = $agentObj['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode(str_replace(' ', '', $agentName));
+
     $detailUrl = $slug ? url('packages/' . $slug) : '#';
 @endphp
 
@@ -80,6 +88,16 @@
             <div class="flex items-center gap-1.5">
                 <i data-lucide="users" size="14" class="opacity-50"></i>
                 {{ $groupSize }}
+            </div>
+        </div>
+
+        <div class="flex items-center justify-between mt-1">
+            <div class="flex items-center gap-2">
+                <i data-lucide="shield-check" size="14" class="text-green-500"></i>
+                <span class="text-xs font-bold text-gray-700">{{ $agentName }}</span>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
+                <img src="{{ $agentLogo }}" alt="{{ $agentName }} Logo" class="w-full h-full object-cover">
             </div>
         </div>
 

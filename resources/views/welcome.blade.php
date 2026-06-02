@@ -293,9 +293,9 @@
     </section>
 
     <!-- Section 7: Offer Stickers -->
-    <section class="py-10 bg-white relative">
+    <section class="py-10 relative" style="background-color: #FFF4CE;">
         <div class="container-custom">
-            <div class="px-4 py-8 md:px-8 md:py-10 relative flex items-center justify-between shadow-sm" style="background-color: #F8F3DC; border-radius: 12px;">
+            <div class="px-4 py-8 md:px-8 md:py-10 relative flex items-center justify-between">
                 
                 <!-- SVG Airplane Path (Moved inside the yellow box) -->
                 <div class="absolute -top-12 -left-8 md:-top-16 md:-left-16 hidden md:block w-64 h-32 pointer-events-none z-20">
@@ -311,16 +311,16 @@
                 </div>
 
                 <!-- Prev Button -->
-                <button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 mr-2 md:mr-6">
+                <button id="prev-promo" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 mr-2 md:mr-6">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
                 
                 <!-- Cards Track -->
-                <div class="flex-1 overflow-x-auto hide-scrollbar z-10 relative">
-                    <div class="flex gap-4 md:gap-6 min-w-max items-center justify-center">
+                <div id="promo-slider" class="flex-1 overflow-x-auto hide-scrollbar z-10 relative scroll-smooth snap-x snap-mandatory">
+                    <div class="flex gap-4 md:gap-6 min-w-max items-center justify-start">
                         
                         <!-- Card 1 -->
-                        <a href="#" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm">
+                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
                             <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img1offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Travel">
                             <!-- <div class="absolute inset-0" style="background-color: rgba(32, 114, 245, 0.85);"></div> -->
                             <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
@@ -335,7 +335,7 @@
                         </a>
 
                         <!-- Card 2 -->
-                        <a href="#" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm" style="background-color: #FCE08F;">
+                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0" style="background-color: #FCE08F;">
                             <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img2offer.png" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Attractions">
                             <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
                                 <div class="max-w-[150px] mt-2">
@@ -349,7 +349,7 @@
                         </a>
 
                         <!-- Card 3 -->
-                        <a href="#" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm">
+                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
                             <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/images3offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Mountain Lake">
                             <div class="absolute inset-0 bg-black/20"></div>
                             <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
@@ -363,16 +363,47 @@
                                 </div>
                             </div>
                         </a>
+                        
+                        <!-- Card 4 -->
+                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
+                            <img src="https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Beach Vacations">
+                            <div class="absolute inset-0 bg-black/30"></div>
+                            <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                <div class="flex flex-col items-start space-y-[3px]">
+                                    <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Special Discount</span>
+                                    <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">20% Off Family</span>
+                                    <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Vacations</span>
+                                </div>
+                                <div class="mt-auto">
+                                    <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #3b82f6;">View More &rarr;</span>
+                                </div>
+                            </div>
+                        </a>
+
+                        <!-- Card 5 -->
+                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0" style="background-color: #FFC0CB;">
+                            <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Honeymoon">
+                            <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                <div class="max-w-[150px] mt-2">
+                                    <span class="text-[11px] font-bold text-gray-800 mb-1 block">Couples Only</span>
+                                    <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Romantic<br>Getaways</h3>
+                                </div>
+                                <div class="mt-auto">
+                                    <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #db2777;">View More &rarr;</span>
+                                </div>
+                            </div>
+                        </a>
 
                     </div>
                 </div>
 
                 <!-- Next Button -->
-                <button class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 ml-2 md:ml-6">
+                <button id="next-promo" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 ml-2 md:ml-6">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
             </div>
         </div>
+    </section>
     <!-- Section 7.5: Top Categories Packages -->
     <section class="py-16 lg:py-24 bg-white">
         <div class="container-custom">
@@ -382,7 +413,7 @@
                     <h2 class="text-2xl md:text-[40px] font-black text-foreground tracking-tight leading-tight">Top Categories Packages</h2>
                     <p class="text-gray-500 text-sm md:text-base">Favorite destinations based on customer reviews</p>
                 </div>
-                <a href="#" class="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-200 text-sm font-bold hover:bg-gray-300 transition-colors self-start md:self-auto">
+                <a href="{{ url('/discover') }}" class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-200 text-sm font-bold hover:bg-gray-300 transition-colors self-start md:self-auto mt-2 md:mt-0">
                     View More 
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
@@ -752,6 +783,7 @@
             // 350px width + 24px gap = 374
             setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, true);
             setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, true);
+            setupSlider('promo-slider', 'prev-promo', 'next-promo', 320, false);
 
             // ── Close dropdowns when clicking outside ─────────────────
             document.addEventListener('click', (e) => {

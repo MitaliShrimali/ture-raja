@@ -179,7 +179,12 @@
         ];
       @endphp
       @foreach($transits as $t)
-        <a href="{{ route('search', ['transit' => Str::slug($t['label'])]) }}"
+        @php
+            $cleanType = str_replace("\n", " ", $t['label']);
+            if ($cleanType === 'Bullet Ride Package') $cleanType = 'Bullet Ride';
+            if ($cleanType === 'Land / customise Package') $cleanType = 'Other';
+        @endphp
+        <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
            class="group flex-none md:flex-1 w-24 md:w-auto flex flex-col items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity">
           <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
             <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">

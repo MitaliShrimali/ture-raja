@@ -1,3 +1,11 @@
+<style>
+  @media (min-width: 1024px) {
+    .footer-partition {
+      border-left: 1px solid rgba(255, 255, 255, 0.2);
+      padding-left: 2rem;
+    }
+  }
+</style>
 <footer style="background:#e85d26;" class="text-white">
   <div class="max-w-7xl mx-auto px-6 py-10">
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
@@ -26,7 +34,7 @@
       </div>
 
       {{-- Col 3: Quick Links --}}
-      <div>
+      <div class="footer-partition">
         <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">Quick Links</h4>
         <ul style="list-style:none; padding:0; margin:0;">
           <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Site Map</a></li>
@@ -38,7 +46,7 @@
       </div>
 
       {{-- Col 4: Popular Transits --}}
-      <div>
+      <div class="footer-partition">
         <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">Popular Transits</h4>
         <ul style="list-style:none; padding:0; margin:0;">
           <li style="padding:1px 0;"><a href="{{ url('/discover?transit=flight') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Flight Package</a></li>
@@ -53,7 +61,7 @@
       </div>
 
       {{-- Col 5: More Links --}}
-      <div>
+      <div class="footer-partition">
         <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">More Links</h4>
         <ul style="list-style:none; padding:0; margin:0;">
           <li style="padding:1px 0;"><a href="{{ url('/profile?tab=history') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Bookings</a></li>

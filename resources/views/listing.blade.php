@@ -125,12 +125,75 @@
     </style>
 
     <!-- Small Hero Header -->
-    <div class="bg-primary pt-32 pb-20">
-        <div class="container-custom text-white text-center">
-            <h1 class="text-4xl md:text-5xl font-black mb-4 font-syne">Explore Destinations</h1>
-            <p class="text-white/80 max-w-2xl mx-auto font-medium">
-                Discover 100+ amazing tour packages across the globe with premium services and best prices.
-            </p>
+    <div class="pt-[120px] pb-6 bg-gray-50 border-b border-gray-200">
+        
+        <!-- Popular Transits (Packages Logos) -->
+        <div class="container-custom mb-6">
+            <div class="flex flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth items-start justify-around gap-4 md:gap-8 pb-4 px-2">
+              @php
+                $transits = [
+                  ['label' => "Land / customise\nPackage",   'gif' => 'https://s13.gifyu.com/images/bIHHY.png'],
+                  ['label' => "Flight\nPackage",              'gif' => 'https://s13.gifyu.com/images/bIHxe.gif'],
+                  ['label' => "Train\nPackage",               'gif' => 'https://s13.gifyu.com/images/bIHxG.gif'],
+                  ['label' => "Bus\nPackage",                 'gif' => 'https://s13.gifyu.com/images/bIHxJ.gif'],
+                  ['label' => "Bullet Ride\nPackage",         'gif' => 'https://s13.gifyu.com/images/bIHxP.gif'],
+                  ['label' => "Cruise\nPackage",              'gif' => 'https://s13.gifyu.com/images/bIHxX.gif'],
+                  ['label' => "Tracking\nPackage",            'gif' => 'https://s13.gifyu.com/images/bIHHt.png'],
+                  ['label' => "Helicopter\nPackage",          'gif' => 'https://s13.gifyu.com/images/bIHH5.png'],
+                ];
+              @endphp
+              @foreach($transits as $t)
+                @php
+                    $cleanType = str_replace("\n", " ", $t['label']);
+                    if ($cleanType === 'Bullet Ride Package') $cleanType = 'Bullet Ride';
+                    if ($cleanType === 'Land / customise Package') $cleanType = 'Other';
+                @endphp
+                <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
+                   class="group flex-none md:flex-1 w-20 md:w-auto flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                  <div class="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center">
+                    <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
+                  </div>
+                  <span class="text-center text-[10px] md:text-xs font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
+                </a>
+              @endforeach
+            </div>
+        </div>
+
+        <div class="container-custom text-center">
+            <div class="w-full max-w-5xl mx-auto">
+              <form action="{{ url('/discover') }}" method="GET">
+                <div style="background:rgba(255,255,255,0.8); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(0,0,0,0.1); border-radius:8px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);"
+                     class="flex flex-col md:flex-row items-center gap-0 overflow-hidden">
+                  
+                  {{-- Destination Field --}}
+                  <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 md:border-r md:border-gray-200">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input type="text" name="search" placeholder="Search Where You Go !!!"
+                           class="bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-sm font-medium outline-none w-full"
+                           style="box-shadow: none;"
+                           value="{{ request('search') }}">
+                  </div>
+
+                  {{-- Agent/City Field --}}
+                  <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <input type="text" name="city" placeholder="Search agent from your location/near by city"
+                           class="bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-[12px] font-medium outline-none w-full"
+                           style="box-shadow: none;"
+                           value="{{ request('city') }}">
+                  </div>
+
+                  {{-- Search Button --}}
+                  <div class="px-4 py-3 md:px-2 md:py-2 flex-shrink-0 w-full md:w-auto">
+                    <button type="submit"
+                            style="background:#e85d26; border-radius:6px;"
+                            class="px-8 py-3 text-white font-bold text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto">
+                      Search
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
         </div>
     </div>
 

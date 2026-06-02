@@ -5,7 +5,7 @@
 <aside class="w-full bg-white rounded-2xl overflow-hidden font-sans border-0 shadow-sm">
     <!-- Header -->
     <div class="bg-primary text-white py-4 px-5 flex items-center justify-between">
-        <h2 class="text-xs font-bold uppercase tracking-wide">Filters</h2>
+        <h2 class="text-[28px] font-bold uppercase tracking-wide">Filters</h2>
         <button type="button" onclick="clearAllFilters()" class="text-[10px] font-bold bg-white/20 hover:bg-white text-white hover:text-primary px-3 py-1.5 rounded-lg transition-all uppercase tracking-wider">
             Clear All
         </button>
@@ -29,12 +29,12 @@
 
         <!-- 1. Tour Type -->
         <div x-data="{ expanded: false }">
-            <h3 class="font-bold text-gray-900 mb-3 text-sm">Tour Type</h3>
+            <h3 class="font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide">Tour Type</h3>
             @php
                 $allTourTypes = ['Flight Package', 'Train Package', 'Bus Package', 'Bullet Ride', 'Cruise Package', 'Tracking Package', 'Helicopter Package', 'Other'];
                 $visibleTypes = array_slice($allTourTypes, 0, 5);
                 $hiddenTypes = array_slice($allTourTypes, 5);
-                $selectedTypes = request('tour_type', []);
+                $selectedTypes = (array) request('tour_type', []);
             @endphp
             <div class="space-y-2">
                 @foreach($visibleTypes as $type)
@@ -62,7 +62,7 @@
 
         <!-- 2. Duration (Nights) -->
         <div x-data="rangeSlider({{ request('min_nights', 2) }}, {{ request('max_nights', 11) }}, 1, 20)">
-            <h3 class="font-bold text-gray-900 mb-5 text-sm">Duration (Nights)</h3>
+            <h3 class="font-bold text-gray-900 mb-5 text-xs uppercase tracking-wide">Duration (Nights)</h3>
             
             <div class="px-2 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <!-- Track Highlight -->
@@ -93,7 +93,7 @@
 
         <!-- 3. Price -->
         <div x-data="rangeSlider({{ request('min_price', 1000) }}, {{ request('max_price', 100000) }}, 0, 150000)">
-            <h3 class="font-bold text-gray-900 mb-5 text-sm">Price</h3>
+            <h3 class="font-bold text-gray-900 mb-5 text-xs uppercase tracking-wide">Price</h3>
             
             <!-- Price Slider -->
             <div class="px-2 mb-6 relative h-1.5 bg-gray-200 rounded-full">
@@ -137,7 +137,7 @@
 
         <!-- 4. City -->
         <div x-data="{ expanded: false }">
-            <h3 class="font-bold text-gray-900 mb-3 text-sm">City</h3>
+            <h3 class="font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide">City</h3>
             <div class="relative mb-3">
                 <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
                     <i data-lucide="search" class="text-gray-400" size="14"></i>
@@ -178,7 +178,7 @@
 
         <!-- 5. Rating -->
         <div>
-            <h3 class="font-bold text-gray-900 mb-4 text-sm">Rating</h3>
+            <h3 class="font-bold text-gray-900 mb-4 text-xs uppercase tracking-wide">Rating</h3>
             <div class="flex items-center justify-between mb-3">
                 <div class="w-6 h-6 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0">
                     <span class="text-[10px] font-bold text-gray-500">0</span>
@@ -200,7 +200,7 @@
 
         <!-- 6. Theme -->
         <div x-data="{ expanded: false }">
-            <h3 class="font-bold text-gray-900 mb-3 text-sm">Theme</h3>
+            <h3 class="font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide">Theme</h3>
             @php
                 $allThemes = ['Honeymoon', 'Solo', 'Adventure', 'Family/Group', 'Religious', 'Romantic', 'Nature'];
                 $visibleThemes = array_slice($allThemes, 0, 5);
@@ -233,7 +233,7 @@
 
         <!-- 7. Activity Type (Tags) -->
         <div>
-            <h3 class="font-bold text-gray-900 mb-3 text-sm">Activity Type</h3>
+            <h3 class="font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide">Activity Type</h3>
             @php
                 $allActivities = ['Cable Car / Rope way', 'Adventure', 'Nature', 'Rides and Thrill', 'Water Activities', 'Jeep Safari', 'Hill Station', 'Religious'];
                 $selectedActs = request('activities', []);

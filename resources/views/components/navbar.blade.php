@@ -41,7 +41,15 @@
         <div class="flex-1 relative flex justify-center items-center z-20 header-center-wrapper">
             <div id="navbar-transits" class="absolute flex w-full lg:w-auto overflow-x-auto hide-scrollbar lg:overflow-visible items-center justify-start lg:justify-center gap-4 xl:gap-8 px-4 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-4 pointer-events-none'">
                 @foreach($headerTransits as $t)
-                  <a href="{{ route('search', ['transit' => Str::slug($t['label'])]) }}" class="flex flex-col items-center group flex-shrink-0">
+                  @php
+                      $cleanType = $t['label'];
+                      if (in_array($cleanType, ['Flight', 'Train', 'Bus', 'Cruise', 'Tracking', 'Helicopter'])) {
+                          $cleanType .= ' Package';
+                      } elseif ($cleanType === 'Land') {
+                          $cleanType = 'Other';
+                      }
+                  @endphp
+                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group flex-shrink-0">
                      <div class="w-10 h-10 xl:w-12 xl:h-12 flex items-center justify-center">
                         <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
