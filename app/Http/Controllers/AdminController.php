@@ -782,6 +782,7 @@ class AdminController extends Controller
         DB::table('ads')->where('id', $request->id)->update([
             'campaign_name' => $request->campaign_name,
             'position' => $request->position,
+            'image' => $request->image,
             'link' => $request->link,
             'status' => $request->status ?? 'Active',
             'updated_at' => now(),

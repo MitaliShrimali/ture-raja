@@ -60,7 +60,14 @@ class UserController extends Controller
             $heroBanners = collect();
         }
 
-        return view('welcome', compact('packages', 'heroBanners'));
+        // Pull an active Ad for the home page from DB
+        try {
+            $homeAd = DB::table('ads')->where('status', 'Active')->orderBy('id', 'desc')->first();
+        } catch (\Exception $e) {
+            $homeAd = null;
+        }
+
+        return view('welcome', compact('packages', 'heroBanners', 'homeAd'));
     }
 
     // ─── SEARCH ───────────────────────────────────────────────────────
@@ -86,6 +93,20 @@ class UserController extends Controller
         // Redirect to discover/listing page with the search term
         $searchTerm = !empty($destination) ? $destination : $fromCity;
         return redirect()->route('discover', ['search' => $searchTerm]);
+    }
+
+    // ─── AD CLICK TRACKING ────────────────────────────────────────────
+    public function trackAdClick($id)
+    {
+        try {
+            $ad = DB::table('ads')->where('id', $id)->first();
+            if ($ad) {
+                DB::table('ads')->where('id', $id)->increment('clicks');
+                return redirect($ad->link ?: '/discover');
+            }
+        } catch (\Exception $e) {}
+        
+        return redirect('/discover');
     }
 
     // ─── NEWSLETTER SUBSCRIBE ─────────────────────────────────────────

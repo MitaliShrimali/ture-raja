@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-hero :banners="$heroBanners ?? collect()" />
+    <x-hero :banners="$heroBanners ?? collect()" :home-ad="$homeAd ?? null" />
 
     {{-- Popular Transits is now inside the hero component --}}
 
@@ -33,7 +33,7 @@
                 @endphp
                 @foreach($intl as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-xl overflow-hidden block group flex-1 min-w-0" style="height:115px;">
+                   class="relative rounded-sm overflow-hidden block group flex-1 min-w-0" style="height:115px;">
                     <img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
@@ -72,7 +72,7 @@
                 @endphp
                 @foreach($dom as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-xl overflow-hidden block group flex-1 min-w-0" style="height:115px;">
+                   class="relative rounded-sm overflow-hidden block group flex-1 min-w-0" style="height:115px;">
                     <img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
@@ -94,7 +94,7 @@
             <!-- Card 1: Security Assurance -->
             <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
                 <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <i data-lucide="shield-check" class="text-yellow-500 w-8 h-8"></i>
+                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/security.svg.svg" alt="Security Assurance" class="w-8 h-8 object-contain">
                 </div>
                 <h4 class="font-extrabold text-black text-[16px] mb-3">Security Assurance</h4>
                 <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Demonstrates commitment to user data security</p>
@@ -104,7 +104,7 @@
             <!-- Card 2: Best Price Deals -->
             <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
                 <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <i data-lucide="headset" class="text-orange-500 w-8 h-8"></i>
+                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/support.svg.svg" alt="Best Price Deals" class="w-8 h-8 object-contain">
                 </div>
                 <h4 class="font-extrabold text-black text-[16px] mb-3">Best Price Deals</h4>
                 <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Compare and choose the most affordable package</p>
@@ -114,7 +114,7 @@
             <!-- Card 3: Direct Agent Contacts -->
             <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
                 <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <i data-lucide="handshake" class="text-blue-500 w-8 h-8"></i>
+                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/policy.svg.svg" alt="Direct Agent Contacts" class="w-8 h-8 object-contain">
                 </div>
                 <h4 class="font-extrabold text-black text-[16px] mb-3">Direct Agent Contacts</h4>
                 <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">No middleman, connect instantly</p>
@@ -124,7 +124,7 @@
             <!-- Card 4: Find Nearby Travel Agent -->
             <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
                 <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <i data-lucide="map" class="text-teal-400 w-8 h-8"></i>
+                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/repu.svg.svg" alt="Find Nearby Travel Agent" class="w-8 h-8 object-contain">
                 </div>
                 <h4 class="font-extrabold text-black text-[16px] mb-3">Find Nearby Travel Agent</h4>
                 <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Find the perfect trip without confusion with your local agent</p>

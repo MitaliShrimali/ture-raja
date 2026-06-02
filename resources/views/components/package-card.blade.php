@@ -25,7 +25,7 @@
         $price    = $pkgArr['price']    ?? $price;
         $oldPrice = $pkgArr['oldPrice'] ?? $oldPrice;
         $badge    = $pkgArr['badge']    ?? $badge;
-        $slug     = $pkgArr['slug']     ?? $slug;
+        $slug     = $pkgArr['slug']     ?? \Illuminate\Support\Str::slug($title ?? '') ?: $slug;
     }
     $detailUrl = $slug ? url('packages/' . $slug) : '#';
 @endphp

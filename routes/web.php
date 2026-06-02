@@ -21,6 +21,9 @@ Route::get('/contact', function () { return view('contact'); });
 // Search from hero bar → redirect to listing
 Route::get('/search', [UserController::class, 'search'])->name('search');
 
+// Ad click tracking
+Route::get('/ad/click/{id}', [UserController::class, 'trackAdClick'])->name('ad.click');
+
 // Newsletter subscription
 Route::post('/newsletter/subscribe', [UserController::class, 'subscribe'])->name('newsletter.subscribe');
 

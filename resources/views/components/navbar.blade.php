@@ -6,11 +6,12 @@
         @media (min-width: 1024px) {
             .header-center-wrapper {
                 position: absolute !important;
-                left: 0 !important;
-                right: 0 !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
                 top: 0 !important;
                 bottom: 0 !important;
                 justify-content: center !important;
+                width: max-content !important;
             }
         }
     </style>
@@ -37,8 +38,8 @@
           ];
         @endphp
         
-        <div class="flex-1 pointer-events-none flex justify-start items-center z-0 header-center-wrapper">
-            <div id="navbar-transits" class="pointer-events-auto flex w-full lg:w-auto overflow-x-auto hide-scrollbar lg:overflow-visible items-center justify-start lg:justify-center gap-4 xl:gap-8 px-4 lg:px-0 transition-all duration-500 {{ $isHome ? 'opacity-0 pointer-events-none scale-90 translate-y-4' : 'opacity-100 scale-100 translate-y-0' }}">
+        <div class="flex-1 relative flex justify-center items-center z-20 header-center-wrapper">
+            <div id="navbar-transits" class="absolute flex w-full lg:w-auto overflow-x-auto hide-scrollbar lg:overflow-visible items-center justify-start lg:justify-center gap-4 xl:gap-8 px-4 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-4 pointer-events-none'">
                 @foreach($headerTransits as $t)
                   <a href="{{ route('search', ['transit' => Str::slug($t['label'])]) }}" class="flex flex-col items-center group flex-shrink-0">
                      <div class="w-10 h-10 xl:w-12 xl:h-12 flex items-center justify-center">
@@ -48,20 +49,32 @@
                   </a>
                 @endforeach
             </div>
+            <div class="absolute hidden lg:flex items-center gap-8 text-[15px] font-bold text-white transition-all duration-500 z-50 whitespace-nowrap" :class="(!isScrolled && isHome) ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4 pointer-events-none'">
+                <a href="{{ url('/') }}" class="hover:text-white transition-colors flex items-center gap-1.5 relative group whitespace-nowrap {{ request()->is('/') ? 'text-white' : 'text-white/80' }}">
+                    Home
+                    <span class="absolute -bottom-1 left-0 {{ request()->is('/') ? 'w-full' : 'w-0' }} h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+                </a>
+                @if(!request()->is('discover'))
+                <a href="{{ url('/discover') }}" class="hover:text-white transition-colors flex items-center gap-1.5 relative group whitespace-nowrap {{ request()->is('discover') ? 'text-white' : 'text-white/80' }}">
+                    Top Destinations
+                    <span class="absolute -bottom-1 left-0 {{ request()->is('discover') ? 'w-full' : 'w-0' }} h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>
+                </a>
+                @endif
+            </div>
         </div>
 
         <!-- Right Side Icons & Actions -->
         <div class="flex items-center justify-end gap-4 lg:gap-6 flex-shrink-0 z-10">
             
-            <div class="hidden lg:flex items-center gap-5 text-[13px] font-bold" :class="(isScrolled || !isHome) ? 'text-text-main' : 'text-white/90'">
-                <a href="{{ url('/') }}" class="hover:text-primary transition-colors flex items-center gap-1.5 relative group">
+            <div class="hidden lg:flex items-center gap-5 text-[13px] font-bold transition-all duration-500 overflow-hidden" :class="(isScrolled || !isHome) ? 'opacity-100 pointer-events-auto max-w-[500px] mr-2 text-text-main' : 'opacity-0 pointer-events-none max-w-0 mr-0'">
+                <a href="{{ url('/') }}" class="hover:text-primary transition-colors flex items-center gap-1.5 relative group whitespace-nowrap {{ request()->is('/') ? 'text-primary' : '' }}">
                     Home
-                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
+                    <span class="absolute -bottom-1 left-0 {{ request()->is('/') ? 'w-full' : 'w-0' }} h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
                 </a>
                 @if(!request()->is('discover'))
-                <a href="{{ url('/discover') }}" class="hover:text-primary transition-colors flex items-center gap-1.5 relative group">
-                    <i data-lucide="map-pin" size="18"></i> Top Destinations
-                    <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
+                <a href="{{ url('/discover') }}" class="hover:text-primary transition-colors flex items-center gap-1.5 relative group whitespace-nowrap {{ request()->is('discover') ? 'text-primary' : '' }}">
+                    Top Destinations
+                    <span class="absolute -bottom-1 left-0 {{ request()->is('discover') ? 'w-full' : 'w-0' }} h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
                 </a>
                 @endif
             </div>
@@ -71,11 +84,16 @@
                 <div class="relative hidden lg:block" x-data="{ open: false }" @click.away="open = false">
                     <button 
                         @click="open = !open"
-                        class="relative flex items-center gap-1.5 text-[13px] font-bold hover:text-primary transition-colors"
-                        :class="(isScrolled || !isHome) ? 'text-text-main' : 'text-white/90'"
+                        class="relative flex items-center gap-2.5 text-left group"
                     >
-                        <i data-lucide="heart" size="18"></i> Wishlist
-                        <span id="wishlist-count" class="absolute -top-1.5 left-2 w-4 h-4 bg-primary text-white text-[10px] font-black rounded-full flex items-center justify-center hidden">0</span>
+                        <div class="relative w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                            <i data-lucide="heart" size="18" class="text-primary fill-primary"></i>
+                            <span id="wishlist-count" class="absolute -top-1 -right-1 w-4 h-4 bg-black text-white text-[10px] font-black rounded-full flex items-center justify-center hidden">0</span>
+                        </div>
+                        <div class="hidden xl:flex flex-col justify-center transition-colors duration-300" :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'">
+                            <span class="text-[14px] font-black leading-tight tracking-wide">Wishlist</span>
+                            <span class="text-[10px] font-bold opacity-80 leading-tight">Save favourites</span>
+                        </div>
                     </button>
 
                     <!-- Wishlist Dropdown -->
@@ -104,16 +122,21 @@
                 <div class="relative hidden lg:block">
                     <button 
                         @click="$dispatch('open-login-modal')"
-                        class="relative flex items-center gap-1.5 text-[13px] font-bold hover:text-primary transition-colors"
-                        :class="(isScrolled || !isHome) ? 'text-text-main' : 'text-white/90'"
+                        class="relative flex items-center gap-2.5 text-left group"
                     >
-                        <i data-lucide="heart" size="18"></i> Wishlist
+                        <div class="relative w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                            <i data-lucide="heart" size="18" class="text-primary fill-primary"></i>
+                        </div>
+                        <div class="hidden xl:flex flex-col justify-center transition-colors duration-300" :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'">
+                            <span class="text-[14px] font-black leading-tight tracking-wide">Wishlist</span>
+                            <span class="text-[10px] font-bold opacity-80 leading-tight">Save favourites</span>
+                        </div>
                     </button>
                 </div>
             @endif
 
             @if(Auth::check())
-                <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-premium hover:scale-105 duration-300 ml-2">
+                <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2">
                     @if(Auth::user()->avatar)
                         <img src="{{ Auth::user()->avatar }}" class="w-full h-full rounded-full object-cover">
                     @else

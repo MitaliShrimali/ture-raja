@@ -1,7 +1,7 @@
-@props(['banners' => null])
+@props(['banners' => null, 'homeAd' => null])
 @php use Illuminate\Support\Str; @endphp
 
-<section class="relative overflow-hidden" style="height:75vh; min-height:500px; max-height:700px;">
+<section class="relative overflow-hidden" style="height:55vh; min-height:400px; max-height:550px;">
 
   {{-- ── Background Slider ── --}}
   <div class="absolute inset-0 z-0 bg-[#1A1A24]">
@@ -53,23 +53,16 @@
   </button>
   @endif
 
-  {{-- ── Slide dots (Centered) ── --}}
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm">
-    <button onclick="prevHeroSlide()" class="text-white/60 hover:text-white transition-colors">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    @foreach($slides as $i => $url)
-      <div class="hero-dot {{ $i===0?'opacity-100':'opacity-40' }}" data-dot="{{ $i }}" onclick="goToHeroSlide({{ $i }})"
-           style="width:8px;height:8px;border-radius:50%;background:#fff;cursor:pointer;transition:opacity .3s;"></div>
-    @endforeach
-    <button onclick="nextHeroSlide()" class="text-white/60 hover:text-white transition-colors">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-  </div>
 
-  {{-- ── Hero Content ── --}}
-  <div class="relative z-20 h-full flex flex-col items-center justify-center text-center px-4 pt-16 pb-8">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-snug w-full mb-8"
+
+  {{-- Top/Bottom Gradients --}}
+  <div class="absolute inset-0 z-10 pointer-events-none" style="background:linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 25%, transparent 60%, rgba(0,0,0,0.4) 100%);"></div>
+
+  {{-- ── Main Hero Content (Centered Text + Search Form) ── --}}
+  <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 md:px-8">
+    
+    {{-- Main Headline --}}
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-snug w-full mb-6"
         style="color:#ffffff !important; text-shadow:0 2px 12px rgba(0,0,0,0.5);">
       Discover Exclusive Travel Packages<br class="hidden sm:block">from Local Agents Near You!
     </h1>
@@ -111,6 +104,30 @@
     </div>
   </div>
 
+  {{-- ── Sound Toggle (Bottom Right Corner) ── --}}
+  @if($hasVideo)
+  <button onclick="toggleHeroSound()" id="heroSoundToggle" class="absolute bottom-8 right-8 z-40 bg-black/40 hover:bg-black/60 p-3 rounded-full text-white transition-all cursor-pointer backdrop-blur-sm" title="Toggle Sound">
+    <!-- Muted Icon -->
+    <svg id="icon-muted" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+    <!-- Unmuted Icon -->
+    <svg id="icon-unmuted" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="hidden"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+  </button>
+  @endif
+
+  {{-- ── Slide dots (Centered) ── --}}
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm">
+    <button onclick="prevHeroSlide()" class="text-white/60 hover:text-white transition-colors">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    @foreach($slides as $i => $url)
+      <div class="hero-dot {{ $i===0?'opacity-100':'opacity-40' }}" data-dot="{{ $i }}" onclick="goToHeroSlide({{ $i }})"
+           style="width:8px;height:8px;border-radius:50%;background:#fff;cursor:pointer;transition:opacity .3s;"></div>
+    @endforeach
+    <button onclick="nextHeroSlide()" class="text-white/60 hover:text-white transition-colors">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </div>
+
   <script>
     let currentSlide = 0;
     const totalSlides = {{ count($slides) }};
@@ -148,14 +165,17 @@
 
     document.addEventListener('DOMContentLoaded', () => { slideInterval = setInterval(nextHeroSlide, 5000); });
   </script>
+  {{-- Background Music --}}
+  <audio id="heroBgMusic" src="/public/audio/destroyer_of_all.mp3?v={{ time() }}" loop></audio>
+
   {{-- Bottom fade blur: image fades into white below --}}
-  <div class="absolute bottom-0 left-0 right-0 z-10 pointer-events-none" style="height:80px; background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 60%, #ffffff 100%); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);"></div>
+  <div class="absolute bottom-0 left-0 right-0 z-10 pointer-events-none" style="height:60px; background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 60%, #ffffff 100%); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);"></div>
 </section>
 
 {{-- ── Popular Transits (below hero, white bg) ── --}}
-<section id="popular-transits-section" class="bg-white py-12 lg:py-16 border-b border-gray-100">
+<section id="popular-transits-section" class="bg-white pt-6 pb-4 md:pt-8 md:pb-6">
   <div class="container-custom">
-    <h2 class="font-black text-foreground tracking-tight font-heading mb-10 text-center" style="font-size: 36px;">Popular Transits</h2>
+    <h2 class="font-black text-foreground tracking-tight font-heading mb-6 md:mb-8 text-center" style="font-size: 28px;">Popular Transits</h2>
     <div class="flex flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth items-start justify-around gap-6 md:gap-10 pb-4 md:pb-0 px-2">
       @php
         $transits = [
@@ -171,14 +191,29 @@
       @endphp
       @foreach($transits as $t)
         <a href="{{ route('search', ['transit' => Str::slug($t['label'])]) }}"
-           class="group flex-none md:flex-1 w-28 md:w-auto flex flex-col items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
-          <div class="w-20 h-20 md:w-24 md:h-24 flex items-center justify-center">
+           class="group flex-none md:flex-1 w-24 md:w-auto flex flex-col items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+          <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
             <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
           </div>
-          <span class="text-center text-sm md:text-base font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
+          <span class="text-center text-xs md:text-sm font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
         </a>
       @endforeach
     </div>
+  </div>
+</section>
+
+{{-- ── ADS Section ── --}}
+<section class="bg-white pb-8 md:pb-12 border-b border-gray-100">
+  <div class="container-custom">
+    @if(isset($homeAd) && $homeAd)
+        <a href="{{ route('ad.click', ['id' => $homeAd->id]) }}" target="_blank" class="block w-full h-[80px] md:h-[100px] lg:h-[120px] bg-gray-100 rounded-[20px] shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex items-center justify-center">
+            <img src="{{ $homeAd->image }}" alt="{{ $homeAd->campaign_name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500">
+        </a>
+    @else
+        <div class="w-full h-[80px] md:h-[100px] lg:h-[120px] bg-[#d5d5d5] rounded-[20px] flex items-center justify-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+          <span class="text-lg md:text-xl font-black text-black tracking-widest">ADS</span>
+        </div>
+    @endif
   </div>
 </section>
 
