@@ -14,6 +14,7 @@
 ])
 
 @php
+    $agentObj = null;
     if ($pkg) {
         $pkgArr = (array) $pkg;
         $title    = $pkgArr['title']    ?? $title;
