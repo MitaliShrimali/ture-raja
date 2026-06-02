@@ -528,10 +528,10 @@ class DatabaseSeeder extends Seeder
         DB::table('banners')->truncate();
         DB::table('banners')->insert([
             [
-                'title' => 'Monaco Premium Tour',
-                'subtitle' => 'Explore the Glamorous Monte Carlo Casino',
-                'image' => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=1200',
-                'link' => '/packages/monaco-luxury-tour',
+                'title' => 'Explore the World with TourRaja',
+                'subtitle' => 'Watch this beautiful journey and find your next escape',
+                'image' => 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+                'link' => '/discover',
                 'status' => 'Active',
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -541,7 +541,7 @@ class DatabaseSeeder extends Seeder
                 'subtitle' => 'Cruising the breathtaking Ha Long Bay karsts',
                 'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=1200',
                 'link' => '/packages/vietnam-tour-package',
-                'status' => 'Active',
+                'status' => 'Inactive',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

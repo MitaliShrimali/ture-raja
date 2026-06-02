@@ -44,14 +44,12 @@
   </div>
 
   {{-- ── Sound Toggle (Bottom Right Corner) ── --}}
-  @if($hasVideo)
   <button onclick="toggleHeroSound()" id="heroSoundToggle" class="absolute bottom-8 right-8 z-40 bg-black/40 hover:bg-black/60 p-3 rounded-full text-white transition-all cursor-pointer backdrop-blur-sm" title="Toggle Sound">
     <!-- Muted Icon -->
     <svg id="icon-muted" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
     <!-- Unmuted Icon -->
     <svg id="icon-unmuted" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="hidden"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
   </button>
-  @endif
 
 
 
@@ -104,15 +102,7 @@
     </div>
   </div>
 
-  {{-- ── Sound Toggle (Bottom Right Corner) ── --}}
-  @if($hasVideo)
-  <button onclick="toggleHeroSound()" id="heroSoundToggle" class="absolute bottom-8 right-8 z-40 bg-black/40 hover:bg-black/60 p-3 rounded-full text-white transition-all cursor-pointer backdrop-blur-sm" title="Toggle Sound">
-    <!-- Muted Icon -->
-    <svg id="icon-muted" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
-    <!-- Unmuted Icon -->
-    <svg id="icon-unmuted" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="hidden"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
-  </button>
-  @endif
+
 
   {{-- ── Slide dots (Centered) ── --}}
   <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm">
@@ -165,8 +155,7 @@
 
     document.addEventListener('DOMContentLoaded', () => { slideInterval = setInterval(nextHeroSlide, 5000); });
   </script>
-  {{-- Background Music --}}
-  <audio id="heroBgMusic" src="/public/audio/destroyer_of_all.mp3?v={{ time() }}" loop></audio>
+
 
   {{-- Bottom fade blur: image fades into white below --}}
   <div class="absolute bottom-0 left-0 right-0 z-10 pointer-events-none" style="height:60px; background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 60%, #ffffff 100%); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);"></div>
