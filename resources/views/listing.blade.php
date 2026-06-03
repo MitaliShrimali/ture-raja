@@ -191,7 +191,7 @@
                   {{-- Search Button --}}
                   <div class="w-full md:w-auto shrink-0">
                     <button type="submit"
-                            class="bg-white text-gray-900 font-bold text-sm hover:bg-gray-100 transition-colors w-full sm:w-auto px-10 py-3 rounded-md shadow-sm">
+                            class="rounded-full bg-white text-gray-900 font-bold text-sm hover:bg-gray-100 transition-colors w-full sm:w-auto px-10 py-3 shadow-sm">
                       Search
                     </button>
                   </div>

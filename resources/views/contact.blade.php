@@ -34,7 +34,7 @@
                         <textarea name="message" rows="4" required placeholder="Go ahead, we are listening.." class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[12px] sm:text-[15px] font-medium placeholder-gray-400 resize-none" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'"></textarea>
                     </div>
                     <div class="text-left">
-                        <button type="submit" class="text-white font-semibold text-[12px] sm:text-[15px] py-2 sm:py-3.5 px-6 sm:px-10 rounded transition-colors inline-block w-auto" style="background-color: #2b6d64;" onmouseover="this.style.backgroundColor='#1f524a'" onmouseout="this.style.backgroundColor='#2b6d64'">
+                        <button type="submit" class="text-white font-semibold text-[12px] sm:text-[15px] py-2 sm:py-3.5 px-6 sm:px-10 rounded-full transition-colors inline-block w-auto" style="background-color: #2b6d64;" onmouseover="this.style.backgroundColor='#1f524a'" onmouseout="this.style.backgroundColor='#2b6d64'">
                             Submit
                         </button>
                     </div>

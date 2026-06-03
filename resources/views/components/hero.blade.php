@@ -92,8 +92,8 @@
           {{-- Search Button --}}
           <div class="px-4 py-3 md:px-2 md:py-2 flex-shrink-0 w-full md:w-auto">
             <button type="submit"
-                    style="background:#e85d26; border-radius:6px;"
-                    class="px-8 py-3 text-white font-bold text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto">
+                    style="background:#e85d26;"
+                    class="rounded-full px-8 py-3 text-white font-bold text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto">
               Search
             </button>
           </div>

@@ -313,10 +313,10 @@
             </div>
             <!-- Navigation -->
             <div class="flex items-center gap-2">
-                <button onclick="const c=document.getElementById('history-carousel'); c.scrollBy({left: -(c.offsetWidth/2+8), behavior:'smooth'})" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors shadow-sm">
+                <button onclick="const c=document.getElementById('history-carousel'); if(c) c.scrollBy({left: -(c.offsetWidth/2+8), behavior:'smooth'})" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors shadow-sm">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i>
                 </button>
-                <button onclick="const c=document.getElementById('history-carousel'); c.scrollBy({left: c.offsetWidth/2+8, behavior:'smooth'})" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors shadow-sm">
+                <button onclick="const c=document.getElementById('history-carousel'); if(c) c.scrollBy({left: c.offsetWidth/2+8, behavior:'smooth'})" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-700 hover:bg-gray-200 transition-colors shadow-sm">
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -324,12 +324,12 @@
 
         <div id="history-carousel" class="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory">
             <!-- Card 1 -->
-            <div class="history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
+            <div onclick="window.location.href='{{ url('/listing') }}'" class="cursor-pointer history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
                 <!-- Image block (42%) -->
                 <div class="w-[33%] relative overflow-hidden h-full">
                     <img src="https://images.unsplash.com/photo-1508849789987-4e5333c12b78?auto=format&fit=crop&q=80&w=600" alt="New York" class="w-full h-full object-cover">
                     <!-- Favorite heart button -->
-                    <button class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
+                    <button onclick="this.classList.toggle('text-red-500'); let svg = this.querySelector('svg'); if(svg) svg.classList.toggle('fill-current');" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
                         <i data-lucide="heart" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -373,20 +373,20 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">18 Seats left</span>
-                        <button class="bg-[#E8460A] hover:bg-orange-600 text-white text-[12px] font-extrabold px-5 py-2.5 rounded-full transition-all duration-200 shadow-sm">
-                            Book Now
-                        </button>
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                            Search Now
+                        </a>
                     </div>
                 </div>
             </div>
             
             <!-- Card 2 -->
-            <div class="history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
+            <div onclick="window.location.href='{{ url('/listing') }}'" class="cursor-pointer history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
                 <!-- Image block (42%) -->
                 <div class="w-[33%] relative overflow-hidden h-full">
                     <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=600" alt="Switzerland" class="w-full h-full object-cover">
                     <!-- Favorite heart button -->
-                    <button class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
+                    <button onclick="this.classList.toggle('text-red-500'); let svg = this.querySelector('svg'); if(svg) svg.classList.toggle('fill-current');" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
                         <i data-lucide="heart" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -425,20 +425,20 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">18 Seats left</span>
-                        <button class="bg-[#E8460A] hover:bg-orange-600 text-white text-[12px] font-extrabold px-5 py-2.5 rounded-full transition-all duration-200 shadow-sm">
-                            Book Now
-                        </button>
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                            Search Now
+                        </a>
                     </div>
                 </div>
             </div>
 
             <!-- Card 3 -->
-            <div class="history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
+            <div onclick="window.location.href='{{ url('/listing') }}'" class="cursor-pointer history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
                 <!-- Image block (42%) -->
                 <div class="w-[33%] relative overflow-hidden h-full">
                     <img src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600" alt="Dubai" class="w-full h-full object-cover">
                     <!-- Favorite heart button -->
-                    <button class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
+                    <button onclick="this.classList.toggle('text-red-500'); let svg = this.querySelector('svg'); if(svg) svg.classList.toggle('fill-current');" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
                         <i data-lucide="heart" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -477,20 +477,20 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">18 Seats left</span>
-                        <button class="bg-[#E8460A] hover:bg-orange-600 text-white text-[12px] font-extrabold px-5 py-2.5 rounded-full transition-all duration-200 shadow-sm">
-                            Book Now
-                        </button>
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                            Search Now
+                        </a>
                     </div>
                 </div>
             </div>
 
             <!-- Card 4 (Paris) -->
-            <div class="history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
+            <div onclick="window.location.href='{{ url('/listing') }}'" class="cursor-pointer history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
                 <!-- Image block (42%) -->
                 <div class="w-[33%] relative overflow-hidden h-full">
                     <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600" alt="Paris" class="w-full h-full object-cover">
                     <!-- Favorite heart button -->
-                    <button class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
+                    <button onclick="this.classList.toggle('text-red-500'); let svg = this.querySelector('svg'); if(svg) svg.classList.toggle('fill-current');" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
                         <i data-lucide="heart" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -534,20 +534,20 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">12 Seats left</span>
-                        <button class="bg-[#E8460A] hover:bg-orange-600 text-white text-[12px] font-extrabold px-5 py-2.5 rounded-full transition-all duration-200 shadow-sm">
-                            Book Now
-                        </button>
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                            Search Now
+                        </a>
                     </div>
                 </div>
             </div>
 
             <!-- Card 5 (London) -->
-            <div class="history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
+            <div onclick="window.location.href='{{ url('/listing') }}'" class="cursor-pointer history-card snap-start bg-white rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex h-[210px] overflow-hidden relative">
                 <!-- Image block (42%) -->
                 <div class="w-[33%] relative overflow-hidden h-full">
-                    <img src="https://images.unsplash.com/photo-1513635269975-5969336cd44e?auto=format&fit=crop&q=80&w=600" alt="London" class="w-full h-full object-cover">
+                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/recal-media-ueBIGLmiI5A-unsplash.jpg" alt="London" class="w-full h-full object-cover">
                     <!-- Favorite heart button -->
-                    <button class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
+                    <button onclick="this.classList.toggle('text-red-500'); let svg = this.querySelector('svg'); if(svg) svg.classList.toggle('fill-current');" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-700 hover:text-red-500 transition-colors z-20">
                         <i data-lucide="heart" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -586,9 +586,9 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">24 Seats left</span>
-                        <button class="bg-[#E8460A] hover:bg-orange-600 text-white text-[12px] font-extrabold px-5 py-2.5 rounded-full transition-all duration-200 shadow-sm">
-                            Book Now
-                        </button>
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                            Search Now
+                        </a>
                     </div>
                 </div>
             </div>
