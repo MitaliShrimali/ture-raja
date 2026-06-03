@@ -11,8 +11,10 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .orange-side {
-            background-color: #E8460A;
-            background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' viewBox='0 0 1600 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 800V0c400 0 400 800 800 800s400-800 800-800v800H0z' fill='white' fill-opacity='0.05'/%3E%3Cpath d='M0 800V0c200 0 200 800 400 800s200-800 400-800 200 800 400 800 200-800 400-800v800H0z' fill='white' fill-opacity='0.03'/%3E%3C/svg%3E");
+            background-color: #e85d26;
+            background-image: url("{{ asset('images/tourraja-bg.png') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover;
             border-top-left-radius: 120px;
             border-bottom-left-radius: 120px;
@@ -99,12 +101,10 @@
 
         <!-- Orange Side -->
         <div class="hidden lg:flex lg:w-[55%] orange-side items-center justify-center relative">
-            <div class="text-center space-y-4">
+            <div class="text-center space-y-4 w-full px-12">
                 <!-- Large Logo -->
                 <div class="flex items-center justify-center">
-                    <div class="bg-white px-8 py-6 rounded-3xl shadow-2xl">
-                        <x-logo class="h-12 sm:h-16 w-auto text-foreground" />
-                    </div>
+                    <x-logo white="true" class="h-20 sm:h-28 w-auto" />
                 </div>
             </div>
 

@@ -2,6 +2,14 @@
     'searchTerm' => '',
 ])
 
+<style>
+    .activity-checkbox-input:checked + .activity-checkbox-btn {
+        background-color: rgba(232, 93, 38, 0.08) !important;
+        color: #e85d26 !important;
+        border-color: #e85d26 !important;
+    }
+</style>
+
 <aside class="w-full bg-white rounded-lg overflow-hidden font-sans border-0 shadow-sm">
     <!-- Header -->
     <div class="bg-primary text-white py-4 px-5 flex items-center justify-between">
@@ -185,7 +193,7 @@
                     <span class="text-[10px] font-bold text-gray-500">0</span>
                 </div>
                 <div class="flex-1 px-3 relative">
-                    <input type="range" name="min_rating" min="0" max="5" step="0.5" value="{{ request('min_rating', 0) }}" oninput="document.getElementById('ratingLabel').innerText = this.value + ' Stars'" class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-primary">
+                    <input type="range" name="min_rating" min="0" max="5" step="0.5" value="{{ request('min_rating', 0) }}" oninput="document.getElementById('ratingLabel').innerText = this.value + ' Stars'" onchange="this.form.dispatchEvent(new Event('submit'))" class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-primary">
                 </div>
                 <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <span class="text-[10px] font-bold text-primary">5</span>
@@ -242,8 +250,8 @@
             <div class="flex flex-wrap gap-2">
                 @foreach($allActivities as $act)
                     <label class="cursor-pointer">
-                        <input type="checkbox" name="activities[]" value="{{ $act }}" {{ in_array($act, $selectedActs) ? 'checked' : '' }} class="hidden peer">
-                        <div class="px-3 py-1.5 border border-gray-200 rounded-lg text-[11px] font-bold text-gray-600 peer-checked:bg-primary/10 peer-checked:text-primary peer-checked:border-primary hover:bg-gray-50 transition-colors">
+                        <input type="checkbox" name="activities[]" value="{{ $act }}" {{ in_array($act, $selectedActs) ? 'checked' : '' }} class="hidden activity-checkbox-input">
+                        <div class="px-3 py-1.5 border border-gray-200 rounded-lg text-[11px] font-bold text-gray-600 activity-checkbox-btn hover:bg-gray-50 transition-colors">
                             {{ $act }}
                         </div>
                     </label>

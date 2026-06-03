@@ -11,7 +11,10 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .gradient-side {
-            background: linear-gradient(135deg, #E8460A, #D62828);
+            background-color: #e85d26;
+            background-image: url("{{ asset('images/tourraja-bg.png') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
             background-size: cover;
             border-top-left-radius: 120px;
             border-bottom-left-radius: 120px;
@@ -77,14 +80,12 @@
         </div>
         <!-- Gradient Side -->
         <div class="hidden lg:flex lg:w-[55%] gradient-side items-center justify-center relative">
-            <div class="text-center space-y-4">
-                <div class="flex items-center justify-center">
-                    <div class="bg-white px-8 py-6 rounded-3xl shadow-2xl">
-                        <x-logo class="h-12 sm:h-16 w-auto text-foreground" />
-                    </div>
+            <div class="text-center space-y-4 w-full px-12">
+                <div class="flex items-center justify-center mb-6">
+                    <x-logo white="true" class="h-20 sm:h-28 w-auto" />
                 </div>
-                <h3 class="text-2xl font-bold text-white">Join Us!</h3>
-                <p class="text-white/80">Start your adventures with TourRaja today.</p>
+                <h3 class="text-3xl font-bold text-white tracking-tight">Join Us!</h3>
+                <p class="text-white/80 max-w-md mx-auto">Start your adventures with TourRaja today.</p>
             </div>
         </div>
     </div>

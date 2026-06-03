@@ -243,10 +243,37 @@
                     </div>
                 </div>
 
+                {{-- Document / Brochure Download Section --}}
+                <div class="bg-white rounded-lg border border-gray-150 p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-md bg-orange-50 flex items-center justify-center shrink-0" style="color: #e85d26;">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10 9 9 9 8 9"></polyline>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 text-base">Travel Guide &amp; Itinerary Brochure</h4>
+                            <p class="text-xs text-gray-400 font-semibold">Download the complete tour handbook in PDF format (2.4 MB)</p>
+                        </div>
+                    </div>
+                    <a href="#" style="background-color: #e85d26;" class="w-full sm:w-auto px-6 py-3.5 text-white text-[11px] font-black uppercase tracking-widest rounded-md transition-all shadow-sm hover:shadow-lg text-center flex items-center justify-center gap-2 hover:opacity-90">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>Download PDF</span>
+                    </a>
+                </div>
+
                 {{-- Quick Info Strip --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 grid grid-cols-3 gap-2 sm:gap-4">
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-4 sm:p-5 grid grid-cols-3 gap-2 sm:gap-4">
                     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-orange-50 flex items-center justify-center shrink-0">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         </div>
                         <div>
@@ -255,7 +282,7 @@
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-orange-50 flex items-center justify-center shrink-0">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         </div>
                         <div>
@@ -264,7 +291,7 @@
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-orange-50 flex items-center justify-center shrink-0">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                         </div>
                         <div>
@@ -300,7 +327,7 @@
                 </div>
 
                 {{-- Tour Overview --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
                     <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
                     <p class="text-gray-600 leading-relaxed text-base detail-overview-text">{{ $package['overview'] }}</p>
 
@@ -316,7 +343,7 @@
                 </div>
 
                 {{-- What's Included / Excluded --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
                     <h2 class="font-black text-gray-900 mb-5 section-heading">What's Included</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
                         @foreach($package['included'] as $item)
@@ -335,7 +362,7 @@
                 </div>
 
                 {{-- Itinerary --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8">
                     <h2 class="font-black text-gray-900 mb-8 section-heading">Itinerary</h2>
                     <div class="relative pl-2">
                         @foreach($package['itinerary'] as $idx => $day)
@@ -369,7 +396,7 @@
                 </div>
 
                 {{-- FAQ Section --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8" x-data="{ activeFaq: 0 }">
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8" x-data="{ activeFaq: 0 }">
                     <h2 class="font-black text-gray-900 mb-6 section-heading">FAQ</h2>
                     <div class="space-y-3">
                         @php
@@ -394,7 +421,7 @@
                         @endphp
                         
                         @foreach($faqs as $i => $faq)
-                        <div class="border border-gray-100 rounded-xl overflow-hidden transition-all duration-300" :class="activeFaq === {{ $i }} ? 'bg-[#F8F9FA]/50 border-gray-200' : 'bg-white hover:bg-gray-50/50'">
+                        <div class="border border-gray-100 rounded-md overflow-hidden transition-all duration-300" :class="activeFaq === {{ $i }} ? 'bg-[#F8F9FA]/50 border-gray-200' : 'bg-white hover:bg-gray-50/50'">
                             <button 
                                 type="button" 
                                 class="w-full flex items-center justify-between p-5 text-left transition-all duration-200 outline-none"
@@ -516,7 +543,7 @@
                     
                     $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentData->id);
                 @endphp
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 space-y-4">
+                <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-4">
                     <h3 class="text-base font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">Agent Information</h3>
                     <div class="flex flex-col items-center text-center py-2 space-y-2">
                         <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-primary/20 flex items-center justify-center shadow-md">
@@ -550,15 +577,15 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-2 pt-1">
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" class="py-2.5 bg-green-500 hover:bg-green-600 text-white text-center text-xs font-black rounded-xl transition-colors">Whatsapp</a>
-                        <a href="mailto:{{ $agentEmail }}" class="py-2.5 bg-primary hover:bg-primary/90 text-white text-center text-xs font-black rounded-xl transition-colors">Email</a>
-                        <a href="{{ $agentRedirectUrl }}" class="py-2.5 border border-border-soft text-foreground text-center text-xs font-black rounded-xl hover:bg-gray-50 transition-colors">Other Packages</a>
-                        <a href="{{ $agentRedirectUrl }}" class="py-2.5 bg-foreground hover:opacity-90 text-white text-center text-xs font-black rounded-xl transition-colors">See Profile</a>
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" class="py-2.5 bg-green-500 hover:bg-green-600 text-white text-center text-xs font-black rounded-md transition-colors">Whatsapp</a>
+                        <a href="mailto:{{ $agentEmail }}" class="py-2.5 bg-primary hover:bg-primary/90 text-white text-center text-xs font-black rounded-md transition-colors">Email</a>
+                        <a href="{{ $agentRedirectUrl }}" class="py-2.5 border border-border-soft text-foreground text-center text-xs font-black rounded-md hover:bg-gray-50 transition-colors">Other Packages</a>
+                        <a href="{{ $agentRedirectUrl }}" class="py-2.5 bg-foreground hover:opacity-90 text-white text-center text-xs font-black rounded-md transition-colors">See Profile</a>
                     </div>
                 </div>
 
                 {{-- Price & Book Card --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 space-y-4">
+                <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-4">
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Price Per Person</p>
                         <p class="text-3xl font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">₹{{ number_format($package['price']) }}</p>
@@ -566,16 +593,16 @@
                         <p class="text-sm text-primary font-bold line-through mt-1">₹{{ number_format($package['oldPrice']) }}</p>
                         @endif
                     </div>
-                    <button type="button" @click="showBookingModal = true" class="block w-full py-3.5 bg-primary hover:bg-primary/90 text-white text-center font-black text-sm uppercase tracking-widest rounded-xl transition-all duration-200 shadow-glow">
+                    <button type="button" @click="showBookingModal = true" class="block w-full py-3.5 bg-primary hover:bg-primary/90 text-white text-center font-black text-sm uppercase tracking-widest rounded-md transition-all duration-200 shadow-glow">
                         Book Now
                     </button>
-                    <a href="#contact-form" class="block w-full py-3 border-2 border-gray-200 hover:border-orange-300 text-gray-700 text-center font-bold text-sm rounded-xl transition-all duration-200">
+                    <a href="#contact-form" class="block w-full py-3 border-2 border-gray-200 hover:border-orange-300 text-gray-700 text-center font-bold text-sm rounded-md transition-all duration-200">
                         Enquire Now
                     </a>
                 </div>
 
                 {{-- Get in Touch --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 space-y-4" id="contact-form">
+                <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-4" id="contact-form">
                     <div>
                         <h3 class="text-base font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">Get in touch</h3>
                         <p class="text-sm text-gray-500 mt-1">We are here for you, how can we help?</p>
@@ -598,13 +625,13 @@
                         @csrf
                         <input type="hidden" name="subject" value="Inquiry for {{ $package['title'] }}">
                         <input type="text" name="name" required placeholder="Enter your name"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                            class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
                         <input type="email" name="email" required placeholder="Enter your email"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                            class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
                         <textarea name="message" required rows="3" placeholder="Go ahead, we are listening..."
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400 resize-none"></textarea>
+                            class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400 resize-none"></textarea>
                         <button type="submit"
-                            class="w-full py-3 bg-primary hover:bg-primary/90 text-white font-black text-sm rounded-xl transition-colors duration-200 shadow-glow">
+                            class="w-full py-3 bg-primary hover:bg-primary/90 text-white font-black text-sm rounded-md transition-colors duration-200 shadow-glow">
                             Submit Inquiry
                         </button>
                     </form>
@@ -647,7 +674,7 @@
 
                     @foreach($allTestimonials as $testi)
                         <div class="flex-shrink-0 w-full md:w-[450px] testimonial-card">
-                            <div class="p-6 md:p-10 rounded-[40px] border border-gray-200 bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-4 md:space-y-6">
+                            <div class="p-6 md:p-10 rounded-lg border border-gray-200 bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-4 md:space-y-6">
                                 <h4 class="text-lg md:text-xl font-black text-foreground font-heading" style="font-family: 'Outfit', sans-serif;">The best booking system</h4>
                                 <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic">"{{ $testi['text'] }}"</p>
                                 
@@ -703,7 +730,7 @@
     {{-- Booking Modal (Alpine JS wrapper needed at root of page) --}}
     <div x-show="showBookingModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showBookingModal = false"></div>
-        <div class="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-6 lg:p-8 animate-fade-in-up">
+        <div class="relative w-full max-w-lg bg-white rounded-lg shadow-2xl p-6 lg:p-8 animate-fade-in-up">
             <button @click="showBookingModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
                 <i data-lucide="x" size="18"></i>
             </button>
@@ -719,38 +746,38 @@
                 
                 <div class="space-y-1.5">
                     <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Traveler Name</label>
-                    <input type="text" name="traveler_name" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                    <input type="text" name="traveler_name" required class="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Email</label>
-                        <input type="email" name="traveler_email" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                        <input type="email" name="traveler_email" required class="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
                     </div>
                     <div class="space-y-1.5">
                         <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Phone</label>
-                        <input type="text" name="traveler_phone" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                        <input type="text" name="traveler_phone" required class="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
                     </div>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Travel Date</label>
-                        <input type="date" name="travel_date" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                        <input type="date" name="travel_date" required class="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
                     </div>
                     <div class="space-y-1.5">
                         <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Guests</label>
-                        <input type="number" name="guests" min="1" value="2" required class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                        <input type="number" name="guests" min="1" value="2" required class="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
                     </div>
                 </div>
                 
                 <div class="space-y-1.5">
                     <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Special Requests</label>
-                    <textarea name="special_request" rows="2" class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"></textarea>
+                    <textarea name="special_request" rows="2" class="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none"></textarea>
                 </div>
                 
                 <div class="pt-2">
-                    <button type="submit" class="w-full py-4 bg-primary hover:bg-primary-hover text-white font-black rounded-xl transition-all shadow-lg shadow-primary/30">
+                    <button type="submit" class="w-full py-4 bg-primary hover:bg-primary-hover text-white font-black rounded-md transition-all shadow-lg shadow-primary/30">
                         Confirm Booking Request
                     </button>
                 </div>

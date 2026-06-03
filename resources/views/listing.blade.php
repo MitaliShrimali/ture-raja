@@ -241,12 +241,9 @@
 
                 <x-filter-sidebar />
                 
-                <div class="mt-8">
-                    <button type="submit" @click="mobileFiltersOpen = false" class="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-2xl font-bold transition-all shadow-lg shadow-primary/20 lg:hidden">
+                <div class="mt-8 lg:hidden">
+                    <button type="submit" @click="mobileFiltersOpen = false" class="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-2xl font-bold transition-all shadow-lg shadow-primary/20">
                         Apply Filters
-                    </button>
-                    <button type="button" onclick="clearAllFilters()" class="w-full text-center mt-4 text-muted-text font-bold hover:text-primary transition-colors text-sm">
-                        Clear All Filters
                     </button>
                 </div>
             </div>
@@ -468,7 +465,7 @@
         form.addEventListener('submit', handleFilterUpdate);
 
         // Auto update on input/change events
-        form.querySelectorAll('input[type="checkbox"], select').forEach(input => {
+        form.querySelectorAll('input[type="checkbox"], input[type="range"], select').forEach(input => {
             input.addEventListener('change', handleFilterUpdate);
         });
 

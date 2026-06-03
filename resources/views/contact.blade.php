@@ -19,19 +19,19 @@
             <div class="flex-1 w-1/2">
                 <div class="mb-4 sm:mb-8 text-left">
                     <h2 class="text-[#0f172a] font-bold mb-1 sm:mb-2 text-[22px] sm:text-3xl md:text-[34px] tracking-tight">Get in touch</h2>
-                    <p class="text-gray-500 text-[11px] sm:text-sm md:text-[15px] font-medium leading-tight">We are here for you! How can we help?</p>
+                    <p class="text-gray-500 text-[11px] sm:text-sm md:text-[15px] font-medium leading-tight">We are here for you! How can we help?</p><br>
                 </div>
                 
                 <form action="{{ url('/contact/submit') }}" method="POST">
                     @csrf
                     <div class="mb-3 sm:mb-5">
-                        <input type="text" name="name" required placeholder="Enter your name" class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[12px] sm:text-[15px] font-medium placeholder-gray-400" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
+                        <input type="text" name="name" required placeholder="Enter your name" class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
                     </div>
                     <div class="mb-3 sm:mb-5">
-                        <input type="email" name="email" required placeholder="Enter your email" class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[12px] sm:text-[15px] font-medium placeholder-gray-400" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
+                        <input type="email" name="email" required placeholder="Enter your email" class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
                     </div>
                     <div class="mb-4 sm:mb-6">
-                        <textarea name="message" rows="4" required placeholder="Go ahead, we are listening.." class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[12px] sm:text-[15px] font-medium placeholder-gray-400 resize-none" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'"></textarea>
+                        <textarea name="message" rows="4" required placeholder="Go ahead, we are listening.." class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400 resize-none" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'"></textarea>
                     </div>
                     <div class="text-left">
                         <button type="submit" class="text-white font-semibold text-[12px] sm:text-[15px] py-2 sm:py-3.5 px-6 sm:px-10 rounded-full transition-colors inline-block w-auto" style="background-color: #2b6d64;" onmouseover="this.style.backgroundColor='#1f524a'" onmouseout="this.style.backgroundColor='#2b6d64'">
@@ -117,20 +117,11 @@
             </div>
         </div>
 
-        <!-- Payment Methods -->
-        <div class="mt-16 flex flex-wrap items-center justify-center gap-10 opacity-90 transition-all">
-            <span class="font-bold text-blue-800 text-xl italic tracking-tight">PayPal</span>
-            <span class="font-bold text-indigo-600 text-xl tracking-tighter">stripe</span>
-            <span class="font-bold text-gray-800 text-lg flex items-center gap-1"><i data-lucide="circle" size="18" class="text-orange-500"></i> Payoneer</span>
-            <span class="font-black text-blue-900 text-2xl italic">VISA<span class="text-yellow-500 inline-block w-3 h-3 rounded-full bg-yellow-500 align-middle ml-1"></span></span>
-            <span class="font-bold text-black text-lg flex items-center gap-1"><span class="bg-green-500 text-white rounded-md px-1 py-0.5"><i data-lucide="dollar-sign" size="14"></i></span> Cash App</span>
-            <span class="font-bold text-black text-lg flex items-center gap-1"><i data-lucide="bitcoin" size="22" class="text-orange-500"></i> bitcoin</span>
-            <span class="font-bold text-gray-900 text-lg uppercase tracking-tight">Discover</span>
-        </div>
+
     </div>
 
     <!-- Testimonials -->
-    <div class="w-full py-16 relative overflow-hidden" style="background-color: #eef6ff;">
+    <section class="py-16 lg:py-24 overflow-hidden border-t border-gray-100 relative" style="background-color: #eef6ff;">
         <!-- Plane illustration path -->
         <div class="absolute top-10 pointer-events-none hidden md:block" style="left: 15%; width: 250px; height: 120px; opacity: 0.8; z-index: 10;">
             <svg viewBox="0 0 250 120" fill="none" stroke="#333" stroke-dasharray="4 4" stroke-width="2">
@@ -143,74 +134,87 @@
                 </g>
             </svg>
         </div>
-        
-        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <!-- Left -->
-            <div class="space-y-6 max-w-sm pt-8">
-                <div class="inline-flex items-center gap-2 bg-white px-3 py-1.5 rounded-full shadow-sm text-[11px] font-bold text-gray-900">
-                    <div class="flex -space-x-2">
-                        <img src="https://i.pravatar.cc/150?img=32" class="w-6 h-6 rounded-full border-2 border-white object-cover" alt="avatar">
-                        <img src="https://i.pravatar.cc/150?img=11" class="w-6 h-6 rounded-full border-2 border-white object-cover" alt="avatar">
-                        <img src="https://i.pravatar.cc/150?img=12" class="w-6 h-6 rounded-full border-2 border-white object-cover" alt="avatar">
-                    </div>
-                    Testimonials
+        <div class="container-custom">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 gap-6">
+                <div class="space-y-2">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight font-heading" style="font-family: 'Outfit', sans-serif;">What Our Clients Say!!!</h2>
+                    <p class="text-text-muted text-base md:text-lg font-medium">They Love TourRaja!</p>
                 </div>
-                <h2 class="font-extrabold text-black" style="font-size: 42px; line-height: 1.15; letter-spacing: -0.5px;">What our clients are<br>saying about us?</h2>
-                <p class="text-gray-500 font-medium leading-relaxed" style="font-size: 14px;">
-                    Discover how you can offset your adventure's carbon emissions and support the sustainable initiatives practiced by our operators worldwide.
-                </p>
+                <div class="flex items-center gap-4 self-start md:self-auto">
+                    <button id="prev-testi" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 flex items-center justify-center text-foreground hover:bg-primary hover:text-white transition-all duration-300">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button id="next-testi" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary flex items-center justify-center text-white shadow-glow hover:scale-110 transition-all duration-300">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
             </div>
-            
-            <!-- Right -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10 pt-4 pb-12">
-                <!-- Testimonial 1 -->
-                <div class="bg-white p-8 rounded-3xl shadow-sm space-y-6">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <img src="https://i.pravatar.cc/150?img=32" class="w-14 h-14 rounded-full object-cover" alt="Sara Mohamed">
-                            <div>
-                                <h4 class="font-bold text-gray-900 text-sm">Sara Mohamed</h4>
-                                <p class="text-gray-500 font-medium" style="font-size: 11px;">Jakatar</p>
+
+            <div class="relative group">
+                <div class="flex gap-6 overflow-hidden py-8 testimonial-track" id="testi-slider">
+                    @php
+                        $testimonials = [
+                            ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara', 'rating' => 5],
+                            ['name' => 'Atend John', 'loc' => 'California', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=john', 'rating' => 5],
+                            ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara2', 'rating' => 3],
+                            ['name' => 'Michael Chen', 'loc' => 'Singapore', 'text' => "Excellent service and direct agent contact saved me 30% on my last Bali trip.", 'img' => 'https://i.pravatar.cc/150?u=mike', 'rating' => 5],
+                        ];
+                        // Clone for seamless loop
+                        $allTestimonials = array_merge($testimonials, $testimonials);
+                    @endphp
+
+                    @foreach($allTestimonials as $testi)
+                        <div class="flex-shrink-0 w-full md:w-[450px] testimonial-card">
+                            <div class="p-6 md:p-10 rounded-lg border border-gray-200 bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-4 md:space-y-6">
+                                <h4 class="text-lg md:text-xl font-black text-foreground font-heading" style="font-family: 'Outfit', sans-serif;">The best booking system</h4>
+                                <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic">"{{ $testi['text'] }}"</p>
+                                
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-gray-100 mt-auto gap-4">
+                                    <div class="flex items-center gap-4">
+                                        <img src="{{ $testi['img'] }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-primary/10">
+                                        <div class="flex flex-col">
+                                            <span class="font-black text-foreground text-sm md:text-base">{{ $testi['name'] }}</span>
+                                            <span class="text-[10px] md:text-xs text-text-muted font-bold">{{ $testi['loc'] }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-0.5">
+                                        @for($i=0; $i<5; $i++)
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="{{ $i < $testi['rating'] ? '#f97316' : '#e5e7eb' }}" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        @endfor
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex text-yellow-400 gap-0.5">
-                            <i data-lucide="star" size="10" class="fill-yellow-400"></i>
-                            <i data-lucide="star" size="10" class="fill-yellow-400"></i>
-                            <i data-lucide="star" size="10" class="fill-yellow-400"></i>
-                            <i data-lucide="star" size="10" class="fill-yellow-400"></i>
-                            <i data-lucide="star" size="10" class="fill-yellow-400"></i>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 leading-relaxed font-medium" style="font-size: 12px;">
-                        I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips. The interface is user-friendly, and I appreciate the detailed information and real-time availability of hotels.
-                    </p>
-                </div>
-                <!-- Testimonial 2 -->
-                <div class="bg-white p-8 rounded-3xl shadow-sm space-y-6 sm:mt-8">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <img src="https://i.pravatar.cc/150?img=11" class="w-14 h-14 rounded-full object-cover" alt="Atend John">
-                            <div>
-                                <h4 class="font-bold text-gray-900 text-sm">Atend John</h4>
-                                <p class="text-gray-500 font-medium" style="font-size: 11px;">Califonia</p>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 leading-relaxed font-medium" style="font-size: 12px;">
-                        I had a last-minute business trip, and this system came to the rescue. I booked a hotel in no time and even got a great rate. The confirmation process was straightforward, and I had all the necessary information promptly.
-                    </p>
-                </div>
-                
-                <!-- Navigation Dots -->
-                <div class="absolute right-0 flex gap-2" style="bottom: -20px;">
-                    <button class="w-10 h-10 rounded-full text-gray-500 flex items-center justify-center transition-colors bg-[#e2e8f0] hover:bg-[#cbd5e1]">
-                        <i data-lucide="arrow-left" size="16"></i>
-                    </button>
-                    <button class="w-10 h-10 rounded-full text-gray-500 flex items-center justify-center transition-colors bg-[#e2e8f0] hover:bg-[#cbd5e1]">
-                        <i data-lucide="arrow-right" size="16"></i>
-                    </button>
+                    @endforeach
                 </div>
             </div>
         </div>
-    </div>
+
+        <style>
+            @keyframes marquee {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-450px * 4 - 24px * 4)); }
+            }
+            .testimonial-track {
+                display: flex;
+                width: max-content;
+                animation: marquee 40s linear infinite;
+            }
+            .testimonial-track:hover {
+                animation-play-state: paused;
+            }
+            @media (max-width: 767px) {
+                .testimonial-card {
+                    width: calc(100vw - 80px);
+                }
+                @keyframes marquee-mobile {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .testimonial-track {
+                    animation: marquee-mobile 15s linear infinite;
+                }
+            }
+        </style>
+    </section>
 @endsection
