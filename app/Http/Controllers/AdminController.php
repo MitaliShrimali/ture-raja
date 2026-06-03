@@ -58,7 +58,16 @@ class AdminController extends Controller
             ->limit(5)
             ->get();
 
-        return view('admin.dashboard', compact('data', 'recentPayments'));
+        // Fetch packages pending approval (status = Draft)
+        $pendingPackages = DB::table('packages')
+            ->where('status', 'Draft')
+            ->orderBy('id', 'desc')
+            ->limit(5)
+            ->get();
+
+        $pendingPackagesCount = DB::table('packages')->where('status', 'Draft')->count();
+
+        return view('admin.dashboard', compact('data', 'recentPayments', 'pendingPackages', 'pendingPackagesCount'));
     }
 
     // ==========================================
@@ -133,6 +142,18 @@ class AdminController extends Controller
             DB::table('packages')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
         return redirect()->back()->with('success', 'Package status updated!');
+    }
+
+    public function approvePackage($id)
+    {
+        DB::table('packages')->where('id', $id)->update(['status' => 'Active', 'updated_at' => now()]);
+        return redirect('/admin/dashboard')->with('success', 'Package approved and published!');
+    }
+
+    public function declinePackage($id)
+    {
+        DB::table('packages')->where('id', $id)->update(['status' => 'Inactive', 'updated_at' => now()]);
+        return redirect('/admin/dashboard')->with('success', 'Package declined.');
     }
 
     // HOTELS

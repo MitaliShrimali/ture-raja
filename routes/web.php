@@ -66,6 +66,8 @@ Route::prefix('admin')->group(function () {
         return view('admin.signup', ['type' => 'admin']);
     });
     Route::get('/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/packages/approve/{id}', [AdminController::class, 'approvePackage'])->name('admin.package.approve');
+    Route::get('/packages/decline/{id}', [AdminController::class, 'declinePackage'])->name('admin.package.decline');
     
     // Inventory & Stays
     Route::get('/packages', [AdminController::class, 'packages']);

@@ -134,5 +134,85 @@
             </a>
         </div>
     </div>
+
+    <!-- Package Approvals -->
+    <div class="bg-white rounded-[32px] shadow-soft p-8 space-y-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h3 class="text-2xl font-black text-foreground">Package Approvals</h3>
+                <p class="text-sm text-muted-text font-medium">Review and publish submitted tour packages</p>
+            </div>
+            <div class="flex items-center gap-4">
+                @if($pendingPackagesCount > 0)
+                    <span class="text-xs font-black text-white px-3 py-1.5 rounded-full" style="background-color:#e85d26;">
+                        {{ $pendingPackagesCount }} NEW
+                    </span>
+                @endif
+                <a href="{{ url('/admin/packages') }}" class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
+                    View All <i data-lucide="arrow-up-right" size="14"></i>
+                </a>
+            </div>
+        </div>
+
+        @if(session('success'))
+            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-xs flex items-center gap-3">
+                <i data-lucide="check-circle-2" size="16" class="shrink-0"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+
+        @forelse($pendingPackages as $pkg)
+            <div class="flex items-center justify-between py-5 border-b border-border-soft last:border-0">
+                <div class="flex items-center gap-4">
+                    <!-- Package image -->
+                    <div class="w-14 h-14 rounded-2xl overflow-hidden shrink-0 bg-gray-100">
+                        <img src="{{ $pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=200' }}"
+                             alt="{{ $pkg->title }}"
+                             class="w-full h-full object-cover">
+                    </div>
+                    <!-- Info -->
+                    <div>
+                        <p class="text-sm font-bold text-foreground">{{ $pkg->title }}</p>
+                        <p class="text-xs text-muted-text font-medium mt-0.5">
+                            {{ $pkg->location ?? 'Global' }}
+                            @if($pkg->created_at)
+                                &nbsp;·&nbsp;{{ \Carbon\Carbon::parse($pkg->created_at)->diffForHumans() }}
+                            @endif
+                        </p>
+                        <!-- Action buttons -->
+                        <div class="flex items-center gap-2 mt-3">
+                            <a href="{{ route('admin.package.approve', $pkg->id) }}"
+                               class="px-4 py-1.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider transition-all hover:opacity-90"
+                               style="background-color:#e85d26;"
+                               onclick="return confirm('Approve and publish this package?')">
+                                Approve
+                            </a>
+                            <a href="{{ route('admin.package.decline', $pkg->id) }}"
+                               class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-gray-200 text-muted-text hover:border-red-300 hover:text-red-500 transition-all"
+                               onclick="return confirm('Decline this package?')">
+                                Decline
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Price -->
+                <div class="text-right shrink-0 ml-4">
+                    <p class="text-sm font-black text-foreground">₹{{ number_format($pkg->price, 0) }}</p>
+                    @if($pkg->duration)
+                        <p class="text-[10px] text-muted-text font-medium mt-0.5">{{ $pkg->duration }}</p>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <div class="py-12 text-center">
+                <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="check-circle-2" size="28" class="text-green-500"></i>
+                </div>
+                <p class="text-sm font-bold text-muted-text">All packages are reviewed!</p>
+                <p class="text-xs text-muted-text/60 mt-1">No packages pending approval right now.</p>
+            </div>
+        @endforelse
+    </div>
+
 </div>
 @endsection
