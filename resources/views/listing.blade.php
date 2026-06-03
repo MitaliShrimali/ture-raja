@@ -218,7 +218,7 @@
     }
     </style>
 
-    <div class="container-custom pt-8 pb-16" x-data="{ viewStyle: localStorage.getItem('tourraja_view_style') || 'grid', mobileFiltersOpen: false }" x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
+    <div class="container-custom pt-8 pb-16" x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tourraja_view_style') || 'grid'" }}, mobileFiltersOpen: false }" x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
 
         <form id="filter-form" action="{{ url('/listing') }}" method="GET" class="flex flex-col lg:flex-row gap-12 w-full">
             <!-- Sidebar Wrapper (Responsive: Slide-over Drawer on Mobile, Sticky Column on Desktop) -->
@@ -356,6 +356,7 @@
                         </div>
                         
                         <!-- View Toggle Buttons -->
+                        @if(!isset($agent))
                         <div class="flex bg-background p-1 rounded-2xl border border-gray-100 shrink-0">
                             <button @click="viewStyle = 'grid'" type="button" :class="viewStyle === 'grid' ? 'bg-white shadow-soft text-primary' : 'text-gray-400 hover:text-primary transition-colors'" class="p-2.5 rounded-xl transition-all duration-300">
                                 <i data-lucide="layout-grid" size="18"></i>
@@ -364,6 +365,7 @@
                                 <i data-lucide="list" size="18"></i>
                             </button>
                         </div>
+                        @endif
                     </div>
                 </div>
 

@@ -387,91 +387,11 @@
     </div>
 
     <!-- Featured Tour Packages Showcase Grid -->
-    <div class="bg-[#FAFAFA]">
+    <div class="bg-[#FAFAFA] py-12">
         <div class="container-custom">
-            <div class="showcase-grid">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @forelse($packages as $pkg)
-                    @php
-                        $p = (array) $pkg;
-                        $pkgId = $p['id'] ?? 1;
-                        $slug = $p['slug'] ?? 'package-' . $pkgId;
-                        
-                        // Parse duration dynamically to format like 4N/5D
-                        $durationText = strtolower($p['duration'] ?? '');
-                        $durBadge = '3N/4D';
-                        if (preg_match('/(\d+)\s*n/', $durationText, $mN) && preg_match('/(\d+)\s*d/', $durationText, $mD)) {
-                            $durBadge = $mN[1] . 'N/' . $mD[1] . 'D';
-                        } elseif (preg_match('/(\d+)\s*d/', $durationText, $mD)) {
-                            $days = intval($mD[1]);
-                            $nights = max(1, $days - 1);
-                            $durBadge = $nights . 'N/' . $days . 'D';
-                        }
-                        
-                        // Categories and locations
-                        $category = $p['category'] ?? 'Tour';
-                        $location = $p['location'] ?? 'India';
-                        
-                        // Determine flight/bus/land badge dynamically
-                        $isInternational = in_array(strtolower($category), ['international', 'tropical', 'city']) || str_contains(strtolower($location), 'bali') || str_contains(strtolower($location), 'paris') || str_contains(strtolower($location), 'dubai') || str_contains(strtolower($location), 'monaco');
-                        
-                        $isFlight = $isInternational || str_contains(strtolower($p['title']), 'flight') || str_contains(strtolower($p['title']), 'swiss') || str_contains(strtolower($p['title']), 'dubai') || str_contains(strtolower($p['title']), 'vietnam') || str_contains(strtolower($p['title']), 'monaco');
-                        $isBus = str_contains(strtolower($p['title']), 'somnath') || str_contains(strtolower($p['title']), 'yatra') || str_contains(strtolower($p['title']), 'shirdi');
-                        
-                        $transportBadge = 'Land Package';
-                        $transportIcon = '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>';
-                        if ($isFlight) {
-                            $transportBadge = 'Flight Package';
-                            $transportIcon = '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>';
-                        } elseif ($isBus) {
-                            $transportBadge = 'Bus Package';
-                            $transportIcon = '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M4 18h2v2H4z"/><path d="M18 18h2v2h-2z"/><path d="M12 4v12"/>';
-                        }
-                    @endphp
-
-                    <div class="pkg-card">
-                        <!-- Top Image and Duration Tag -->
-                        <div class="pkg-img-wrapper">
-                            <img src="{{ $p['image'] ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800' }}" alt="{{ $p['title'] }}" class="pkg-img">
-                            <span class="pkg-duration-badge">{{ $durBadge }}</span>
-                        </div>
-
-                        <!-- Action Row (Agent Logo and View Package Button) -->
-                        <div class="pkg-action-row">
-                            <div class="pkg-agent-avatar">
-                                <img src="{{ $agentLogoUrl }}" alt="{{ $agent->name }}">
-                            </div>
-                            <a href="{{ url('/packages/' . $slug) }}" class="pkg-view-btn">View Package</a>
-                        </div>
-
-                        <!-- Card Body Details -->
-                        <div class="pkg-body">
-                            <p class="pkg-category">{{ $category }}</p>
-                            <h3 class="pkg-title">
-                                @if(str_contains(strtolower($p['title']), 'somnath') || str_contains(strtolower($p['title']), 'gir'))
-                                    ▲ {{ $p['title'] }}
-                                @else
-                                    {{ $p['title'] }}
-                                @endif
-                            </h3>
-                            
-                            <div class="pkg-location-row">
-                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                <span>{{ $location }} @if(str_contains(strtolower($location), 'dwarka')) (2N) @endif</span>
-                            </div>
-
-                            <!-- Bottom Badge Pills matching image -->
-                            <div class="pkg-badges-row">
-                                <span class="pkg-badge-pill">
-                                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                                    {{ $isInternational ? 'International' : 'Domestic' }}
-                                </span>
-                                <span class="pkg-badge-pill">
-                                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">{!! $transportIcon !!}</svg>
-                                    {{ $transportBadge }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
+                    <x-package-card :pkg="$pkg" :hideAgent="true" />
                 @empty
                     <div class="col-span-full py-16 text-center">
                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">

@@ -373,7 +373,7 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">18 Seats left</span>
-                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-flex items-center justify-center whitespace-nowrap shrink-0">
                             Search Now
                         </a>
                     </div>
@@ -425,7 +425,7 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">18 Seats left</span>
-                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-flex items-center justify-center whitespace-nowrap shrink-0">
                             Search Now
                         </a>
                     </div>
@@ -477,7 +477,7 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">18 Seats left</span>
-                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-flex items-center justify-center whitespace-nowrap shrink-0">
                             Search Now
                         </a>
                     </div>
@@ -534,7 +534,7 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">12 Seats left</span>
-                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-flex items-center justify-center whitespace-nowrap shrink-0">
                             Search Now
                         </a>
                     </div>
@@ -586,7 +586,7 @@
                     <!-- Footer info and CTA -->
                     <div class="flex items-center justify-between mt-auto pt-3 border-t border-gray-50">
                         <span class="text-[12px] text-gray-400 font-semibold">24 Seats left</span>
-                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-block whitespace-nowrap shrink-0 text-center">
+                        <a href="{{ url('/listing') }}" onclick="event.stopPropagation()" class="bg-[#E8460A] hover:bg-orange-600 text-white text-[11px] font-extrabold px-4 py-2 rounded-full transition-all duration-200 shadow-sm inline-flex items-center justify-center whitespace-nowrap shrink-0">
                             Search Now
                         </a>
                     </div>

@@ -11,6 +11,7 @@
     'oldPrice' => null,
     'badge' => null,
     'slug' => null,
+    'hideAgent' => false,
 ])
 
 @php
@@ -92,15 +93,46 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-between mt-1">
-            <div class="flex items-center gap-2">
-                <i data-lucide="shield-check" size="14" class="text-green-500"></i>
-                <span class="text-xs font-bold text-gray-700">{{ $agentName }}</span>
+        @if($hideAgent)
+            @php
+                $categoryVal = $pkgArr['category'] ?? 'Tour';
+                $tourTypeVal = $pkgArr['tour_type'] ?? 'Land Package';
+                
+                $transportIcon = 'plane';
+                $typeLower = strtolower($tourTypeVal);
+                if (str_contains($typeLower, 'bus')) {
+                    $transportIcon = 'bus';
+                } elseif (str_contains($typeLower, 'train')) {
+                    $transportIcon = 'train';
+                } elseif (str_contains($typeLower, 'cruise') || str_contains($typeLower, 'boat')) {
+                    $transportIcon = 'ship';
+                } elseif (str_contains($typeLower, 'helicopter')) {
+                    $transportIcon = 'plane-takeoff';
+                } elseif (str_contains($typeLower, 'trek') || str_contains($typeLower, 'track')) {
+                    $transportIcon = 'footprints';
+                }
+            @endphp
+            <div class="flex flex-wrap gap-2 mt-1">
+                <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-[11px] font-extrabold capitalize border border-blue-100">
+                    <i data-lucide="globe" size="12"></i>
+                    {{ $categoryVal }}
+                </span>
+                <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 text-[11px] font-extrabold capitalize border border-orange-100">
+                    <i data-lucide="{{ $transportIcon }}" size="12"></i>
+                    {{ $tourTypeVal }}
+                </span>
             </div>
-            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
-                <img src="{{ $agentLogo }}" alt="{{ $agentName }} Logo" class="w-full h-full object-cover">
+        @else
+            <div class="flex items-center justify-between mt-1">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="shield-check" size="14" class="text-green-500"></i>
+                    <span class="text-xs font-bold text-gray-700">{{ $agentName }}</span>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
+                    <img src="{{ $agentLogo }}" alt="{{ $agentName }} Logo" class="w-full h-full object-cover">
+                </div>
             </div>
-        </div>
+        @endif
 
         <div class="pt-4 border-t border-border-soft/50 flex items-end justify-between mt-auto package-action">
             <div class="flex flex-col">

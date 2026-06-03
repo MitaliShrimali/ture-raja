@@ -6,14 +6,40 @@
 <style>
     .detail-overview-text { word-break: normal; overflow-wrap: break-word; }
     .itinerary-line { min-height: 40px; }
+    .view-gallery-btn {
+        background-color: rgba(0, 0, 0, 0.8) !important;
+        color: #ffffff !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    .view-gallery-btn:hover {
+        background-color: #000000 !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
+    }
+    .package-detail-title {
+        font-size: 38px !important;
+        font-family: 'Outfit', sans-serif !important;
+        line-height: 1.25 !important;
+    }
+    .section-heading {
+        font-size: 32px !important;
+        font-family: 'Outfit', sans-serif !important;
+        line-height: 1.25 !important;
+        font-weight: 900 !important;
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
 </style>
 
-<div class="bg-[#F8F9FA] min-h-screen pt-32 lg:pt-40">
-
-
+<div class="bg-[#F8F9FA] min-h-screen pt-24 lg:pt-32" x-data="{ showBookingModal: false }">
     {{-- Breadcrumb --}}
-    <div class="bg-white border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div>
+        <div class="container-custom py-2">
             <nav class="flex items-center gap-2 text-xs font-semibold text-gray-500">
                 <a href="{{ url('/') }}" class="hover:text-orange-500 transition-colors">Home</a>
                 <span>/</span>
@@ -24,40 +50,7 @@
         </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
-        {{-- Page Title Area --}}
-        <div class="mb-6">
-            <div class="flex flex-wrap gap-2 mb-3">
-                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
-                    ✓ Free Cancellation
-                </span>
-                @if($package['badge'])
-                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold">
-                    {{ $package['badge'] }}
-                </span>
-                @endif
-                <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold capitalize">
-                    {{ $package['category'] }}
-                </span>
-            </div>
-            <h1 class="text-2xl md:text-3xl lg:text-4xl font-black text-gray-900 leading-tight mb-3" style="font-family: 'Outfit', sans-serif;">
-                {{ $package['title'] }}
-            </h1>
-            <div class="flex flex-wrap items-center gap-4">
-                <div class="flex items-center gap-1.5">
-                    @for($i = 0; $i < 5; $i++)
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="{{ $i < floor($package['rating']) ? '#f97316' : '#e5e7eb' }}" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    @endfor
-                    <span class="font-bold text-gray-800 text-sm ml-1">{{ $package['rating'] }}</span>
-                    <span class="text-gray-500 text-sm">({{ $package['reviews'] }} reviews)</span>
-                </div>
-                <span class="flex items-center gap-1 text-gray-500 text-sm">
-                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    India
-                </span>
-            </div>
-        </div>
+    <div class="container-custom py-8">
 
         {{-- TWO-COLUMN LAYOUT --}}
         <div class="flex flex-col lg:flex-row gap-8 items-start">
@@ -65,9 +58,43 @@
             {{-- ── LEFT MAIN CONTENT (2/3 width) ───────────────────── --}}
             <div class="w-full lg:w-2/3 space-y-6">
 
-                {{-- Interactive Image Slider --}}
+                {{-- Page Title Area --}}
+                <div class="mb-6">
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
+                            ✓ Free Cancellation
+                        </span>
+                        @if($package['badge'])
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold">
+                            {{ $package['badge'] }}
+                        </span>
+                        @endif
+                        <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-xs font-bold capitalize">
+                            {{ $package['category'] }}
+                        </span>
+                    </div>
+                    <h1 class="font-black text-gray-900 mb-3 package-detail-title">
+                        {{ $package['title'] }}
+                    </h1>
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="flex items-center gap-1.5">
+                            @for($i = 0; $i < 5; $i++)
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="{{ $i < floor($package['rating']) ? '#f97316' : '#e5e7eb' }}" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            @endfor
+                            <span class="font-bold text-gray-800 text-sm ml-1">{{ $package['rating'] }}</span>
+                            <span class="text-gray-500 text-sm">({{ $package['reviews'] }} reviews)</span>
+                        </div>
+                        <span class="flex items-center gap-1 text-gray-500 text-sm">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            India
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Image Grid Gallery (Contained) --}}
                 <div x-data="{ 
-                    activeSlide: 0,
+                    showGallery: false, 
+                    activeImage: 0,
                     slides: [
                         '{{ $package['image'] }}',
                         'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
@@ -75,79 +102,145 @@
                         'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200',
                         'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=1200'
                     ],
-                    next() {
-                        this.activeSlide = (this.activeSlide + 1) % this.slides.length;
-                        this.scrollToActive();
-                    },
-                    prev() {
-                        this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length;
-                        this.scrollToActive();
-                    },
-                    scrollToActive() {
-                        const container = this.$refs.slider;
-                        container.scrollTo({
-                            left: container.getBoundingClientRect().width * this.activeSlide,
-                            behavior: 'smooth'
+                    openGallery(index) {
+                        this.activeImage = index;
+                        this.showGallery = true;
+                        document.body.classList.add('overflow-hidden');
+                        this.$nextTick(() => {
+                            this.scrollToImage(index, 'auto');
                         });
                     },
-                    init() {
-                        setInterval(() => this.next(), 6000);
+                    closeGallery() {
+                        this.showGallery = false;
+                        document.body.classList.remove('overflow-hidden');
+                    },
+                    nextImage() {
+                        const nextIndex = (this.activeImage + 1) % this.slides.length;
+                        this.scrollToImage(nextIndex, 'smooth');
+                    },
+                    prevImage() {
+                        const prevIndex = (this.activeImage - 1 + this.slides.length) % this.slides.length;
+                        this.scrollToImage(prevIndex, 'smooth');
+                    },
+                    scrollToImage(index, behavior = 'smooth') {
+                        this.activeImage = index;
+                        const container = this.$refs.sliderContainer;
+                        if (!container) return;
+                        const slide = container.children[index];
+                        if (slide) {
+                            container.scrollTo({
+                                left: slide.offsetLeft - (container.clientWidth - slide.clientWidth) / 2,
+                                behavior: behavior
+                            });
+                        }
+                    },
+                    updateActiveFromScroll() {
+                        const container = this.$refs.sliderContainer;
+                        if (!container) return;
+                        const scrollCenter = container.scrollLeft + container.clientWidth / 2;
+                        let closestIndex = 0;
+                        let minDistance = Infinity;
+                        
+                        Array.from(container.children).forEach((slide, index) => {
+                            const slideCenter = slide.offsetLeft + slide.clientWidth / 2;
+                            const distance = Math.abs(scrollCenter - slideCenter);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                                closestIndex = index;
+                            }
+                        });
+                        this.activeImage = closestIndex;
                     }
-                }" class="relative group rounded-[32px] overflow-hidden shadow-2xl bg-gray-100">
+                }" class="mb-6">
                     
-                    {{-- Scrollable Container --}}
-                    <div 
-                        x-ref="slider"
-                        @scroll.debounce.100ms="activeSlide = Math.round($event.target.scrollLeft / $event.target.offsetWidth)"
-                        class="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar" 
-                        style="height: 380px;"
-                    >
-                        <template x-for="(slide, index) in slides" :key="index">
-                            <div class="w-full min-w-full flex-shrink-0 snap-center relative overflow-hidden">
-                                <img :src="slide" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Package Image">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
-                            </div>
-                        </template>
-                    </div>
-
-                    {{-- Top Actions (Wishlist) --}}
-                    <div class="absolute top-5 right-5 z-20">
-                        <button 
-                            class="w-11 h-11 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all duration-300 shadow-lg"
-                            onclick="toggleWishlist(event, {slug: '{{ $package['slug'] }}', title: '{{ $package['title'] }}', image: '{{ $package['image'] }}', price: '{{ $package['price'] }}'})"
-                        >
-                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                        </button>
-                    </div>
-
-                    {{-- Premium Combined Controls (Matching User Reference) --}}
-                    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-6 z-20 bg-black/30 backdrop-blur-xl px-7 py-3.5 rounded-full border border-white/10 shadow-2xl">
-                        <!-- Left Arrow (Thin style) -->
-                        <button @click="prev()" class="text-white hover:text-primary transition-all duration-300 transform hover:scale-125">
-                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                        </button>
-
-                        <!-- Dots/Pills -->
-                        <div class="flex items-center gap-3">
-                            <template x-for="(slide, index) in slides" :key="index">
-                                <button 
-                                    @click="scrollToActive(activeSlide = index)"
-                                    class="transition-all duration-500 rounded-full"
-                                    :class="activeSlide === index ? 'w-10 h-3 bg-primary shadow-glow' : 'w-3 h-3 bg-white shadow-sm hover:bg-white/80'"
-                                ></button>
-                            </template>
+                    {{-- Gallery Layout --}}
+                    <div class="grid grid-cols-3 gap-2 w-full overflow-hidden relative" style="height: 320px;">
+                        {{-- Large Left Image --}}
+                        <div class="col-span-2 h-full w-full relative cursor-pointer hover:opacity-95 transition overflow-hidden" @click="openGallery(0)">
+                            <img :src="slides[0]" class="w-full h-full object-cover" alt="Package Main Image">
+                        </div>
+                        
+                        {{-- Small Right Images (Top and Bottom) --}}
+                        <div class="col-span-1 grid grid-rows-2 gap-2 h-full w-full">
+                            <img :src="slides[1]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(1)">
+                            <img :src="slides[2]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(2)">
                         </div>
 
-                        <!-- Right Arrow (Thin style) -->
-                        <button @click="next()" class="text-white hover:text-primary transition-all duration-300 transform hover:scale-125">
-                            <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        {{-- View Gallery Button (Fixed on the grid container) --}}
+                        <button @click.stop="openGallery(0)" class="absolute bottom-4 right-4 view-gallery-btn text-[12px] font-bold px-4 py-2.5 flex items-center gap-2 z-30 shadow-lg rounded-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <span>View Gallery</span>
                         </button>
                     </div>
 
-                    <style>
-                        .hide-scrollbar::-webkit-scrollbar { display: none; }
-                        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-                    </style>
+                    {{-- Lightbox / Gallery Modal --}}
+                    <div x-show="showGallery" x-cloak class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/95 backdrop-blur-sm py-6" @keydown.escape.window="closeGallery()" @keydown.arrow-left.window="prevImage()" @keydown.arrow-right.window="nextImage()" @click="closeGallery()">
+                        {{-- Close Button --}}
+                        <button @click.stop="closeGallery()" class="absolute top-6 right-6 text-white bg-black/60 hover:bg-black w-10 h-10 rounded-full flex items-center justify-center transition-all z-50 border border-white/10 shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                        
+                        {{-- Prev Button --}}
+                        <button @click.stop="prevImage()" class="absolute left-6 text-white bg-black/60 hover:bg-black w-12 h-12 rounded-full flex items-center justify-center transition-all z-50 border border-white/10 shadow-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+                        </button>
+                        
+                        {{-- Slider Container --}}
+                        <div class="w-full max-w-6xl relative flex-grow flex items-center justify-center" @click.stop>
+                            <div x-ref="sliderContainer" 
+                                 @scroll.debounce.10ms="updateActiveFromScroll()"
+                                 class="w-full flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar px-[12%] py-4">
+                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
+                                     :class="activeImage === 0 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
+                                    <img :src="slides[0]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
+                                </div>
+                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
+                                     :class="activeImage === 1 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
+                                    <img :src="slides[1]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
+                                </div>
+                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
+                                     :class="activeImage === 2 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
+                                    <img :src="slides[2]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
+                                </div>
+                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
+                                     :class="activeImage === 3 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
+                                    <img :src="slides[3]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
+                                </div>
+                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
+                                     :class="activeImage === 4 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
+                                    <img :src="slides[4]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {{-- Next Button --}}
+                        <button @click.stop="nextImage()" class="absolute right-6 text-white bg-black/60 hover:bg-black w-12 h-12 rounded-full flex items-center justify-center transition-all z-50 border border-white/10 shadow-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                        
+                        {{-- Thumbnail Navigation Strip --}}
+                        <div class="mt-4 flex items-center gap-2 bg-black/40 backdrop-blur-md p-2 rounded-2xl border border-white/10" @click.stop>
+                            <button @click="scrollToImage(0)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 0 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
+                                <img :src="slides[0]" class="w-full h-full object-cover select-none">
+                            </button>
+                            <button @click="scrollToImage(1)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 1 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
+                                <img :src="slides[1]" class="w-full h-full object-cover select-none">
+                            </button>
+                            <button @click="scrollToImage(2)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 2 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
+                                <img :src="slides[2]" class="w-full h-full object-cover select-none">
+                            </button>
+                            <button @click="scrollToImage(3)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 3 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
+                                <img :src="slides[3]" class="w-full h-full object-cover select-none">
+                            </button>
+                            <button @click="scrollToImage(4)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 4 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
+                                <img :src="slides[4]" class="w-full h-full object-cover select-none">
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Quick Info Strip --}}
@@ -208,10 +301,10 @@
 
                 {{-- Tour Overview --}}
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <h2 class="text-xl font-black text-gray-900 mb-4" style="font-family: 'Outfit', sans-serif;">Tour Overview</h2>
+                    <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
                     <p class="text-gray-600 leading-relaxed text-base detail-overview-text">{{ $package['overview'] }}</p>
 
-                    <h3 class="text-base font-black text-gray-900 mt-6 mb-3">Tour Highlights</h3>
+                    <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Tour Highlights</h3>
                     <ul class="space-y-2">
                         @foreach($package['highlights'] as $hl)
                         <li class="flex items-start gap-2 text-sm text-gray-600">
@@ -224,7 +317,7 @@
 
                 {{-- What's Included / Excluded --}}
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <h2 class="text-xl font-black text-gray-900 mb-5" style="font-family: 'Outfit', sans-serif;">What's Included</h2>
+                    <h2 class="font-black text-gray-900 mb-5 section-heading">What's Included</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
                         @foreach($package['included'] as $item)
                         <div class="flex items-start gap-2 text-sm text-gray-600">
@@ -242,22 +335,88 @@
                 </div>
 
                 {{-- Itinerary --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                    <h2 class="text-xl font-black text-gray-900 mb-6" style="font-family: 'Outfit', sans-serif;">Itinerary</h2>
-                    <div class="space-y-0">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8">
+                    <h2 class="font-black text-gray-900 mb-8 section-heading">Itinerary</h2>
+                    <div class="relative pl-2">
                         @foreach($package['itinerary'] as $idx => $day)
-                        <div class="flex gap-4 {{ !$loop->last ? 'pb-6' : '' }}">
-                            <div class="flex flex-col items-center">
-                                <div class="w-9 h-9 rounded-full bg-orange-500 flex items-center justify-center shrink-0 text-white text-xs font-black">
-                                    {{ $idx + 1 }}
-                                </div>
-                                @if(!$loop->last)
-                                    <div class="w-0.5 bg-orange-200 flex-1 mt-2"></div>
+                        <div class="relative flex gap-6 pb-8 last:pb-2">
+                            {{-- Timeline Line --}}
+                            @if(!$loop->last)
+                                <div class="absolute left-[11px] top-6 bottom-0" style="border-left: 2px dashed #e85d26 !important;"></div>
+                            @endif
+                            
+                            {{-- Timeline Circle --}}
+                            <div class="relative z-10 shrink-0">
+                                @if($loop->first || $loop->last)
+                                    {{-- Solid Circle --}}
+                                    <div class="w-6 h-6 rounded-full shadow-sm" style="background-color: #e85d26 !important; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.2);"></div>
+                                @else
+                                    {{-- Hollow Circle --}}
+                                    <div class="w-6 h-6 rounded-full bg-white shadow-sm" style="border: 4px solid #e85d26 !important; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.12);"></div>
                                 @endif
                             </div>
-                            <div class="pt-1 {{ !$loop->last ? 'pb-2' : '' }}">
-                                <p class="font-black text-gray-800 text-sm">Day {{ $idx + 1 }}: {{ $day['title'] }}</p>
-                                <p class="text-gray-500 text-sm leading-relaxed mt-1">{{ $day['desc'] }}</p>
+                            
+                            {{-- Content --}}
+                            <div class="-mt-1 flex-1">
+                                <h4 class="font-black text-gray-800 text-sm sm:text-base" style="font-family: 'Outfit', sans-serif;">Day {{ $idx + 1 }}: {{ $day['title'] }}</h4>
+                                @if(!empty($day['desc']))
+                                    <p class="text-gray-500 text-[13px] sm:text-sm leading-relaxed mt-2 max-w-3xl">{{ $day['desc'] }}</p>
+                                @endif
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- FAQ Section --}}
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8" x-data="{ activeFaq: 0 }">
+                    <h2 class="font-black text-gray-900 mb-6 section-heading">FAQ</h2>
+                    <div class="space-y-3">
+                        @php
+                            $faqs = [
+                                [
+                                    'q' => 'Can I get the refund?',
+                                    'a' => 'For a full refund, cancel at least 24 hours in advance of the start date of the experience. Discover and book ' . $package['title'] . ' with ease.'
+                                ],
+                                [
+                                    'q' => 'Can I change the travel date?',
+                                    'a' => 'Yes, you can request date changes up to 72 hours before departure, subject to availability and the specific operator policy.'
+                                ],
+                                [
+                                    'q' => 'When and where does the tour end?',
+                                    'a' => 'The tour typically ends back at the original departure point or airport drop-off, as detailed in the Itinerary.'
+                                ],
+                                [
+                                    'q' => 'Do you arrange airport transfers?',
+                                    'a' => 'Yes, airport pickups and drop-offs are fully included as standard in this premium tour package.'
+                                ]
+                            ];
+                        @endphp
+                        
+                        @foreach($faqs as $i => $faq)
+                        <div class="border border-gray-100 rounded-xl overflow-hidden transition-all duration-300" :class="activeFaq === {{ $i }} ? 'bg-[#F8F9FA]/50 border-gray-200' : 'bg-white hover:bg-gray-50/50'">
+                            <button 
+                                type="button" 
+                                class="w-full flex items-center justify-between p-5 text-left transition-all duration-200 outline-none"
+                                @click="activeFaq = (activeFaq === {{ $i }} ? null : {{ $i }})"
+                            >
+                                <span class="font-black text-gray-800 text-sm sm:text-base leading-tight">{{ $faq['q'] }}</span>
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300"
+                                     :style="activeFaq === {{ $i }} ? 'background-color: #e85d26 !important; color: #ffffff !important;' : 'background-color: rgba(26,26,36,0.04) !important; color: #6b6b7a !important;'">
+                                    <svg class="w-4 h-4 transition-transform duration-300" :class="activeFaq === {{ $i }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </div>
+                            </button>
+                            
+                            <div 
+                                x-show="activeFaq === {{ $i }}"
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 -translate-y-2"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="px-5 pb-5 pt-0 text-gray-600 text-sm sm:text-[15px] leading-relaxed border-t border-gray-100/50"
+                            >
+                                {{ $faq['a'] }}
                             </div>
                         </div>
                         @endforeach
@@ -268,23 +427,6 @@
 
             {{-- ── RIGHT SIDEBAR (1/3 width) ──────────────────────── --}}
             <div class="w-full lg:w-1/3 shrink-0 space-y-5">
-
-                {{-- Price & Book Card --}}
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 space-y-4">
-                    <div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Price Per Person</p>
-                        <p class="text-3xl font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">₹{{ number_format($package['price']) }}</p>
-                        @if($package['oldPrice'])
-                        <p class="text-sm text-primary font-bold line-through mt-1">₹{{ number_format($package['oldPrice']) }}</p>
-                        @endif
-                    </div>
-                    <button type="button" @click="showBookingModal = true" class="block w-full py-3.5 bg-primary hover:bg-primary/90 text-white text-center font-black text-sm uppercase tracking-widest rounded-xl transition-all duration-200 shadow-glow">
-                        Book Now
-                    </button>
-                    <a href="#contact-form" class="block w-full py-3 border-2 border-gray-200 hover:border-orange-300 text-gray-700 text-center font-bold text-sm rounded-xl transition-all duration-200">
-                        Enquire Now
-                    </a>
-                </div>
 
                 {{-- Agent Card --}}
                 @php
@@ -415,6 +557,23 @@
                     </div>
                 </div>
 
+                {{-- Price & Book Card --}}
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 space-y-4">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Price Per Person</p>
+                        <p class="text-3xl font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">₹{{ number_format($package['price']) }}</p>
+                        @if($package['oldPrice'])
+                        <p class="text-sm text-primary font-bold line-through mt-1">₹{{ number_format($package['oldPrice']) }}</p>
+                        @endif
+                    </div>
+                    <button type="button" @click="showBookingModal = true" class="block w-full py-3.5 bg-primary hover:bg-primary/90 text-white text-center font-black text-sm uppercase tracking-widest rounded-xl transition-all duration-200 shadow-glow">
+                        Book Now
+                    </button>
+                    <a href="#contact-form" class="block w-full py-3 border-2 border-gray-200 hover:border-orange-300 text-gray-700 text-center font-bold text-sm rounded-xl transition-all duration-200">
+                        Enquire Now
+                    </a>
+                </div>
+
                 {{-- Get in Touch --}}
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 space-y-4" id="contact-form">
                     <div>
@@ -454,6 +613,92 @@
             </div>{{-- end right sidebar --}}
         </div>{{-- end grid --}}
     </div>
+
+    <!-- Customer Reviews Section (Marquee Testimonials) -->
+    <section class="py-16 lg:py-24 bg-white overflow-hidden border-t border-gray-100">
+        <div class="container-custom">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 gap-6">
+                <div class="space-y-2">
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight font-heading" style="font-family: 'Outfit', sans-serif;">What Our Clients Say!!!</h2>
+                    <p class="text-text-muted text-base md:text-lg font-medium">They Love TourRaja!</p>
+                </div>
+                <div class="flex items-center gap-4 self-start md:self-auto">
+                    <button id="prev-testi" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 flex items-center justify-center text-foreground hover:bg-primary hover:text-white transition-all duration-300">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <button id="next-testi" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary flex items-center justify-center text-white shadow-glow hover:scale-110 transition-all duration-300">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative group">
+                <div class="flex gap-6 overflow-hidden py-8 testimonial-track" id="testi-slider">
+                    @php
+                        $testimonials = [
+                            ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara', 'rating' => 5],
+                            ['name' => 'Atend John', 'loc' => 'California', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=john', 'rating' => 5],
+                            ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara2', 'rating' => 3],
+                            ['name' => 'Michael Chen', 'loc' => 'Singapore', 'text' => "Excellent service and direct agent contact saved me 30% on my last Bali trip.", 'img' => 'https://i.pravatar.cc/150?u=mike', 'rating' => 5],
+                        ];
+                        // Clone for seamless loop
+                        $allTestimonials = array_merge($testimonials, $testimonials);
+                    @endphp
+
+                    @foreach($allTestimonials as $testi)
+                        <div class="flex-shrink-0 w-full md:w-[450px] testimonial-card">
+                            <div class="p-6 md:p-10 rounded-[40px] border border-gray-200 bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-4 md:space-y-6">
+                                <h4 class="text-lg md:text-xl font-black text-foreground font-heading" style="font-family: 'Outfit', sans-serif;">The best booking system</h4>
+                                <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic">"{{ $testi['text'] }}"</p>
+                                
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-gray-100 mt-auto gap-4">
+                                    <div class="flex items-center gap-4">
+                                        <img src="{{ $testi['img'] }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-primary/10">
+                                        <div class="flex flex-col">
+                                            <span class="font-black text-foreground text-sm md:text-base">{{ $testi['name'] }}</span>
+                                            <span class="text-[10px] md:text-xs text-text-muted font-bold">{{ $testi['loc'] }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-0.5">
+                                        @for($i=0; $i<5; $i++)
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="{{ $i < $testi['rating'] ? '#f97316' : '#e5e7eb' }}" xmlns="http://www.w3.org/2000/svg"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        @endfor
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @keyframes marquee {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(calc(-450px * 4 - 24px * 4)); }
+            }
+            .testimonial-track {
+                display: flex;
+                width: max-content;
+                animation: marquee 40s linear infinite;
+            }
+            .testimonial-track:hover {
+                animation-play-state: paused;
+            }
+            @media (max-width: 767px) {
+                .testimonial-card {
+                    width: calc(100vw - 80px);
+                }
+                @keyframes marquee-mobile {
+                    0% { transform: translateX(0); }
+                    100% { transform: translateX(-50%); }
+                }
+                .testimonial-track {
+                    animation: marquee-mobile 15s linear infinite;
+                }
+            }
+        </style>
+    </section>
     
     {{-- Booking Modal (Alpine JS wrapper needed at root of page) --}}
     <div x-show="showBookingModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
