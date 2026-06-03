@@ -96,3 +96,80 @@
     <script>lucide.createIcons();</script>
 </body>
 </html>
+                            class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-3.5 px-5 text-sm font-medium text-gray-800 placeholder:text-gray-300 outline-none focus:border-[#e85d26]/60 focus:bg-white transition-all shadow-sm" />
+                    </div>
+
+                    <!-- Password -->
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1.5 pl-1">
+                            Password <span style="color:#e85d26;">*</span>
+                        </label>
+                        <input type="password" name="password" required placeholder="Min. 8 characters"
+                            class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-3.5 px-5 text-sm font-medium text-gray-800 placeholder:text-gray-300 outline-none focus:border-[#e85d26]/60 focus:bg-white transition-all shadow-sm" />
+                    </div>
+
+                    <!-- Terms -->
+                    <div class="flex items-start gap-3 pt-1">
+                        <input type="checkbox" required class="w-4 h-4 mt-0.5 rounded border-gray-300 shrink-0" />
+                        <span class="text-xs text-gray-500 leading-relaxed">
+                            I agree to the
+                            <a href="{{ url('/terms-and-conditions') }}" target="_blank"
+                               class="font-semibold hover:underline" style="color:#e85d26;">Terms &amp; Conditions</a>
+                            and
+                            <a href="{{ url('/privacy-policy') }}" target="_blank"
+                               class="font-semibold hover:underline" style="color:#e85d26;">Privacy Policy</a>
+                        </span>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit" class="btn-signup w-full text-white rounded-2xl py-3.5 font-bold text-sm shadow-lg mt-2">
+                        Create Account
+                    </button>
+
+                    <!-- Sign-in link -->
+                    <p class="text-xs text-gray-400 text-center pt-1">
+                        Already have an account?
+                        <a href="{{ url('/login') }}" class="font-semibold hover:underline" style="color:#e85d26;">Sign In</a>
+                    </p>
+                </form>
+
+                <script>
+                    window.onpageshow = function(e) { if (e.persisted) window.location.reload(); };
+                </script>
+
+                <!-- Copyright -->
+                <p class="text-[10px] text-gray-300 mt-12 leading-relaxed">
+                    © 2026 Tour Raja Private Limited, India. All rights reserved.
+                </p>
+            </div>
+        </div>
+
+        <!-- ── Orange / Image Side ── -->
+        <div class="hidden lg:flex lg:w-[55%] gradient-side flex-col items-center justify-center relative">
+
+            <div class="flex items-center justify-center">
+                <x-logo white="true" class="h-28 w-auto" />
+            </div>
+
+            <div class="mt-8 text-center px-12">
+                <h2 class="text-2xl font-bold text-white tracking-tight mb-2">Join TourRaja!</h2>
+                <p class="text-white/70 text-sm max-w-xs mx-auto leading-relaxed">Start your adventures today and explore the world's most amazing destinations.</p>
+            </div>
+
+            <!-- Footer links -->
+            <div class="absolute bottom-10 w-full flex flex-wrap items-center justify-center gap-x-8 gap-y-4 px-8">
+                <a href="{{ url('/about') }}"
+                   class="text-[10px] font-semibold text-white/60 hover:text-white uppercase tracking-widest transition-colors">About Us</a>
+                <a href="{{ url('/terms-and-conditions') }}"
+                   class="text-[10px] font-semibold text-white/60 hover:text-white uppercase tracking-widest transition-colors">Terms of Service</a>
+                <a href="{{ url('/privacy-policy') }}"
+                   class="text-[10px] font-semibold text-white/60 hover:text-white uppercase tracking-widest transition-colors">Privacy Policy</a>
+                <a href="{{ url('/contact') }}"
+                   class="text-[10px] font-semibold text-white/60 hover:text-white uppercase tracking-widest transition-colors">Contact</a>
+            </div>
+        </div>
+    </div>
+
+    <script>lucide.createIcons();</script>
+</body>
+</html>

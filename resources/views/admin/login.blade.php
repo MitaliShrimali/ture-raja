@@ -54,13 +54,50 @@
     }
 @endphp
 <body class="bg-white min-h-screen relative overflow-x-hidden">
-    <div class="flex min-h-screen" x-data="{ showPassword: false }">
+    <!-- Top Navbar menu bar -->
+    <div class="absolute top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-4 hidden md:block">
+        <div class="bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-gray-100 px-8 py-3.5 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <a href="{{ url('/') }}" class="text-[10px] font-black text-gray-500 hover:text-[#e85d26] uppercase tracking-widest transition-colors flex items-center gap-1.5"><i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Dashboard</a>
+                <a href="{{ url('/profile') }}" class="text-[10px] font-black text-gray-500 hover:text-[#e85d26] uppercase tracking-widest transition-colors flex items-center gap-1.5"><i data-lucide="user" class="w-3.5 h-3.5"></i> Profile</a>
+                <a href="{{ url('/signup') }}" class="text-[10px] font-black text-gray-500 hover:text-[#e85d26] uppercase tracking-widest transition-colors flex items-center gap-1.5"><i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Sign Up</a>
+                <a href="{{ url('/login') }}" class="text-[10px] font-black text-[#e85d26] uppercase tracking-widest transition-colors flex items-center gap-1.5"><i data-lucide="log-in" class="w-3.5 h-3.5"></i> Sign In</a>
+            </div>
+            <a href="{{ url('/contact') }}" class="text-white text-[10px] font-bold uppercase tracking-widest px-6 py-2.5 rounded-full transition-colors" style="background-color: #e85d26;" onmouseover="this.style.backgroundColor='#d44f1c'" onmouseout="this.style.backgroundColor='#e85d26'">Contact Admin</a>
+        </div>
+    </div>
+
+    <div class="flex min-h-screen" x-data="{ showPassword: false, showForgotPassword: false, forgotEmailSent: false, loading: false }">
         <!-- Form Side -->
-        <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12">
-            <div class="max-w-md w-full mx-auto space-y-10">
-                <div class="space-y-4">
-                    <h2 class="font-black text-foreground tracking-tight font-heading">{{ $title }}</h2>
-                    <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">{{ $subtext }}</p>
+        <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 pt-28">
+            <div class="max-w-md w-full mx-auto space-y-8">
+                <div class="space-y-2">
+                    <h2 class="font-black tracking-tight font-heading text-4xl" style="color: #e85d26;" x-text="showForgotPassword ? 'Reset Password' : '{{ $title }}'">{{ $title }}</h2>
+                    <p class="text-xs font-bold text-gray-400" x-text="showForgotPassword ? 'Enter your email to receive a password reset link.' : 'Enter your email and password to sign in!'">Enter your email and password to sign in!</p>
+                </div>
+
+                <!-- Google Sign In -->
+                <div x-show="!showForgotPassword">
+                    <button type="button" class="w-full bg-[#f4f7fe] hover:bg-[#ebf0fc] text-gray-700 rounded-2xl py-4 px-6 flex items-center justify-center gap-3 font-bold text-sm transition-colors shadow-sm">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-.1.85-.75 1.5l1.62 1.62c.95-.88 2.19-2.3 2.19-4.97z"/>
+                            <path fill="#34A853" d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.87-3c-1.08.72-2.47 1.16-4.09 1.16-3.15 0-5.81-2.13-6.76-5.01L1.3 15.14v3.13C3.28 22.22 7.37 24 12 24z"/>
+                            <path fill="#FBBC05" d="M5.24 14.24a7.17 7.17 0 0 1 0-4.48v-3.13H1.3a12.01 12.01 0 0 0 0 10.74l3.94-3.13z"/>
+                            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.22 0 12 0 7.37 0 3.28 1.78 1.3 4.97l3.94 3.13c.95-2.88 3.61-5.01 6.76-5.01z"/>
+                        </svg>
+                        <span>Sign in with Google</span>
+                    </button>
+                    <div class="flex items-center gap-4 py-4">
+                        <div class="flex-1 h-px bg-gray-100"></div>
+                        <span class="text-xs font-bold text-gray-300 uppercase tracking-widest">or</span>
+                        <div class="flex-1 h-px bg-gray-100"></div>
+                    </div>
+                </div>
+
+                <!-- Success Message for Reset Link -->
+                <div x-show="forgotEmailSent" x-transition class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-xs flex items-center gap-3" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <span>A password reset link has been successfully sent to your email!</span>
                 </div>
 
                 <!-- Flash Messages -->
@@ -78,47 +115,43 @@
                 @endif
 
                 <!-- Main Form -->
-                <form action="{{ route('admin.login.submit') }}" method="POST" class="space-y-8">
+                <form x-on:submit="if (showForgotPassword) { $event.preventDefault(); loading = true; forgotEmailSent = false; setTimeout(() => { loading = false; forgotEmailSent = true; }, 1000); }" action="{{ route('admin.login.submit') }}" method="POST" class="space-y-6">
                     @csrf
                     <input type="hidden" name="type" value="{{ $type }}" />
                     
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
-                        <input required type="email" name="email" value="{{ old('email', $defaultEmail) }}" placeholder="{{ $defaultEmail }}" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
+                        <label class="text-xs font-bold text-gray-700 pl-1">Email<span style="color: #e85d26;">*</span></label>
+                        <input required type="email" name="email" value="{{ old('email', $defaultEmail) }}" placeholder="mail@simmmple.com" class="w-full bg-white border border-gray-200 rounded-2xl py-4 px-6 outline-none focus:border-[#e85d26]/50 transition-all font-medium text-foreground placeholder:text-gray-400 text-sm shadow-sm" />
                     </div>
                     
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Password<span class="text-primary">*</span></label>
+                    <div class="space-y-2" x-show="!showForgotPassword" x-transition>
+                        <label class="text-xs font-bold text-gray-700 pl-1">Password<span style="color: #e85d26;">*</span></label>
                         <div class="relative">
-                            <input required :type="showPassword ? 'text' : 'password'" name="password" value="password123" placeholder="Enter password" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 pr-14 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm shadow-black/5" />
-                            <button @click="showPassword = !showPassword" type="button" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-muted-text hover:text-primary transition-colors">
-                                <!-- Eye Open SVG -->
-                                <template x-if="!showPassword">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                </template>
-                                <!-- Eye Closed SVG -->
-                                <template x-if="showPassword">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88 2 2m17.76 17.76L22 22M2 12s3-7 10-7a9.06 9.06 0 0 1 5.01 1.51M9.1 9.1a3 3 0 0 0 3.79 3.79M12 19c-7 0-10-7-10-7a9.75 9.75 0 0 1 1.51-2.01M17.76 17.76A10.38 10.38 0 0 1 12 19c-7 0-10-7-10-7M22 12s-3 7-10 7a9.06 9.06 0 0 1-5.01-1.51M12 5c7 0 10 7 10 7a9.75 9.75 0 0 1-1.51 2.01M17.76 17.76a3 3 0 0 0-3.79-3.79"/></svg>
-                                </template>
+                            <input :required="!showForgotPassword" :type="showPassword ? 'text' : 'password'" name="password" value="password123" placeholder="Min. 8 characters" class="w-full bg-white border border-gray-200 rounded-2xl py-4 px-6 pr-14 outline-none focus:border-[#e85d26]/50 transition-all font-medium text-foreground placeholder:text-gray-400 text-sm shadow-sm" />
+                            <button @click="showPassword = !showPassword" type="button" class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#e85d26] transition-colors">
+                                <!-- Eye Open / Closed Toggle -->
+                                <i :data-lucide="showPassword ? 'eye-off' : 'eye'" class="w-5 h-5"></i>
                             </button>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-between pt-2">
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" class="w-5 h-5 rounded-lg border-border-soft text-primary focus:ring-primary/20 transition-all" checked />
-                            <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">Remember me</span>
+                        <label class="flex items-center gap-3 cursor-pointer group" x-show="!showForgotPassword">
+                            <input type="checkbox" class="w-5 h-5 rounded-lg border-gray-300 focus:ring-[#e85d26]/20 transition-all" style="accent-color: #e85d26;" checked />
+                            <span class="text-xs font-bold text-gray-500 group-hover:text-foreground transition-colors">Keep me logged in</span>
                         </label>
-                        <a href="#" class="text-xs font-bold text-primary hover:underline">Forgot password?</a>
+                        <a href="#" @click.prevent="showForgotPassword = !showForgotPassword; forgotEmailSent = false" class="text-xs font-bold hover:underline" style="color: #e85d26;" x-text="showForgotPassword ? 'Back to Sign In' : 'Forget password?'">Forget password?</a>
                     </div>
 
-                    <button type="submit" class="w-full bg-[#E8460A] hover:bg-primary-hover text-white rounded-2xl py-5 font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1">
-                        {{ $btnText }}
+                    <button type="submit" class="w-full text-white rounded-2xl py-4 font-bold text-sm shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2" style="background-color: #e85d26; box-shadow: 0 10px 20px rgba(232, 93, 38, 0.2);" onmouseover="this.style.backgroundColor='#d44f1c'" onmouseout="this.style.backgroundColor='#e85d26'">
+                        <span x-show="loading" class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+                        <span x-text="showForgotPassword ? (loading ? 'Sending...' : 'Send Reset Link') : 'Sign In'">Sign In</span>
                     </button>
 
-                    <p class="text-xs font-bold text-muted-text text-center mt-6">
-                        Don't have an account? <a href="{{ url('/signup?tab=' . $type) }}" class="text-primary hover:underline">Sign Up</a>
+                    <p class="text-xs font-bold text-gray-400 text-center mt-6">
+                        Not registered yet? <a href="{{ url('/signup?tab=' . $type) }}" class="hover:underline font-bold" style="color: #e85d26;">Create an Account</a>
                     </p>
+                </form>
                 <script>
         // If the page was loaded from the browser's back‑forward cache (bfcache),
         // force a reload so Laravel generates a fresh CSRF token.
@@ -130,23 +163,36 @@
     </script>
 
                 <div class="pt-12">
-                    <p class="text-[10px] font-medium text-muted-text leading-loose">
-                        Copyright © 2026 Tour Raja Private Limited, India. <br/> All rights reserved for administrative control.
+                    <p class="text-[10px] font-medium text-gray-400 leading-loose">
+                        Copyright © 2026 Tour Raja Private Limited, India. <br/> All rights reserved.
                     </p>
                 </div>
             </div>
         </div>
 
         <!-- Orange Side -->
-        <div class="hidden lg:flex lg:w-[55%] orange-side items-center justify-center relative">
+        <div class="hidden lg:flex lg:w-[55%] orange-side items-center justify-center relative" style="border-bottom-left-radius: 250px;">
             <div class="text-center space-y-4 w-full px-12">
                 <!-- Large Logo -->
                 <div class="flex items-center justify-center">
-                    <x-logo white="true" class="h-20 sm:h-28 w-auto" />
+                    <x-logo white="true" class="h-24 sm:h-32 w-auto" />
                 </div>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 w-full px-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-center">
+                <a href="{{ url('/about') }}" class="text-[10px] font-bold text-white/70 hover:text-white uppercase tracking-widest transition-colors">About Us</a>
+                <a href="{{ url('/terms-and-conditions') }}" class="text-[10px] font-bold text-white/70 hover:text-white uppercase tracking-widest transition-colors">License</a>
+                <a href="{{ url('/terms-and-conditions') }}" class="text-[10px] font-bold text-white/70 hover:text-white uppercase tracking-widest transition-colors">Terms of Services</a>
+                <a href="{{ url('/privacy-policy') }}" class="text-[10px] font-bold text-white/70 hover:text-white uppercase tracking-widest transition-colors">Privacy Policy</a>
             </div>
         </div>
     </div>
+
+    <!-- Chatbot Bubble -->
+    <button class="fixed bottom-8 right-8 w-16 h-16 bg-[#0052FF] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-50 shadow-blue-500/30">
+        <i data-lucide="message-circle" class="w-7 h-7"></i>
+    </button>
 
     <script>
         lucide.createIcons();
