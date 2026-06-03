@@ -125,7 +125,7 @@
     </style>
 
     <!-- Small Hero Header -->
-    <div class="pt-[120px] pb-6 bg-gray-50 border-b border-gray-200">
+    <div class="pt-[120px] pb-6 bg-gray-50">
         
         <!-- Popular Transits (Packages Logos) -->
         <div class="container-custom mb-6">
@@ -159,35 +159,39 @@
             </div>
         </div>
 
-        <div class="container-custom text-center">
-            <div class="w-full max-w-5xl mx-auto">
+        <div class="container-custom text-center mb-0">
+            <div class="w-full max-w-6xl mx-auto">
               <form action="{{ url('/discover') }}" method="GET">
-                <div style="background:rgba(255,255,255,0.8); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(0,0,0,0.1); border-radius:8px; box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);"
-                     class="flex flex-col md:flex-row items-center gap-0 overflow-hidden">
+                <div class="p-3 md:p-3 rounded-lg flex flex-col md:flex-row items-center gap-3 w-full shadow-sm" style="background: #e85d26;">
                   
                   {{-- Destination Field --}}
-                  <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 md:border-r md:border-gray-200">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                  <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3" style="background: rgba(255,255,255,0.2);">
+                    <i data-lucide="search" class="text-white" size="18"></i>
                     <input type="text" name="search" placeholder="Search Where You Go !!!"
-                           class="bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-sm font-medium outline-none w-full"
-                           style="box-shadow: none;"
+                           class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
                            value="{{ request('search') }}">
                   </div>
 
                   {{-- Agent/City Field --}}
-                  <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <input type="text" name="city" placeholder="Search agent from your location/near by city"
-                           class="bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-500 text-[12px] font-medium outline-none w-full"
-                           style="box-shadow: none;"
-                           value="{{ request('city') }}">
+                  <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3" style="background: rgba(255,255,255,0.2);">
+                    <i data-lucide="user" class="text-white" size="18"></i>
+                    <input type="text" name="city" placeholder="Search Nearby Agent Location"
+                           class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
+                           value="{{ is_array(request('city')) ? implode(', ', request('city')) : request('city') }}">
+                  </div>
+
+                  {{-- Check In Field --}}
+                  <div class="flex items-center gap-3 w-full md:w-auto rounded-md px-4 py-3 shrink-0" style="background: rgba(255,255,255,0.2);">
+                    <i data-lucide="calendar" class="text-white" size="18"></i>
+                    <input type="text" name="check_in" placeholder="Check in" onfocus="(this.type='date')" onblur="(this.type='text')"
+                           class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full md:w-28 p-0"
+                           value="{{ request('check_in') }}">
                   </div>
 
                   {{-- Search Button --}}
-                  <div class="px-4 py-3 md:px-2 md:py-2 flex-shrink-0 w-full md:w-auto">
+                  <div class="w-full md:w-auto shrink-0">
                     <button type="submit"
-                            style="background:#e85d26; border-radius:6px;"
-                            class="px-8 py-3 text-white font-bold text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto">
+                            class="bg-white text-gray-900 font-bold text-sm hover:bg-gray-100 transition-colors w-full sm:w-auto px-10 py-3 rounded-md shadow-sm">
                       Search
                     </button>
                   </div>
@@ -214,7 +218,7 @@
     }
     </style>
 
-    <div class="container-custom py-16" x-data="{ viewStyle: localStorage.getItem('tourraja_view_style') || 'grid', mobileFiltersOpen: false }" x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
+    <div class="container-custom pt-8 pb-16" x-data="{ viewStyle: localStorage.getItem('tourraja_view_style') || 'grid', mobileFiltersOpen: false }" x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
 
         <form id="filter-form" action="{{ url('/listing') }}" method="GET" class="flex flex-col lg:flex-row gap-12 w-full">
             <!-- Sidebar Wrapper (Responsive: Slide-over Drawer on Mobile, Sticky Column on Desktop) -->
@@ -327,10 +331,10 @@
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
                 </div>
                 <!-- Top Bar -->
-                <div class="bg-white rounded-[32px] p-5 md:p-6 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-6">
-                    <div class="text-center md:text-left">
-                        <p class="text-gray-400 font-bold uppercase tracking-widest text-[9px] mb-1">Search Results</p>
-                        <h3 class="text-lg md:text-2xl font-black">Showing <span id="results-count" class="text-primary">{{ $packages->count() }}</span> Packages</h3>
+                <div class="bg-white rounded-lg py-3 px-5 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
+                    <div class="text-center md:text-left flex items-center flex-wrap gap-2" style="font-size: 16px;">
+                        <span class="text-gray-500 font-bold uppercase tracking-widest" style="font-size: 16px;">Search Results:</span>
+                        <h3 class="font-black" style="font-size: 16px;">Showing <span id="results-count" class="text-primary">{{ $packages->count() }}</span> Packages</h3>
                     </div>
                     
                     <div class="flex flex-row items-center justify-between gap-3 w-full md:w-auto border-t border-gray-50 pt-5 md:border-none md:pt-0">

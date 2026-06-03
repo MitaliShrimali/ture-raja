@@ -254,7 +254,7 @@
                         <span class="inline-block px-4 py-1.5 rounded-full bg-[#E8460A] text-white text-[10px] font-black uppercase tracking-widest shadow-sm">
                             Join our newsletter
                         </span>
-                        <h2 class="text-3xl lg:text-5xl font-black text-black leading-[1.1] tracking-tight">
+                        <h2 class="font-black text-foreground leading-[1.1] tracking-tight font-heading" style="font-size: 38px;">
                             Subscribe to see secret deals prices drop the moment you sign up!
                         </h2>
 

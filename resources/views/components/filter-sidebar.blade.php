@@ -2,10 +2,10 @@
     'searchTerm' => '',
 ])
 
-<aside class="w-full bg-white rounded-2xl overflow-hidden font-sans border-0 shadow-sm">
+<aside class="w-full bg-white rounded-lg overflow-hidden font-sans border-0 shadow-sm">
     <!-- Header -->
     <div class="bg-primary text-white py-4 px-5 flex items-center justify-between">
-        <h2 class="text-[28px] font-bold uppercase tracking-wide">Filters</h2>
+        <h2 class="font-bold uppercase tracking-wide" style="font-size: 26px;">Filters</h2>
         <button type="button" onclick="clearAllFilters()" class="text-[10px] font-bold bg-white/20 hover:bg-white text-white hover:text-primary px-3 py-1.5 rounded-lg transition-all uppercase tracking-wider">
             Clear All
         </button>
@@ -14,8 +14,8 @@
     <div class="p-5 space-y-6"> 
 
         <!-- Search (Hidden on Mobile, Visible on Desktop within Sidebar) -->
-        <div class="relative group hidden lg:block">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <div class="relative group hidden lg:block mb-6">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <i data-lucide="search" class="text-gray-400" size="16"></i>
             </div>
             <input 
@@ -23,13 +23,14 @@
                 name="search"
                 placeholder="Search destination or package..." 
                 value="{{ request('search') }}"
-                class="w-full bg-gray-50 border border-gray-200 rounded-xl py-3 pl-10 pr-4 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-semibold text-gray-800 placeholder:text-gray-400"
+                class="w-full bg-gray-50 border border-gray-200 py-3 pr-4 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-semibold text-gray-800 placeholder:text-gray-400"
+                style="padding-left: 44px; border-radius: 6px;"
             >
         </div>
 
         <!-- 1. Tour Type -->
         <div x-data="{ expanded: false }">
-            <h3 class="font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide">Tour Type</h3>
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Tour Type</h3>
             @php
                 $allTourTypes = ['Flight Package', 'Train Package', 'Bus Package', 'Bullet Ride', 'Cruise Package', 'Tracking Package', 'Helicopter Package', 'Other'];
                 $visibleTypes = array_slice($allTourTypes, 0, 5);
@@ -62,7 +63,7 @@
 
         <!-- 2. Duration (Nights) -->
         <div x-data="rangeSlider({{ request('min_nights', 2) }}, {{ request('max_nights', 11) }}, 1, 20)">
-            <h3 class="font-bold text-gray-900 mb-5 text-xs uppercase tracking-wide">Duration (Nights)</h3>
+            <h3 class="font-bold text-gray-900 mb-5 uppercase tracking-wide" style="font-size: 20px;">Duration (Nights)</h3>
             
             <div class="px-2 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <!-- Track Highlight -->
@@ -93,7 +94,7 @@
 
         <!-- 3. Price -->
         <div x-data="rangeSlider({{ request('min_price', 1000) }}, {{ request('max_price', 100000) }}, 0, 150000)">
-            <h3 class="font-bold text-gray-900 mb-5 text-xs uppercase tracking-wide">Price</h3>
+            <h3 class="font-bold text-gray-900 mb-5 uppercase tracking-wide" style="font-size: 20px;">Price</h3>
             
             <!-- Price Slider -->
             <div class="px-2 mb-6 relative h-1.5 bg-gray-200 rounded-full">
@@ -137,7 +138,7 @@
 
         <!-- 4. City -->
         <div x-data="{ expanded: false }">
-            <h3 class="font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide">City</h3>
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">City</h3>
             <div class="relative mb-3">
                 <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
                     <i data-lucide="search" class="text-gray-400" size="14"></i>
@@ -149,7 +150,7 @@
                 $allCities = ['Manali', 'Goa', 'Shimla', 'Rishikesh', 'Kasol', 'Munnar', 'Darjeeling', 'Paris', 'Monaco', 'Hanoi', 'Dubai', 'Bali'];
                 $visibleCities = array_slice($allCities, 0, 5);
                 $hiddenCities = array_slice($allCities, 5);
-                $selectedCities = request('city', []);
+                $selectedCities = (array) request('city', []);
             @endphp
             
             <div class="space-y-2">
@@ -178,7 +179,7 @@
 
         <!-- 5. Rating -->
         <div>
-            <h3 class="font-bold text-gray-900 mb-4 text-xs uppercase tracking-wide">Rating</h3>
+            <h3 class="font-bold text-gray-900 mb-4 uppercase tracking-wide" style="font-size: 20px;">Rating</h3>
             <div class="flex items-center justify-between mb-3">
                 <div class="w-6 h-6 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0">
                     <span class="text-[10px] font-bold text-gray-500">0</span>
@@ -200,12 +201,12 @@
 
         <!-- 6. Theme -->
         <div x-data="{ expanded: false }">
-            <h3 class="font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide">Theme</h3>
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Theme</h3>
             @php
                 $allThemes = ['Honeymoon', 'Solo', 'Adventure', 'Family/Group', 'Religious', 'Romantic', 'Nature'];
                 $visibleThemes = array_slice($allThemes, 0, 5);
                 $hiddenThemes = array_slice($allThemes, 5);
-                $selectedThemes = request('theme', []);
+                $selectedThemes = (array) request('theme', []);
             @endphp
             <div class="space-y-2">
                 @foreach($visibleThemes as $theme)
@@ -233,7 +234,7 @@
 
         <!-- 7. Activity Type (Tags) -->
         <div>
-            <h3 class="font-bold text-gray-900 mb-3 text-xs uppercase tracking-wide">Activity Type</h3>
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Activity Type</h3>
             @php
                 $allActivities = ['Cable Car / Rope way', 'Adventure', 'Nature', 'Rides and Thrill', 'Water Activities', 'Jeep Safari', 'Hill Station', 'Religious'];
                 $selectedActs = request('activities', []);

@@ -39,9 +39,9 @@
     $detailUrl = $slug ? url('packages/' . $slug) : '#';
 @endphp
 
-<div {{ $attributes->merge(['class' => 'group bg-white rounded-[24px] overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50 package-card-inner']) }}>
+<div {{ $attributes->merge(['class' => 'group bg-white rounded-lg overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50 package-card-inner']) }}>
     <!-- Image Container -->
-    <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-[20px] package-image-container">
+    <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-md package-image-container">
         <img 
             src="{{ $image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800' }}" 
             alt="{{ $title }}" 
@@ -71,7 +71,7 @@
     <div class="px-6 pt-5 pb-6 flex flex-col flex-grow space-y-4 package-content">
 
         <div class="flex items-start justify-between gap-4">
-            <h3 class="text-xl font-black text-foreground leading-tight line-clamp-2 font-heading min-h-[3rem] flex-grow">
+            <h3 class="font-black text-foreground leading-tight line-clamp-2 font-heading min-h-[3rem] flex-grow" style="font-size: 20px;">
                 {{ $title }}
             </h3>
             

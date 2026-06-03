@@ -28,8 +28,8 @@
           <li style="padding:1px 0;"><a href="{{ url('/about') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">About Us</a></li>
           <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Career</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/contact') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Contact Us</a></li>
-          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Privacy Policy</a></li>
-          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Terms of Services</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/privacy-policy') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Privacy Policy</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/terms-and-conditions') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Terms And Conditions</a></li>
         </ul>
       </div>
 
@@ -37,11 +37,11 @@
       <div class="footer-partition">
         <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">Quick Links</h4>
         <ul style="list-style:none; padding:0; margin:0;">
-          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Site Map</a></li>
+          <li style="padding:1px 0;"><a href="https://tourism.gov.in/sites/default/files/2024-04/MOT%20India%20Map_Digital.pdf" target="_blank" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Site Map</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/discover?category=international') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">International Destinations</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/discover?category=domestic') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Domestic Destinations</a></li>
           <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Multi-City Destinations</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Popular Destinations</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?badge=Popular') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Popular Destinations</a></li>
         </ul>
       </div>
 
@@ -49,14 +49,14 @@
       <div class="footer-partition">
         <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">Popular Transits</h4>
         <ul style="list-style:none; padding:0; margin:0;">
-          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=flight') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Flight Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=train') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Train Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=bus') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Bus Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=bullet') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Bullet Ride Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=cruise') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Cruise Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=land') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Land Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=tracking') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Tracking Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?transit=helicopter') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Helicopter Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Flight Package')) }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Flight Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Train Package')) }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Train Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Bus Package')) }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Bus Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Bullet Ride')) }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Bullet Ride Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Cruise Package')) }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Cruise Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Land Package')) }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Land Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Tracking Package')) }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Tracking Package</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Helicopter Package')) }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Helicopter Package</a></li>
         </ul>
       </div>
 
@@ -64,9 +64,21 @@
       <div class="footer-partition">
         <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">More Links</h4>
         <ul style="list-style:none; padding:0; margin:0;">
-          <li style="padding:1px 0;"><a href="{{ url('/profile?tab=history') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Bookings</a></li>
+          <li style="padding:1px 0;">
+            @auth
+              <a href="{{ url('/profile?tab=history') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Bookings</a>
+            @else
+              <a href="javascript:void(0)" @click="$dispatch('open-login-modal')" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Bookings</a>
+            @endauth
+          </li>
           <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Saved Agent</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/profile') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Account</a></li>
+          <li style="padding:1px 0;">
+            @auth
+              <a href="{{ url('/profile') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Account</a>
+            @else
+              <a href="javascript:void(0)" @click="$dispatch('open-login-modal')" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Account</a>
+            @endauth
+          </li>
           <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My Reviews</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/admin/login') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Admin Login</a></li>
         </ul>

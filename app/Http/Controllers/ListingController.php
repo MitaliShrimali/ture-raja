@@ -120,7 +120,13 @@ class ListingController extends Controller
             $cities = array_map('strtolower', (array) $request->city);
             $packages = $packages->filter(function($pkg) use ($cities) {
                 $pkg = (array) $pkg;
-                return in_array(strtolower($pkg['city'] ?? ''), $cities);
+                $pkgCity = strtolower($pkg['city'] ?? '');
+                foreach ($cities as $city) {
+                    if (str_contains($pkgCity, $city)) {
+                        return true;
+                    }
+                }
+                return false;
             });
         }
 
@@ -139,6 +145,15 @@ class ListingController extends Controller
             $packages = $packages->filter(function($pkg) use ($themes) {
                 $pkg = (array) $pkg;
                 return in_array(strtolower($pkg['theme'] ?? ''), $themes);
+            });
+        }
+
+        // ── Badge filter ───────────────────────────────────────────
+        if ($request->filled('badge')) {
+            $badges = array_map('strtolower', (array) $request->badge);
+            $packages = $packages->filter(function($pkg) use ($badges) {
+                $pkg = (array) $pkg;
+                return in_array(strtolower($pkg['badge'] ?? ''), $badges);
             });
         }
 

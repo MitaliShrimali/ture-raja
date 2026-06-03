@@ -77,7 +77,7 @@
 
                     <div class="flex items-center gap-3 py-2">
                         <input type="checkbox" class="w-5 h-5 rounded-lg border-border-soft text-primary focus:ring-primary/20 transition-all" required />
-                        <span class="text-xs font-bold text-muted-text">I agree to the <a href="#" class="text-primary hover:underline">Terms & Conditions</a></span>
+                        <span class="text-xs font-bold text-muted-text">I agree to the <a href="{{ url('/terms-and-conditions') }}" target="_blank" class="text-primary hover:underline">Terms & Conditions</a></span>
                     </div>
 
                     <button type="submit" class="w-full bg-[#E8460A] hover:bg-primary-hover text-white rounded-2xl py-5 font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 transition-all transform hover:-translate-y-1">

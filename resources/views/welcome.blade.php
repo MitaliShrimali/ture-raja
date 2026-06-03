@@ -33,7 +33,7 @@
                 @endphp
                 @foreach($intl as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-sm overflow-hidden block group flex-1 min-w-0" style="height:115px;">
+                   class="relative rounded-lg overflow-hidden block group flex-1 min-w-0" style="height:115px;">
                     <img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
@@ -72,7 +72,7 @@
                 @endphp
                 @foreach($dom as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-sm overflow-hidden block group flex-1 min-w-0" style="height:115px;">
+                   class="relative rounded-lg overflow-hidden block group flex-1 min-w-0" style="height:115px;">
                     <img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
@@ -136,16 +136,16 @@
     <!-- Section 6: Browse by Travel Theme -->
     <section class="py-16 bg-white border-t border-border-soft/30 animate-fade-up">
         <div class="container-custom">
-            <h2 class="text-2xl md:text-[30px] font-black text-foreground text-center mb-10 tracking-tight font-heading">Browse by Travel Theme</h2>
+            <h2 class="font-black text-foreground text-center mb-10 tracking-tight font-heading" style="font-size: 28px;">Browse by Travel Theme</h2>
 
-            <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4 items-start">
+            <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 lg:gap-6 items-start w-full">
                 @php
                     $themes = [
                         ['label' => 'Family/Group', 'image' => 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=400&v=1'],
                         ['label' => 'Religious', 'image' => 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&q=80&w=400&v=1'],
                         ['label' => 'Honeymoon', 'image' => 'https://images.unsplash.com/photo-1573152958734-1922c188fba3?auto=format&fit=crop&q=80&w=400&v=1'],
                         ['label' => 'Solo', 'image' => 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=400&v=1'],
-                        ['label' => 'Adventure', 'image' => 'https://images.unsplash.com/photo-1533240332313-0db36245e4a2?auto=format&fit=crop&q=80&w=400&v=1'],
+                        ['label' => 'Adventure', 'image' => 'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&q=80&w=400&v=1'],
                         ['label' => 'Cruise', 'image' => 'https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&q=80&w=400&v=1'],
                         ['label' => 'WaterPark', 'image' => 'https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?auto=format&fit=crop&q=80&w=400&v=1'],
                         ['label' => 'Pilgrimage', 'image' => 'https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&q=80&w=400&v=1'],
@@ -153,14 +153,14 @@
                 @endphp
 
                 @foreach($themes as $theme)
-                    <div class="group flex flex-col items-center text-center space-y-3 cursor-pointer">
-                        <div class="w-20 h-20 lg:w-24 lg:h-24 rounded-2xl overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
+                    <a href="{{ url('/discover?theme=' . urlencode($theme['label'])) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer w-full max-w-20 md:max-w-24 lg:max-w-28 mx-auto">
+                        <div class="w-full aspect-square rounded-lg overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
                             <img src="{{ $theme['image'] }}" alt="{{ $theme['label'] }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                         </div>
-                        <h4 class="font-bold text-foreground group-hover:text-primary transition-colors text-[11px] lg:text-xs tracking-tight">
+                        <h4 class="font-semibold text-foreground group-hover:text-primary transition-colors text-xs md:text-sm tracking-tight whitespace-nowrap">
                             {{ $theme['label'] }}
                         </h4>
-                    </div>
+                    </a>
                 @endforeach
             </div>
         </div>
@@ -648,7 +648,7 @@
                         <span class="inline-block px-4 py-1.5 rounded-full bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-glow">
                             Join our newsletter
                         </span>
-                        <h2 class="text-3xl lg:text-5xl font-black text-foreground leading-[1.1] tracking-tight font-heading">
+                        <h2 class="font-black text-foreground leading-[1.1] tracking-tight font-heading" style="font-size: 38px;">
                             Subscribe to see secret deals prices drop the moment you sign up!
                         </h2>
                         

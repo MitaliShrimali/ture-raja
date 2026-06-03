@@ -17,6 +17,8 @@ Route::get('/discover', [ListingController::class, 'index'])->name('discover');
 // Static pages (keep original behaviour)
 Route::get('/about', function () { return view('about'); });
 Route::get('/contact', function () { return view('contact'); });
+Route::get('/privacy-policy', function () { return view('privacy-policy'); });
+Route::get('/terms-and-conditions', function () { return view('terms'); });
 
 // Search from hero bar → redirect to listing
 Route::get('/search', [UserController::class, 'search'])->name('search');
