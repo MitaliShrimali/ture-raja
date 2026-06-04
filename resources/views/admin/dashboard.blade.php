@@ -136,22 +136,19 @@
     </div>
 
     <!-- Package Approvals -->
-    <div class="bg-white rounded-[32px] shadow-soft p-8 space-y-6">
+    <div class="bg-white rounded-[40px] shadow-soft p-10 space-y-6">
         <div class="flex items-center justify-between">
-            <div>
-                <h3 class="text-2xl font-black text-foreground">Package Approvals</h3>
-                <p class="text-sm text-muted-text font-medium">Review and publish submitted tour packages</p>
-            </div>
             <div class="flex items-center gap-4">
+                <h3 class="text-2xl font-black text-foreground">Package Approvals</h3>
                 @if($pendingPackagesCount > 0)
-                    <span class="text-xs font-black text-white px-3 py-1.5 rounded-full" style="background-color:#e85d26;">
+                    <span class="text-[10px] font-black text-white px-3 py-1 rounded-full uppercase tracking-wider flex items-center" style="background-color:#af3a03;">
                         {{ $pendingPackagesCount }} NEW
                     </span>
                 @endif
-                <a href="{{ url('/admin/packages') }}" class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
-                    View All <i data-lucide="arrow-up-right" size="14"></i>
-                </a>
             </div>
+            <a href="{{ url('/admin/packages') }}" class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
+                View All <i data-lucide="arrow-up-right" size="14"></i>
+            </a>
         </div>
 
         @if(session('success'))
@@ -161,57 +158,67 @@
             </div>
         @endif
 
-        @forelse($pendingPackages as $pkg)
-            <div class="flex items-center justify-between py-5 border-b border-border-soft last:border-0">
-                <div class="flex items-center gap-4">
-                    <!-- Package image -->
-                    <div class="w-14 h-14 rounded-2xl overflow-hidden shrink-0 bg-gray-100">
-                        <img src="{{ $pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=200' }}"
-                             alt="{{ $pkg->title }}"
-                             class="w-full h-full object-cover">
-                    </div>
-                    <!-- Info -->
-                    <div>
-                        <p class="text-sm font-bold text-foreground">{{ $pkg->title }}</p>
-                        <p class="text-xs text-muted-text font-medium mt-0.5">
-                            {{ $pkg->location ?? 'Global' }}
-                            @if($pkg->created_at)
-                                &nbsp;·&nbsp;{{ \Carbon\Carbon::parse($pkg->created_at)->diffForHumans() }}
-                            @endif
-                        </p>
-                        <!-- Action buttons -->
-                        <div class="flex items-center gap-2 mt-3">
-                            <a href="{{ route('admin.package.approve', $pkg->id) }}"
-                               class="px-4 py-1.5 rounded-full text-white text-[10px] font-black uppercase tracking-wider transition-all hover:opacity-90"
-                               style="background-color:#e85d26;"
-                               onclick="return confirm('Approve and publish this package?')">
-                                Approve
-                            </a>
-                            <a href="{{ route('admin.package.decline', $pkg->id) }}"
-                               class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border border-gray-200 text-muted-text hover:border-red-300 hover:text-red-500 transition-all"
-                               onclick="return confirm('Decline this package?')">
-                                Decline
-                            </a>
+        <div class="space-y-4">
+            @forelse($pendingPackages as $pkg)
+                @php
+                    $agent = json_decode($pkg->agent);
+                    $priceSym = $pkg->price < 10000 ? '$' : '₹';
+                    
+                    // Format time ago to match "14 MIN AGO" style
+                    $timeAgo = $pkg->created_at ? \Carbon\Carbon::parse($pkg->created_at)->diffForHumans() : '';
+                    $timeAgoFormatted = strtoupper(str_replace(
+                        [' minutes ago', ' minute ago', ' hours ago', ' hour ago', ' days ago', ' day ago', ' ago'], 
+                        [' MIN AGO', ' MIN AGO', ' HOURS AGO', ' HOUR AGO', ' DAYS AGO', ' DAY AGO', ' AGO'], 
+                        $timeAgo
+                    ));
+                @endphp
+                <div class="flex items-center justify-between p-6 bg-gray-50/50 rounded-[32px] border border-gray-100 hover:bg-gray-50/80 transition-all">
+                    <div class="flex items-center gap-5">
+                        <!-- Package image -->
+                        <div class="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-100 border border-gray-200/50">
+                            <img src="{{ $pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=200' }}"
+                                 alt="{{ $pkg->title }}"
+                                 class="w-full h-full object-cover">
+                        </div>
+                        <!-- Info -->
+                        <div>
+                            <p class="text-base font-bold text-foreground">{{ $pkg->title }}</p>
+                            <p class="text-xs text-muted-text font-medium mt-0.5">
+                                Submitted by: {{ $agent->name ?? 'Wanderlust Pro' }}
+                            </p>
+                            <!-- Action buttons -->
+                            <div class="flex items-center gap-3 mt-3">
+                                <a href="{{ route('admin.package.approve', $pkg->id) }}"
+                                   class="px-5 py-2 rounded-full text-white text-[10px] font-black uppercase tracking-wider transition-all hover:opacity-90 shadow-sm"
+                                   style="background-color:#af3a03;"
+                                   onclick="return confirm('Approve and publish this package?')">
+                                    Approve
+                                </a>
+                                <a href="{{ route('admin.package.decline', $pkg->id) }}"
+                                   class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-wider bg-gray-200/60 text-gray-700 hover:bg-gray-200 transition-all"
+                                   onclick="return confirm('Decline this package?')">
+                                    Decline
+                                </a>
+                            </div>
                         </div>
                     </div>
+                    <!-- Price and Time -->
+                    <div class="text-right shrink-0 ml-4">
+                        <p class="text-lg font-black text-foreground">{{ $priceSym }}{{ number_format($pkg->price, 0) }}</p>
+                        <p class="text-[10px] font-bold text-muted-text tracking-widest mt-1 opacity-80">{{ $timeAgoFormatted }}</p>
+                    </div>
                 </div>
-                <!-- Price -->
-                <div class="text-right shrink-0 ml-4">
-                    <p class="text-sm font-black text-foreground">₹{{ number_format($pkg->price, 0) }}</p>
-                    @if($pkg->duration)
-                        <p class="text-[10px] text-muted-text font-medium mt-0.5">{{ $pkg->duration }}</p>
-                    @endif
+            @empty
+                <div class="py-12 text-center bg-gray-50/50 rounded-[32px] border border-gray-100">
+                    <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="check-circle-2" size="28" class="text-green-500"></i>
+                    </div>
+                    <p class="text-sm font-bold text-muted-text">All packages are reviewed!</p>
+                    <p class="text-xs text-muted-text/60 mt-1">No packages pending approval right now.</p>
                 </div>
-            </div>
-        @empty
-            <div class="py-12 text-center">
-                <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="check-circle-2" size="28" class="text-green-500"></i>
-                </div>
-                <p class="text-sm font-bold text-muted-text">All packages are reviewed!</p>
-                <p class="text-xs text-muted-text/60 mt-1">No packages pending approval right now.</p>
-            </div>
-        @endforelse
+            @endforelse
+        </div>
+    </div>
     </div>
 
 </div>

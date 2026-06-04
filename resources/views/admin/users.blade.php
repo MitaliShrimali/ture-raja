@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editUser: { id: '', name: '', email: '', role: '' } }">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editUser: { id: '', name: '', email: '', role: '' }, addRole: 'SUPER ADMIN' }">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
@@ -215,11 +215,26 @@
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Access Role<span class="text-primary">*</span></label>
-                    <select required name="role" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                    <select required name="role" x-model="addRole" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                         <option value="SUPER ADMIN">SUPER ADMIN</option>
                         <option value="MANAGER">MANAGER</option>
                         <option value="EDITOR">EDITOR</option>
                     </select>
+                </div>
+                
+                <!-- Warning for Super Admin role -->
+                <div x-show="addRole === 'SUPER ADMIN'" class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 transition-all" x-transition>
+                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-gray-100">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <h5 class="text-xs font-bold text-gray-800">Security Profile: Full Access</h5>
+                        <p class="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            The Super Admin role has unrestricted access to all modules including system configuration, financial reports, user access management, and global data deletion. All actions performed by this user are logged in the master audit trail.
+                        </p>
+                    </div>
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Password<span class="text-primary">*</span></label>
@@ -275,6 +290,21 @@
                         <option value="MANAGER">MANAGER</option>
                         <option value="EDITOR">EDITOR</option>
                     </select>
+                </div>
+
+                <!-- Warning for Super Admin role -->
+                <div x-show="editUser.role === 'SUPER ADMIN'" class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 transition-all" x-transition>
+                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-gray-100">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <h5 class="text-xs font-bold text-gray-800">Security Profile: Full Access</h5>
+                        <p class="text-[11px] text-gray-500 leading-relaxed font-medium">
+                            The Super Admin role has unrestricted access to all modules including system configuration, financial reports, user access management, and global data deletion. All actions performed by this user are logged in the master audit trail.
+                        </p>
+                    </div>
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Password<span class="text-muted-text"> (Leave blank to keep current)</span></label>

@@ -92,37 +92,31 @@
                 </div>
 
                 {{-- Image Grid Gallery (Contained) --}}
-                <div x-data="{ 
+                <div x-data='{ 
                     showGallery: false, 
                     activeImage: 0,
-                    slides: [
-                        '{{ $package['image'] }}',
-                        'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
-                        'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200',
-                        'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200',
-                        'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=1200'
-                    ],
+                    slides: @json($package['gallery']),
                     openGallery(index) {
                         this.activeImage = index;
                         this.showGallery = true;
-                        document.body.classList.add('overflow-hidden');
+                        document.body.classList.add("overflow-hidden");
                         this.$nextTick(() => {
-                            this.scrollToImage(index, 'auto');
+                            this.scrollToImage(index, "auto");
                         });
                     },
                     closeGallery() {
                         this.showGallery = false;
-                        document.body.classList.remove('overflow-hidden');
+                        document.body.classList.remove("overflow-hidden");
                     },
                     nextImage() {
                         const nextIndex = (this.activeImage + 1) % this.slides.length;
-                        this.scrollToImage(nextIndex, 'smooth');
+                        this.scrollToImage(nextIndex, "smooth");
                     },
                     prevImage() {
                         const prevIndex = (this.activeImage - 1 + this.slides.length) % this.slides.length;
-                        this.scrollToImage(prevIndex, 'smooth');
+                        this.scrollToImage(prevIndex, "smooth");
                     },
-                    scrollToImage(index, behavior = 'smooth') {
+                    scrollToImage(index, behavior = "smooth") {
                         this.activeImage = index;
                         const container = this.$refs.sliderContainer;
                         if (!container) return;
@@ -151,7 +145,7 @@
                         });
                         this.activeImage = closestIndex;
                     }
-                }" class="mb-6">
+                }' class="mb-6">
                     
                     {{-- Gallery Layout --}}
                     <div class="grid grid-cols-3 gap-2 w-full overflow-hidden relative" style="height: 320px;">
@@ -161,20 +155,20 @@
                         </div>
                         
                         {{-- Small Right Images (Top and Bottom) --}}
-                        <div class="col-span-1 grid grid-rows-2 gap-2 h-full w-full">
-                            <img :src="slides[1]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(1)">
-                            <img :src="slides[2]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(2)">
+                        <div class="col-span-1 grid grid-rows-2 gap-2 h-full w-full relative">
+                            <img :src="slides[1] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(1)">
+                            <img :src="slides[2] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(2)">
+                            
+                            {{-- View Gallery Button (Anchored on the stacked/small images part) --}}
+                            <button @click.stop="openGallery(0)" class="absolute top-6 right-6 view-gallery-btn text-[12px] font-bold px-4 py-2.5 flex items-center gap-2 z-30 shadow-lg rounded-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                <span>View Gallery</span>
+                            </button>
                         </div>
-
-                        {{-- View Gallery Button (Fixed on the grid container) --}}
-                        <button @click.stop="openGallery(0)" class="absolute bottom-4 right-4 view-gallery-btn text-[12px] font-bold px-4 py-2.5 flex items-center gap-2 z-30 shadow-lg rounded-lg">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                <circle cx="8.5" cy="8.5" r="1.5"/>
-                                <polyline points="21 15 16 10 5 21"/>
-                            </svg>
-                            <span>View Gallery</span>
-                        </button>
                     </div>
 
                     {{-- Lightbox / Gallery Modal --}}
@@ -194,26 +188,12 @@
                             <div x-ref="sliderContainer" 
                                  @scroll.debounce.10ms="updateActiveFromScroll()"
                                  class="w-full flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar px-[12%] py-4">
-                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
-                                     :class="activeImage === 0 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
-                                    <img :src="slides[0]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
-                                </div>
-                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
-                                     :class="activeImage === 1 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
-                                    <img :src="slides[1]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
-                                </div>
-                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
-                                     :class="activeImage === 2 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
-                                    <img :src="slides[2]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
-                                </div>
-                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
-                                     :class="activeImage === 3 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
-                                    <img :src="slides[3]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
-                                </div>
-                                <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
-                                     :class="activeImage === 4 ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
-                                    <img :src="slides[4]" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
-                                </div>
+                                <template x-for="(slide, idx) in slides" :key="idx">
+                                    <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
+                                         :class="activeImage === idx ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
+                                        <img :src="slide" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
+                                    </div>
+                                </template>
                             </div>
                         </div>
                         
@@ -224,21 +204,11 @@
                         
                         {{-- Thumbnail Navigation Strip --}}
                         <div class="mt-4 flex items-center gap-2 bg-black/40 backdrop-blur-md p-2 rounded-2xl border border-white/10" @click.stop>
-                            <button @click="scrollToImage(0)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 0 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
-                                <img :src="slides[0]" class="w-full h-full object-cover select-none">
-                            </button>
-                            <button @click="scrollToImage(1)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 1 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
-                                <img :src="slides[1]" class="w-full h-full object-cover select-none">
-                            </button>
-                            <button @click="scrollToImage(2)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 2 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
-                                <img :src="slides[2]" class="w-full h-full object-cover select-none">
-                            </button>
-                            <button @click="scrollToImage(3)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 3 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
-                                <img :src="slides[3]" class="w-full h-full object-cover select-none">
-                            </button>
-                            <button @click="scrollToImage(4)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === 4 ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
-                                <img :src="slides[4]" class="w-full h-full object-cover select-none">
-                            </button>
+                            <template x-for="(slide, idx) in slides" :key="idx">
+                                <button @click="scrollToImage(idx)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === idx ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
+                                    <img :src="slide" class="w-full h-full object-cover select-none">
+                                </button>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -257,17 +227,23 @@
                         </div>
                         <div>
                             <h4 class="font-bold text-gray-800 text-base">Travel Guide &amp; Itinerary Brochure</h4>
-                            <p class="text-xs text-gray-400 font-semibold">Download the complete tour handbook in PDF format (2.4 MB)</p>
+                            <p class="text-xs text-gray-400 font-semibold font-medium">Download the complete tour handbook in PDF format</p>
                         </div>
                     </div>
-                    <a href="#" style="background-color: #e85d26;" class="w-full sm:w-auto px-6 py-3.5 text-white text-[11px] font-black uppercase tracking-widest rounded-md transition-all shadow-sm hover:shadow-lg text-center flex items-center justify-center gap-2 hover:opacity-90">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        <span>Download PDF</span>
-                    </a>
+                    @if($package['brochure'])
+                        <a href="{{ asset($package['brochure']) }}" target="_blank" style="background-color: #e85d26;" class="w-full sm:w-auto px-6 py-3.5 text-white text-[11px] font-black uppercase tracking-widest rounded-md transition-all shadow-sm hover:shadow-lg text-center flex items-center justify-center gap-2 hover:opacity-90">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <span>Download PDF</span>
+                        </a>
+                    @else
+                        <button disabled class="w-full sm:w-auto px-6 py-3.5 bg-gray-100 text-gray-400 text-[11px] font-black uppercase tracking-widest rounded-md text-center cursor-not-allowed">
+                            Not Available
+                        </button>
+                    @endif
                 </div>
 
                 {{-- Quick Info Strip --}}

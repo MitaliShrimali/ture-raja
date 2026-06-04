@@ -71,6 +71,7 @@ Route::prefix('admin')->group(function () {
     
     // Inventory & Stays
     Route::get('/packages', [AdminController::class, 'packages']);
+    Route::get('/packages/create', [AdminController::class, 'createPackage']);
     Route::get('/hotels', [AdminController::class, 'hotels']);
     Route::get('/amenities', [AdminController::class, 'amenities']);
     Route::get('/holiday-types', [AdminController::class, 'holidayTypes']);
@@ -81,6 +82,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/customers', [AdminController::class, 'customers']);
     Route::get('/customers/delete/{id}', [AdminController::class, 'deleteCustomer']);
     Route::get('/agents', [AdminController::class, 'agents']);
+    Route::get('/registered-agents', [AdminController::class, 'registeredAgents']);
     Route::get('/leads', [AdminController::class, 'leads']);
 
     // Subscription Oversight
@@ -407,6 +409,91 @@ Route::get('/packages/{slug}', function ($slug) {
         ],
     ];
 
+    // Try to find the package in the database first
+    $dbPkg = DB::table('packages')->get()->first(function($p) use ($slug) {
+        return \Illuminate\Support\Str::slug($p->title) === $slug;
+    });
+
+    if ($dbPkg) {
+        $gallery = [];
+        if ($dbPkg->gallery) {
+            $gallery = json_decode($dbPkg->gallery, true) ?: [];
+        }
+        $included = [];
+        if ($dbPkg->included) {
+            $included = json_decode($dbPkg->included, true) ?: [];
+        }
+        $excluded = [];
+        if ($dbPkg->excluded) {
+            $excluded = json_decode($dbPkg->excluded, true) ?: [];
+        }
+        $itinerary = [];
+        if ($dbPkg->itinerary) {
+            $itinerary = json_decode($dbPkg->itinerary, true) ?: [];
+        }
+
+        $package = [
+            'slug'       => $slug,
+            'title'      => $dbPkg->title,
+            'image'      => $dbPkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
+            'duration'   => $dbPkg->duration,
+            'groupSize'  => $dbPkg->group_size ?? '4-6 guest',
+            'rating'     => $dbPkg->rating ?? '4.8',
+            'reviews'    => $dbPkg->reviews ?? '10',
+            'price'      => $dbPkg->price,
+            'oldPrice'   => $dbPkg->old_price,
+            'badge'      => $dbPkg->badge,
+            'category'   => $dbPkg->category,
+            'tour_type'  => 'Flight Package',
+            'city'       => $dbPkg->location,
+            'theme'      => 'Adventure',
+            'activities' => [],
+            'overview'   => "Experience the incredible beauty and culture of {$dbPkg->title}. This package offers an unforgettable journey filled with stunning landscapes, historic sites, and amazing local cuisine.",
+            'highlights' => [
+                "Guided city tour of {$dbPkg->title}",
+                "Visit top attractions and hidden gems",
+                "Authentic local dining experience",
+                "Comfortable 4-star accommodation",
+                "Airport transfers included",
+            ],
+            'gallery'    => $gallery,
+            'brochure'   => $dbPkg->brochure,
+            'included'   => $included,
+            'excluded'   => $excluded,
+            'itinerary'  => $itinerary,
+            'agent'      => $dbPkg->agent ?? 'Miths Holidays',
+        ];
+
+        // Fill defaults if empty
+        if (empty($package['gallery'])) {
+            $package['gallery'] = [
+                $package['image'],
+                'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=1200'
+            ];
+        } else {
+            array_unshift($package['gallery'], $package['image']);
+            $package['gallery'] = array_values(array_unique($package['gallery']));
+        }
+        if (empty($package['included'])) {
+            $package['included'] = ['Hotel Stay', 'Daily Breakfast', 'Tour Guide', 'Transfers'];
+        }
+        if (empty($package['excluded'])) {
+            $package['excluded'] = ['Flights', 'Personal Expenses', 'Visa Fees'];
+        }
+        if (empty($package['itinerary'])) {
+            $package['itinerary'] = [
+                ['title' => 'Arrival & Check-in', 'desc' => "Arrive at {$dbPkg->title}, transfer to your hotel and relax."],
+                ['title' => 'City Exploration', 'desc' => 'Full day guided tour exploring major landmarks.'],
+                ['title' => 'Leisure & Departure', 'desc' => 'Free time for shopping before transferring to the airport.'],
+            ];
+        }
+
+        return view('packages.show', ['package' => $package]);
+    }
+
     if (!isset($allPackages[$slug])) {
         $title = ucwords(str_replace('-', ' ', $slug));
         $allPackages[$slug] = [
@@ -447,3 +534,12 @@ Route::get('/packages/{slug}', function ($slug) {
 })->name('packages.show');
 
 Route::get('/audio/bg_music.mp3', function () { return response()->file(public_path('audio/bg_music.mp3')); });
+
+Route::get('/uploads/{path}', function ($path) {
+    $fullPath = base_path('uploads/' . $path);
+    if (file_exists($fullPath)) {
+        return response()->file($fullPath);
+    }
+    abort(404);
+})->where('path', '.*');
+

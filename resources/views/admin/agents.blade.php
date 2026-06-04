@@ -3,16 +3,22 @@
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ tier: 'Premium', status: 'Active' }">
     <!-- Header -->
-    <div class="space-y-2">
-        <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Management</p>
-        <h2 class="font-black text-foreground tracking-tight">Onboard New Agent</h2>
-        <p class="text-muted-text font-medium max-w-2xl">
-            Expand the Horizon network by registering a new premium travel agent partner. All fields are required for secure portal access.
-        </p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="space-y-2">
+            <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Management</p>
+            <h2 class="font-black text-foreground tracking-tight">Onboard New Agent</h2>
+            <p class="text-muted-text font-medium max-w-xl">
+                Expand the Horizon network by registering a new premium travel agent partner. All fields are required for secure portal access.
+            </p>
+        </div>
+        <a href="{{ url('/admin/registered-agents') }}" class="bg-gray-100 hover:bg-gray-200 text-muted-text px-8 py-4 rounded-2xl font-black text-sm transition-all flex items-center gap-3">
+            <i data-lucide="users" size="20"></i>
+            View Registered Agents
+        </a>
     </div>
 
     <!-- Onboard Agent Form -->
-    <form action="{{ url('/admin/agents/store') }}" method="POST">
+    <form action="{{ url('/admin/agents/store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <input type="hidden" name="tier" x-model="tier" />
         <input type="hidden" name="status" x-model="status" />
@@ -98,6 +104,52 @@
 
             <!-- Sidebar Controls Area -->
             <div class="space-y-8">
+                <!-- Company Profile Image Card -->
+                <div class="bg-white rounded-[40px] shadow-premium border border-border-soft p-8 flex flex-col items-center text-center space-y-4" x-data="{ imagePreview: null }">
+                    <h4 class="text-xs font-black text-muted-text uppercase tracking-widest pl-2 self-start">Company Profile Image</h4>
+                    
+                    <div class="relative mt-2">
+                        <!-- Dashed Box / Preview -->
+                        <div class="w-32 h-32 rounded-[28px] border-2 border-dashed border-gray-200 bg-gray-50/50 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-gray-50 transition-all" @click="$refs.fileInput.click()">
+                            <template x-if="imagePreview">
+                                <img :src="imagePreview" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!imagePreview">
+                                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                            </template>
+                        </div>
+                        
+                        <!-- Floating Upload Button -->
+                        <button type="button" @click="$refs.fileInput.click()" class="absolute -bottom-1 -right-1 w-10 h-10 rounded-full bg-[#af3a03] hover:bg-[#8f2f02] text-white flex items-center justify-center shadow-lg transition-all border-2 border-white">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Hidden File Input -->
+                    <input type="file" name="logo" x-ref="fileInput" class="hidden" accept="image/*" @change="
+                        const file = $event.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => { imagePreview = e.target.result; };
+                            reader.readAsDataURL(file);
+                        }
+                    ">
+                    
+                    <div class="space-y-1">
+                        <p class="text-sm font-bold text-foreground">Company Profile Image</p>
+                        <p class="text-[11px] text-muted-text font-bold leading-relaxed max-w-[200px]">
+                            Upload a high-resolution logo or headshot. Min 500x500px suggested.
+                        </p>
+                    </div>
+                </div>
+
                 <!-- Tier Selection Card -->
                 <div class="bg-white rounded-[40px] shadow-premium border border-border-soft p-8 space-y-6">
                     <h4 class="text-xs font-black text-muted-text uppercase tracking-widest pl-2">Tier Selection</h4>
@@ -132,67 +184,13 @@
                         <i data-lucide="rocket" size="22" class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
                         Create User Account
                     </button>
-                    <button type="button" onclick="history.back();" class="w-full bg-gray-200 hover:bg-gray-300 text-foreground rounded-3xl py-6 font-black text-lg transition-all flex items-center justify-center gap-3">
+                    <a href="{{ url('/admin/registered-agents') }}" class="w-full bg-gray-200 hover:bg-gray-300 text-foreground rounded-3xl py-6 font-black text-lg transition-all flex items-center justify-center gap-3">
                         <i data-lucide="x" size="22"></i>
                         Cancel Onboarding
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
     </form>
-
-    <!-- Existing Agents List -->
-    <div class="mt-16 space-y-6">
-        <div class="flex items-center justify-between">
-            <h3 class="text-2xl font-black text-foreground">Registered Agents</h3>
-            <p class="text-sm text-muted-text font-medium">Viewing all active and inactive partners</p>
-        </div>
-
-        <div class="bg-white rounded-[32px] shadow-soft border border-border-soft overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-gray-50 border-b border-border-soft">
-                    <tr>
-                        <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Agent Name</th>
-                        <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Region & Tier</th>
-                        <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Status</th>
-                        <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-border-soft">
-                    @forelse($agents ?? [] as $agent)
-                        <tr class="hover:bg-gray-50/50 transition-colors">
-                            <td class="py-5 px-8">
-                                <p class="text-sm font-bold text-foreground">{{ $agent->name }}</p>
-                                <p class="text-[10px] text-muted-text font-medium">{{ $agent->email }} • {{ $agent->phone }}</p>
-                            </td>
-                            <td class="py-5 px-8">
-                                <p class="text-sm font-bold text-foreground">{{ $agent->region }}</p>
-                                <p class="text-[10px] text-primary font-black uppercase tracking-wider">{{ $agent->tier }}</p>
-                            </td>
-                            <td class="py-5 px-8">
-                                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ $agent->status === 'Active' ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500' }}">
-                                    {{ $agent->status }}
-                                </span>
-                            </td>
-                            <td class="py-5 px-8">
-                                <div class="flex items-center gap-3">
-                                    <a href="{{ url('/admin/agents/toggle/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-muted-text hover:text-primary transition-colors">
-                                        <i data-lucide="power" size="14"></i>
-                                    </a>
-                                    <a href="{{ url('/admin/agents/delete/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-400 hover:text-red-500 transition-colors" onclick="return confirm('Are you sure you want to remove this agent?');">
-                                        <i data-lucide="trash-2" size="14"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="py-10 text-center text-sm font-bold text-muted-text">No agents registered yet.</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
 </div>
 @endsection

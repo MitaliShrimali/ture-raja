@@ -83,6 +83,7 @@ class DatabaseSeeder extends Seeder
         DB::table('agents')->insert([
             [
                 'name' => 'Nomad Ventures',
+                'logo' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=150',
                 'email' => 'contact@nomad.com',
                 'phone' => '+1 (555) 019-2831',
                 'region' => 'Asia Pacific',
@@ -95,6 +96,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Azure Horizons',
+                'logo' => 'https://images.unsplash.com/photo-1542744094-2ab25be78b90?auto=format&fit=crop&q=80&w=150',
                 'email' => 'info@azure.com',
                 'phone' => '+44 (123) 456-7890',
                 'region' => 'Europe',
@@ -107,6 +109,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Globe Trotters',
+                'logo' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=150',
                 'email' => 'contact@globetrotters.com',
                 'phone' => '+1 (555) 012-3456',
                 'region' => 'North America',
@@ -119,6 +122,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Atlas Global Travels',
+                'logo' => 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&q=80&w=150',
                 'email' => 'contact@atlas.com',
                 'phone' => '+971 (4) 987-6543',
                 'region' => 'Middle East',

@@ -11,7 +11,15 @@
 </head>
 <body class="bg-background text-foreground font-body h-full overflow-x-hidden antialiased">
     <!-- Root Layout Wrapper -->
-    <div class="flex h-full overflow-hidden w-screen max-w-full relative" x-data="{ sidebarOpen: false }">
+    <div class="flex h-full overflow-hidden w-screen max-w-full relative" x-data="{ 
+        sidebarOpen: false, 
+        sidebarDropdowns: {},
+        showAddModal: false, 
+        showEditModal: false, 
+        addPreviewUrl: '', 
+        editPreviewUrl: '', 
+        editPkg: { id: '', title: '', location: '', price: '', old_price: '', rating: '4.8', reviews: '10', duration: '', group_size: '4-6 guest', image: '', stock: '', status: '', category: '', badge: '', brochure: '', included: [], excluded: [] } 
+    }">
         
         <!-- Sidebar Backdrop (Mobile) -->
         <template x-if="sidebarOpen">
@@ -55,6 +63,7 @@
                                 ['name' => 'Admin User', 'icon' => 'user-round', 'href' => '/admin/users'],
                                 ['name' => 'Customers', 'icon' => 'user', 'href' => '/admin/customers'],
                                 ['name' => 'Agent Management', 'icon' => 'users', 'href' => '/admin/agents'],
+                                ['name' => 'Registered Agents', 'icon' => 'users-round', 'href' => '/admin/registered-agents'],
                                 ['name' => 'Lead Management', 'icon' => 'target', 'href' => '/admin/leads'],
                             ]
                         ],
@@ -63,7 +72,15 @@
                             'items' => [
                                 ['name' => 'Hotel Management', 'icon' => 'building-2', 'href' => '/admin/hotels'],
                                 ['name' => 'Amenities', 'icon' => 'clipboard-list', 'href' => '/admin/amenities'],
-                                ['name' => 'Tour Packages', 'icon' => 'package', 'href' => '/admin/packages'],
+                                [
+                                    'name' => 'Tour Packages', 
+                                    'icon' => 'package', 
+                                    'href' => '/admin/packages',
+                                    'children' => [
+                                        ['name' => 'All Packages', 'href' => '/admin/packages'],
+                                        ['name' => 'Add New Package', 'href' => '/admin/packages/create'],
+                                    ]
+                                ],
                                 ['name' => 'Holiday Types', 'icon' => 'layout', 'href' => '/admin/holiday-types'],
                                 ['name' => 'Activities', 'icon' => 'target', 'href' => '/admin/activities'],
                             ]
@@ -99,16 +116,52 @@
                         </p>
                         <div class="space-y-1">
                             @foreach($group['items'] as $item)
-                                @php
-                                    $isActive = request()->is(ltrim($item['href'], '/')) || request()->is(ltrim($item['href'], '/') . '/*');
-                                @endphp
-                                <a 
-                                    href="{{ url($item['href']) }}" 
-                                    class="group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ $isActive ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-muted hover:bg-gray-50 hover:text-foreground' }}"
-                                >
-                                    <i data-lucide="{{ $item['icon'] }}" size="20"></i>
-                                    <span class="text-sm font-black tracking-tight">{{ $item['name'] }}</span>
-                                </a>
+                                @if(isset($item['children']))
+                                    @php
+                                        $hasActiveChild = false;
+                                        foreach($item['children'] as $child) {
+                                            if (request()->is(ltrim($child['href'], '/'))) {
+                                                $hasActiveChild = true;
+                                            }
+                                        }
+                                    @endphp
+                                    <div x-data="{ open: {{ $hasActiveChild ? 'true' : 'false' }} }" class="space-y-1">
+                                        <button 
+                                            @click="open = !open" 
+                                            class="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 {{ $hasActiveChild ? 'bg-primary/5 text-primary' : 'text-text-muted hover:bg-gray-50 hover:text-foreground' }}"
+                                        >
+                                            <div class="flex items-center gap-4">
+                                                <i data-lucide="{{ $item['icon'] }}" size="20"></i>
+                                                <span class="text-sm font-black tracking-tight">{{ $item['name'] }}</span>
+                                            </div>
+                                            <i data-lucide="chevron-down" size="16" class="transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
+                                        </button>
+                                        <div x-show="open" x-collapse class="pl-12 space-y-1 pt-1" style="display: none;">
+                                            @foreach($item['children'] as $child)
+                                                @php
+                                                    $isChildActive = request()->is(ltrim($child['href'], '/'));
+                                                @endphp
+                                                <a 
+                                                    href="{{ url($child['href']) }}" 
+                                                    class="block py-2.5 px-4 rounded-xl text-xs font-bold transition-all {{ $isChildActive ? 'text-primary bg-primary/5 font-black border-l-2 border-primary pl-3' : 'text-text-muted hover:text-foreground hover:bg-gray-50/50' }}"
+                                                >
+                                                    {{ $child['name'] }}
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @else
+                                    @php
+                                        $isActive = request()->is(ltrim($item['href'], '/')) || request()->is(ltrim($item['href'], '/') . '/*');
+                                    @endphp
+                                    <a 
+                                        href="{{ url($item['href']) }}" 
+                                        class="group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ $isActive ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-muted hover:bg-gray-50 hover:text-foreground' }}"
+                                    >
+                                        <i data-lucide="{{ $item['icon'] }}" size="20"></i>
+                                        <span class="text-sm font-black tracking-tight">{{ $item['name'] }}</span>
+                                    </a>
+                                @endif
                             @endforeach
                         </div>
                     </div>
@@ -220,6 +273,7 @@
                 </div>
             </div>
         </main>
+    @stack('modals')
     </div>
 
     <script>
@@ -250,6 +304,48 @@
             }
         });
     </script>
+    <!-- Floating Toast Notifications -->
+    <div 
+        x-data="{ 
+            show: false, 
+            message: '', 
+            type: 'success',
+            init() {
+                @if(session('success'))
+                    this.flash('{{ session('success') }}', 'success');
+                @endif
+                @if(session('error'))
+                    this.flash('{{ session('error') }}', 'error');
+                @endif
+                @if($errors->any())
+                    this.flash('{{ $errors->first() }}', 'error');
+                @endif
+            },
+            flash(msg, type = 'success') {
+                this.message = msg;
+                this.type = type;
+                this.show = true;
+                setTimeout(() => this.show = false, 5000);
+            }
+        }"
+        x-show="show"
+        x-transition
+        class="fixed bottom-6 right-6 z-[999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-premium border border-white/10 max-w-md"
+        :class="type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'"
+        style="display: none;"
+    >
+        <template x-if="type === 'success'">
+            <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
+        </template>
+        <template x-if="type === 'error'">
+            <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+        </template>
+        <div class="text-xs font-black tracking-tight" x-text="message"></div>
+        <button @click="show = false" class="ml-auto text-white/80 hover:text-white">
+            <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+    </div>
+
     <style>
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -258,3 +354,4 @@
     </style>
 </body>
 </html>
+

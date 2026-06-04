@@ -88,40 +88,248 @@ class AdminController extends Controller
         return view('admin.packages', compact('packages', 'search'));
     }
 
+    public function createPackage()
+    {
+        $agents = DB::table('agents')->orderBy('name', 'asc')->get();
+        return view('admin.packages-create', compact('agents'));
+    }
+
     public function storePackage(Request $request)
     {
         $request->validate(['title' => 'required', 'price' => 'required|numeric']);
+
+        // Main Image Upload
+        $imageUrl = $request->image;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            if (!$file->isValid()) {
+                return redirect()->back()->withErrors(['image_file' => 'The uploaded main image file is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+            }
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/packages'), $fileName);
+            $imageUrl = '/uploads/packages/' . $fileName;
+        }
+
+        // Gallery Images Upload
+        $galleryUrls = [];
+        if ($request->hasFile('gallery_files')) {
+            foreach ($request->file('gallery_files') as $file) {
+                if (!$file->isValid()) {
+                    return redirect()->back()->withErrors(['gallery_files' => 'One of the uploaded gallery files is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+                }
+                $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/packages/gallery'), $fileName);
+                $galleryUrls[] = '/uploads/packages/gallery/' . $fileName;
+            }
+        }
+
+        // Brochure Upload
+        $brochureUrl = null;
+        if ($request->hasFile('brochure_file')) {
+            $file = $request->file('brochure_file');
+            if (!$file->isValid()) {
+                return redirect()->back()->withErrors(['brochure_file' => 'The uploaded brochure PDF file is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+            }
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/packages/brochures'), $fileName);
+            $brochureUrl = '/uploads/packages/brochures/' . $fileName;
+        }
+
+        // Inclusions & Exclusions parsing
+        $included = [];
+        if ($request->has('included')) {
+            if (is_array($request->included)) {
+                $included = array_values(array_filter(array_map('trim', $request->included)));
+            } else {
+                $included = array_values(array_filter(array_map('trim', explode("\n", $request->included))));
+            }
+        }
+        $excluded = [];
+        if ($request->has('excluded')) {
+            if (is_array($request->excluded)) {
+                $excluded = array_values(array_filter(array_map('trim', $request->excluded)));
+            } else {
+                $excluded = array_values(array_filter(array_map('trim', explode("\n", $request->excluded))));
+            }
+        }
+
+        // Itinerary Days parsing
+        $itinerary = [];
+        if ($request->has('itinerary_titles')) {
+            foreach ($request->itinerary_titles as $i => $dayTitle) {
+                $dayDesc = $request->itinerary_descriptions[$i] ?? '';
+                if (!empty($dayTitle)) {
+                    $itinerary[] = [
+                        'title' => $dayTitle,
+                        'desc' => $dayDesc
+                    ];
+                }
+            }
+        }
         
+        $agentName = $request->agent ?? 'Miths Holidays';
+        $agentDb = DB::table('agents')->where('name', $agentName)->first();
+        if ($agentDb) {
+            $agentJson = json_encode([
+                'logo' => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->name),
+                'name' => $agentDb->name,
+                'phone' => $agentDb->phone ?? '',
+                'whatsapp' => $agentDb->phone ?? ''
+            ]);
+        } else {
+            $agentJson = json_encode([
+                'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName),
+                'name' => $agentName,
+                'phone' => '',
+                'whatsapp' => ''
+            ]);
+        }
+
         DB::table('packages')->insert([
             'title' => $request->title,
             'location' => $request->location ?? 'Global',
             'price' => $request->price,
+            'old_price' => $request->old_price,
             'rating' => $request->rating ?? 4.8,
             'reviews' => $request->reviews ?? 10,
             'duration' => $request->duration ?? '3 Days',
-            'image' => $request->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
+            'group_size' => $request->group_size ?? '4-6 guest',
+            'image' => $imageUrl ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
             'category' => $request->category ?? 'Tropical',
             'badge' => $request->badge,
             'status' => $request->status ?? 'Active',
             'stock' => ($request->stock ?? '10') . ' Left',
+            'agent' => $agentJson,
+            'gallery' => json_encode($galleryUrls),
+            'brochure' => $brochureUrl,
+            'included' => json_encode($included),
+            'excluded' => json_encode($excluded),
+            'itinerary' => json_encode($itinerary),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Package created successfully!');
+        return redirect('/admin/packages')->with('success', 'Package created successfully!');
     }
 
     public function updatePackage(Request $request)
     {
         $request->validate(['id' => 'required', 'title' => 'required', 'price' => 'required|numeric']);
+
+        // Main Image Upload
+        $imageUrl = $request->image;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            if (!$file->isValid()) {
+                return redirect()->back()->withErrors(['image_file' => 'The uploaded main image file is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+            }
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/packages'), $fileName);
+            $imageUrl = '/uploads/packages/' . $fileName;
+        }
+
+        // Get original package to keep old gallery/brochure/etc if no new ones uploaded
+        $oldPkg = DB::table('packages')->where('id', $request->id)->first();
+
+        // Gallery Images Upload
+        $galleryUrls = [];
+        if ($request->hasFile('gallery_files')) {
+            foreach ($request->file('gallery_files') as $file) {
+                if (!$file->isValid()) {
+                    return redirect()->back()->withErrors(['gallery_files' => 'One of the uploaded gallery files is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+                }
+                $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/packages/gallery'), $fileName);
+                $galleryUrls[] = '/uploads/packages/gallery/' . $fileName;
+            }
+        } else {
+            if ($oldPkg && $oldPkg->gallery) {
+                $galleryUrls = json_decode($oldPkg->gallery, true) ?: [];
+            }
+        }
+
+        // Brochure Upload
+        $brochureUrl = $oldPkg ? $oldPkg->brochure : null;
+        if ($request->hasFile('brochure_file')) {
+            $file = $request->file('brochure_file');
+            if (!$file->isValid()) {
+                return redirect()->back()->withErrors(['brochure_file' => 'The uploaded brochure PDF file is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+            }
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/packages/brochures'), $fileName);
+            $brochureUrl = '/uploads/packages/brochures/' . $fileName;
+        }
+
+        // Inclusions & Exclusions parsing
+        $included = [];
+        if ($request->has('included')) {
+            if (is_array($request->included)) {
+                $included = array_values(array_filter(array_map('trim', $request->included)));
+            } else {
+                $included = array_values(array_filter(array_map('trim', explode("\n", $request->included))));
+            }
+        }
+        $excluded = [];
+        if ($request->has('excluded')) {
+            if (is_array($request->excluded)) {
+                $excluded = array_values(array_filter(array_map('trim', $request->excluded)));
+            } else {
+                $excluded = array_values(array_filter(array_map('trim', explode("\n", $request->excluded))));
+            }
+        }
+
+        // Itinerary Days parsing
+        $itinerary = [];
+        if ($request->has('itinerary_titles')) {
+            foreach ($request->itinerary_titles as $i => $dayTitle) {
+                $dayDesc = $request->itinerary_descriptions[$i] ?? '';
+                if (!empty($dayTitle)) {
+                    $itinerary[] = [
+                        'title' => $dayTitle,
+                        'desc' => $dayDesc
+                    ];
+                }
+            }
+        }
         
+        $agentName = $request->agent ?? 'Miths Holidays';
+        $agentDb = DB::table('agents')->where('name', $agentName)->first();
+        if ($agentDb) {
+            $agentJson = json_encode([
+                'logo' => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->name),
+                'name' => $agentDb->name,
+                'phone' => $agentDb->phone ?? '',
+                'whatsapp' => $agentDb->phone ?? ''
+            ]);
+        } else {
+            $agentJson = json_encode([
+                'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName),
+                'name' => $agentName,
+                'phone' => '',
+                'whatsapp' => ''
+            ]);
+        }
+
         DB::table('packages')->where('id', $request->id)->update([
             'title' => $request->title,
             'location' => $request->location,
             'price' => $request->price,
+            'old_price' => $request->old_price,
+            'rating' => $request->rating ?? 4.8,
+            'reviews' => $request->reviews ?? 10,
             'duration' => $request->duration,
+            'group_size' => $request->group_size ?? '4-6 guest',
+            'image' => $imageUrl,
+            'category' => $request->category ?? 'Tropical',
+            'badge' => $request->badge,
             'status' => $request->status ?? 'Active',
             'stock' => $request->stock,
+            'agent' => $agentJson,
+            'gallery' => json_encode($galleryUrls),
+            'brochure' => $brochureUrl,
+            'included' => json_encode($included),
+            'excluded' => json_encode($excluded),
+            'itinerary' => json_encode($itinerary),
             'updated_at' => now(),
         ]);
 
@@ -473,12 +681,31 @@ class AdminController extends Controller
         return view('admin.agents', compact('agents'));
     }
 
+    public function registeredAgents(Request $request)
+    {
+        $agents = DB::table('agents')->orderBy('id', 'desc')->get();
+        return view('admin.registered-agents', compact('agents'));
+    }
+
     public function storeAgent(Request $request)
     {
-        $request->validate(['name' => 'required', 'email' => 'required|email']);
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'logo' => 'nullable|image|max:2048'
+        ]);
+
+        $logoUrl = null;
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/agents'), $fileName);
+            $logoUrl = '/uploads/agents/' . $fileName;
+        }
         
         DB::table('agents')->insert([
             'name' => $request->name,
+            'logo' => $logoUrl,
             'email' => $request->email,
             'phone' => $request->phone,
             'region' => $request->region ?? 'Asia Pacific',

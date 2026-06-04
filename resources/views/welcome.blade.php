@@ -247,7 +247,63 @@
             <!-- Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10" id="packages-grid" style="position: relative; z-index: 1;">
                 @php
-                    $packages = [
+                    $dbPkgs = isset($packages) && $packages instanceof \Illuminate\Support\Collection ? $packages : collect();
+                    $mappedDbPkgs = $dbPkgs->map(function($pkg) {
+                        if (is_object($pkg)) {
+                            $title = $pkg->title ?? '';
+                            $price = $pkg->price ?? 0;
+                            $oldPrice = $pkg->old_price ?? null;
+                            $rating = $pkg->rating ?? '4.8';
+                            $reviews = $pkg->reviews ?? '10';
+                            $duration = $pkg->duration ?? '3 Days';
+                            $groupSize = $pkg->group_size ?? '4-6 guest';
+                            $image = $pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800';
+                            $category = $pkg->category ?? 'Tropical';
+                            $badge = $pkg->badge ?? null;
+                            $slugVal = $pkg->slug ?? null;
+                            $idVal = $pkg->id ?? null;
+                        } else {
+                            $title = $pkg['title'] ?? '';
+                            $price = $pkg['price'] ?? 0;
+                            $oldPrice = $pkg['old_price'] ?? ($pkg['oldPrice'] ?? null);
+                            $rating = $pkg['rating'] ?? '4.8';
+                            $reviews = $pkg['reviews'] ?? '10';
+                            $duration = $pkg['duration'] ?? '3 Days';
+                            $groupSize = $pkg['group_size'] ?? ($pkg['groupSize'] ?? '4-6 guest');
+                            $image = $pkg['image'] ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800';
+                            $category = $pkg['category'] ?? 'Tropical';
+                            $badge = $pkg['badge'] ?? null;
+                            $slugVal = $pkg['slug'] ?? null;
+                            $idVal = $pkg['id'] ?? null;
+                        }
+
+                        $durationDays = 3;
+                        if ($duration) {
+                            preg_match('/\d+/', $duration, $matches);
+                            if (!empty($matches)) {
+                                $durationDays = (int) $matches[0];
+                            }
+                        }
+                        if (!$slugVal && $title) {
+                            $slugVal = \Illuminate\Support\Str::slug($title);
+                        }
+                        return [
+                            'slug' => $slugVal ?: 'package-' . ($idVal ?? rand(1000, 9999)),
+                            'title' => $title,
+                            'image' => $image,
+                            'duration' => $duration,
+                            'duration_days' => $durationDays,
+                            'groupSize' => $groupSize,
+                            'rating' => $rating,
+                            'reviews' => $reviews,
+                            'price' => $price,
+                            'oldPrice' => $oldPrice,
+                            'badge' => $badge,
+                            'category' => strtolower($category),
+                        ];
+                    })->toArray();
+
+                    $staticPkgs = [
                         ['slug'=>'monaco-luxury-tour','title'=>'Monaco Luxury Tour Package','image'=>'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600','duration'=>'2 days 3 nights','duration_days'=>2,'groupSize'=>'4-6 guest','rating'=>'4.96','reviews'=>'672','price'=>44825,'oldPrice'=>59825,'badge'=>'Top Rated','category'=>'international'],
                         ['slug'=>'vietnam-tour-package','title'=>'Vietnam Tour Package','image'=>'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=600','duration'=>'3 days 3 nights','duration_days'=>3,'groupSize'=>'2-3 guest','rating'=>'4.91','reviews'=>'670','price'=>17320,'oldPrice'=>25320,'badge'=>'Best Sale','category'=>'international'],
                         ['slug'=>'char-dham-yatra','title'=>'Char Dham Yatra Package','image'=>'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=600','duration'=>'7 days 6 nights','duration_days'=>7,'groupSize'=>'4-6 guest','rating'=>'4.86','reviews'=>'656','price'=>15463,'oldPrice'=>19000,'badge'=>'25% Off','category'=>'religious'],
@@ -258,6 +314,13 @@
                         ['slug'=>'dubai-desert-safari','title'=>'Dubai Desert Safari & Burj','image'=>'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600','duration'=>'4 days 3 nights','duration_days'=>4,'groupSize'=>'2-6 guest','rating'=>'4.8','reviews'=>'890','price'=>29999,'oldPrice'=>35000,'badge'=>'Trending','category'=>'international'],
                         ['slug'=>'bali-luxury-villa','title'=>'Bali Luxury Villa Escape','image'=>'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=600','duration'=>'5 days 4 nights','duration_days'=>5,'groupSize'=>'2 guest','rating'=>'4.9','reviews'=>'543','price'=>35000,'oldPrice'=>42000,'badge'=>'Honeymoon','category'=>'international'],
                     ];
+
+                    $dbSlugs = array_column($mappedDbPkgs, 'slug');
+                    $filteredStaticPkgs = array_filter($staticPkgs, function($static) use ($dbSlugs) {
+                        return !in_array($static['slug'], $dbSlugs);
+                    });
+
+                    $packages = array_merge($mappedDbPkgs, $filteredStaticPkgs);
                 @endphp
 
                 @foreach($packages as $pkg)

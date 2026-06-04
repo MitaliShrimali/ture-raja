@@ -9,167 +9,264 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .gradient-side {
+        body { font-family: 'Inter', sans-serif; margin: 0; }
+
+        .hero-bg {
             background-color: #e85d26;
             background-image: url("{{ asset('images/tourraja-bg.png') }}");
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
-            border-top-left-radius: 120px;
-            border-bottom-left-radius: 120px;
+            position: relative;
         }
-        @media (max-width: 1024px) { .gradient-side { display: none; } }
+
+        /* Floating pill navbar */
+        .navbar-pill {
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.85);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: #fff; }
+
+        .card-form {
+            border-radius: 24px;
+            box-shadow: 0 20px 60px -15px rgba(0,0,0,0.12);
+        }
+
+        .input-field {
+            width: 100%;
+            border: none;
+            border-bottom: 1.5px solid #e5e7eb;
+            padding: 14px 4px 10px 4px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: transparent;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .input-field::placeholder { color: #b0b0b0; font-weight: 400; }
+        .input-field:focus { border-color: #e85d26; }
+
+        .btn-signup {
+            background-color: #e85d26;
+            transition: background-color 0.2s, transform 0.15s;
+        }
+        .btn-signup:hover {
+            background-color: #d04d18;
+            transform: translateY(-1px);
+        }
+
+        /* Toggle switch */
+        .toggle-track {
+            width: 44px; height: 24px;
+            border-radius: 999px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.25s;
+        }
+        .toggle-track.on  { background: #e85d26; }
+        .toggle-track.off { background: #d1d5db; }
+        .toggle-knob {
+            width: 18px; height: 18px;
+            border-radius: 999px;
+            background: #fff;
+            position: absolute;
+            top: 3px;
+            transition: left 0.25s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .toggle-track.on  .toggle-knob { left: 23px; }
+        .toggle-track.off .toggle-knob { left: 3px;  }
+
+        /* Social buttons */
+        .social-btn {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            border: 1.5px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fff;
+        }
+        .social-btn:hover {
+            border-color: #e85d26;
+            box-shadow: 0 2px 12px rgba(232,93,38,0.12);
+        }
     </style>
 </head>
-<body class="bg-white min-h-screen overflow-x-hidden">
-    <div class="flex min-h-screen" x-data="{ showPassword: false }">
-        <!-- Form Side -->
-        <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 pt-32 pb-12">
-            <div class="max-w-md w-full mx-auto space-y-10">
-                @php
-                    $type = $type ?? 'customer';
-                    $title = 'Sign Up';
-                    if ($type === 'admin') $title = 'Admin Sign Up';
-                    elseif ($type === 'agent') $title = 'Agent Sign Up';
-                    elseif ($type === 'customer') $title = 'Customer Sign Up';
-                @endphp
-                <div class="space-y-4">
-                    <h2 class="font-black text-foreground tracking-tight text-3xl">{{ $title }}</h2>
-                    <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Create your TourRaja account.</p>
+<body class="bg-[#f0f0f0] min-h-screen flex flex-col">
+
+    @php
+        $type = $type ?? 'customer';
+    @endphp
+
+    <!-- ─── Orange Hero ─── -->
+    <div class="hero-bg">
+        <!-- Floating Navbar -->
+        <div class="max-w-5xl mx-auto px-6 pt-6 pb-4">
+            <div class="navbar-pill rounded-full px-6 py-3 flex items-center justify-between">
+                <x-logo white="true" class="h-8 w-auto" />
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="{{ url('/admin/dashboard') }}" class="nav-link flex items-center gap-1.5">
+                        <i data-lucide="layout-dashboard" size="14"></i> Dashboard
+                    </a>
+                    <a href="{{ url('/profile') }}" class="nav-link flex items-center gap-1.5">
+                        <i data-lucide="user" size="14"></i> Profile
+                    </a>
+                    <a href="{{ url('/signup') }}" class="nav-link flex items-center gap-1.5" style="color:#fff;">
+                        <i data-lucide="user-plus" size="14"></i> Sign Up
+                    </a>
+                    <a href="{{ url('/login') }}" class="nav-link flex items-center gap-1.5">
+                        <i data-lucide="log-in" size="14"></i> Sign In
+                    </a>
                 </div>
-                @if($errors->any())
-                    <div class="p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 font-bold text-xs flex flex-col gap-1">
-                        @foreach($errors->all() as $error)
-                            <span>- {{ $error }}</span>
-                        @endforeach
-                    </div>
-                @endif
-                <form action="{{ url('/signup/submit') }}" method="POST" class="space-y-6">
-                    @csrf
-                    <input type="hidden" name="type" value="{{ $type }}" />
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">First Name<span class="text-primary">*</span></label>
-                            <input type="text" name="first_name" value="{{ old('first_name') }}" required placeholder="John" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground shadow-sm" />
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Last Name<span class="text-primary">*</span></label>
-                            <input type="text" name="last_name" value="{{ old('last_name') }}" required placeholder="Doe" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground shadow-sm" />
-                        </div>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email<span class="text-primary">*</span></label>
-                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="mail@example.com" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm" />
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Password<span class="text-primary">*</span></label>
-                        <input type="password" name="password" required placeholder="Min. 8 characters" class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
-                    <div class="flex items-center gap-3 py-2">
-                        <input type="checkbox" class="w-5 h-5 rounded-lg border-border-soft text-primary focus:ring-primary/20 transition-all" required />
-                        <span class="text-xs font-bold text-muted-text">I agree to the <a href="{{ url('/terms-and-conditions') }}" target="_blank" class="text-primary hover:underline">Terms & Conditions</a></span>
-                    </div>
-                    <button type="submit" class="w-full bg-[#E8460A] hover:bg-primary-hover text-white rounded-2xl py-5 font-black text-sm uppercase tracking-widest shadow-xl transition-all transform hover:-translate-y-1">Create Account</button>
-                    <p class="text-xs font-bold text-muted-text text-center mt-6">Already have an account? <a href="{{ url('/login') }}" class="text-primary hover:underline">Sign In</a></p>
-                </form>
-                <div class="pt-8">
-                    <p class="text-[10px] font-medium text-muted-text leading-loose">© 2026 Tour Raja Private Limited, India. All rights reserved.</p>
-                </div>
+                <a href="{{ url('/contact') }}" class="hidden md:inline-flex items-center gap-2 bg-[#e85d26] hover:bg-[#d04d18] text-white text-[11px] font-bold uppercase tracking-wider px-5 py-2.5 rounded-full transition-all shadow-lg shadow-black/10">
+                    Contact Admin
+                </a>
+                <!-- Mobile menu toggle -->
+                <button class="md:hidden text-white" @click="$refs.mobileNav.classList.toggle('hidden')">
+                    <i data-lucide="menu" size="22"></i>
+                </button>
+            </div>
+            <!-- Mobile nav dropdown -->
+            <div x-ref="mobileNav" class="hidden md:hidden navbar-pill rounded-2xl mt-2 p-4 space-y-2">
+                <a href="{{ url('/admin/dashboard') }}" class="nav-link block py-2">Dashboard</a>
+                <a href="{{ url('/profile') }}" class="nav-link block py-2">Profile</a>
+                <a href="{{ url('/signup') }}" class="nav-link block py-2" style="color:#fff;">Sign Up</a>
+                <a href="{{ url('/login') }}" class="nav-link block py-2">Sign In</a>
+                <a href="{{ url('/contact') }}" class="nav-link block py-2">Contact Admin</a>
             </div>
         </div>
-        <!-- Gradient Side -->
-        <div class="hidden lg:flex lg:w-[55%] gradient-side items-center justify-center relative">
-            <div class="text-center space-y-4 w-full px-12">
-                <div class="flex items-center justify-center mb-6">
-                    <x-logo white="true" class="h-20 sm:h-28 w-auto" />
-                </div>
-                <h3 class="text-3xl font-bold text-white tracking-tight">Join Us!</h3>
-                <p class="text-white/80 max-w-md mx-auto">Start your adventures with TourRaja today.</p>
-            </div>
+
+        <!-- Welcome text -->
+        <div class="text-center pt-10 px-6" style="padding-bottom: 240px;">
+            <h1 class="font-black tracking-tight mb-2" style="color: #ffffff; font-size: 28px;">Welcome!</h1>
+            <p class="text-sm max-w-md mx-auto leading-relaxed" style="color: rgba(255,255,255,0.9); font-weight: 500;">
+                Join with TourRaja,<br>We have wide range of travel category!
+            </p>
         </div>
     </div>
-    <script>
-        // Reload page on bfcache restore to refresh CSRF token
-        window.onpageshow = function(event) { if (event.persisted) { window.location.reload(); } };
-    </script>
-    <script>lucide.createIcons();</script>
-</body>
-</html>
-                            class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-3.5 px-5 text-sm font-medium text-gray-800 placeholder:text-gray-300 outline-none focus:border-[#e85d26]/60 focus:bg-white transition-all shadow-sm" />
+
+    <!-- ─── Floating Card ─── -->
+    <div class="flex-1 flex flex-col items-center justify-start px-4" style="margin-top: -180px; position: relative; z-index: 10;">
+        <div class="card-form bg-white w-full max-w-md p-8 md:p-10" x-data="{ remember: true }">
+
+            <h2 class="text-center text-2xl font-extrabold tracking-tight mb-6" style="color:#e85d26;">Sign Up</h2>
+
+            <!-- Social Buttons -->
+            <div class="flex items-center justify-center gap-5 mb-5">
+                <button type="button" class="social-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12z"/></svg>
+                </button>
+                <button type="button" class="social-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#000"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.32 2.32-2.13 4.47-3.74 4.25z"/></svg>
+                </button>
+                <button type="button" class="social-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                </button>
+            </div>
+
+            <p class="text-center text-xs text-gray-400 mb-6">or</p>
+
+            <!-- Flash Messages -->
+            @if($errors->any())
+                <div class="mb-5 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-semibold flex flex-col gap-1">
+                    @foreach($errors->all() as $error)
+                        <span>— {{ $error }}</span>
+                    @endforeach
+                </div>
+            @endif
+
+            <!-- Form -->
+            <form action="{{ url('/signup/submit') }}" method="POST" class="space-y-5">
+                @csrf
+                <input type="hidden" name="type" value="{{ $type }}" />
+
+                <!-- Name -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Name</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input type="text" name="first_name" value="{{ old('first_name') }}" required
+                            placeholder="Your first name"
+                            class="input-field" />
+                        <input type="text" name="last_name" value="{{ old('last_name') }}" required
+                            placeholder="Your last name"
+                            class="input-field" />
                     </div>
+                </div>
 
-                    <!-- Password -->
-                    <div>
-                        <label class="block text-xs font-bold text-gray-600 mb-1.5 pl-1">
-                            Password <span style="color:#e85d26;">*</span>
-                        </label>
-                        <input type="password" name="password" required placeholder="Min. 8 characters"
-                            class="w-full bg-gray-50 border border-gray-200 rounded-2xl py-3.5 px-5 text-sm font-medium text-gray-800 placeholder:text-gray-300 outline-none focus:border-[#e85d26]/60 focus:bg-white transition-all shadow-sm" />
+                <!-- Email -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Email*</label>
+                    <input type="email" name="email" value="{{ old('email') }}" required
+                        placeholder="Your email"
+                        class="input-field" />
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Password*</label>
+                    <input type="password" name="password" required
+                        placeholder="Your password"
+                        class="input-field" />
+                </div>
+
+                <!-- Remember me toggle -->
+                <div class="flex items-center gap-3 pt-2">
+                    <div
+                        @click="remember = !remember"
+                        :class="remember ? 'on' : 'off'"
+                        class="toggle-track">
+                        <div class="toggle-knob"></div>
                     </div>
+                    <span class="text-xs font-semibold text-gray-600">Remember me</span>
+                </div>
 
-                    <!-- Terms -->
-                    <div class="flex items-start gap-3 pt-1">
-                        <input type="checkbox" required class="w-4 h-4 mt-0.5 rounded border-gray-300 shrink-0" />
-                        <span class="text-xs text-gray-500 leading-relaxed">
-                            I agree to the
-                            <a href="{{ url('/terms-and-conditions') }}" target="_blank"
-                               class="font-semibold hover:underline" style="color:#e85d26;">Terms &amp; Conditions</a>
-                            and
-                            <a href="{{ url('/privacy-policy') }}" target="_blank"
-                               class="font-semibold hover:underline" style="color:#e85d26;">Privacy Policy</a>
-                        </span>
-                    </div>
+                <!-- Submit -->
+                <button type="submit"
+                    class="btn-signup w-full text-white rounded-xl py-3.5 font-bold text-sm uppercase tracking-widest shadow-lg mt-1">
+                    Sign Up
+                </button>
 
-                    <!-- Submit -->
-                    <button type="submit" class="btn-signup w-full text-white rounded-2xl py-3.5 font-bold text-sm shadow-lg mt-2">
-                        Create Account
-                    </button>
-
-                    <!-- Sign-in link -->
-                    <p class="text-xs text-gray-400 text-center pt-1">
-                        Already have an account?
-                        <a href="{{ url('/login') }}" class="font-semibold hover:underline" style="color:#e85d26;">Sign In</a>
-                    </p>
-                </form>
-
-                <script>
-                    window.onpageshow = function(e) { if (e.persisted) window.location.reload(); };
-                </script>
-
-                <!-- Copyright -->
-                <p class="text-[10px] text-gray-300 mt-12 leading-relaxed">
-                    © 2026 Tour Raja Private Limited, India. All rights reserved.
+                <!-- Sign-in link -->
+                <p class="text-xs text-gray-500 text-center pt-2">
+                    Already have an account?
+                    <a href="{{ url('/login') }}" class="font-bold hover:underline" style="color:#e85d26;">Sign in</a>
                 </p>
-            </div>
-        </div>
-
-        <!-- ── Orange / Image Side ── -->
-        <div class="hidden lg:flex lg:w-[55%] gradient-side flex-col items-center justify-center relative">
-
-            <div class="flex items-center justify-center">
-                <x-logo white="true" class="h-28 w-auto" />
-            </div>
-
-            <div class="mt-8 text-center px-12">
-                <h2 class="text-2xl font-bold text-white tracking-tight mb-2">Join TourRaja!</h2>
-                <p class="text-white/70 text-sm max-w-xs mx-auto leading-relaxed">Start your adventures today and explore the world's most amazing destinations.</p>
-            </div>
-
-            <!-- Footer links -->
-            <div class="absolute bottom-10 w-full flex flex-wrap items-center justify-center gap-x-8 gap-y-4 px-8">
-                <a href="{{ url('/about') }}"
-                   class="text-[10px] font-semibold text-white/60 hover:text-white uppercase tracking-widest transition-colors">About Us</a>
-                <a href="{{ url('/terms-and-conditions') }}"
-                   class="text-[10px] font-semibold text-white/60 hover:text-white uppercase tracking-widest transition-colors">Terms of Service</a>
-                <a href="{{ url('/privacy-policy') }}"
-                   class="text-[10px] font-semibold text-white/60 hover:text-white uppercase tracking-widest transition-colors">Privacy Policy</a>
-                <a href="{{ url('/contact') }}"
-                   class="text-[10px] font-semibold text-white/60 hover:text-white uppercase tracking-widest transition-colors">Contact</a>
-            </div>
+            </form>
         </div>
     </div>
 
-    <script>lucide.createIcons();</script>
+    <!-- ─── Footer ─── -->
+    <footer class="mt-auto py-8 px-6">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-[11px] text-gray-400 font-medium">
+                Copyright © 2026 Tour Raja Private Limited, India. All rights reserved.
+            </p>
+            <div class="flex items-center gap-6">
+                <a href="{{ url('/about') }}" class="text-[11px] font-semibold text-gray-400 hover:text-gray-600 transition-colors">About Us</a>
+                <a href="{{ url('/terms-and-conditions') }}" class="text-[11px] font-semibold text-gray-400 hover:text-gray-600 transition-colors">License</a>
+                <a href="{{ url('/terms-and-conditions') }}" class="text-[11px] font-semibold text-gray-400 hover:text-gray-600 transition-colors">Terms of Services</a>
+                <a href="{{ url('/privacy-policy') }}" class="text-[11px] font-semibold text-gray-400 hover:text-gray-600 transition-colors">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.onpageshow = function(e) { if (e.persisted) window.location.reload(); };
+        lucide.createIcons();
+    </script>
 </body>
 </html>
