@@ -22,18 +22,27 @@
             {{-- 6 small cards --}}
             <div class="flex flex-nowrap gap-5 pt-2 pb-4">
                 @php
-                    $intl = [
-                        ['title' => 'Bangkok',   'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Dubai',     'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Las Vegas', 'image' => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Rome',      'image' => 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Bali',      'image' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Andaman',   'image' => 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&q=80&w=400'],
-                    ];
+                    if(isset($homeInternational) && $homeInternational->count() > 0) {
+                        $intl = $homeInternational->map(function($pkg) {
+                            return [
+                                'title' => $pkg->title,
+                                'image' => $pkg->image,
+                            ];
+                        })->toArray();
+                    } else {
+                        $intl = [
+                            ['title' => 'Bangkok',   'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Dubai',     'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Las Vegas', 'image' => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Rome',      'image' => 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Bali',      'image' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Andaman',   'image' => 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&q=80&w=400'],
+                        ];
+                    }
                 @endphp
                 @foreach($intl as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-lg overflow-hidden block group flex-1 min-w-0" style="height:115px;">
+                   class="relative rounded-lg overflow-hidden block group flex-1 min-w-0 shrink-0 min-w-[150px]" style="height:115px;">
                     <img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
@@ -61,18 +70,27 @@
             {{-- 6 small cards --}}
             <div class="flex flex-nowrap gap-5 pt-2 pb-4">
                 @php
-                    $dom = [
-                        ['title' => 'Goa',     'image' => 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Kerala',  'image' => 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Jaipur',  'image' => 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Kutch',   'image' => 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Mumbai',  'image' => 'https://images.unsplash.com/photo-1566552881560-0be862a7c445?auto=format&fit=crop&q=80&w=400'],
-                        ['title' => 'Srinagar','image' => 'https://images.unsplash.com/photo-1562979314-bee7453e911c?auto=format&fit=crop&q=80&w=400'],
-                    ];
+                    if(isset($homeDomestic) && $homeDomestic->count() > 0) {
+                        $dom = $homeDomestic->map(function($pkg) {
+                            return [
+                                'title' => $pkg->title,
+                                'image' => $pkg->image,
+                            ];
+                        })->toArray();
+                    } else {
+                        $dom = [
+                            ['title' => 'Goa',     'image' => 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Kerala',  'image' => 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Jaipur',  'image' => 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Kutch',   'image' => 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Mumbai',  'image' => 'https://images.unsplash.com/photo-1566552881560-0be862a7c445?auto=format&fit=crop&q=80&w=400'],
+                            ['title' => 'Srinagar','image' => 'https://images.unsplash.com/photo-1562979314-bee7453e911c?auto=format&fit=crop&q=80&w=400'],
+                        ];
+                    }
                 @endphp
                 @foreach($dom as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-lg overflow-hidden block group flex-1 min-w-0" style="height:115px;">
+                   class="relative rounded-lg overflow-hidden block group flex-1 min-w-0 shrink-0 min-w-[150px]" style="height:115px;">
                     <img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
@@ -82,6 +100,60 @@
             </div>
         </div>
     </section>
+
+    @if(isset($domesticAds) && $domesticAds->count() > 0)
+    <!-- Section: Ads under Domestic Packages -->
+    <section class="py-10 bg-gray-50/40 border-t border-b border-gray-100">
+        <div class="container-custom">
+            <!-- Scrollable Ads Row -->
+            <div class="flex flex-nowrap gap-6 overflow-x-auto hide-scrollbar pb-2">
+                @foreach($domesticAds as $ad)
+                <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 32px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.04); padding: 20px; display: flex; gap: 16px; width: 420px; flex-shrink: 0; position: relative; box-sizing: border-box; transition: shadow 0.3s;" class="group hover:shadow-md">
+                    <!-- Left: Ad Image -->
+                    <div style="width: 120px; height: 120px; border-radius: 24px; overflow: hidden; flex-shrink: 0; position: relative;">
+                        <img src="{{ $ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300' }}" 
+                             alt="{{ $ad->campaign_name }}" 
+                             style="width: 100%; height: 100%; object-fit: cover;">
+                        <!-- AD Label -->
+                        <span style="position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: #ffffff; font-weight: 800; text-transform: uppercase; font-size: 9px; letter-spacing: 1px; padding: 2px 6px; border-radius: 6px; z-index: 10; font-family: sans-serif;">AD</span>
+                    </div>
+
+                    <!-- Right: Ad Details -->
+                    <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; min-w: 0;">
+                        <div>
+                            @if($ad->subtitle)
+                                <p style="font-size: 10px; font-weight: 900; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ $ad->subtitle }}</p>
+                            @else
+                                <p style="font-size: 10px; font-weight: 900; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0;">Stop Searching, Start Traveling</p>
+                            @endif
+                            <h4 style="font-weight: 800; color: #1a1a1a; font-size: 14px; line-height: 1.4; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-right: 8px;">
+                                {{ $ad->campaign_name }}
+                            </h4>
+                            <p style="font-size: 11px; font-weight: 500; color: #9ca3af; margin: 4px 0 0 0;">Get Your Best Deal Now!!!</p>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px;">
+                            <a href="{{ route('ad.click', $ad->id) }}" target="_blank"
+                               style="background-color: #4c75d4; color: #ffffff; padding: 10px 20px; border-radius: 12px; font-size: 12px; font-weight: 700; text-decoration: none; display: inline-block; transition: background-color 0.2s;"
+                               onmouseover="this.style.backgroundColor='#3b62c2'"
+                               onmouseout="this.style.backgroundColor='#4c75d4'">
+                                Check Now
+                            </a>
+                            @if($ad->agent_logo)
+                                <img src="{{ $ad->agent_logo }}" 
+                                     alt="{{ $ad->agent_name ?? 'Agent' }}" 
+                                     style="height: 40px; max-width: 100px; object-fit: contain; opacity: 0.9; transition: opacity 0.2s;"
+                                     onmouseover="this.style.opacity='1'"
+                                     onmouseout="this.style.opacity='0.9'">
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
 
     <!-- Section 3: Why Travel With TourRaja -->
     <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
@@ -381,81 +453,112 @@
                 <!-- Cards Track -->
                 <div id="promo-slider" class="flex-1 overflow-x-auto hide-scrollbar z-10 relative scroll-smooth snap-x snap-mandatory">
                     <div class="flex gap-4 md:gap-6 min-w-max items-center justify-start">
-                        
-                        <!-- Card 1 -->
-                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
-                            <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img1offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Travel">
-                            <!-- <div class="absolute inset-0" style="background-color: rgba(32, 114, 245, 0.85);"></div> -->
-                            <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                <div class="text-right">
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-white mb-2 ml-auto transform -rotate-45" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                                    <h3 class="text-white text-[10px] font-bold leading-tight">We Make Every<br>Trips Special</h3>
-                                </div>
-                                <div class="mt-auto text-right">
-                                    <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
-                                </div>
-                            </div>
-                        </a>
 
-                        <!-- Card 2 -->
-                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0" style="background-color: #FCE08F;">
-                            <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img2offer.png" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Attractions">
-                            <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                <div class="max-w-[150px] mt-2">
-                                    <span class="text-[11px] font-bold text-gray-800 mb-1 block">Limited Offers</span>
-                                    <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Buy 1, Get 1 Free<br>Attractions</h3>
-                                </div>
-                                <div class="mt-auto">
-                                    <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
-                                </div>
-                            </div>
-                        </a>
+                        @if(isset($offerStickers) && $offerStickers->count() > 0)
+                            {{-- Dynamic stickers from admin --}}
+                            @foreach($offerStickers as $sticker)
+                                <a href="{{ url($sticker->link ?? '/discover') }}"
+                                   class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0"
+                                   style="{{ !empty($sticker->bg_color) ? 'background-color: ' . $sticker->bg_color . ';' : '' }}">
 
-                        <!-- Card 3 -->
-                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
-                            <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/images3offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Mountain Lake">
-                            <div class="absolute inset-0 bg-black/20"></div>
-                            <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                <div class="flex flex-col items-start space-y-[3px]">
-                                    <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Limited Offers</span>
-                                    <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Buy 1, Get 1 Free</span>
-                                    <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Attractions</span>
-                                </div>
-                                <div class="mt-auto">
-                                    <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #e7602e;">View More &rarr;</span>
-                                </div>
-                            </div>
-                        </a>
-                        
-                        <!-- Card 4 -->
-                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
-                            <img src="https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Beach Vacations">
-                            <div class="absolute inset-0 bg-black/30"></div>
-                            <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                <div class="flex flex-col items-start space-y-[3px]">
-                                    <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Special Discount</span>
-                                    <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">20% Off Family</span>
-                                    <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Vacations</span>
-                                </div>
-                                <div class="mt-auto">
-                                    <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #3b82f6;">View More &rarr;</span>
-                                </div>
-                            </div>
-                        </a>
+                                    {{-- Image fills the fixed container, cover-cropped --}}
+                                    @if($sticker->image)
+                                        <img src="{{ $sticker->image }}"
+                                             class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105"
+                                             style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);"
+                                             alt="{{ $sticker->title }}">
+                                    @endif
 
-                        <!-- Card 5 -->
-                        <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0" style="background-color: #FFC0CB;">
-                            <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Honeymoon">
-                            <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                <div class="max-w-[150px] mt-2">
-                                    <span class="text-[11px] font-bold text-gray-800 mb-1 block">Couples Only</span>
-                                    <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Romantic<br>Getaways</h3>
+                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                        <div class="max-w-[150px] mt-2">
+                                            @if($sticker->subtitle)
+                                                <span class="text-[11px] font-bold text-gray-800 mb-1 block">{{ $sticker->subtitle }}</span>
+                                            @endif
+                                            <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">{{ $sticker->title }}</h3>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
+                                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @else
+                            {{-- Static fallback cards (shown when no stickers added from admin yet) --}}
+
+                            <!-- Card 1 -->
+                            <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
+                                <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img1offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Travel">
+                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                    <div class="text-right">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-white mb-2 ml-auto transform -rotate-45" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                                        <h3 class="text-white text-[10px] font-bold leading-tight">We Make Every<br>Trips Special</h3>
+                                    </div>
+                                    <div class="mt-auto text-right">
+                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
+                                    </div>
                                 </div>
-                                <div class="mt-auto">
-                                    <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #db2777;">View More &rarr;</span>
+                            </a>
+
+                            <!-- Card 2 -->
+                            <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0" style="background-color: #FCE08F;">
+                                <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img2offer.png" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Attractions">
+                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                    <div class="max-w-[150px] mt-2">
+                                        <span class="text-[11px] font-bold text-gray-800 mb-1 block">Limited Offers</span>
+                                        <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Buy 1, Get 1 Free<br>Attractions</h3>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+
+                            <!-- Card 3 -->
+                            <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
+                                <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/images3offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Mountain Lake">
+                                <div class="absolute inset-0 bg-black/20"></div>
+                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                    <div class="flex flex-col items-start space-y-[3px]">
+                                        <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Limited Offers</span>
+                                        <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Buy 1, Get 1 Free</span>
+                                        <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Attractions</span>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #e7602e;">View More &rarr;</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Card 4 -->
+                            <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0">
+                                <img src="https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Beach Vacations">
+                                <div class="absolute inset-0 bg-black/30"></div>
+                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                    <div class="flex flex-col items-start space-y-[3px]">
+                                        <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Special Discount</span>
+                                        <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">20% Off Family</span>
+                                        <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Vacations</span>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #3b82f6;">View More &rarr;</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- Card 5 -->
+                            <a href="{{ url('/discover') }}" class="w-72 md:w-80 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0" style="background-color: #FFC0CB;">
+                                <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Honeymoon">
+                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                    <div class="max-w-[150px] mt-2">
+                                        <span class="text-[11px] font-bold text-gray-800 mb-1 block">Couples Only</span>
+                                        <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Romantic<br>Getaways</h3>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #db2777;">View More &rarr;</span>
+                                    </div>
+                                </div>
+                            </a>
+                        @endif
 
                     </div>
                 </div>
@@ -742,6 +845,22 @@
             </div>
         </div>
     </section>
+
+    @if(isset($footerAds) && $footerAds->count() > 0)
+    <!-- Section: Ads under Newsletter -->
+    <section class="pb-12 lg:pb-20 bg-white">
+        <div class="container-custom space-y-6">
+            @foreach($footerAds as $ad)
+                <div class="w-full flex justify-center">
+                    <a href="{{ route('ad.click', $ad->id) }}" target="_blank" class="block w-full h-[80px] md:h-[100px] lg:h-[120px] bg-gray-100 rounded-[20px] shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex items-center justify-center relative">
+                        <img src="{{ $ad->image }}" alt="{{ $ad->campaign_name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 left-3 bg-black/60 text-white font-extrabold uppercase text-[9px] tracking-widest px-2 py-0.5 rounded-md backdrop-blur-xs">AD</span>
+                    </a>
+                </div>
+            @endforeach
+        </div>
+    </section>
+    @endif
 
     {{-- Welcome Popup Modal --}}
     <div id="welcome-popup" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-500">

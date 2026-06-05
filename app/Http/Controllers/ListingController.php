@@ -254,11 +254,32 @@ class ListingController extends Controller
         elseif ($sort === 'Price: High to Low') $packages = $packages->sortByDesc(fn($p) => ((array)$p)['price'] ?? 0);
         elseif ($sort === 'Top Rated')       $packages = $packages->sortByDesc(fn($p) => ((array)$p)['rating'] ?? 0);
 
-        if ($agent) {
-            return view('agent-showcase', ['packages' => $packages->values(), 'agent' => $agent]);
+        // Fetch active ads for Package Sidebar
+        try {
+            $sidebarAds = \DB::table('ads')
+                ->leftJoin('agents', 'ads.agent_id', '=', 'agents.id')
+                ->select('ads.*', 'agents.logo as agent_logo', 'agents.name as agent_name')
+                ->where('ads.status', 'Active')
+                ->whereIn('ads.position', ['Package Sidebar', 'Package Details Sidebar'])
+                ->orderBy('ads.id', 'desc')
+                ->get();
+        } catch (\Exception $e) {
+            $sidebarAds = collect();
         }
 
-        return view('listing', ['packages' => $packages->values(), 'agent' => $agent]);
+        if ($agent) {
+            return view('agent-showcase', [
+                'packages' => $packages->values(),
+                'agent' => $agent,
+                'sidebarAds' => $sidebarAds
+            ]);
+        }
+
+        return view('listing', [
+            'packages' => $packages->values(),
+            'agent' => $agent,
+            'sidebarAds' => $sidebarAds
+        ]);
     }
 
     private function getStaticPackages()

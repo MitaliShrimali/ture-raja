@@ -71,6 +71,8 @@ Route::prefix('admin')->group(function () {
     
     // Inventory & Stays
     Route::get('/packages', [AdminController::class, 'packages']);
+    Route::get('/packages/international', [AdminController::class, 'internationalPackages']);
+    Route::get('/packages/domestic', [AdminController::class, 'domesticPackages']);
     Route::get('/packages/create', [AdminController::class, 'createPackage']);
     Route::get('/hotels', [AdminController::class, 'hotels']);
     Route::get('/amenities', [AdminController::class, 'amenities']);
@@ -135,6 +137,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/packages/delete/{id}', [AdminController::class, 'deletePackage']);
     Route::get('/packages/toggle/{id}', [AdminController::class, 'togglePackage']);
 
+    Route::post('/home-packages/store', [AdminController::class, 'storeHomePackage']);
+    Route::post('/home-packages/update', [AdminController::class, 'updateHomePackage']);
+    Route::get('/home-packages/delete/{id}', [AdminController::class, 'deleteHomePackage']);
+    Route::get('/home-packages/toggle/{id}', [AdminController::class, 'toggleHomePackage']);
+
     Route::post('/holiday-types/store', [AdminController::class, 'storeHolidayType']);
     Route::post('/holiday-types/update', [AdminController::class, 'updateHolidayType']);
     Route::get('/holiday-types/delete/{id}', [AdminController::class, 'deleteHolidayType']);
@@ -198,6 +205,13 @@ Route::prefix('admin')->group(function () {
     Route::post('/settings/update', [AdminController::class, 'updateSettings']);
     Route::get('/profile', [AdminController::class, 'adminProfile']);
     Route::post('/profile/update', [AdminController::class, 'updateProfile']);
+
+    // Offer Stickers
+    Route::get('/offer-stickers', [AdminController::class, 'offerStickers']);
+    Route::post('/offer-stickers/store', [AdminController::class, 'storeOfferSticker']);
+    Route::post('/offer-stickers/update', [AdminController::class, 'updateOfferSticker']);
+    Route::get('/offer-stickers/delete/{id}', [AdminController::class, 'deleteOfferSticker']);
+    Route::get('/offer-stickers/toggle/{id}', [AdminController::class, 'toggleOfferSticker']);
 });
 
 Route::get('/tour/{slug}', function($slug) {

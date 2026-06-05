@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editAd: { id: '', campaign_name: '', position: '', image: '', link: '', status: '' } }">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, addPosition: 'Home Hero', editAd: { id: '', campaign_name: '', position: '', image: '', link: '', status: '', subtitle: '', agent_id: '' } }">
     <div class="space-y-4">
         <div class="flex items-center gap-2 text-[10px] font-black text-muted-text uppercase tracking-widest">
             <span>Pages</span>
@@ -72,7 +72,7 @@
                             <td class="py-6 px-8 text-right">
                                 <div class="flex items-center justify-end gap-1">
                                     <button 
-                                        @click="showEditModal = true; editAd = { id: '{{ $ad->id }}', campaign_name: '{{ addslashes($ad->campaign_name) }}', position: '{{ addslashes($ad->position) }}', image: '{{ addslashes($ad->image) }}', link: '{{ addslashes($ad->link) }}', status: '{{ $ad->status }}' }"
+                                        @click="showEditModal = true; editAd = { id: '{{ $ad->id }}', campaign_name: '{{ addslashes($ad->campaign_name) }}', position: '{{ addslashes($ad->position) }}', image: '{{ addslashes($ad->image) }}', link: '{{ addslashes($ad->link) }}', status: '{{ $ad->status }}', subtitle: '{{ addslashes($ad->subtitle ?? '') }}', agent_id: '{{ $ad->agent_id ?? '' }}' }"
                                         class="p-2 text-muted-text hover:text-primary transition-all"
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
@@ -164,10 +164,27 @@
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Placement Position</label>
-                    <select name="position" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                    <select name="position" x-model="addPosition" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                         <option value="Home Hero">Home Hero</option>
                         <option value="Package Sidebar">Package Sidebar</option>
                         <option value="Footer Banner">Footer Banner</option>
+                        <option value="Under Domestic Packages">Under Domestic Packages</option>
+                    </select>
+                </div>
+                
+                <!-- Conditional fields for Under Domestic Packages -->
+                <div class="space-y-2 animate-fade-in" x-show="addPosition === 'Under Domestic Packages'" style="display: none;">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Subtitle / Slogan</label>
+                    <input type="text" name="subtitle" placeholder="E.g. Stop Searching, Start Traveling" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+
+                <div class="space-y-2 animate-fade-in" x-show="addPosition === 'Under Domestic Packages'" style="display: none;">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Select Agent (For Logo display)</label>
+                    <select name="agent_id" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="">-- No Agent Logo --</option>
+                        @foreach($agents as $agent)
+                            <option value="{{ $agent->id }}">{{ $agent->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="space-y-2">
@@ -230,6 +247,23 @@
                         <option value="Home Hero">Home Hero</option>
                         <option value="Package Sidebar">Package Sidebar</option>
                         <option value="Footer Banner">Footer Banner</option>
+                        <option value="Under Domestic Packages">Under Domestic Packages</option>
+                    </select>
+                </div>
+                
+                <!-- Conditional fields for Under Domestic Packages in Edit Modal -->
+                <div class="space-y-2 animate-fade-in" x-show="editAd.position === 'Under Domestic Packages'" style="display: none;">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Subtitle / Slogan</label>
+                    <input type="text" name="subtitle" x-model="editAd.subtitle" placeholder="E.g. Stop Searching, Start Traveling" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
+
+                <div class="space-y-2 animate-fade-in" x-show="editAd.position === 'Under Domestic Packages'" style="display: none;">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Select Agent (For Logo display)</label>
+                    <select name="agent_id" x-model="editAd.agent_id" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="">-- No Agent Logo --</option>
+                        @foreach($agents as $agent)
+                            <option value="{{ $agent->id }}">{{ $agent->name }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="space-y-2">

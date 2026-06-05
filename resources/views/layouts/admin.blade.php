@@ -7,11 +7,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-background text-foreground font-body h-full overflow-x-hidden antialiased">
-    <!-- Root Layout Wrapper -->
-    <div class="flex h-full overflow-hidden w-screen max-w-full relative" x-data="{ 
+<body class="bg-background text-foreground font-body h-full overflow-x-hidden antialiased" x-data="{ 
         sidebarOpen: false, 
         sidebarDropdowns: {},
         showAddModal: false, 
@@ -20,6 +19,8 @@
         editPreviewUrl: '', 
         editPkg: { id: '', title: '', location: '', price: '', old_price: '', rating: '4.8', reviews: '10', duration: '', group_size: '4-6 guest', image: '', stock: '', status: '', category: '', badge: '', brochure: '', included: [], excluded: [] } 
     }">
+    <!-- Root Layout Wrapper -->
+    <div class="flex h-full overflow-hidden w-screen max-w-full relative">
         
         <!-- Sidebar Backdrop (Mobile) -->
         <template x-if="sidebarOpen">
@@ -32,7 +33,7 @@
                 x-transition:leave-end="opacity-0"
             ></div>
         </template>
-
+ 
         <!-- Sidebar -->
         <aside 
             :class="{
@@ -79,6 +80,8 @@
                                     'children' => [
                                         ['name' => 'All Packages', 'href' => '/admin/packages'],
                                         ['name' => 'Add New Package', 'href' => '/admin/packages/create'],
+                                        ['name' => 'International Packages', 'href' => '/admin/packages/international'],
+                                        ['name' => 'Domestic Packages', 'href' => '/admin/packages/domestic'],
                                     ]
                                 ],
                                 ['name' => 'Holiday Types', 'icon' => 'layout', 'href' => '/admin/holiday-types'],
@@ -106,7 +109,15 @@
                         [
                             'label' => 'PLATFORM SETTINGS',
                             'items' => [
-                                ['name' => 'Home Page', 'icon' => 'home', 'href' => '/admin/home-editor'],
+                                [
+                                    'name' => 'Home Page', 
+                                    'icon' => 'home', 
+                                    'href' => '/admin/home-editor',
+                                    'children' => [
+                                        ['name' => 'Home Editor', 'href' => '/admin/home-editor'],
+                                        ['name' => 'Offer Stickers', 'href' => '/admin/offer-stickers'],
+                                    ]
+                                ],
                                 ['name' => 'Notification', 'icon' => 'bell', 'href' => '/admin/notifications'],
                                 ['name' => 'Pages', 'icon' => 'file-text', 'href' => '/admin/cms'],
                                 ['name' => 'Contact US', 'icon' => 'message-square', 'href' => '/admin/contact'],
@@ -281,8 +292,8 @@
                 </div>
             </div>
         </main>
-    @stack('modals')
     </div>
+    @stack('modals')
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

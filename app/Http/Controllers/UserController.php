@@ -70,14 +70,56 @@ class UserController extends Controller
             $heroBanners = collect();
         }
 
+        // Pull home packages for International and Domestic sections
+        try {
+            $homeInternational = DB::table('home_packages')->where('type', 'international')->where('status', 'Live')->orderBy('id', 'desc')->get();
+            $homeDomestic = DB::table('home_packages')->where('type', 'domestic')->where('status', 'Live')->orderBy('id', 'desc')->get();
+        } catch (\Exception $e) {
+            $homeInternational = collect();
+            $homeDomestic = collect();
+        }
+
         // Pull an active Ad for the home page from DB
         try {
-            $homeAd = DB::table('ads')->where('status', 'Active')->orderBy('id', 'desc')->first();
+            $homeAd = DB::table('ads')->where('status', 'Active')->where('position', 'Home Hero')->orderBy('id', 'desc')->first();
         } catch (\Exception $e) {
             $homeAd = null;
         }
 
-        return view('welcome', compact('packages', 'heroBanners', 'homeAd'));
+        // Pull active ads under domestic packages
+        try {
+            $domesticAds = DB::table('ads')
+                ->leftJoin('agents', 'ads.agent_id', '=', 'agents.id')
+                ->select('ads.*', 'agents.logo as agent_logo')
+                ->where('ads.status', 'Active')
+                ->where('ads.position', 'Under Domestic Packages')
+                ->orderBy('ads.id', 'desc')
+                ->get();
+        } catch (\Exception $e) {
+            $domesticAds = collect();
+        }
+
+        // Pull active ads for footer banner
+        try {
+            $footerAds = DB::table('ads')
+                ->leftJoin('agents', 'ads.agent_id', '=', 'agents.id')
+                ->select('ads.*', 'agents.logo as agent_logo', 'agents.name as agent_name')
+                ->where('ads.status', 'Active')
+                ->where('ads.position', 'Footer Banner')
+                ->orderBy('ads.id', 'desc')
+                ->get();
+        } catch (\Exception $e) {
+            $footerAds = collect();
+        }
+
+        // Pull live offer stickers
+        try {
+            $offerStickers = DB::table('offer_stickers')->where('status', 'Live')->orderBy('id', 'desc')->get();
+        } catch (\Exception $e) {
+            $offerStickers = collect();
+        }
+
+        return view('welcome', compact('packages', 'heroBanners', 'homeAd', 'homeInternational', 'homeDomestic', 'offerStickers', 'domesticAds', 'footerAds'));
     }
 
     // ─── SEARCH ───────────────────────────────────────────────────────

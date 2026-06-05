@@ -74,6 +74,164 @@ class AdminController extends Controller
     // Inventory & Stays
     // ==========================================
 
+    public function internationalPackages(Request $request)
+    {
+        $packages = DB::table('home_packages')->where('type', 'international')->orderBy('id', 'desc')->paginate(10);
+        return view('admin.packages-international', compact('packages'));
+    }
+
+    public function domesticPackages(Request $request)
+    {
+        $packages = DB::table('home_packages')->where('type', 'domestic')->orderBy('id', 'desc')->paginate(10);
+        return view('admin.packages-domestic', compact('packages'));
+    }
+
+    public function storeHomePackage(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'type' => 'required|in:international,domestic',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('packages', 'public');
+            $imagePath = '/storage/' . $imagePath;
+        } else {
+            $imagePath = 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=400';
+        }
+
+        DB::table('home_packages')->insert([
+            'type' => $request->type,
+            'title' => $request->title,
+            'subtitle' => $request->subtitle,
+            'image' => $imagePath,
+            'price' => $request->price,
+            'status' => $request->status ?? 'Live',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Package added successfully!');
+    }
+
+    public function updateHomePackage(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'title' => 'required',
+        ]);
+
+        $data = [
+            'title' => $request->title,
+            'subtitle' => $request->subtitle,
+            'price' => $request->price,
+            'status' => $request->status ?? 'Live',
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('packages', 'public');
+            $data['image'] = '/storage/' . $imagePath;
+        }
+
+        DB::table('home_packages')->where('id', $request->id)->update($data);
+
+        return redirect()->back()->with('success', 'Package updated successfully!');
+    }
+
+    public function deleteHomePackage($id)
+    {
+        DB::table('home_packages')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Package removed!');
+    }
+
+    public function toggleHomePackage($id)
+    {
+        $pkg = DB::table('home_packages')->where('id', $id)->first();
+        if ($pkg) {
+            $newStatus = $pkg->status === 'Live' ? 'Drafting' : 'Live';
+            DB::table('home_packages')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'Package status updated!');
+    }
+
+    // ==========================================
+    // Offer Stickers
+    // ==========================================
+
+    public function offerStickers()
+    {
+        $stickers = DB::table('offer_stickers')->orderBy('id', 'desc')->paginate(10);
+        return view('admin.offer-stickers', compact('stickers'));
+    }
+
+    public function storeOfferSticker(Request $request)
+    {
+        $request->validate(['title' => 'required']);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/stickers'), $fileName);
+            $imagePath = '/uploads/stickers/' . $fileName;
+        }
+
+        DB::table('offer_stickers')->insert([
+            'title'    => $request->title,
+            'subtitle' => $request->subtitle,
+            'image'    => $imagePath,
+            'link'     => $request->link ?? '/discover',
+            'status'   => $request->status ?? 'Live',
+            'bg_color' => $request->bg_color,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Offer Sticker added successfully!');
+    }
+
+    public function updateOfferSticker(Request $request)
+    {
+        $request->validate(['id' => 'required', 'title' => 'required']);
+
+        $data = [
+            'title'    => $request->title,
+            'subtitle' => $request->subtitle,
+            'link'     => $request->link ?? '/discover',
+            'status'   => $request->status ?? 'Live',
+            'bg_color' => $request->bg_color,
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/stickers'), $fileName);
+            $data['image'] = '/uploads/stickers/' . $fileName;
+        }
+
+        DB::table('offer_stickers')->where('id', $request->id)->update($data);
+        return redirect()->back()->with('success', 'Offer Sticker updated successfully!');
+    }
+
+    public function deleteOfferSticker($id)
+    {
+        DB::table('offer_stickers')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Offer Sticker removed!');
+    }
+
+    public function toggleOfferSticker($id)
+    {
+        $sticker = DB::table('offer_stickers')->where('id', $id)->first();
+        if ($sticker) {
+            $newStatus = $sticker->status === 'Live' ? 'Drafting' : 'Live';
+            DB::table('offer_stickers')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'Sticker status updated!');
+    }
+
     public function packages(Request $request)
     {
         $search = $request->input('search');
@@ -1020,8 +1178,13 @@ class AdminController extends Controller
     // ADVERTISEMENT
     public function ads(Request $request)
     {
-        $ads = DB::table('ads')->orderBy('id', 'asc')->paginate(5);
-        return view('admin.ads', compact('ads'));
+        $ads = DB::table('ads')
+            ->leftJoin('agents', 'ads.agent_id', '=', 'agents.id')
+            ->select('ads.*', 'agents.name as agent_name', 'agents.logo as agent_logo')
+            ->orderBy('ads.id', 'desc')
+            ->paginate(5);
+        $agents = DB::table('agents')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        return view('admin.ads', compact('ads', 'agents'));
     }
 
     public function storeAd(Request $request)
@@ -1033,6 +1196,8 @@ class AdminController extends Controller
             'position' => $request->position,
             'image' => $request->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
             'link' => $request->link ?? '/discover',
+            'subtitle' => $request->subtitle,
+            'agent_id' => $request->agent_id,
             'clicks' => 0,
             'views' => 0,
             'status' => $request->status ?? 'Active',
@@ -1052,6 +1217,8 @@ class AdminController extends Controller
             'position' => $request->position,
             'image' => $request->image,
             'link' => $request->link,
+            'subtitle' => $request->subtitle,
+            'agent_id' => $request->agent_id,
             'status' => $request->status ?? 'Active',
             'updated_at' => now(),
         ]);

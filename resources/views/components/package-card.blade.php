@@ -58,7 +58,7 @@
             src="{{ $image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800' }}" 
             alt="{{ $title }}" 
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            style="width: 100%; height: 100%; object-fit: cover; max-height: 250px;"
+            style="width: 100%; height: 100%; object-fit: cover;"
         >
         
         <!-- Badge top-left -->
