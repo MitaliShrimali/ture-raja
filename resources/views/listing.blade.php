@@ -150,8 +150,8 @@
                 @endphp
                 <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
                    class="group flex-none md:flex-1 w-20 md:w-auto flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
-                  <div class="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center">
-                    <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
+                  <div class="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center" style="width: 64px; height: 64px; flex-shrink: 0;">
+                    <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" style="max-width: 100%; max-height: 100%;">
                   </div>
                   <span class="text-center text-[10px] md:text-xs font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
                 </a>
@@ -159,8 +159,8 @@
             </div>
         </div>
 
-        <div class="container-custom text-center mb-0">
-            <div class="w-full max-w-6xl mx-auto">
+        <div class="container-custom text-center">
+            <div class="w-full max-w-5xl mx-auto">
               <form action="{{ url('/discover') }}" method="GET">
                 <div class="p-3 md:p-3 rounded-lg flex flex-col md:flex-row items-center gap-3 w-full shadow-sm" style="background: #e85d26;">
                   
@@ -191,14 +191,16 @@
                   {{-- Search Button --}}
                   <div class="w-full md:w-auto shrink-0">
                     <button type="submit"
-                            class="rounded-full bg-white text-gray-900 font-bold text-sm hover:bg-gray-100 transition-colors w-full sm:w-auto px-10 py-3 shadow-sm">
+                            class="bg-white text-gray-900 font-bold text-sm hover:bg-gray-100 transition-colors w-full sm:w-auto px-10 py-3 rounded-md shadow-sm">
                       Search
                     </button>
                   </div>
+
                 </div>
               </form>
             </div>
         </div>
+
     </div>
 
     <style>

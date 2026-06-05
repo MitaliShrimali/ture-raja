@@ -2,7 +2,7 @@
 @php use Illuminate\Support\Str; @endphp
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, viewType: 'desktop', editBanner: { id: '', title: '', subtitle: '', image: '', link: '', status: '' } }">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, viewType: 'desktop', editBanner: { id: '', title: '', subtitle: '', image: '', link: '', status: '' }, newBannerPreview: null, newBannerIsVideo: false, editBannerPreview: null, editBannerIsVideo: false }">
     <div class="space-y-4">
         <div class="flex items-center gap-2 text-[10px] font-black text-muted-text uppercase tracking-widest">
             <span>Management</span>
@@ -234,118 +234,205 @@
     <!-- ================= MODALS ================= -->
 
     <!-- Add Banner Modal -->
-    <div 
-        x-show="showAddModal" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        style="display: none;"
-    >
-        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
-            <div class="flex items-center justify-between border-b border-border-soft pb-4">
+    <template x-teleport="body">
+        <div 
+            x-show="showAddModal" 
+            class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            style="display: none;"
+        >
+        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-border-soft p-6 md:p-8 shrink-0">
                 <div class="space-y-1">
                     <h3 class="text-xl font-black text-foreground">Add Marketing Banner</h3>
                     <p class="text-xs text-muted-text font-medium">Create a new high-impact slideshow banner.</p>
                 </div>
-                <button @click="showAddModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                <button type="button" @click="showAddModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
                     <i data-lucide="x" size="20"></i>
                 </button>
             </div>
             
-            <form action="{{ url('/admin/home-editor/store') }}" method="POST" class="space-y-6">
-                @csrf
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Banner Title<span class="text-primary">*</span></label>
-                    <input required type="text" name="title" placeholder="E.g. Get Up to 20% OFF on south India" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Subtitle / Category</label>
-                    <input type="text" name="subtitle" placeholder="E.g. Summer Explorer Series" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Image URL</label>
-                    <input type="text" name="image" placeholder="E.g. https://images.unsplash.com/..." class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Link URL</label>
-                    <input type="text" name="link" placeholder="E.g. /packages/south-india" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
-                    <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    </select>
-                </div>
-                
-                <div class="flex items-center justify-end gap-4 pt-4">
-                    <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Slide</button>
-                </div>
-            </form>
+            <div class="p-6 md:p-8 overflow-y-auto">
+                <form action="{{ url('/admin/home-editor/store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    @csrf
+                    
+                    <!-- Media Upload Area -->
+                    <div class="bg-gray-50 rounded-3xl border-2 border-dashed border-gray-300 p-2 flex flex-col items-center justify-center relative overflow-hidden group hover:border-primary/50 transition-colors w-full h-40 shrink-0">
+                        <template x-if="!newBannerPreview">
+                            <div class="flex flex-col items-center justify-center text-center space-y-2">
+                                <i data-lucide="image-plus" size="28" class="text-gray-400 group-hover:text-primary/50 transition-colors"></i>
+                                <p class="text-xs font-black text-muted-text uppercase tracking-widest">Upload Media</p>
+                            </div>
+                        </template>
+                        <template x-if="newBannerPreview">
+                            <div class="w-full h-full absolute inset-0">
+                                <template x-if="newBannerIsVideo">
+                                    <video :src="newBannerPreview" autoplay loop muted class="w-full h-full object-cover"></video>
+                                </template>
+                                <template x-if="!newBannerIsVideo">
+                                    <img :src="newBannerPreview" class="w-full h-full object-cover" />
+                                </template>
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <p class="text-white font-black text-sm uppercase tracking-widest bg-black/50 px-4 py-2 rounded-xl backdrop-blur-sm">Change Media</p>
+                                </div>
+                            </div>
+                        </template>
+                        <input 
+                            type="file" 
+                            name="image_file" 
+                            accept="image/*,video/mp4"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            @change="
+                                const file = $event.target.files[0]; 
+                                if(file) { 
+                                    newBannerPreview = URL.createObjectURL(file); 
+                                    newBannerIsVideo = file.type.includes('video');
+                                }
+                            "
+                        >
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[10px] text-muted-text font-bold uppercase tracking-widest">OR USE EXTERNAL URL</p>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Banner Title<span class="text-primary">*</span></label>
+                        <input required type="text" name="title" placeholder="E.g. Get Up to 20% OFF on south India" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Image URL</label>
+                        <input type="text" name="image" placeholder="E.g. https://images.unsplash.com/..." class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Link URL</label>
+                        <input type="text" name="link" placeholder="E.g. /packages/south-india" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                        <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center justify-end gap-4 pt-4 border-t border-border-soft">
+                        <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                        <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Slide</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </template>
 
     <!-- Edit Banner Modal -->
-    <div 
-        x-show="showEditModal" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        style="display: none;"
-    >
-        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
-            <div class="flex items-center justify-between border-b border-border-soft pb-4">
+    <template x-teleport="body">
+        <div 
+            x-show="showEditModal" 
+            class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            style="display: none;"
+        >
+        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-border-soft p-6 md:p-8 shrink-0">
                 <div class="space-y-1">
                     <h3 class="text-xl font-black text-foreground">Edit Banner</h3>
                     <p class="text-xs text-muted-text font-medium">Modify slide image and target destination.</p>
                 </div>
-                <button @click="showEditModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                <button type="button" @click="showEditModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
                     <i data-lucide="x" size="20"></i>
                 </button>
             </div>
             
-            <form action="{{ url('/admin/home-editor/update') }}" method="POST" class="space-y-6">
-                @csrf
-                <input type="hidden" name="id" x-model="editBanner.id" />
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Banner Title<span class="text-primary">*</span></label>
-                    <input required type="text" name="title" x-model="editBanner.title" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Subtitle / Category</label>
-                    <input type="text" name="subtitle" x-model="editBanner.subtitle" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Image URL</label>
-                    <input type="text" name="image" x-model="editBanner.image" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Link URL</label>
-                    <input type="text" name="link" x-model="editBanner.link" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
-                    <select name="status" x-model="editBanner.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    </select>
-                </div>
-                
-                <div class="flex items-center justify-end gap-4 pt-4">
-                    <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
-                </div>
-            </form>
+            <div class="p-6 md:p-8 overflow-y-auto">
+                <form action="{{ url('/admin/home-editor/update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                    @csrf
+                    <input type="hidden" name="id" x-model="editBanner.id" />
+                    
+                    <!-- Media Upload Area -->
+                    <div class="bg-gray-50 rounded-3xl border-2 border-dashed border-gray-300 p-2 flex flex-col items-center justify-center relative overflow-hidden group hover:border-primary/50 transition-colors w-full h-40 shrink-0">
+                        <template x-if="!editBannerPreview && !editBanner.image">
+                            <div class="flex flex-col items-center justify-center text-center space-y-2">
+                                <i data-lucide="image-plus" size="28" class="text-gray-400 group-hover:text-primary/50 transition-colors"></i>
+                                <p class="text-xs font-black text-muted-text uppercase tracking-widest">Upload Media</p>
+                            </div>
+                        </template>
+                        <template x-if="editBannerPreview || editBanner.image">
+                            <div class="w-full h-full absolute inset-0">
+                                <template x-if="editBannerPreview && editBannerIsVideo">
+                                    <video :src="editBannerPreview" autoplay loop muted class="w-full h-full object-cover"></video>
+                                </template>
+                                <template x-if="editBannerPreview && !editBannerIsVideo">
+                                    <img :src="editBannerPreview" class="w-full h-full object-cover" />
+                                </template>
+                                <template x-if="!editBannerPreview && editBanner.image">
+                                    <template x-if="editBanner.image.endsWith('.mp4')">
+                                        <video :src="'{{ asset('') }}' + editBanner.image" autoplay loop muted class="w-full h-full object-cover"></video>
+                                    </template>
+                                </template>
+                                <template x-if="!editBannerPreview && editBanner.image">
+                                    <template x-if="!editBanner.image.endsWith('.mp4')">
+                                        <img :src="editBanner.image.startsWith('http') ? editBanner.image : '{{ asset('') }}' + editBanner.image" class="w-full h-full object-cover" />
+                                    </template>
+                                </template>
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <p class="text-white font-black text-sm uppercase tracking-widest bg-black/50 px-4 py-2 rounded-xl backdrop-blur-sm">Change Media</p>
+                                </div>
+                            </div>
+                        </template>
+                        <input 
+                            type="file" 
+                            name="image_file" 
+                            accept="image/*,video/mp4"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            @change="
+                                const file = $event.target.files[0]; 
+                                if(file) { 
+                                    editBannerPreview = URL.createObjectURL(file); 
+                                    editBannerIsVideo = file.type.includes('video');
+                                }
+                            "
+                        >
+                    </div>
+                    <div class="text-center">
+                        <p class="text-[10px] text-muted-text font-bold uppercase tracking-widest">OR USE EXTERNAL URL</p>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Banner Title<span class="text-primary">*</span></label>
+                        <input required type="text" name="title" x-model="editBanner.title" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Image URL</label>
+                        <input type="text" name="image" x-model="editBanner.image" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Link URL</label>
+                        <input type="text" name="link" x-model="editBanner.link" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                        <select name="status" x-model="editBanner.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center justify-end gap-4 pt-4 border-t border-border-soft">
+                        <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                        <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Update Slide</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </template>
 </div>
 @endsection

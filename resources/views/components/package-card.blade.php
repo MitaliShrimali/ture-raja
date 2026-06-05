@@ -31,22 +31,34 @@
         $agentObj = $pkgArr['agent']    ?? null;
     }
     
-    if (is_object($agentObj)) {
-        $agentObj = (array) $agentObj;
+    if (is_string($agentObj)) {
+        $decoded = json_decode($agentObj, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            $agentObj = $decoded;
+            $agentName = $agentObj['name'] ?? 'Travel Agent Name';
+        } else {
+            $agentName = $agentObj;
+        }
+    } else {
+        if (is_object($agentObj)) {
+            $agentObj = (array) $agentObj;
+        }
+        $agentName = $agentObj['name'] ?? 'Travel Agent Name';
     }
-    $agentName = $agentObj['name'] ?? 'Travel Agent Name';
-    $agentLogo = $agentObj['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode(str_replace(' ', '', $agentName));
+
+    $agentLogo = (is_array($agentObj) ? ($agentObj['logo'] ?? null) : null) ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode(str_replace(' ', '', $agentName));
 
     $detailUrl = $slug ? url('packages/' . $slug) : '#';
 @endphp
 
 <div onclick="window.location.href='{{ $detailUrl }}'" {{ $attributes->merge(['class' => 'cursor-pointer group bg-white rounded-lg overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50 package-card-inner']) }}>
     <!-- Image Container -->
-    <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-md package-image-container">
+    <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-md package-image-container" style="aspect-ratio: 1.2/1;">
         <img 
             src="{{ $image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800' }}" 
             alt="{{ $title }}" 
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            style="width: 100%; height: 100%; object-fit: cover; max-height: 250px;"
         >
         
         <!-- Badge top-left -->

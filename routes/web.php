@@ -87,6 +87,7 @@ Route::prefix('admin')->group(function () {
 
     // Subscription Oversight
     Route::get('/paid-users', [AdminController::class, 'paidUsers']);
+    Route::get('/paid-users/create', [AdminController::class, 'createPaidUser']);
     Route::get('/user-plans', [AdminController::class, 'userPlans']);
     Route::get('/payments', [AdminController::class, 'payments']);
     Route::get('/ads', [AdminController::class, 'ads']);
@@ -206,6 +207,12 @@ Route::get('/tour/{slug}', function($slug) {
 Route::get('/package/{id}', [PackageController::class, 'show']);
 
 Route::get('/packages/{slug}', function ($slug) {
+    try {
+        \App\Models\Package::where('slug', $slug)->increment('clicks');
+    } catch (\Exception $e) {
+        // ignore
+    }
+
     $allPackages = [
         'monaco-luxury-tour' => [
             'slug'       => 'monaco-luxury-tour',
@@ -529,6 +536,13 @@ Route::get('/packages/{slug}', function ($slug) {
             ],
         ];
     }
+
+    try {
+        $dbPkg = \App\Models\Package::where('slug', $slug)->first();
+        if ($dbPkg) {
+            $dbPkg->increment('clicks');
+        }
+    } catch (\Exception $e) {}
 
     return view('packages.show', ['package' => $allPackages[$slug]]);
 })->name('packages.show');

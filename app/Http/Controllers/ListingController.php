@@ -48,6 +48,16 @@ class ListingController extends Controller
 
         $packages = collect($merged);
 
+        // Sort packages to show popular tagged ones first, then by most reviewed/clicked
+        $popularBadges = ['popular'];
+        $packages = $packages
+            ->sortByDesc(fn($p) => (int)(is_array($p) ? ($p['reviews'] ?? 0) : ($p->reviews ?? 0)))
+            ->sortByDesc(fn($p) => (int)(is_array($p) ? ($p['clicks'] ?? 0) : ($p->clicks ?? 0)))
+            ->sortByDesc(function ($p) use ($popularBadges) {
+                $badge = strtolower(is_array($p) ? ($p['badge'] ?? '') : ($p->badge ?? ''));
+                return in_array($badge, $popularBadges) ? 2 : (!empty($badge) ? 1 : 0);
+            })->values();
+
         // ── Search by destination / title ──────────────────────────
         if ($request->filled('search')) {
             $search = strtolower($request->search);

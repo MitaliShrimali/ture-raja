@@ -88,7 +88,15 @@
                         [
                             'label' => 'SUBSCRIPTION OVERSIGHT',
                             'items' => [
-                                ['name' => 'Paid User', 'icon' => 'user-plus', 'href' => '/admin/paid-users'],
+                                [
+                                    'name' => 'Paid User', 
+                                    'icon' => 'user-plus', 
+                                    'href' => '/admin/paid-users',
+                                    'children' => [
+                                        ['name' => 'All Paid Users', 'href' => '/admin/paid-users'],
+                                        ['name' => 'Add Paid User', 'href' => '/admin/paid-users/create'],
+                                    ]
+                                ],
                                 ['name' => 'User Plan', 'icon' => 'clipboard-list', 'href' => '/admin/user-plans'],
                                 ['name' => 'Payment', 'icon' => 'credit-card', 'href' => '/admin/payments'],
                                 ['name' => 'Advertisement', 'icon' => 'megaphone', 'href' => '/admin/ads'],

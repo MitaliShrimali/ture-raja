@@ -8,10 +8,10 @@
             <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Management</p>
             <h2 class="font-black text-foreground tracking-tight">Paid User Registry</h2>
         </div>
-        <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
+        <a href="{{ url('/admin/paid-users/create') }}" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
             <i data-lucide="plus" size="20"></i>
             Add User
-        </button>
+        </a>
     </div>
 
     <!-- Filters & Search Section -->

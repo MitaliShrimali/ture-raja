@@ -64,7 +64,7 @@
                         <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">
                             ✓ Free Cancellation
                         </span>
-                        @if($package['badge'])
+                        @if(!empty($package['badge']))
                         <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-bold">
                             {{ $package['badge'] }}
                         </span>
@@ -92,10 +92,19 @@
                 </div>
 
                 {{-- Image Grid Gallery (Contained) --}}
+                @php
+                    $defaultGallery = [
+                        $package["image"] ?? "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200",
+                        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200",
+                        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200",
+                        "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200"
+                    ];
+                    $gallerySlides = !empty($package["gallery"]) ? $package["gallery"] : $defaultGallery;
+                @endphp
                 <div x-data='{ 
                     showGallery: false, 
                     activeImage: 0,
-                    slides: @json($package['gallery']),
+                    slides: @json($gallerySlides),
                     openGallery(index) {
                         this.activeImage = index;
                         this.showGallery = true;
@@ -230,7 +239,7 @@
                             <p class="text-xs text-gray-400 font-semibold font-medium">Download the complete tour handbook in PDF format</p>
                         </div>
                     </div>
-                    @if($package['brochure'])
+                    @if(!empty($package['brochure']))
                         <a href="{{ asset($package['brochure']) }}" target="_blank" style="background-color: #e85d26;" class="w-full sm:w-auto px-6 py-3.5 text-white text-[11px] font-black uppercase tracking-widest rounded-md transition-all shadow-sm hover:shadow-lg text-center flex items-center justify-center gap-2 hover:opacity-90">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -565,7 +574,7 @@
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Price Per Person</p>
                         <p class="text-3xl font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">₹{{ number_format($package['price']) }}</p>
-                        @if($package['oldPrice'])
+                        @if(!empty($package['oldPrice']))
                         <p class="text-sm text-primary font-bold line-through mt-1">₹{{ number_format($package['oldPrice']) }}</p>
                         @endif
                     </div>

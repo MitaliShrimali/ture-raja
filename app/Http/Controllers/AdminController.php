@@ -740,13 +740,28 @@ class AdminController extends Controller
     public function leads(Request $request)
     {
         $search = $request->input('search');
+        $type = $request->input('type');
         $query = DB::table('leads');
 
         if ($search) {
-            $query->where('name', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('agent', 'like', "%{$search}%")
                   ->orWhere('package', 'like', "%{$search}%");
+            });
+        }
+        
+        if ($type) {
+            if ($type === 'Other') {
+                $query->where('package', 'not like', "%Flight%")
+                      ->where('package', 'not like', "%Train%")
+                      ->where('package', 'not like', "%Bus%")
+                      ->where('package', 'not like', "%Cruise%")
+                      ->where('package', 'not like', "%Land%");
+            } else {
+                $query->where('package', 'like', "%{$type}%");
+            }
         }
 
         $leads = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
@@ -852,6 +867,11 @@ class AdminController extends Controller
 
         $paidUsers = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
         return view('admin.paid-users', compact('paidUsers', 'search'));
+    }
+
+    public function createPaidUser()
+    {
+        return view('admin.paid-users-create');
     }
 
     public function storePaidUser(Request $request)
@@ -1125,10 +1145,18 @@ class AdminController extends Controller
     {
         $request->validate(['title' => 'required']);
         
+        $imageUrl = $request->image;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/banners'), $filename);
+            $imageUrl = '/uploads/banners/' . $filename;
+        }
+        
         DB::table('banners')->insert([
             'title' => $request->title,
             'subtitle' => $request->subtitle,
-            'image' => !empty($request->image) ? $request->image : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
+            'image' => !empty($imageUrl) ? $imageUrl : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
             'link' => !empty($request->link) ? $request->link : '/discover',
             'status' => $request->status ?? 'Active',
             'created_at' => now(),
@@ -1142,10 +1170,18 @@ class AdminController extends Controller
     {
         $request->validate(['id' => 'required', 'title' => 'required']);
         
+        $imageUrl = $request->image;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/banners'), $filename);
+            $imageUrl = '/uploads/banners/' . $filename;
+        }
+        
         DB::table('banners')->where('id', $request->id)->update([
             'title' => $request->title,
             'subtitle' => $request->subtitle,
-            'image' => !empty($request->image) ? $request->image : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
+            'image' => !empty($imageUrl) ? $imageUrl : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
             'link' => !empty($request->link) ? $request->link : '/discover',
             'status' => $request->status ?? 'Active',
             'updated_at' => now(),

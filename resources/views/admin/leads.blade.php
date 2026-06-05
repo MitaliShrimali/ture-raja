@@ -12,9 +12,6 @@
                 <p class="text-muted-text font-medium">Manage your prospective travelers and track conversion performance.</p>
             </div>
             <div class="flex items-center gap-3">
-                <button @click="showAddModal = true" class="flex items-center gap-2 px-6 py-3 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">
-                    <i data-lucide="plus" size="16"></i> Add New Lead
-                </button>
                 <a href="{{ url('/admin/reports/leads/download') }}" class="flex items-center gap-2 px-6 py-3 bg-white border border-border-soft rounded-2xl text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-50 transition-all">
                     <i data-lucide="download" size="16"></i> Export List
                 </a>
@@ -25,16 +22,36 @@
     <!-- Table Card -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <!-- Search Form -->
-            <form method="GET" action="{{ url('/admin/leads') }}" class="relative group w-full md:w-96">
-                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
-                <input 
-                    type="text" 
-                    name="search"
-                    value="{{ $search ?? '' }}"
-                    placeholder="Search leads by name, email, agent..." 
-                    class="w-full bg-gray-50 border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
-                >
+            <!-- Search & Filter Form -->
+            <form method="GET" action="{{ url('/admin/leads') }}" class="flex flex-col md:flex-row items-center gap-4 w-full">
+                <div class="relative group flex-1 w-full">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
+                    <input 
+                        type="text" 
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Search leads by name, email, agent..." 
+                        class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
+                    >
+                </div>
+                
+                <div class="w-full md:w-64 relative">
+                    <div class="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
+                        <i data-lucide="filter" size="18"></i>
+                    </div>
+                    <select name="type" onchange="this.form.submit()" class="w-full bg-white border border-gray-200 rounded-2xl py-4 pl-12 pr-10 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-bold text-sm text-foreground appearance-none cursor-pointer hover:border-primary/50 shadow-sm">
+                        <option value="">All Package Types</option>
+                        <option value="Flight" {{ request('type') == 'Flight' ? 'selected' : '' }}>Flight Packages</option>
+                        <option value="Train" {{ request('type') == 'Train' ? 'selected' : '' }}>Train Packages</option>
+                        <option value="Bus" {{ request('type') == 'Bus' ? 'selected' : '' }}>Bus Packages</option>
+                        <option value="Cruise" {{ request('type') == 'Cruise' ? 'selected' : '' }}>Cruise Packages</option>
+                        <option value="Land" {{ request('type') == 'Land' ? 'selected' : '' }}>Land / Customize</option>
+                        <option value="Other" {{ request('type') == 'Other' ? 'selected' : '' }}>Other Types</option>
+                    </select>
+                    <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-text">
+                        <i data-lucide="chevron-down" size="18"></i>
+                    </div>
+                </div>
             </form>
         </div>
 
