@@ -1392,40 +1392,56 @@ class AdminController extends Controller
     public function notifications(Request $request)
     {
         $notifications = DB::table('notifications')->orderBy('id', 'desc')->paginate(5);
-        return view('admin.notifications', compact('notifications'));
+        $agents = DB::table('agents')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        return view('admin.notifications', compact('notifications', 'agents'));
     }
 
     public function storeNotification(Request $request)
     {
         $request->validate(['title' => 'required', 'message' => 'required']);
         
+        $targetAudience = $request->target_audience ?? 'all_users';
+        $agentId = $request->agent_id ?? null;
+
         DB::table('notifications')->insert([
             'title' => $request->title,
             'message' => $request->message,
             'type' => $request->type ?? 'Info',
+            'target_audience' => $targetAudience,
+            'agent_id' => $targetAudience === 'specific_agent' ? $agentId : null,
             'sent_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         try {
-            $users = DB::table('users')->get();
-            foreach ($users as $user) {
-                DB::table('user_notifications')->insert([
-                    'user_id' => $user->id,
-                    'title' => $request->title,
-                    'message' => $request->message,
-                    'type' => $request->type ?? 'Info',
-                    'is_read' => false,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+            // If target is all users, broadcast to all users
+            if ($targetAudience === 'all_users') {
+                $users = DB::table('users')->get();
+                foreach ($users as $user) {
+                    DB::table('user_notifications')->insert([
+                        'user_id' => $user->id,
+                        'title' => $request->title,
+                        'message' => $request->message,
+                        'type' => $request->type ?? 'Info',
+                        'is_read' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             // Silently ignore DB errors
         }
 
-        return redirect()->back()->with('success', 'Global system notification sent and delivered to all users! 📣');
+        $successMsg = 'Global system notification sent and delivered to all users! 📣';
+        if ($targetAudience === 'specific_agent') {
+            $successMsg = 'Notification sent successfully to the selected agent! 📣';
+        } elseif ($targetAudience === 'all_agents') {
+            $successMsg = 'Notification sent successfully to all agents! 📣';
+        }
+
+        return redirect()->back()->with('success', $successMsg);
     }
 
     public function deleteNotification($id)

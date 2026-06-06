@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false }">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, targetAudience: 'all_users' }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
             <h2 class="font-black text-foreground tracking-tight">Notifications Management</h2>
@@ -143,6 +143,23 @@
                         <option value="Info">Info Announcement</option>
                         <option value="Alert">Alert (High Priority)</option>
                         <option value="Warning">Warning Notice</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Audience</label>
+                    <select name="target_audience" x-model="targetAudience" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="all_users">All Users</option>
+                        <option value="all_agents">All Agents</option>
+                        <option value="specific_agent">Specific Agent</option>
+                    </select>
+                </div>
+                <div class="space-y-2" x-show="targetAudience === 'specific_agent'" style="display: none;">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Select Agent</label>
+                    <select name="agent_id" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" :required="targetAudience === 'specific_agent'">
+                        <option value="">Select an agent...</option>
+                        @foreach($agents as $agent)
+                            <option value="{{ $agent->id }}">{{ $agent->name }} ({{ $agent->email }})</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="space-y-2">

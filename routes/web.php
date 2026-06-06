@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ListingController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AgentController;
 use Illuminate\Support\Facades\Route;
 
 // ─── PUBLIC / USER ROUTES ────────────────────────────────────────────────────
@@ -212,6 +213,30 @@ Route::prefix('admin')->group(function () {
     Route::post('/offer-stickers/update', [AdminController::class, 'updateOfferSticker']);
     Route::get('/offer-stickers/delete/{id}', [AdminController::class, 'deleteOfferSticker']);
     Route::get('/offer-stickers/toggle/{id}', [AdminController::class, 'toggleOfferSticker']);
+});
+
+// ─── AGENT ROUTES ────────────────────────────────────────────────────────────
+Route::prefix('agent')->name('agent.')->group(function () {
+    Route::get('/login', [AgentController::class, 'login'])->name('login');
+    Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
+    Route::get('/about', [AgentController::class, 'about'])->name('about');
+    Route::get('/add-branch', [AgentController::class, 'addBranch'])->name('add-branch');
+    Route::get('/add-hotel', [AgentController::class, 'addHotel'])->name('add-hotel');
+    Route::get('/branch', [AgentController::class, 'branch'])->name('branch');
+    Route::get('/edit-images', [AgentController::class, 'editImages'])->name('edit-images');
+    Route::get('/edit-itinerary', [AgentController::class, 'editItinerary'])->name('edit-itinerary');
+    Route::get('/edit-package', [AgentController::class, 'editPackage'])->name('edit-package');
+    Route::get('/feedback', [AgentController::class, 'feedback'])->name('feedback');
+    Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
+    Route::get('/hotels', [AgentController::class, 'hotels'])->name('hotels');
+    Route::get('/invoice', [AgentController::class, 'invoice'])->name('invoice');
+    Route::get('/leads', [AgentController::class, 'leads'])->name('leads');
+    Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
+    Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
+    Route::get('/payment', [AgentController::class, 'payment'])->name('payment');
+    Route::get('/profile', [AgentController::class, 'profile'])->name('profile');
+    Route::get('/services', [AgentController::class, 'services'])->name('services');
+    Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
 });
 
 Route::get('/tour/{slug}', function($slug) {
