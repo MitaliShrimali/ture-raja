@@ -6,14 +6,14 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
             <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Management</p>
-            <h2 class="font-black text-foreground tracking-tight">Onboard New Agent</h2>
+            <h2 class="font-black text-foreground tracking-tight">Add Paid User</h2>
             <p class="text-muted-text font-medium max-w-xl">
-                Expand the Horizon network by registering a new premium travel agent partner. All fields are required for secure portal access.
+                Expand the network by registering a new paid user. All fields are required for secure portal access.
             </p>
         </div>
         <a href="{{ url('/admin/registered-agents') }}" class="bg-gray-100 hover:bg-gray-200 text-muted-text px-8 py-4 rounded-2xl font-black text-sm transition-all flex items-center gap-3">
             <i data-lucide="users" size="20"></i>
-            View Registered Agents
+            View All Paid Users
         </a>
     </div>
 
@@ -32,13 +32,13 @@
                         <div class="w-10 h-10 bg-primary/5 rounded-2xl flex items-center justify-center text-primary">
                             <i data-lucide="building-2" size="22"></i>
                         </div>
-                        <h3 class="text-2xl font-black text-foreground">Entity Information</h3>
+                        <h3 class="text-2xl font-black text-foreground">User Information</h3>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
-                            <label class="text-xs font-black text-muted-text uppercase tracking-widest pl-2">Travel Agent Name</label>
-                            <input required type="text" name="name" placeholder="e.g. Atlas Global Travels" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-4 px-6 outline-none transition-all font-bold text-foreground text-sm">
+                            <label class="text-xs font-black text-muted-text uppercase tracking-widest pl-2">Full Name</label>
+                            <input required type="text" name="name" placeholder="e.g. John Doe" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-4 px-6 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
                         <div class="space-y-2">
                             <label class="text-xs font-black text-muted-text uppercase tracking-widest pl-2">Email Address</label>

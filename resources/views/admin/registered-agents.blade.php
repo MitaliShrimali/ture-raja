@@ -6,12 +6,12 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
             <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Management</p>
-            <h2 class="font-black text-foreground tracking-tight">Registered Agents</h2>
-            <p class="text-muted-text font-medium">Viewing all active and inactive travel agent partners.</p>
+            <h2 class="font-black text-foreground tracking-tight">All paid user</h2>
+            <p class="text-muted-text font-medium">Viewing all active and inactive paid users.</p>
         </div>
         <a href="{{ url('/admin/agents') }}" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3 group">
             <i data-lucide="plus" size="20" class="group-hover:rotate-90 transition-transform"></i>
-            Onboard New Agent
+            Add Paid User
         </a>
     </div>
 
@@ -77,7 +77,7 @@
                             <p class="text-[11px] font-black uppercase tracking-wider {{ strtolower($agent->tier) === 'premium' ? 'text-purple-500 bg-purple-50' : 'text-primary bg-primary/10' }} inline-block px-3 py-1 rounded-full">{{ $agent->tier ?? 'Basic' }}</p>
                         </td>
                         <td class="py-5 px-8">
-                            <p class="text-sm font-bold text-foreground">-</p>
+                            <p class="text-sm font-bold text-foreground">{{ strtolower($agent->tier) === 'premium' ? '₹4,999' : (strtolower($agent->tier) === 'enterprise' ? '₹9,999' : '₹0') }}</p>
                         </td>
                         <td class="py-5 px-8">
                             <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ $agent->status === 'Active' ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500' }}">

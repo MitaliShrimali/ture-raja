@@ -125,82 +125,59 @@
     </style>
 
     <!-- Small Hero Header -->
-    <div class="pt-[120px] pb-6 bg-gray-50">
-        
-        <!-- Popular Transits (Packages Logos) -->
-        <div class="container-custom mb-6">
-            <div class="flex flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth items-start justify-around gap-4 md:gap-8 pb-4 px-2">
-              @php
-                $transits = [
-                  ['label' => "Land / customise\nPackage",   'gif' => 'https://s13.gifyu.com/images/bIHHY.png'],
-                  ['label' => "Flight\nPackage",              'gif' => 'https://s13.gifyu.com/images/bIHxe.gif'],
-                  ['label' => "Train\nPackage",               'gif' => 'https://s13.gifyu.com/images/bIHxG.gif'],
-                  ['label' => "Bus\nPackage",                 'gif' => 'https://s13.gifyu.com/images/bIHxJ.gif'],
-                  ['label' => "Bullet Ride\nPackage",         'gif' => 'https://s13.gifyu.com/images/bIHxP.gif'],
-                  ['label' => "Cruise\nPackage",              'gif' => 'https://s13.gifyu.com/images/bIHxX.gif'],
-                  ['label' => "Tracking\nPackage",            'gif' => 'https://s13.gifyu.com/images/bIHHt.png'],
-                  ['label' => "Helicopter\nPackage",          'gif' => 'https://s13.gifyu.com/images/bIHH5.png'],
-                ];
-              @endphp
-              @foreach($transits as $t)
-                @php
-                    $cleanType = str_replace("\n", " ", $t['label']);
-                    if ($cleanType === 'Bullet Ride Package') $cleanType = 'Bullet Ride';
-                    if ($cleanType === 'Land / customise Package') $cleanType = 'Other';
-                @endphp
-                <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
-                   class="group flex-none md:flex-1 w-20 md:w-auto flex flex-col items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
-                  <div class="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center" style="width: 64px; height: 64px; flex-shrink: 0;">
-                    <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" style="max-width: 100%; max-height: 100%;">
-                  </div>
-                  <span class="text-center text-[10px] md:text-xs font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
-                </a>
-              @endforeach
-            </div>
-        </div>
+    <div class="pt-20 pb-6 bg-gray-50">
 
-        <div class="container-custom text-center">
-            <div class="w-full max-w-5xl mx-auto">
-              <form action="{{ url('/discover') }}" method="GET">
-                <div class="p-3 md:p-3 rounded-lg flex flex-col md:flex-row items-center gap-3 w-full shadow-sm" style="background: #e85d26;">
-                  
-                  {{-- Destination Field --}}
-                  <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3" style="background: rgba(255,255,255,0.2);">
-                    <i data-lucide="search" class="text-white" size="18"></i>
-                    <input type="text" name="search" placeholder="Search Where You Go !!!"
-                           class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
-                           value="{{ request('search') }}">
-                  </div>
+        <!-- Sticky Search Bar Wrapper with Placeholder height -->
+        <div x-data="{ isSticky: false, topOffset: 0 }" 
+             x-init="$nextTick(() => { topOffset = $el.getBoundingClientRect().top + window.pageYOffset - 80 })" 
+             @scroll.window="isSticky = window.pageYOffset > topOffset"
+             class="w-full"
+             style="min-height: 72px;">
+            
+            <div :class="isSticky ? 'fixed top-20 left-0 right-0 z-50 py-2 pointer-events-none' : 'relative z-40'">
+                <div class="container-custom text-center pointer-events-auto">
+                    <div class="w-full max-w-5xl mx-auto">
+                      <form action="{{ url('/discover') }}" method="GET">
+                        <div class="p-3 md:p-3 flex flex-col md:flex-row items-center gap-3 w-full shadow-sm transition-all duration-300" style="background: #e85d26;" :class="isSticky ? 'rounded-xl' : 'rounded-lg'">
+                          
+                          {{-- Destination Field --}}
+                          <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3" style="background: rgba(255,255,255,0.2);">
+                            <i data-lucide="search" class="text-white" size="18"></i>
+                            <input type="text" name="search" placeholder="Search Where You Go !!!"
+                                   class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
+                                   value="{{ request('search') }}">
+                          </div>
 
-                  {{-- Agent/City Field --}}
-                  <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3" style="background: rgba(255,255,255,0.2);">
-                    <i data-lucide="user" class="text-white" size="18"></i>
-                    <input type="text" name="city" placeholder="Search Nearby Agent Location"
-                           class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
-                           value="{{ is_array(request('city')) ? implode(', ', request('city')) : request('city') }}">
-                  </div>
+                          {{-- Agent/City Field --}}
+                          <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3" style="background: rgba(255,255,255,0.2);">
+                            <i data-lucide="user" class="text-white" size="18"></i>
+                            <input type="text" name="city" placeholder="Search Nearby Agent Location"
+                                   class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
+                                   value="{{ is_array(request('city')) ? implode(', ', request('city')) : request('city') }}">
+                          </div>
 
-                  {{-- Check In Field --}}
-                  <div class="flex items-center gap-3 w-full md:w-auto rounded-md px-4 py-3 shrink-0" style="background: rgba(255,255,255,0.2);">
-                    <i data-lucide="calendar" class="text-white" size="18"></i>
-                    <input type="text" name="check_in" placeholder="Check in" onfocus="(this.type='date')" onblur="(this.type='text')"
-                           class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full md:w-28 p-0"
-                           value="{{ request('check_in') }}">
-                  </div>
+                          {{-- Check In Field --}}
+                          <div class="flex items-center gap-3 w-full md:w-auto rounded-md px-4 py-3 shrink-0" style="background: rgba(255,255,255,0.2);">
+                            <i data-lucide="calendar" class="text-white" size="18"></i>
+                            <input type="text" name="check_in" placeholder="Check in" onfocus="(this.type='date')" onblur="(this.type='text')"
+                                   class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full md:w-28 p-0"
+                                   value="{{ request('check_in') }}">
+                          </div>
 
-                  {{-- Search Button --}}
-                  <div class="w-full md:w-auto shrink-0">
-                    <button type="submit"
-                            class="bg-white text-gray-900 font-bold text-sm hover:bg-gray-100 transition-colors w-full sm:w-auto px-10 py-3 rounded-md shadow-sm">
-                      Search
-                    </button>
-                  </div>
+                          {{-- Search Button --}}
+                          <div class="w-full md:w-auto shrink-0">
+                            <button type="submit"
+                                    class="bg-white text-gray-900 font-bold text-sm hover:bg-gray-100 transition-colors w-full sm:w-auto px-10 py-3 rounded-md shadow-sm">
+                              Search
+                            </button>
+                          </div>
 
+                        </div>
+                      </form>
+                    </div>
                 </div>
-              </form>
             </div>
         </div>
-
     </div>
 
     <style>

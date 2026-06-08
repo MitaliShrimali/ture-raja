@@ -1,6 +1,13 @@
 @props(['banners' => null, 'homeAd' => null])
 @php use Illuminate\Support\Str; @endphp
 
+<style>
+  .pure-white-placeholder::placeholder {
+    color: #ffffff !important;
+    opacity: 1 !important;
+  }
+</style>
+
 <section class="relative overflow-hidden" style="height:55vh; min-height:400px; max-height:550px;">
 
   {{-- ── Background Slider ── --}}
@@ -66,25 +73,25 @@
     </h1>
 
     {{-- Glassmorphism Search Bar --}}
-    <div class="w-full max-w-5xl">
+    <div class="w-full max-w-7xl">
       <form action="{{ route('search') }}" method="GET">
         <div style="background:rgba(255,255,255,0.15); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.25); border-radius:8px;"
              class="flex flex-col md:flex-row items-center gap-0 overflow-hidden">
 
           {{-- Destination Field --}}
           <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4" style="border-right: 1px solid rgba(255,255,255,0.2);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             <input type="text" name="destination" placeholder="Search Where You Go !!!"
-                   class="bg-transparent border-none focus:ring-0 text-white placeholder-white/70 text-sm font-medium outline-none w-full"
+                   class="bg-transparent border-none focus:ring-0 text-white placeholder-white text-sm font-medium outline-none w-full pure-white-placeholder"
                    style="box-shadow: none;"
                    value="{{ request('destination') }}">
           </div>
 
           {{-- Agent/City Field --}}
           <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
             <input type="text" name="from_city" placeholder="Search agent from your location/near by city"
-                   class="bg-transparent border-none focus:ring-0 text-white placeholder-white/70 text-[12px] font-medium outline-none w-full"
+                   class="bg-transparent border-none focus:ring-0 text-white placeholder-white text-[12px] font-medium outline-none w-full pure-white-placeholder"
                    style="box-shadow: none;"
                    value="{{ request('from_city') }}">
           </div>

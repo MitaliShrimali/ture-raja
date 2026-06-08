@@ -63,8 +63,15 @@
                                 ['name' => 'Global Dashboard', 'icon' => 'layout-dashboard', 'href' => '/admin/dashboard'],
                                 ['name' => 'Admin User', 'icon' => 'user-round', 'href' => '/admin/users'],
                                 ['name' => 'Customers', 'icon' => 'user', 'href' => '/admin/customers'],
-                                ['name' => 'Agent Management', 'icon' => 'users', 'href' => '/admin/agents'],
-                                ['name' => 'Registered Agents', 'icon' => 'users-round', 'href' => '/admin/registered-agents'],
+                                [
+                                    'name' => 'Paid user',
+                                    'icon' => 'user-plus',
+                                    'href' => '/admin/registered-agents',
+                                    'children' => [
+                                        ['name' => 'All paid user', 'href' => '/admin/registered-agents'],
+                                        ['name' => 'Add Paid User', 'href' => '/admin/agents'],
+                                    ]
+                                ],
                                 ['name' => 'Lead Management', 'icon' => 'target', 'href' => '/admin/leads'],
                             ]
                         ],
@@ -91,15 +98,6 @@
                         [
                             'label' => 'SUBSCRIPTION OVERSIGHT',
                             'items' => [
-                                [
-                                    'name' => 'Paid User', 
-                                    'icon' => 'user-plus', 
-                                    'href' => '/admin/paid-users',
-                                    'children' => [
-                                        ['name' => 'All Paid Users', 'href' => '/admin/paid-users'],
-                                        ['name' => 'Add Paid User', 'href' => '/admin/paid-users/create'],
-                                    ]
-                                ],
                                 ['name' => 'User Plan', 'icon' => 'clipboard-list', 'href' => '/admin/user-plans'],
                                 ['name' => 'Payment', 'icon' => 'credit-card', 'href' => '/admin/payments'],
                                 ['name' => 'Advertisement', 'icon' => 'megaphone', 'href' => '/admin/ads'],

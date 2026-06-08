@@ -2,19 +2,7 @@
     :class="(isScrolled || !isHome) ? 'bg-white shadow-sm py-4' : 'bg-transparent py-8'"
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
 >
-    <style>
-        @media (min-width: 1024px) {
-            .header-center-wrapper {
-                position: absolute !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-                top: 0 !important;
-                bottom: 0 !important;
-                justify-content: center !important;
-                width: max-content !important;
-            }
-        }
-    </style>
+
     <div class="container-custom flex items-center justify-between relative w-full">
         <!-- Logo -->
         <div class="flex items-center justify-start flex-shrink-0 z-10">
@@ -38,8 +26,8 @@
           ];
         @endphp
         
-        <div class="flex-1 relative flex justify-center items-center z-20 header-center-wrapper">
-            <div id="navbar-transits" class="absolute flex w-full lg:w-auto overflow-x-auto hide-scrollbar lg:overflow-visible items-center justify-start lg:justify-center gap-4 xl:gap-8 px-4 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-90 translate-y-4 pointer-events-none'">
+        <div class="flex-1 relative flex justify-center items-center z-20">
+            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 flex w-full lg:w-auto overflow-x-auto hide-scrollbar lg:overflow-visible items-center justify-start lg:justify-center gap-4 xl:gap-8 px-4 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
                 @foreach($headerTransits as $t)
                   @php
                       $cleanType = $t['label'];
@@ -57,7 +45,7 @@
                   </a>
                 @endforeach
             </div>
-            <div class="absolute hidden lg:flex items-center gap-8 text-[15px] font-bold text-white transition-all duration-500 z-50 whitespace-nowrap" :class="(!isScrolled && isHome) ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-4 pointer-events-none'">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-8 text-[15px] font-bold text-white transition-all duration-500 z-50 whitespace-nowrap" :class="(!isScrolled && isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-95 -translate-y-[80%] pointer-events-none'">
                 <a href="{{ url('/') }}" class="hover:text-white transition-colors flex items-center gap-1.5 relative group whitespace-nowrap {{ request()->is('/') ? 'text-white' : 'text-white/80' }}">
                     Home
                     <span class="absolute -bottom-1 left-0 {{ request()->is('/') ? 'w-full' : 'w-0' }} h-0.5 bg-white group-hover:w-full transition-all duration-300"></span>

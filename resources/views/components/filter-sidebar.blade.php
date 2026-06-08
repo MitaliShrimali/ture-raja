@@ -258,6 +258,28 @@
                 @endforeach
             </div>
         </div>
+        <!-- 8. Travel Company -->
+        <div>
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Travel Company</h3>
+            @php
+                $agentsList = \DB::table('agents')->where('status', 'Active')->get();
+            @endphp
+            <div class="relative group mb-3">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i data-lucide="building" class="text-gray-400" size="14"></i>
+                </div>
+                <select name="agent_id" onchange="this.form.dispatchEvent(new Event('submit'))" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 pr-10 text-xs font-semibold text-gray-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all appearance-none cursor-pointer" style="padding-left: 2.5rem;">
+                    <option value="" class="py-2 text-gray-800 font-semibold">All Companies</option>
+                    @foreach($agentsList as $a)
+                        <option value="{{ $a->id }}" {{ request('agent_id') == $a->id ? 'selected' : '' }} class="py-2 text-gray-800">{{ $a->name }}</option>
+                    @endforeach
+                </select>
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <i data-lucide="chevron-down" class="text-gray-400" size="14"></i>
+                </div>
+            </div>
+            <hr class="mt-5 border-gray-100">
+        </div>
 
     </div>
 </aside>
