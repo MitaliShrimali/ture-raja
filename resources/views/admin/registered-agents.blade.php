@@ -42,8 +42,10 @@
             <thead class="bg-gray-50 border-b border-border-soft">
                 <tr>
                     <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Agent Name</th>
-                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Region & Tier</th>
-                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Status</th>
+                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">JOINED DATE</th>
+                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">PLAN</th>
+                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">AMOUNT PAID</th>
+                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">STATUS</th>
                     <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Actions</th>
                 </tr>
             </thead>
@@ -69,8 +71,13 @@
                             </div>
                         </td>
                         <td class="py-5 px-8">
-                            <p class="text-sm font-bold text-foreground">{{ $agent->region }}</p>
-                            <p class="text-[10px] text-primary font-black uppercase tracking-wider">{{ $agent->tier }}</p>
+                            <p class="text-sm font-bold text-foreground">{{ $agent->created_at ? \Carbon\Carbon::parse($agent->created_at)->format('M d, Y') : 'N/A' }}</p>
+                        </td>
+                        <td class="py-5 px-8">
+                            <p class="text-[11px] font-black uppercase tracking-wider {{ strtolower($agent->tier) === 'premium' ? 'text-purple-500 bg-purple-50' : 'text-primary bg-primary/10' }} inline-block px-3 py-1 rounded-full">{{ $agent->tier ?? 'Basic' }}</p>
+                        </td>
+                        <td class="py-5 px-8">
+                            <p class="text-sm font-bold text-foreground">-</p>
                         </td>
                         <td class="py-5 px-8">
                             <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ $agent->status === 'Active' ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500' }}">
@@ -79,10 +86,10 @@
                         </td>
                         <td class="py-5 px-8">
                             <div class="flex items-center gap-3">
-                                <a href="{{ url('/admin/agents/toggle/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-muted-text hover:text-primary transition-colors">
+                                <a href="{{ url('/admin/agents/toggle/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-muted-text hover:text-primary transition-colors" title="Toggle Status">
                                     <i data-lucide="power" size="14"></i>
                                 </a>
-                                <a href="{{ url('/admin/agents/delete/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-400 hover:text-red-500 transition-colors" onclick="return confirm('Are you sure you want to remove this agent?');">
+                                <a href="{{ url('/admin/agents/delete/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-400 hover:text-red-500 transition-colors" onclick="return confirm('Are you sure you want to remove this agent?');" title="Delete">
                                     <i data-lucide="trash-2" size="14"></i>
                                 </a>
                             </div>

@@ -122,6 +122,7 @@
                                 ['name' => 'Pages', 'icon' => 'file-text', 'href' => '/admin/cms'],
                                 ['name' => 'Contact US', 'icon' => 'message-square', 'href' => '/admin/contact'],
                                 ['name' => 'Subscriber', 'icon' => 'users', 'href' => '/admin/subscribers'],
+                                ['name' => 'Careers', 'icon' => 'briefcase', 'href' => '/admin/careers'],
                                 ['name' => 'Settings', 'icon' => 'settings', 'href' => '/admin/settings'],
                             ]
                         ]

@@ -1781,6 +1781,27 @@ class AdminController extends Controller
         
         return view('admin.profile', compact('admin', 'totalPackages', 'totalLeads', 'totalUsers', 'totalPayments', 'totalRevenue'));
     }
+
+    // ─── CAREERS ─────────────────────────────────────────────────────────────
+    public function careers()
+    {
+        $applications = \App\Models\CareerApplication::orderBy('id', 'desc')->get();
+        return view('admin.careers', compact('applications'));
+    }
+
+    public function deleteCareer($id)
+    {
+        $application = \App\Models\CareerApplication::findOrFail($id);
+        
+        // Delete the resume file if it exists
+        if ($application->resume_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($application->resume_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($application->resume_path);
+        }
+        
+        $application->delete();
+        
+        return redirect()->back()->with('success', 'Career application deleted successfully.');
+    }
 }
 
 // Reusable custom timing function for activity feed

@@ -7,9 +7,6 @@
             <h2 class="font-black text-foreground tracking-tight">Subscriber Management</h2>
             <p class="text-muted-text font-medium">Oversee your community engagement and platform growth metrics.</p>
         </div>
-        <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
-            <i data-lucide="plus" size="20"></i> Add Subscriber
-        </button>
     </div>
 
     <!-- Subscriber List -->

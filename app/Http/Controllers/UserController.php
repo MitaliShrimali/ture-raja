@@ -639,6 +639,60 @@ class UserController extends Controller
             ->with('success', 'Logged out successfully.');
     }
 
+    // ─── CAREER FORM SUBMISSION ─────────────────────────────────────────
+    public function submitCareer(Request $request)
+    {
+        $request->validate([
+            'role'           => 'required|string',
+            'resume'         => 'required|file|mimes:pdf,doc,docx|max:5120',
+            'first_name'     => 'required|string',
+            'middle_name'    => 'nullable|string',
+            'last_name'      => 'required|string',
+            'email'          => 'required|email',
+            'phone'          => 'required|string',
+            'location'       => 'required|string',
+            'location_other' => 'nullable|string',
+            'notice_period'  => 'required|string',
+            'gender'         => 'required|string',
+            'education'      => 'required|string',
+            'total_exp'      => 'required|string',
+            'relevant_exp'   => 'nullable|string',
+            'current_ctc'    => 'nullable|string',
+            'expected_ctc'   => 'required|string',
+        ]);
+
+        try {
+            $resumePath = '';
+            if ($request->hasFile('resume')) {
+                // Store resume in public/resumes directory
+                $resumePath = $request->file('resume')->store('resumes', 'public');
+            }
+
+            \App\Models\CareerApplication::create([
+                'role'           => $request->role,
+                'resume_path'    => $resumePath,
+                'first_name'     => $request->first_name,
+                'middle_name'    => $request->middle_name,
+                'last_name'      => $request->last_name,
+                'email'          => $request->email,
+                'phone'          => $request->phone,
+                'location'       => $request->location,
+                'location_other' => $request->location_other,
+                'notice_period'  => $request->notice_period,
+                'gender'         => $request->gender,
+                'education'      => $request->education,
+                'total_exp'      => $request->total_exp,
+                'relevant_exp'   => $request->relevant_exp,
+                'current_ctc'    => $request->current_ctc,
+                'expected_ctc'   => $request->expected_ctc,
+            ]);
+
+            return redirect()->back()->with('success', 'Your application has been submitted successfully! We will review your profile and get back to you soon. ✅');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'There was an error submitting your application. Please try again.')->withInput();
+        }
+    }
+
         // ─── SIGNUP METHOD ──────────────────────────────────────────────────────
         public function signup(Request $request)
         {

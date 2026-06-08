@@ -26,7 +26,7 @@
         <h4 style="font-size:13px; font-weight:700; margin-bottom:16px;" class="text-white">Tour Raja</h4>
         <ul style="list-style:none; padding:0; margin:0;">
           <li style="padding:1px 0;"><a href="{{ url('/about') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">About Us</a></li>
-          <li style="padding:1px 0;"><a href="#" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Career</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/career') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Career</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/contact') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Contact Us</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/privacy-policy') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Privacy Policy</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/terms-and-conditions') }}" style="color:rgba(255,255,255,0.85); font-size:12px; text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Terms And Conditions</a></li>

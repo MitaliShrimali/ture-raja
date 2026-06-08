@@ -17,6 +17,8 @@ Route::get('/discover', [ListingController::class, 'index'])->name('discover');
 
 // Static pages (keep original behaviour)
 Route::get('/about', function () { return view('about'); });
+Route::get('/career', function () { return view('careers'); })->name('career');
+Route::post('/career/submit', [UserController::class, 'submitCareer'])->name('career.submit');
 Route::get('/contact', function () { return view('contact'); });
 Route::get('/privacy-policy', function () { return view('privacy-policy'); });
 Route::get('/terms-and-conditions', function () { return view('terms'); });
@@ -87,6 +89,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/agents', [AdminController::class, 'agents']);
     Route::get('/registered-agents', [AdminController::class, 'registeredAgents']);
     Route::get('/leads', [AdminController::class, 'leads']);
+    Route::get('/careers', [AdminController::class, 'careers']);
+    Route::get('/careers/delete/{id}', [AdminController::class, 'deleteCareer']);
 
     // Subscription Oversight
     Route::get('/paid-users', [AdminController::class, 'paidUsers']);
@@ -590,6 +594,14 @@ Route::get('/audio/bg_music.mp3', function () { return response()->file(public_p
 
 Route::get('/uploads/{path}', function ($path) {
     $fullPath = base_path('uploads/' . $path);
+    if (file_exists($fullPath)) {
+        return response()->file($fullPath);
+    }
+    abort(404);
+})->where('path', '.*');
+
+Route::get('/resume/view/{path}', function ($path) {
+    $fullPath = storage_path('app/public/' . $path);
     if (file_exists($fullPath)) {
         return response()->file($fullPath);
     }
