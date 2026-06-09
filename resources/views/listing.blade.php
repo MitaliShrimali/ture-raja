@@ -197,7 +197,7 @@
     }
     </style>
 
-    <div class="container-custom pt-8 pb-16" x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tourraja_view_style') || 'grid'" }}, mobileFiltersOpen: false }" x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
+    <div class="container-custom pt-8 pb-16" x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tourraja_view_style') || 'grid'" }}, mobileFiltersOpen: false, stateModalOpen: false, expandedStates: {} }" x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
 
         <form id="filter-form" action="{{ url('/listing') }}" method="GET" class="flex flex-col lg:flex-row gap-12 w-full">
             <!-- Sidebar Wrapper (Responsive: Slide-over Drawer on Mobile, Sticky Column on Desktop) -->
@@ -347,9 +347,23 @@
                 </div>
                 <!-- Top Bar -->
                 <div class="bg-white rounded-lg py-3 px-5 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
-                    <div class="text-center md:text-left flex items-center flex-wrap gap-2" style="font-size: 16px;">
+                    <div class="text-center md:text-left flex items-center flex-wrap gap-3" style="font-size: 16px;">
                         <span class="text-gray-500 font-bold uppercase tracking-widest" style="font-size: 16px;">Search Results:</span>
-                        <h3 class="font-black" style="font-size: 16px;">Showing <span id="results-count" class="text-primary">{{ $packages->count() }}</span> Packages</h3>
+                        <h3 class="font-black cursor-pointer hover:text-primary transition-colors" @click="stateModalOpen = true" style="font-size: 16px;">
+                            Showing <span id="results-count" class="text-primary">{{ $packages->count() }}</span> Packages
+                        </h3>
+                        
+                        <!-- Dropdown Pill -->
+                        <button type="button" @click="stateModalOpen = true" class="flex items-center gap-1.5 px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-black text-gray-700 transition-all shadow-sm shrink-0">
+                            <span>
+                                @if(request()->filled('selected_cities'))
+                                    Selected ({{ count(request('selected_cities')) }})
+                                @else
+                                    Select State
+                                @endif
+                            </span>
+                            <i data-lucide="chevron-down" size="14" class="text-gray-400"></i>
+                        </button>
                     </div>
                     
                     <div class="flex flex-row items-center justify-between gap-3 w-full md:w-auto border-t border-gray-50 pt-5 md:border-none md:pt-0">
@@ -362,10 +376,11 @@
                         <!-- Sort Dropdown: Constrained on mobile -->
                         <div class="relative mobile-sort-select-wrapper md:w-64 flex-1 md:flex-none">
                             <select name="sort" class="w-full bg-background border border-gray-100 rounded-2xl py-2.5 pl-4 pr-10 text-[12px] font-black focus:outline-none appearance-none cursor-pointer hover:border-primary/30 transition-all">
-                                <option value="Recommended" {{ request('sort') == 'Recommended' ? 'selected' : '' }}>Recommended</option>
-                                <option value="Price: Low to High" {{ request('sort') == 'Price: Low to High' ? 'selected' : '' }}>Price: Low to High</option>
-                                <option value="Price: High to Low" {{ request('sort') == 'Price: High to Low' ? 'selected' : '' }}>Price: High to Low</option>
-                                <option value="Top Rated" {{ request('sort') == 'Top Rated' ? 'selected' : '' }}>Top Rated</option>
+                                <option value="GUARANTEED SERVICE" {{ request('sort') == 'GUARANTEED SERVICE' || !request('sort') || request('sort') == 'Recommended' ? 'selected' : '' }}>GUARANTEED SERVICE</option>
+                                <option value="PRICE (LOW TO HIGH)" {{ request('sort') == 'PRICE (LOW TO HIGH)' || request('sort') == 'Price: Low to High' ? 'selected' : '' }}>PRICE (LOW TO HIGH)</option>
+                                <option value="PRICE (HIGH TO LOW)" {{ request('sort') == 'PRICE (HIGH TO LOW)' || request('sort') == 'Price: High to Low' ? 'selected' : '' }}>PRICE (HIGH TO LOW)</option>
+                                <option value="DURATION (LOW TO HIGH)" {{ request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>DURATION (LOW TO HIGH)</option>
+                                <option value="DURATION (HIGH TO LOW)" {{ request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>DURATION (HIGH TO LOW)</option>
                             </select>
                             <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="14"></i>
                         </div>
@@ -407,6 +422,87 @@
                             </button>
                         </div>
                     @endif
+                </div>
+            <!-- Select State Modal -->
+            <div 
+                x-show="stateModalOpen" 
+                class="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                style="display: none;"
+            >
+                <div @click.away="stateModalOpen = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-8 space-y-6 flex flex-col max-h-[80vh]">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 shrink-0">
+                        <h3 class="text-xl font-black text-foreground">Select State</h3>
+                        <button type="button" @click="stateModalOpen = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                            <i data-lucide="x" size="20"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Accordion Body -->
+                    <div class="flex-1 overflow-y-auto space-y-4 pr-2 py-2">
+                        @foreach($locationCatalog as $state => $cities)
+                            @php
+                                $stateTotal = array_sum($cities);
+                                $stateSlug = \Illuminate\Support\Str::slug($state);
+                            @endphp
+                            <div class="border border-gray-100 rounded-2xl overflow-hidden bg-gray-50/30">
+                                <!-- State Header -->
+                                <div 
+                                    @click="expandedStates['{{ $stateSlug }}'] = !expandedStates['{{ $stateSlug }}']"
+                                    class="flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 cursor-pointer select-none transition-colors"
+                                >
+                                    <span class="font-extrabold text-sm text-foreground">
+                                        {{ $state }} <span class="text-xs text-muted-text/60">({{ $stateTotal }})</span>
+                                    </span>
+                                    <i data-lucide="chevron-down" class="text-gray-400 transition-transform duration-300" :class="expandedStates['{{ $stateSlug }}'] ? 'rotate-180' : ''" size="16"></i>
+                                </div>
+                                
+                                <!-- Cities list -->
+                                <div 
+                                    x-show="expandedStates['{{ $stateSlug }}']"
+                                    class="p-4 bg-white border-t border-gray-50 space-y-3"
+                                    x-transition.opacity
+                                >
+                                    @foreach($cities as $city => $count)
+                                        <label class="flex items-center gap-3 cursor-pointer group select-none pl-2">
+                                            <input type="checkbox" name="selected_cities[]" value="{{ strtolower($city) }}" {{ in_array(strtolower($city), request('selected_cities', [])) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">
+                                                {{ $city }} <span class="text-[10px] text-gray-400">({{ $count }})</span>
+                                            </span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 shrink-0">
+                        <button 
+                            type="button" 
+                            @click="
+                                $el.closest('form').querySelectorAll('input[name=\'selected_cities[]\']').forEach(cb => cb.checked = false);
+                                stateModalOpen = false;
+                                $el.closest('form').dispatchEvent(new Event('submit'));
+                            "
+                            class="px-6 py-3 hover:bg-gray-50 rounded-xl text-xs font-black text-primary uppercase tracking-widest transition-all"
+                        >
+                            Clear
+                        </button>
+                        <button 
+                            type="submit" 
+                            @click="stateModalOpen = false"
+                            class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all"
+                        >
+                            Apply
+                        </button>
+                    </div>
                 </div>
             </div>
         </form>

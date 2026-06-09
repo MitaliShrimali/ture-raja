@@ -69,7 +69,29 @@
             <hr class="mt-5 border-gray-100">
         </div>
 
-        <!-- 2. Duration (Nights) -->
+        <!-- Holiday Types -->
+        <div>
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Holiday Types</h3>
+            @php
+                $selectedHolidayTypes = (array) request('holiday_type', []);
+                $holidayTypesOptions = [
+                    'Most Popular' => 'most popular',
+                    'Honeymoon' => 'honeymoon',
+                    'Budget' => 'budget',
+                    'Multi City' => 'multi city',
+                    'Short Tour' => 'short tour'
+                ];
+            @endphp
+            <div class="space-y-2">
+                @foreach($holidayTypesOptions as $label => $val)
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" name="holiday_type[]" value="{{ $val }}" {{ in_array($val, $selectedHolidayTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $label }}</span>
+                    </label>
+                @endforeach
+            </div>
+            <hr class="mt-5 border-gray-100">
+        </div>
         <div x-data="rangeSlider({{ request('min_nights', 2) }}, {{ request('max_nights', 11) }}, 1, 20)">
             <h3 class="font-bold text-gray-900 mb-5 uppercase tracking-wide" style="font-size: 20px;">Duration (Nights)</h3>
             

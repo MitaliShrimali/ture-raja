@@ -248,11 +248,168 @@ class ListingController extends Controller
             }
         }
 
+        // ── Holiday Types filter ────────────────────────────────────
+        if ($request->filled('holiday_type')) {
+            $htypes = array_map('strtolower', (array) $request->holiday_type);
+            $packages = $packages->filter(function($pkg) use ($htypes) {
+                $pkg = (array) $pkg;
+                $price = $pkg['price'] ?? 0;
+                $rating = (float)($pkg['rating'] ?? 0);
+                $badge = strtolower($pkg['badge'] ?? '');
+                $theme = strtolower($pkg['theme'] ?? '');
+                $title = strtolower($pkg['title'] ?? '');
+                
+                // Extract nights
+                $nights = $pkg['nights'] ?? 0;
+                if (!$nights && isset($pkg['duration'])) {
+                    if (preg_match('/(\d+)\s*nights?/', strtolower($pkg['duration']), $matches)) {
+                        $nights = (int)$matches[1];
+                    }
+                }
+                
+                foreach ($htypes as $ht) {
+                    if ($ht === 'most popular') {
+                        if (in_array($badge, ['popular', 'top rated']) || $rating >= 4.7 || (int)($pkg['reviews'] ?? 0) > 500) {
+                            return true;
+                        }
+                    }
+                    if ($ht === 'honeymoon') {
+                        if ($theme === 'honeymoon' || str_contains($title, 'honeymoon')) {
+                            return true;
+                        }
+                    }
+                    if ($ht === 'budget') {
+                        if ($price < 20000) {
+                            return true;
+                        }
+                    }
+                    if ($ht === 'multi city') {
+                        if (str_contains(strtolower($pkg['location'] ?? ''), 'europe') || str_contains($title, 'delight') || str_contains($title, 'multi') || str_contains(strtolower($pkg['location'] ?? ''), ',')) {
+                            return true;
+                        }
+                    }
+                    if ($ht === 'short tour') {
+                        if ($nights > 0 && $nights <= 3) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            });
+        }
+
+        // Build state and city counts from filtered packages (before applying the popup filter)
+        $stateMapping = [
+            'manali' => 'Himachal Pradesh',
+            'shimla' => 'Himachal Pradesh',
+            'kasol' => 'Himachal Pradesh',
+            'goa' => 'Goa',
+            'rishikesh' => 'Uttarakhand',
+            'haridwar' => 'Uttarakhand',
+            'munnar' => 'Kerala',
+            'kochi' => 'Kerala',
+            'darjeeling' => 'West Bengal',
+            'rajkot' => 'Gujarat',
+            'monaco' => 'Monaco',
+            'hanoi' => 'Vietnam',
+            'dubai' => 'UAE',
+            'bali' => 'Indonesia',
+            'paris' => 'France',
+        ];
+
+        $locationCatalog = []; // State => [ City => Count ]
+        foreach ($packages as $pkg) {
+            $pkgArray = (array)$pkg;
+            $city = trim($pkgArray['city'] ?? '');
+            
+            if (!$city) {
+                $loc = strtolower($pkgArray['location'] ?? '');
+                foreach (array_keys($stateMapping) as $c) {
+                    if (str_contains($loc, $c)) {
+                        $city = ucfirst($c);
+                        break;
+                    }
+                }
+            }
+            if (!$city) {
+                $city = trim($pkgArray['location'] ?? 'Other');
+            }
+
+            $cityLower = strtolower($city);
+            $state = $stateMapping[$cityLower] ?? 'Other';
+            
+            if ($state === 'Other') {
+                $locLower = strtolower($pkgArray['location'] ?? '');
+                if (str_contains($locLower, 'goa')) $state = 'Goa';
+                elseif (str_contains($locLower, 'kerala')) $state = 'Kerala';
+                elseif (str_contains($locLower, 'himachal')) $state = 'Himachal Pradesh';
+                elseif (str_contains($locLower, 'uttarakhand')) $state = 'Uttarakhand';
+                elseif (str_contains($locLower, 'gujarat')) $state = 'Gujarat';
+                else $state = ucfirst(explode(',', $pkgArray['location'] ?? 'Other')[0]);
+            }
+
+            $state = trim($state);
+            $city = trim($city);
+
+            if (!isset($locationCatalog[$state])) {
+                $locationCatalog[$state] = [];
+            }
+            if (!isset($locationCatalog[$state][$city])) {
+                $locationCatalog[$state][$city] = 0;
+            }
+            $locationCatalog[$state][$city]++;
+        }
+
+        // Apply selected_cities filter if present
+        if ($request->filled('selected_cities')) {
+            $selectedCities = array_map('strtolower', (array) $request->selected_cities);
+            $packages = $packages->filter(function($pkg) use ($selectedCities, $stateMapping) {
+                $pkg = (array) $pkg;
+                $city = strtolower($pkg['city'] ?? $pkg['location'] ?? '');
+                
+                if (in_array($city, $selectedCities)) {
+                    return true;
+                }
+                foreach ($selectedCities as $sc) {
+                    if (str_contains($city, $sc)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
         // ── Sort ───────────────────────────────────────────────────
-        $sort = $request->input('sort', 'Recommended');
-        if ($sort === 'Price: Low to High')  $packages = $packages->sortBy(fn($p) => ((array)$p)['price'] ?? 0);
-        elseif ($sort === 'Price: High to Low') $packages = $packages->sortByDesc(fn($p) => ((array)$p)['price'] ?? 0);
-        elseif ($sort === 'Top Rated')       $packages = $packages->sortByDesc(fn($p) => ((array)$p)['rating'] ?? 0);
+        $sort = $request->input('sort', 'GUARANTEED SERVICE');
+        if ($sort === 'PRICE (LOW TO HIGH)' || $sort === 'Price: Low to High') {
+            $packages = $packages->sortBy(fn($p) => ((array)$p)['price'] ?? 0);
+        } elseif ($sort === 'PRICE (HIGH TO LOW)' || $sort === 'Price: High to Low') {
+            $packages = $packages->sortByDesc(fn($p) => ((array)$p)['price'] ?? 0);
+        } elseif ($sort === 'DURATION (LOW TO HIGH)') {
+            $packages = $packages->sortBy(function($pkg) {
+                $pkg = (array) $pkg;
+                $nights = $pkg['nights'] ?? 0;
+                if (!$nights && isset($pkg['duration'])) {
+                    if (preg_match('/(\d+)\s*nights?/', strtolower($pkg['duration']), $matches)) {
+                        $nights = (int)$matches[1];
+                    }
+                }
+                return $nights;
+            });
+        } elseif ($sort === 'DURATION (HIGH TO LOW)') {
+            $packages = $packages->sortByDesc(function($pkg) {
+                $pkg = (array) $pkg;
+                $nights = $pkg['nights'] ?? 0;
+                if (!$nights && isset($pkg['duration'])) {
+                    if (preg_match('/(\d+)\s*nights?/', strtolower($pkg['duration']), $matches)) {
+                        $nights = (int)$matches[1];
+                    }
+                }
+                return $nights;
+            });
+        } elseif ($sort === 'Top Rated') {
+            $packages = $packages->sortByDesc(fn($p) => ((array)$p)['rating'] ?? 0);
+        }
 
         // Fetch active ads for Package Sidebar
         try {
@@ -271,14 +428,16 @@ class ListingController extends Controller
             return view('agent-showcase', [
                 'packages' => $packages->values(),
                 'agent' => $agent,
-                'sidebarAds' => $sidebarAds
+                'sidebarAds' => $sidebarAds,
+                'locationCatalog' => $locationCatalog
             ]);
         }
 
         return view('listing', [
             'packages' => $packages->values(),
             'agent' => $agent,
-            'sidebarAds' => $sidebarAds
+            'sidebarAds' => $sidebarAds,
+            'locationCatalog' => $locationCatalog
         ]);
     }
 
