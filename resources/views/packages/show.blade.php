@@ -17,15 +17,33 @@
         border-color: rgba(255, 255, 255, 0.4) !important;
     }
     .package-detail-title {
-        font-size: 38px !important;
+        font-size: 30px !important;
         font-family: 'Outfit', sans-serif !important;
         line-height: 1.25 !important;
     }
     .section-heading {
-        font-size: 32px !important;
+        font-size: 30px !important;
         font-family: 'Outfit', sans-serif !important;
-        line-height: 1.25 !important;
+        line-height: 1.3 !important;
         font-weight: 900 !important;
+        position: relative;
+        padding-bottom: 8px;
+        display: inline-block;
+    }
+    .section-heading::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 3px;
+        background-color: #e85d26;
+        border-radius: 2px;
+    }
+    .standard-body-text {
+        font-size: 16px !important;
+        line-height: 1.65 !important;
+        color: #4b5563 !important; /* text-gray-600 */
     }
     .hide-scrollbar::-webkit-scrollbar {
         display: none;
@@ -156,27 +174,72 @@
                     }
                 }' class="mb-6">
                     
-                    {{-- Gallery Layout --}}
-                    <div class="grid grid-cols-3 gap-2 w-full overflow-hidden relative" style="height: 320px;">
-                        {{-- Large Left Image --}}
-                        <div class="col-span-2 h-full w-full relative cursor-pointer hover:opacity-95 transition overflow-hidden" @click="openGallery(0)">
-                            <img :src="slides[0]" class="w-full h-full object-cover" alt="Package Main Image">
-                        </div>
+                    @php
+                        $durationStr = $package['duration'];
+                        $days = 0;
+                        $nights = 0;
+                        if (preg_match('/(\d+)\s*d/i', $durationStr, $m)) {
+                            $days = $m[1];
+                        }
+                        if (preg_match('/(\d+)\s*n/i', $durationStr, $m)) {
+                            $nights = $m[1];
+                        }
                         
-                        {{-- Small Right Images (Top and Bottom) --}}
-                        <div class="col-span-1 grid grid-rows-2 gap-2 h-full w-full relative">
-                            <img :src="slides[1] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(1)">
-                            <img :src="slides[2] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(2)">
+                        if ($days > 0 && $nights > 0) {
+                            $formattedDuration = $nights . ($nights == 1 ? ' NIGHT' : ' NIGHTS') . ' - ' . $days . ($days == 1 ? ' DAY' : ' DAYS');
+                        } else {
+                            $formattedDuration = strtoupper($durationStr);
+                        }
+                    @endphp
+
+                    {{-- Gallery & Details Container --}}
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem;">
+                        {{-- Left Column: Images Grid (Takes 3/4 space on desktop) --}}
+                        <div class="lg:col-span-3 grid grid-cols-3 gap-2 w-full overflow-hidden relative" style="grid-column: span 3 / span 3; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); height: 320px; gap: 0.5rem;">
+                            {{-- Large Left Image --}}
+                            <div class="col-span-2 h-full w-full relative cursor-pointer hover:opacity-95 transition overflow-hidden" style="grid-column: span 2 / span 2;" @click="openGallery(0)">
+                                <img :src="slides[0]" class="w-full h-full object-cover" alt="Package Main Image">
+                            </div>
                             
-                            {{-- View Gallery Button (Anchored on the stacked/small images part) --}}
-                            <button @click.stop="openGallery(0)" class="absolute top-6 right-6 view-gallery-btn text-[12px] font-bold px-4 py-2.5 flex items-center gap-2 z-30 shadow-lg rounded-lg">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <polyline points="21 15 16 10 5 21"/>
-                                </svg>
-                                <span>View Gallery</span>
-                            </button>
+                            {{-- Small Right Images (Top and Bottom) --}}
+                            <div class="col-span-1 grid grid-rows-2 gap-2 h-full w-full relative" style="grid-column: span 1 / span 1; display: grid; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.5rem;">
+                                <img :src="slides[1] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(1)">
+                                <img :src="slides[2] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(2)">
+                                
+                                {{-- View Gallery Button --}}
+                                <button @click.stop="openGallery(0)" class="absolute top-6 right-6 view-gallery-btn text-[12px] font-bold px-4 py-2.5 flex items-center gap-2 z-30 shadow-lg rounded-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                                        <polyline points="21 15 16 10 5 21"/>
+                                    </svg>
+                                    <span>View Gallery</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Right Column: Package Details (Duration, Group Size, Type, Inquiry Now) --}}
+                        <div class="lg:col-span-1 flex flex-col justify-between py-1.5 space-y-6" style="grid-column: span 1 / span 1;">
+                            <div class="space-y-6" style="margin-bottom: 1.5rem;">
+                                <div>
+                                    <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest" style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">DURATION</p>
+                                    <p class="font-extrabold text-gray-800 text-base" style="font-size: 16px; font-family: 'Outfit', sans-serif;">{{ $formattedDuration }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest" style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">GROUP SIZE</p>
+                                    <p class="font-extrabold text-gray-800 text-base uppercase" style="font-size: 16px; font-family: 'Outfit', sans-serif;">{{ $package['groupSize'] }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest" style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">TYPE</p>
+                                    <p class="font-extrabold text-gray-800 text-base uppercase" style="font-size: 16px; font-family: 'Outfit', sans-serif;">{{ $package['category'] }}</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <a href="#contact-form" onclick="event.preventDefault(); document.getElementById('contact-form').scrollIntoView({behavior:'smooth', block:'start'}); return false;" style="background-color: #e85d26; display: flex; align-items: center; justify-content: center;" class="block w-full py-3.5 text-white text-center font-black text-xs uppercase tracking-widest rounded-md hover:opacity-90 transition-opacity shadow-sm">
+                                    Inquiry Now
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -255,36 +318,7 @@
                     @endif
                 </div>
 
-                {{-- Quick Info Strip --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-4 sm:p-5 grid grid-cols-3 gap-2 sm:gap-4">
-                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-orange-50 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Duration</p>
-                            <p class="font-bold text-gray-800 text-xs sm:text-sm">{{ $package['duration'] }}</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-orange-50 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Group Size</p>
-                            <p class="font-bold text-gray-800 text-xs sm:text-sm">{{ $package['groupSize'] }}</p>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-1.5 sm:gap-3">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-md bg-orange-50 flex items-center justify-center shrink-0">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                        </div>
-                        <div>
-                            <p class="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider">Type</p>
-                            <p class="font-bold text-gray-800 text-xs sm:text-sm capitalize">{{ $package['category'] }}</p>
-                        </div>
-                    </div>
-                </div>
+
 
                 {{-- Includes Tags & Properties --}}
                 @php
@@ -314,13 +348,13 @@
                 {{-- Tour Overview --}}
                 <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
                     <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
-                    <p class="text-gray-600 leading-relaxed text-base detail-overview-text">{{ $package['overview'] }}</p>
+                    <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
 
                     <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Tour Highlights</h3>
                     <ul class="space-y-2">
                         @foreach($package['highlights'] as $hl)
-                        <li class="flex items-start gap-2 text-sm text-gray-600">
-                            <svg class="shrink-0 mt-0.5" width="16" height="16" fill="none" stroke="#f97316" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        <li class="flex items-start gap-2 standard-body-text">
+                            <svg class="shrink-0 mt-1" width="14" height="14" fill="none" stroke="#f97316" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                             <span>{{ $hl }}</span>
                         </li>
                         @endforeach
@@ -329,17 +363,17 @@
 
                 {{-- What's Included / Excluded --}}
                 <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-black text-gray-900 mb-5 section-heading">What's Included</h2>
+                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">What's Included</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
                         @foreach($package['included'] as $item)
-                        <div class="flex items-start gap-2 text-sm text-gray-600">
-                            <svg class="shrink-0 mt-0.5" width="16" height="16" fill="none" stroke="#22c55e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        <div class="flex items-start gap-2 standard-body-text">
+                            <svg class="shrink-0 mt-1" width="14" height="14" fill="none" stroke="#22c55e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                             <span>{{ $item }}</span>
                         </div>
                         @endforeach
                         @foreach($package['excluded'] as $item)
-                        <div class="flex items-start gap-2 text-sm text-gray-600">
-                            <svg class="shrink-0 mt-0.5" width="16" height="16" fill="none" stroke="#ef4444" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        <div class="flex items-start gap-2 standard-body-text">
+                            <svg class="shrink-0 mt-1" width="14" height="14" fill="none" stroke="#ef4444" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             <span>{{ $item }}</span>
                         </div>
                         @endforeach
@@ -370,9 +404,9 @@
                             
                             {{-- Content --}}
                             <div class="-mt-1 flex-1">
-                                <h4 class="font-black text-gray-800 text-sm sm:text-base" style="font-family: 'Outfit', sans-serif;">Day {{ $idx + 1 }}: {{ $day['title'] }}</h4>
+                                <h4 class="font-black text-gray-800" style="font-family: 'Outfit', sans-serif; font-size: 16px;">Day {{ $idx + 1 }}: {{ $day['title'] }}</h4>
                                 @if(!empty($day['desc']))
-                                    <p class="text-gray-500 text-[13px] sm:text-sm leading-relaxed mt-2 max-w-3xl">{{ $day['desc'] }}</p>
+                                    <p class="standard-body-text mt-2 max-w-3xl">{{ $day['desc'] }}</p>
                                 @endif
                             </div>
                         </div>
@@ -412,7 +446,7 @@
                                 class="w-full flex items-center justify-between p-5 text-left transition-all duration-200 outline-none"
                                 @click="activeFaq = (activeFaq === {{ $i }} ? null : {{ $i }})"
                             >
-                                <span class="font-black text-gray-800 text-sm sm:text-base leading-tight">{{ $faq['q'] }}</span>
+                                <span class="font-black text-gray-800 leading-tight" style="font-size: 16px;">{{ $faq['q'] }}</span>
                                 <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300"
                                      :style="activeFaq === {{ $i }} ? 'background-color: #e85d26 !important; color: #ffffff !important;' : 'background-color: rgba(26,26,36,0.04) !important; color: #6b6b7a !important;'">
                                     <svg class="w-4 h-4 transition-transform duration-300" :class="activeFaq === {{ $i }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
@@ -426,7 +460,8 @@
                                 x-transition:enter="transition ease-out duration-200"
                                 x-transition:enter-start="opacity-0 -translate-y-2"
                                 x-transition:enter-end="opacity-100 translate-y-0"
-                                class="px-5 pb-5 pt-0 text-gray-600 text-sm sm:text-[15px] leading-relaxed border-t border-gray-100/50"
+                                class="px-5 pb-5 pt-0 standard-body-text border-t border-gray-100/50"
+                                style="padding-top: 0.75rem;"
                             >
                                 {{ $faq['a'] }}
                             </div>
@@ -529,68 +564,98 @@
                     $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentData->id);
                 @endphp
                 <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-4">
-                    <h3 class="text-base font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">Agent Information</h3>
-                    <div class="flex flex-col items-center text-center py-2 space-y-2">
-                        <div class="w-16 h-16 rounded-full overflow-hidden border-4 border-primary/20 flex items-center justify-center shadow-md">
-                            <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-full h-full object-cover">
-                        </div>
-                        <div>
-                            <p class="font-black text-gray-800 text-base">{{ $agentName }}</p>
-                            <p class="text-gray-500 text-xs mt-0.5">{{ $agentRegion }}</p>
-                        </div>
-                        <div class="flex items-center gap-0.5">
-                            @for($s = 0; $s < 5; $s++)
-                                <svg width="13" height="13" fill="{{ $s < 4 ? '#f97316' : '#e5e7eb' }}" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            @endfor
-                            <span class="text-sm font-bold text-gray-700 ml-1">4.8</span>
-                        </div>
+                    <h3 class="text-base font-black text-gray-900 flex items-center gap-2" style="font-family: 'Outfit', sans-serif;">
+                        <span class="inline-block w-[6px] h-5 rounded" style="background-color: #e85d26;"></span>
+                        Agent Information
+                    </h3>
+                    
+                    {{-- Square logo container --}}
+                    <div class="w-full bg-[#FAF0EC] rounded-lg p-6 flex items-center justify-center relative overflow-hidden" style="height: 180px;">
+                        <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="max-w-full max-h-full object-contain">
                     </div>
 
-                    <div class="space-y-2.5 text-sm text-gray-600">
-                        <div class="flex items-center gap-2.5">
-                            <svg class="shrink-0" width="15" height="15" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                            <span>www.{{ strtolower(str_replace(' ', '', $agentName)) }}.com</span>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <svg class="shrink-0" width="15" height="15" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
-                            <span>{{ $agentPhone }}</span>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <svg class="shrink-0" width="15" height="15" fill="none" stroke="#f97316" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            <span>{{ $agentEmail }}</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" class="py-2.5 bg-green-500 hover:bg-green-600 text-white text-center text-xs font-black rounded-md transition-colors">Whatsapp</a>
-                        <a href="mailto:{{ $agentEmail }}" class="py-2.5 bg-primary hover:bg-primary/90 text-white text-center text-xs font-black rounded-md transition-colors">Email</a>
-                        <a href="{{ $agentRedirectUrl }}" class="py-2.5 border border-border-soft text-foreground text-center text-xs font-black rounded-md hover:bg-gray-50 transition-colors">Other Packages</a>
-                        <a href="{{ $agentRedirectUrl }}" class="py-2.5 bg-foreground hover:opacity-90 text-white text-center text-xs font-black rounded-md transition-colors">See Profile</a>
-                    </div>
-                </div>
-
-                {{-- Price & Book Card --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-4">
                     <div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Price Per Person</p>
-                        <p class="text-3xl font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">₹{{ number_format($package['price']) }}</p>
-                        @if(!empty($package['oldPrice']))
-                        <p class="text-sm text-primary font-bold line-through mt-1">₹{{ number_format($package['oldPrice']) }}</p>
-                        @endif
+                        <p class="font-black text-gray-900 text-lg" style="font-family: 'Outfit', sans-serif;">{{ $agentName }}</p>
                     </div>
-                    <button type="button" @click="showBookingModal = true" class="block w-full py-3.5 bg-primary hover:bg-primary/90 text-white text-center font-black text-sm uppercase tracking-widest rounded-md transition-all duration-200 shadow-glow">
-                        Book Now
-                    </button>
-                    <a href="#contact-form" class="block w-full py-3 border-2 border-gray-200 hover:border-orange-300 text-gray-700 text-center font-bold text-sm rounded-md transition-all duration-200">
-                        Enquire Now
-                    </a>
+
+                    <div class="space-y-3 text-sm text-gray-700" style="margin-top: 1rem; margin-bottom: 1rem;">
+                        <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
+                            <span class="font-medium text-gray-800" style="font-size: 16px !important;">{{ $agentPhone }}</span>
+                        </div>
+                        <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <span class="font-medium text-gray-800" style="font-size: 16px !important;">{{ $agentEmail }}</span>
+                        </div>
+                        <div class="flex items-start gap-2" style="display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <svg class="shrink-0 text-blue-500 mt-0.5" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span class="font-medium text-gray-800 leading-tight" style="font-size: 16px !important;">{{ $agentRegion }}</span>
+                        </div>
+                        <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            <span class="font-medium text-gray-800" style="font-size: 16px !important;">www.{{ strtolower(str_replace(' ', '', $agentName)) }}.com</span>
+                        </div>
+                        <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <span class="text-blue-500 font-bold text-base select-none" style="color: #3b82f6 !important; font-size: 20px; width: 20px; text-align: center;">G</span>
+                            <span class="text-gray-800 font-medium" style="font-size: 16px !important;">Google Reviews <span class="text-yellow-500">★</span> 4.5</span>
+                        </div>
+                    </div>
+
+                    {{-- Social Icons --}}
+                    <div class="flex items-center gap-3 pt-1" style="display: flex; gap: 0.75rem; margin-top: 0.5rem; margin-bottom: 0.5rem;">
+                        <a href="#" class="w-9 h-9 rounded-full flex items-center justify-center text-white" style="background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%); display: flex !important; width: 36px; height: 36px; border-radius: 9999px;">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.051C.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                        </a>
+                        <a href="#" class="w-9 h-9 rounded-full flex items-center justify-center text-white bg-[#1877F2]" style="display: flex !important; width: 36px; height: 36px; border-radius: 9999px; background-color: #1877F2 !important;">
+                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                    </div>
+
+                    {{-- Action buttons --}}
+                    <div class="grid grid-cols-2 gap-2 pt-1" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; margin-top: 1rem; margin-bottom: 1rem;">
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" style="background-color: #25D366 !important; display: flex !important; align-items: center; justify-content: center; height: 40px; color: #ffffff !important;" class="text-white text-center text-xs font-black rounded-md hover:opacity-90 transition-opacity">Whatsapp</a>
+                        <a href="mailto:{{ $agentEmail }}" style="background-color: #3B82F6 !important; display: flex !important; align-items: center; justify-content: center; height: 40px; color: #ffffff !important;" class="text-white text-center text-xs font-black rounded-md hover:opacity-90 transition-opacity">Email</a>
+                        <a href="{{ $agentRedirectUrl }}" style="background-color: #e85d26 !important; display: flex !important; align-items: center; justify-content: center; height: 40px; color: #ffffff !important;" class="text-white text-center text-[10px] font-black rounded-md hover:opacity-90 transition-opacity uppercase px-1">View Our Packages</a>
+                        <a href="{{ $agentRedirectUrl }}" style="background-color: #000000 !important; display: flex !important; align-items: center; justify-content: center; height: 40px; color: #ffffff !important;" class="text-white text-center text-[10px] font-black rounded-md hover:opacity-90 transition-opacity uppercase px-1">View My Profile</a>
+                    </div>
+
+                    {{-- Our Services --}}
+                    <div class="border-t border-gray-150 pt-4 mt-2">
+                        <h4 class="font-black text-gray-900 mb-3" style="font-family: 'Outfit', sans-serif; font-size: 18px !important;">Our Services</h4>
+                        <div class="text-gray-700" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                            <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                                <span class="font-medium text-gray-800" style="font-size: 16px !important;">Flight Booking</span>
+                            </div>
+                            <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 3v18M15 3v18M4 11h16M4 15h16"/></svg>
+                                <span class="font-medium text-gray-800" style="font-size: 16px !important;">Train Booking</span>
+                            </div>
+                            <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                <span class="font-medium text-gray-800" style="font-size: 16px !important;">Passport</span>
+                            </div>
+                            <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                <span class="font-medium text-gray-800" style="font-size: 16px !important;">Visa</span>
+                            </div>
+                            <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <span class="font-medium text-gray-800" style="font-size: 16px !important;">International Courier</span>
+                            </div>
+                            <div class="flex items-center gap-2" style="display: flex; align-items: center; gap: 0.5rem;">
+                                <svg class="shrink-0 text-blue-500" style="color: #3b82f6 !important;" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                                <span class="font-medium text-gray-800" style="font-size: 16px !important;">Domestic Tour</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Get in Touch --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-4" id="contact-form">
-                    <div>
-                        <h3 class="text-base font-black text-gray-900" style="font-family: 'Outfit', sans-serif;">Get in touch</h3>
-                        <p class="text-sm text-gray-500 mt-1">We are here for you, how can we help?</p>
+                <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-5" id="contact-form">
+                    <div style="margin-bottom: 0.5rem;">
+                        <h3 class="font-black text-gray-900 section-heading" style="font-family: 'Outfit', sans-serif; font-size: 22px;">Get in touch</h3>
+                        <p class="text-gray-500 mt-4" style="font-size: 14px;">We are here for you, how can we help?</p>
                     </div>
 
                     @if(session('success'))

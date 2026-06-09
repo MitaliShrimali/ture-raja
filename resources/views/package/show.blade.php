@@ -103,6 +103,35 @@
                         <style>
                             .hide-scrollbar::-webkit-scrollbar { display: none; }
                             .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+                            .package-detail-title {
+                                font-size: 30px !important;
+                                font-family: 'Outfit', sans-serif !important;
+                                line-height: 1.25 !important;
+                            }
+                            .section-heading {
+                                font-size: 30px !important;
+                                font-family: 'Outfit', sans-serif !important;
+                                line-height: 1.3 !important;
+                                font-weight: 900 !important;
+                                position: relative;
+                                padding-bottom: 8px;
+                                display: inline-block;
+                            }
+                            .section-heading::after {
+                                content: '';
+                                position: absolute;
+                                bottom: 0;
+                                left: 0;
+                                width: 50px;
+                                height: 3px;
+                                background-color: #e85d26;
+                                border-radius: 2px;
+                            }
+                            .standard-body-text {
+                                font-size: 16px !important;
+                                line-height: 1.65 !important;
+                                color: #4b5563 !important; /* text-gray-600 */
+                            }
                         </style>
                     </div>
 
@@ -114,7 +143,7 @@
                                     <i data-lucide="map-pin" size="18"></i>
                                     <span class="tracking-widest uppercase text-sm">{{ $pkg['location'] }}</span>
                                 </div>
-                                <h1 class="text-4xl md:text-5xl font-black text-foreground leading-tight font-syne">{{ $pkg['title'] }}</h1>
+                                <h1 class="package-detail-title text-foreground font-black leading-tight">{{ $pkg['title'] }}</h1>
                                 <div class="flex items-center gap-6">
                                     <div class="flex items-center gap-2 text-orange-500 font-bold">
                                         <i data-lucide="star" size="20" fill="currentColor"></i>
@@ -136,14 +165,14 @@
                         </div>
 
                         <div class="pt-8 border-t border-gray-100">
-                            <h3 class="text-2xl font-bold mb-6">Tour Overview</h3>
-                            <p class="text-gray-500 leading-relaxed text-lg">
+                            <h3 class="section-heading text-gray-900 mb-4">Tour Overview</h3>
+                            <p class="standard-body-text">
                                 Experience the ultimate luxury with our {{ $pkg['title'] }} package. This carefully curated journey takes you through the most stunning landscapes and cultural landmarks, ensuring every moment is filled with wonder. From premium accommodations to expert-guided tours, we've handled all the details so you can focus on creating memories that last a lifetime.
                             </p>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 pt-8">
-                            <h3 class="text-2xl font-bold col-span-full mb-2 font-syne">What's Included</h3>
+                            <h3 class="section-heading text-gray-900 col-span-full mb-4">What's Included</h3>
                             @php
                                 $included = [
                                     "Luxury Accommodation",
@@ -157,8 +186,8 @@
                                 ];
                             @endphp
                             @foreach($included as $item)
-                                <div class="flex items-center gap-4 text-gray-600 font-medium bg-background/50 p-4 rounded-2xl border border-gray-100">
-                                    <div class="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center text-green-500">
+                                <div class="flex items-center gap-4 standard-body-text bg-background/50 p-4 rounded-2xl border border-gray-100">
+                                    <div class="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center text-green-500 shrink-0">
                                         <i data-lucide="check" size="18" stroke-width="3"></i>
                                     </div>
                                     <span>{{ $item }}</span>
@@ -169,7 +198,7 @@
 
                     <!-- Itinerary -->
                     <div class="bg-white rounded-[32px] p-8 md:p-12 shadow-soft space-y-10 border border-gray-50">
-                        <h3 class="text-3xl font-black font-syne">Tour Itinerary</h3>
+                        <h3 class="section-heading text-gray-900 mb-6">Tour Itinerary</h3>
                         <div class="space-y-12 relative before:absolute before:left-6 before:top-4 before:bottom-4 before:w-0.5 before:bg-gray-100">
                             @php
                                 $itinerary = [
@@ -185,9 +214,9 @@
                                     <div class="absolute left-0 top-1 w-12 h-12 bg-white border-4 border-gray-100 rounded-full flex items-center justify-center text-primary font-bold shadow-soft group-hover:border-primary transition-colors z-10">
                                         {{ $i + 1 }}
                                     </div>
-                                    <span class="text-primary font-bold uppercase tracking-widest text-sm">{{ $item['day'] }}</span>
-                                    <h4 class="text-2xl font-black text-foreground">{{ $item['title'] }}</h4>
-                                    <p class="text-gray-500 text-lg leading-relaxed">{{ $item['desc'] }}</p>
+                                    <span class="text-primary font-bold uppercase tracking-widest text-[11px]">{{ $item['day'] }}</span>
+                                    <h4 class="font-black text-foreground" style="font-size: 16px;">{{ $item['title'] }}</h4>
+                                    <p class="standard-body-text leading-relaxed">{{ $item['desc'] }}</p>
                                 </div>
                             @endforeach
                         </div>
@@ -203,7 +232,7 @@
                                 <img src="{{ $pkg['agent']['logo'] }}" alt="{{ $pkg['agent']['name'] }}" class="w-16 h-16 rounded-2xl shadow-lg" />
                                 <div>
                                     <h4 class="text-xl font-bold">{{ $pkg['agent']['name'] }}</h4>
-                                    <p class="text-gray-400 font-medium">Verified Agent</p>
+                                    <p class="text-gray-400 font-medium text-xs">Verified Agent</p>
                                 </div>
                             </div>
                             
@@ -220,7 +249,7 @@
                         @endif
 
                         <div class="space-y-6 pt-6 border-t border-gray-100">
-                            <h4 class="text-xl font-bold font-syne">Inquiry Form</h4>
+                            <h4 class="section-heading text-gray-900 mb-4">Inquiry Form</h4>
                             <form class="space-y-4">
                                 <input type="text" placeholder="Your Name" class="w-full bg-background border border-gray-100 rounded-xl py-4 px-5 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
                                 <input type="email" placeholder="Your Email" class="w-full bg-background border border-gray-100 rounded-xl py-4 px-5 font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" />
