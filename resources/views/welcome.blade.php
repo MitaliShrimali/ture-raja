@@ -884,29 +884,58 @@
         </div>
     </div>
 
+    {{-- Tour Manager Popup Modal --}}
+    <div id="tour-manager-popup" onclick="handleTourManagerRedirect(event)" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-500 cursor-pointer">
+        <div id="tour-manager-popup-content" class="relative bg-white rounded-3xl shadow-2xl p-8 max-w-lg w-full text-center flex flex-col items-center transform scale-95 transition-transform duration-500 z-10">
+            <!-- Close icon on top right -->
+            <button onclick="event.stopPropagation(); closeTourManagerPopup();" class="close-btn absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+            
+            <!-- Icon/Avatar for Tour Manager -->
+            <div class="w-20 h-20 bg-[#e85d26]/10 rounded-full flex items-center justify-center mb-4">
+                <svg class="w-10 h-10 text-[#e85d26]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+            </div>
+            
+            <h3 class="text-2xl font-black text-[#e85d26] mb-2">Meet Your Tour Manager</h3>
+            <p class="text-gray-600 text-sm leading-relaxed mb-6">
+                Connect with our expert Tour Managers to customize your dream package, verify agent details, and ensure a seamless travel experience.
+            </p>
+            
+            <!-- CTA Button -->
+            <button onclick="event.stopPropagation(); window.location.href='/discover';" 
+                    style="background-color: #e85d26; color: #ffffff;"
+                    class="px-10 py-2.5 rounded-lg font-bold hover:opacity-90 transition-opacity shadow-md text-sm">
+                Discover More
+            </button>
+        </div>
+    </div>
+
     @push('scripts')
     <script>
         let welcomePopupTimeout;
+        let tourManagerPopupTimeout;
         
         document.addEventListener('DOMContentLoaded', () => {
-            // Check if already shown in this session
-            if (!sessionStorage.getItem('welcomePopupShown')) {
-                const popup = document.getElementById('welcome-popup');
-                const content = document.getElementById('welcome-popup-content');
+            const popup = document.getElementById('welcome-popup');
+            const content = document.getElementById('welcome-popup-content');
+            
+            // Show smoothly after a short delay
+            setTimeout(() => {
+                popup.classList.remove('opacity-0', 'pointer-events-none');
+                popup.classList.add('opacity-100');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
                 
-                // Show smoothly after a short delay
-                setTimeout(() => {
-                    popup.classList.remove('opacity-0', 'pointer-events-none');
-                    popup.classList.add('opacity-100');
-                    content.classList.remove('scale-95');
-                    content.classList.add('scale-100');
-                    
-                    // Auto-hide after 5 seconds
-                    welcomePopupTimeout = setTimeout(() => {
-                        closeWelcomePopup();
-                    }, 5000);
-                }, 500);
-            }
+                // Auto-hide after 5 seconds
+                welcomePopupTimeout = setTimeout(() => {
+                    closeWelcomePopup();
+                }, 5000);
+            }, 500);
         });
 
         function closeWelcomePopup() {
@@ -919,12 +948,51 @@
             content.classList.remove('scale-100');
             content.classList.add('scale-95');
             
-            // Remember for session
             sessionStorage.setItem('welcomePopupShown', 'true');
             
             if (welcomePopupTimeout) {
                 clearTimeout(welcomePopupTimeout);
             }
+
+            // Smooth transition to show Tour Manager popup
+            setTimeout(() => {
+                showTourManagerPopup();
+            }, 400);
+        }
+
+        function showTourManagerPopup() {
+            const popup = document.getElementById('tour-manager-popup');
+            const content = document.getElementById('tour-manager-popup-content');
+            
+            popup.classList.remove('opacity-0', 'pointer-events-none');
+            popup.classList.add('opacity-100');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+            
+            tourManagerPopupTimeout = setTimeout(() => {
+                closeTourManagerPopup();
+            }, 5000);
+        }
+
+        function closeTourManagerPopup() {
+            const popup = document.getElementById('tour-manager-popup');
+            const content = document.getElementById('tour-manager-popup-content');
+            
+            popup.classList.remove('opacity-100');
+            popup.classList.add('opacity-0', 'pointer-events-none');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            
+            if (tourManagerPopupTimeout) {
+                clearTimeout(tourManagerPopupTimeout);
+            }
+        }
+
+        function handleTourManagerRedirect(event) {
+            if (event.target.closest('.close-btn') || event.target.closest('button')) {
+                return;
+            }
+            window.location.href = '/discover';
         }
     </script>
     <script>
