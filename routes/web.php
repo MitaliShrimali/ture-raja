@@ -89,6 +89,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/customers', [AdminController::class, 'customers']);
     Route::get('/customers/delete/{id}', [AdminController::class, 'deleteCustomer']);
     Route::get('/agents', [AdminController::class, 'agents']);
+    Route::get('/agents/profile/{id}', [AdminController::class, 'agentProfile']);
     Route::get('/registered-agents', [AdminController::class, 'registeredAgents']);
     Route::get('/leads', [AdminController::class, 'leads']);
     Route::get('/careers', [AdminController::class, 'careers']);
@@ -97,7 +98,6 @@ Route::prefix('admin')->group(function () {
     // Subscription Oversight
     Route::get('/paid-users', [AdminController::class, 'paidUsers']);
     Route::get('/paid-users/create', [AdminController::class, 'createPaidUser']);
-    Route::get('/user-plans', [AdminController::class, 'userPlans']);
     Route::get('/payments', [AdminController::class, 'payments']);
     Route::get('/ads', [AdminController::class, 'ads']);
     Route::get('/plans', [AdminController::class, 'plans']);
@@ -166,13 +166,12 @@ Route::prefix('admin')->group(function () {
     Route::get('/paid-users/delete/{id}', [AdminController::class, 'deletePaidUser']);
     Route::get('/paid-users/toggle/{id}', [AdminController::class, 'togglePaidUser']);
 
-    Route::post('/user-plans/store', [AdminController::class, 'storeUserPlan']);
-    Route::post('/user-plans/update', [AdminController::class, 'updateUserPlan']);
-    Route::get('/user-plans/delete/{id}', [AdminController::class, 'deleteUserPlan']);
-
     Route::post('/payments/store', [AdminController::class, 'storePayment']);
     Route::post('/payments/update', [AdminController::class, 'updatePayment']);
     Route::get('/payments/delete/{id}', [AdminController::class, 'deletePayment']);
+    Route::get('/payments/invoice', function() { return redirect('/admin/payments'); });
+    Route::get('/payments/invoice/{id}', [AdminController::class, 'paymentInvoice']);
+    Route::post('/payments/invoice/update', [AdminController::class, 'updatePaymentInvoice']);
 
     Route::post('/ads/store', [AdminController::class, 'storeAd']);
     Route::post('/ads/update', [AdminController::class, 'updateAd']);

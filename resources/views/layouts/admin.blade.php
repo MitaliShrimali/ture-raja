@@ -94,7 +94,6 @@
                         [
                             'label' => 'SUBSCRIPTION OVERSIGHT',
                             'items' => [
-                                ['name' => 'User Plan', 'icon' => 'clipboard-list', 'href' => '/admin/user-plans'],
                                 ['name' => 'Payment', 'icon' => 'credit-card', 'href' => '/admin/payments'],
                                 ['name' => 'Advertisement', 'icon' => 'megaphone', 'href' => '/admin/ads'],
                                 ['name' => 'Plan', 'icon' => 'clipboard-list', 'href' => '/admin/plans'],

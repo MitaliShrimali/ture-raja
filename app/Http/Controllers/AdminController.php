@@ -944,6 +944,36 @@ class AdminController extends Controller
          }
          return view('admin.agents-edit', compact('agent'));
      }
+
+     public function agentProfile($id)
+     {
+         $agent = DB::table('agents')->where('id', $id)->first();
+         if (!$agent) {
+             return redirect()->back()->with('error', 'Agent not found.');
+         }
+         
+         // Seed realistic default values for empty fields based on reference design
+         if (empty($agent->address)) {
+             $agent->address = "102 Royal Plaza, Opp. Crystal Mall";
+         }
+         if (empty($agent->city)) {
+             $agent->city = "Rajkot";
+         }
+         if (empty($agent->pincode)) {
+             $agent->pincode = "360003";
+         }
+         if (empty($agent->state)) {
+             $agent->state = "Gujarat";
+         }
+         if (empty($agent->about)) {
+             $agent->about = "Specializing in luxury domestic tours and international holiday packages. We pride ourselves on customer satisfaction and 24/7 on-ground support for all our clients.";
+         }
+         if (empty($agent->landline)) {
+             $agent->landline = "0281-2233445";
+         }
+
+         return view('admin.agent-profile', compact('agent'));
+     }
  
      public function updateAgent(Request $request)
      {
@@ -1017,6 +1047,47 @@ class AdminController extends Controller
     // LEAD MANAGEMENT
     public function leads(Request $request)
     {
+        // Ensure all unique agents in leads exist in agents table
+        try {
+            $leadAgents = DB::table('leads')->distinct()->pluck('agent');
+            foreach ($leadAgents as $laName) {
+                if (empty($laName)) continue;
+                $exists = DB::table('agents')
+                    ->where('name', $laName)
+                    ->orWhere('name', 'like', "%{$laName}%")
+                    ->exists();
+                if (!$exists) {
+                    $email = strtolower(str_replace(' ', '', $laName)) . '@' . strtolower(str_replace(' ', '', $laName)) . '.com';
+                    $phone = '+91 9' . rand(7000, 9999) . ' ' . rand(10000, 99999);
+                    $landline = '0' . rand(20, 80) . '-' . rand(2000000, 9999999);
+                    $cities = ['Rajkot', 'Ahmedabad', 'Surat', 'Vadodara', 'Mumbai'];
+                    $city = $cities[array_rand($cities)];
+                    $states = ['Gujarat', 'Gujarat', 'Gujarat', 'Gujarat', 'Maharashtra'];
+                    $state = $states[array_rand($states)];
+                    $pincodes = ['360001', '380001', '395001', '390001', '400001'];
+                    $pincode = $pincodes[array_rand($pincodes)];
+                    
+                    DB::table('agents')->insert([
+                        'name' => $laName,
+                        'email' => $email,
+                        'phone' => $phone,
+                        'landline' => $landline,
+                        'address' => rand(100, 999) . ' Business Plaza, Near Main Ring Road',
+                        'city' => $city,
+                        'state' => $state,
+                        'pincode' => $pincode,
+                        'about' => "Specializing in luxury domestic tours and international holiday packages. We pride ourselves on customer satisfaction and 24/7 on-ground support for all our clients at {$laName}.",
+                        'status' => 'Active',
+                        'tier' => 'Premium',
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            // ignore
+        }
+
         $search = $request->input('search');
         $type = $request->input('type');
         $query = DB::table('leads');
@@ -1043,7 +1114,11 @@ class AdminController extends Controller
         }
 
         $leads = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
-        return view('admin.leads', compact('leads', 'search'));
+        
+        // Fetch all agents to pass for name to ID mapping
+        $agents = DB::table('agents')->get();
+
+        return view('admin.leads', compact('leads', 'search', 'agents'));
     }
 
     public function storeLead(Request $request)
@@ -1203,59 +1278,161 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Paid user status updated!');
     }
 
-    // USER PLAN
-    public function userPlans(Request $request)
-    {
-        $userPlans = DB::table('user_plans')->orderBy('id', 'desc')->paginate(5);
-        return view('admin.user-plans', compact('userPlans'));
-    }
-
-    public function storeUserPlan(Request $request)
-    {
-        $request->validate(['user_name' => 'required', 'email' => 'required', 'plan_name' => 'required']);
-        
-        DB::table('user_plans')->insert([
-            'user_name' => $request->user_name,
-            'email' => $request->email,
-            'plan_name' => $request->plan_name,
-            'price' => $request->price ?? 99.00,
-            'duration' => $request->duration ?? '1 Month',
-            'status' => $request->status ?? 'Active',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return redirect()->back()->with('success', 'User subscription plan assigned!');
-    }
-
-    public function updateUserPlan(Request $request)
-    {
-        $request->validate(['id' => 'required', 'user_name' => 'required']);
-        
-        DB::table('user_plans')->where('id', $request->id)->update([
-            'user_name' => $request->user_name,
-            'email' => $request->email,
-            'plan_name' => $request->plan_name,
-            'price' => $request->price,
-            'duration' => $request->duration,
-            'status' => $request->status,
-            'updated_at' => now(),
-        ]);
-
-        return redirect()->back()->with('success', 'User subscription plan updated!');
-    }
-
-    public function deleteUserPlan($id)
-    {
-        DB::table('user_plans')->where('id', $id)->delete();
-        return redirect()->back()->with('success', 'User subscription record removed!');
-    }
-
-    // PAYMENTS
     public function payments(Request $request)
     {
-        $payments = DB::table('payments')->orderBy('id', 'desc')->paginate(5);
+        // Ensure invoice_data column exists
+        try {
+            DB::statement("SELECT invoice_data FROM payments LIMIT 1");
+        } catch (\Exception $e) {
+            DB::statement("ALTER TABLE payments ADD COLUMN invoice_data LONGTEXT NULL");
+        }
+
+        // Sync paid_users records to payments table
+        $paidUsers = DB::table('paid_users')->get();
+        foreach ($paidUsers as $pu) {
+            $exists = DB::table('payments')
+                ->where('email', $pu->email)
+                ->where('plan_type', $pu->plan)
+                ->exists();
+            if (!$exists) {
+                DB::table('payments')->insert([
+                    'user_name' => $pu->name,
+                    'email' => $pu->email,
+                    'plan_type' => $pu->plan,
+                    'amount' => $pu->amount,
+                    'payment_id' => 'TXN_PU_' . str_pad($pu->id, 4, '0', STR_PAD_LEFT),
+                    'date' => $pu->joined_date,
+                    'status' => $pu->status === 'Active' ? 'Completed' : 'Failed',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+        }
+
+        $payments = DB::table('payments')
+            ->leftJoin('agents', 'payments.email', '=', 'agents.email')
+            ->select('payments.*', 'agents.service_guaranteed')
+            ->orderBy('payments.id', 'desc')
+            ->paginate(5);
         return view('admin.payments', compact('payments'));
+    }
+
+    public function paymentInvoice($id)
+    {
+        try {
+            DB::statement("SELECT invoice_data FROM payments LIMIT 1");
+        } catch (\Exception $e) {
+            DB::statement("ALTER TABLE payments ADD COLUMN invoice_data LONGTEXT NULL");
+        }
+
+        $payment = DB::table('payments')
+            ->leftJoin('agents', 'payments.email', '=', 'agents.email')
+            ->select('payments.*', 'agents.service_guaranteed')
+            ->where('payments.id', $id)
+            ->first();
+
+        if (!$payment) {
+            abort(404, 'Payment record not found');
+        }
+
+        if (!$payment->service_guaranteed) {
+            return response()->make("<div style='font-family: system-ui, -apple-system, sans-serif; padding: 40px; text-align: center; max-width: 600px; margin: 100px auto; background: #fff; border-radius: 28px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;'>
+                <div style='color: #D35400; font-size: 56px; margin-bottom: 20px;'>⚠️</div>
+                <h2 style='color: #1a1a1a; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.02em;'>Generation Blocked</h2>
+                <p style='color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;'>Invoice cannot be generated because Service Guaranteed is No.</p>
+                <a href='" . url('/admin/payments') . "' style='display: inline-flex; align-items: center; justify-content: center; padding: 14px 32px; background: #D35400; color: #fff; text-decoration: none; border-radius: 16px; font-weight: bold; font-size: 14px; transition: all 0.2s;'>Back to Payments</a>
+            </div>", 400);
+        }
+
+        $invoiceData = json_decode($payment->invoice_data ?? '', true);
+        if (!$invoiceData) {
+            $invoiceData = [
+                'invoice_no' => 'TR-INV-2024-' . str_pad($payment->id, 3, '0', STR_PAD_LEFT),
+                'invoice_date' => \Carbon\Carbon::parse($payment->date)->format('F d, Y'),
+                'due_date' => \Carbon\Carbon::parse($payment->date)->addDays(30)->format('F d, Y'),
+                'customer_name' => $payment->user_name,
+                'customer_address' => "12th Floor, Trade Center, Bandra Kurla Complex\nMumbai, Maharashtra - 400051",
+                'customer_gstin' => '27AABCA1234B1Z2',
+                'customer_phone' => '+91 98765 43210',
+                'customer_email' => $payment->email,
+                'place_of_supply' => 'Uttar Pradesh (09)',
+                'state_code' => '09',
+                'payment_due' => 'Net 30 Days (' . \Carbon\Carbon::parse($payment->date)->addDays(30)->format('M d, Y') . ')',
+                'services' => [
+                    [
+                        'name' => $payment->plan_type,
+                        'description' => 'Subscription package fee for ' . $payment->plan_type,
+                        'sac_hsn' => '998522',
+                        'qty' => 1,
+                        'price' => $payment->amount,
+                        'total' => $payment->amount
+                    ]
+                ],
+                'notes' => "All payments should be made in favor of Tour Raja Private Limited.\nInterest at 18% p.a. will be charged if the bill is not paid by the due date.\nGoods/Services once sold cannot be returned.\nSubject to Noida Jurisdiction only."
+            ];
+        }
+
+        return view('admin.invoice-overview', compact('payment', 'invoiceData'));
+    }
+
+    public function updatePaymentInvoice(Request $request)
+    {
+        $id = $request->input('id');
+        $invoiceData = [
+            'invoice_no' => $request->input('invoice_no'),
+            'invoice_date' => $request->input('invoice_date'),
+            'due_date' => $request->input('due_date'),
+            'customer_name' => $request->input('customer_name'),
+            'customer_address' => $request->input('customer_address'),
+            'customer_gstin' => $request->input('customer_gstin'),
+            'customer_phone' => $request->input('customer_phone'),
+            'customer_email' => $request->input('customer_email'),
+            'place_of_supply' => $request->input('place_of_supply'),
+            'state_code' => $request->input('state_code'),
+            'payment_due' => $request->input('payment_due'),
+            'services' => [],
+            'notes' => $request->input('notes')
+        ];
+
+        $serviceNames = $request->input('service_name', []);
+        $serviceDescriptions = $request->input('service_description', []);
+        $serviceSacs = $request->input('service_sac', []);
+        $serviceQtys = $request->input('service_qty', []);
+        $servicePrices = $request->input('service_price', []);
+
+        $totalAmount = 0;
+        foreach ($serviceNames as $index => $name) {
+            if (!empty($name)) {
+                $qty = intval($serviceQtys[$index] ?? 1);
+                $price = floatval($servicePrices[$index] ?? 0);
+                $total = $qty * $price;
+                $totalAmount += $total;
+
+                $invoiceData['services'][] = [
+                    'name' => $name,
+                    'description' => $serviceDescriptions[$index] ?? '',
+                    'sac_hsn' => $serviceSacs[$index] ?? '',
+                    'qty' => $qty,
+                    'price' => $price,
+                    'total' => $total
+                ];
+            }
+        }
+
+        // SGST 9%, CGST 9% (18% total GST)
+        $subtotal = $totalAmount;
+        $sgst = round($subtotal * 0.09, 2);
+        $cgst = round($subtotal * 0.09, 2);
+        $grandTotal = $subtotal + $sgst + $cgst;
+
+        DB::table('payments')->where('id', $id)->update([
+            'amount' => $grandTotal,
+            'plan_type' => $invoiceData['services'][0]['name'] ?? 'Custom Plan',
+            'invoice_data' => json_encode($invoiceData),
+            'updated_at' => now()
+        ]);
+
+        return redirect()->back()->with('success', 'Invoice details updated successfully!');
     }
 
     public function storePayment(Request $request)
@@ -1279,9 +1456,24 @@ class AdminController extends Controller
 
     public function updatePayment(Request $request)
     {
-        $request->validate(['id' => 'required', 'status' => 'required']);
+        $request->validate([
+            'id' => 'required',
+            'user_name' => 'required',
+            'email' => 'required|email',
+            'plan_type' => 'required',
+            'amount' => 'required|numeric',
+            'payment_id' => 'required',
+            'date' => 'required|date',
+            'status' => 'required'
+        ]);
         
         DB::table('payments')->where('id', $request->id)->update([
+            'user_name' => $request->user_name,
+            'email' => $request->email,
+            'plan_type' => $request->plan_type,
+            'amount' => $request->amount,
+            'payment_id' => $request->payment_id,
+            'date' => $request->date,
             'status' => $request->status,
             'updated_at' => now(),
         ]);

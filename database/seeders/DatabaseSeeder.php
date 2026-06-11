@@ -349,9 +349,9 @@ class DatabaseSeeder extends Seeder
         DB::table('paid_users')->insert([
             [
                 'name' => 'Alice Johnson',
-                'email' => 'alice.j@example.com',
+                'email' => 'contact@nomadventures.com', // linked to Nomad Ventures (Guaranteed = Yes)
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice',
-                'plan' => 'Premium Plus',
+                'plan' => 'PREMIUM ANNUAL 2024',
                 'joined_date' => '2026-05-01',
                 'amount' => 199.00,
                 'status' => 'Active',
@@ -360,9 +360,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Mark Wilson',
-                'email' => 'mark.w@example.com',
+                'email' => 'hello@azurehorizons.travel', // linked to Azure Horizons (Guaranteed = No)
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mark',
-                'plan' => 'Standard',
+                'plan' => 'WELCOME OFFER 1',
                 'joined_date' => '2026-05-03',
                 'amount' => 99.00,
                 'status' => 'Active',
@@ -371,20 +371,20 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Sarah Connor',
-                'email' => 'sarah.c@example.com',
+                'email' => 'support@globetrotters.org', // linked to Globe Trotters (Guaranteed = Yes)
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-                'plan' => 'Premium Plus',
+                'plan' => 'ENTERPRISE TRIAL',
                 'joined_date' => '2026-04-20',
-                'amount' => 199.00,
+                'amount' => 499.00,
                 'status' => 'Suspended',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'John Wick',
-                'email' => 'john.w@example.com',
+                'email' => 'info@alpine-escape.com', // linked to Alpine Escape (Guaranteed = No)
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
-                'plan' => 'Standard',
+                'plan' => 'WELCOME OFFER 1',
                 'joined_date' => '2026-05-10',
                 'amount' => 99.00,
                 'status' => 'Active',
@@ -398,18 +398,18 @@ class DatabaseSeeder extends Seeder
         DB::table('user_plans')->insert([
             [
                 'user_name' => 'Alice Johnson',
-                'email' => 'alice.j@example.com',
-                'plan_name' => 'Premium Plus',
+                'email' => 'contact@nomadventures.com',
+                'plan_name' => 'PREMIUM ANNUAL 2024',
                 'price' => 199.00,
-                'duration' => '1 Month',
+                'duration' => '1 Year',
                 'status' => 'Active',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'user_name' => 'Mark Wilson',
-                'email' => 'mark.w@example.com',
-                'plan_name' => 'Standard',
+                'email' => 'hello@azurehorizons.travel',
+                'plan_name' => 'WELCOME OFFER 1',
                 'price' => 99.00,
                 'duration' => '1 Month',
                 'status' => 'Active',
@@ -418,9 +418,9 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'user_name' => 'Sarah Connor',
-                'email' => 'sarah.c@example.com',
-                'plan_name' => 'Premium Plus',
-                'price' => 199.00,
+                'email' => 'support@globetrotters.org',
+                'plan_name' => 'ENTERPRISE TRIAL',
+                'price' => 499.00,
                 'duration' => '1 Month',
                 'status' => 'Expired',
                 'created_at' => now(),
@@ -432,9 +432,9 @@ class DatabaseSeeder extends Seeder
         DB::table('payments')->truncate();
         DB::table('payments')->insert([
             [
-                'user_name' => 'Alice Johnson',
-                'email' => 'alice.j@example.com',
-                'plan_type' => 'Premium Plus',
+                'user_name' => 'Nomad Ventures',
+                'email' => 'contact@nomadventures.com',
+                'plan_type' => 'PREMIUM ANNUAL 2024',
                 'amount' => 199.00,
                 'payment_id' => 'TXN_987213812',
                 'date' => '2026-05-01',
@@ -443,10 +443,10 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'user_name' => 'Mark Wilson',
-                'email' => 'mark.w@example.com',
-                'plan_type' => 'Standard',
-                'amount' => 99.00,
+                'user_name' => 'Globe Trotters Co',
+                'email' => 'support@globetrotters.org',
+                'plan_type' => 'ENTERPRISE TRIAL',
+                'amount' => 499.00,
                 'payment_id' => 'TXN_128731982',
                 'date' => '2026-05-03',
                 'status' => 'Completed',
@@ -454,10 +454,10 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'user_name' => 'Sarah Connor',
-                'email' => 'sarah.c@example.com',
-                'plan_type' => 'Premium Plus',
-                'amount' => 199.00,
+                'user_name' => 'Azure Horizons',
+                'email' => 'hello@azurehorizons.travel',
+                'plan_type' => 'WELCOME OFFER 1',
+                'amount' => 99.00,
                 'payment_id' => 'TXN_876238122',
                 'date' => '2026-04-20',
                 'status' => 'Failed',

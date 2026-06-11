@@ -71,17 +71,29 @@
                         @php
                             $srNo = str_pad($leads->firstItem() + $index, 2, '0', STR_PAD_LEFT);
                         @endphp
+                        @php
+                            $matchedAgent = $agents->first(function($a) use ($lead) {
+                                return strtolower($a->name) === strtolower($lead->agent) || 
+                                       str_contains(strtolower($a->name), strtolower($lead->agent)) || 
+                                       str_contains(strtolower($lead->agent), strtolower($a->name));
+                            });
+                            $agentProfileUrl = $matchedAgent ? url('/admin/agents/profile/' . $matchedAgent->id) : '#';
+                        @endphp
                         <tr class="group hover:bg-gray-50/30 transition-colors">
                             <td class="py-6 px-10 text-sm font-bold text-muted-text opacity-40">{{ $srNo }}</td>
                             <td class="py-6 px-10">
                                 <div class="space-y-1">
-                                    <p class="text-sm font-black text-foreground">{{ $lead->name }}</p>
+                                    <a href="{{ $agentProfileUrl }}" class="hover:text-primary transition-all">
+                                        <p class="text-sm font-black text-foreground hover:text-primary transition-all">{{ $lead->name }}</p>
+                                    </a>
                                     <p class="text-[10px] text-muted-text font-medium">{{ $lead->email }} • {{ $lead->phone }}</p>
                                 </div>
                             </td>
                             <td class="py-6 px-10">
                                 <div class="space-y-1">
-                                    <p class="text-sm font-bold text-primary">{{ $lead->agent }}</p>
+                                    <a href="{{ $agentProfileUrl }}" class="hover:underline transition-all">
+                                        <p class="text-sm font-bold text-primary hover:text-primary-hover transition-all">{{ $lead->agent }}</p>
+                                    </a>
                                     <p class="text-[10px] text-muted-text font-black uppercase tracking-widest">{{ $lead->package }}</p>
                                 </div>
                             </td>
