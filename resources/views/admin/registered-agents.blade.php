@@ -16,7 +16,7 @@
     </div>
 
     <!-- Existing Agents List -->
-    <div class="bg-white rounded-[32px] shadow-soft border border-border-soft overflow-hidden">
+    <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div class="flex items-center gap-4 text-sm font-bold text-muted-text">
                 <span>Show</span>
@@ -38,70 +38,173 @@
             </div>
         </div>
 
-        <table class="w-full text-left">
-            <thead class="bg-gray-50 border-b border-border-soft">
-                <tr>
-                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Agent Name</th>
-                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">JOINED DATE</th>
-                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">PLAN</th>
-                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">AMOUNT PAID</th>
-                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">STATUS</th>
-                    <th class="py-5 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-border-soft">
-                @forelse($agents ?? [] as $agent)
-                    <tr class="hover:bg-gray-50/50 transition-colors">
-                        <td class="py-5 px-8">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-full bg-gray-100/60 flex items-center justify-center overflow-hidden border border-gray-200/50 flex-shrink-0">
-                                    @if($agent->logo)
-                                        <img src="{{ asset($agent->logo) }}" alt="{{ $agent->name }}" class="w-full h-full object-cover">
+        <div class="admin-table-container">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-gray-50/50">
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">#</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Travel Agent Name</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Email</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Mobile</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Guaranteed</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Plan</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">Pending</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">Approved</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">Status</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border-soft">
+                    @forelse($agents as $index => $agent)
+                        @php
+                            $srNo = str_pad($agents->firstItem() + $index, 2, '0', STR_PAD_LEFT);
+                        @endphp
+                        <tr class="group hover:bg-gray-50/30 transition-colors">
+                            <!-- Serial Number -->
+                            <td class="py-6 px-8 text-sm font-bold text-muted-text opacity-60">
+                                {{ $srNo }}
+                            </td>
+                            
+                            <!-- Travel Agent Name -->
+                            <td class="py-6 px-8">
+                                <a href="{{ url('/admin/agents/edit/' . $agent->id) }}" class="text-sm font-black text-primary hover:text-primary-hover transition-colors leading-tight block">
+                                    {{ $agent->name }}
+                                </a>
+                            </td>
+                            
+                            <!-- Email -->
+                            <td class="py-6 px-8 text-sm font-medium text-muted-text">
+                                {{ $agent->email }}
+                            </td>
+                            
+                            <!-- Mobile -->
+                            <td class="py-6 px-8 text-sm font-medium text-muted-text">
+                                {{ $agent->phone }}
+                            </td>
+                            
+                            <!-- Guaranteed -->
+                            <td class="py-6 px-8">
+                                @if($agent->service_guaranteed)
+                                    <span class="px-3 py-1 rounded-full bg-green-50 text-green-500 text-[10px] font-black uppercase tracking-wider">
+                                        Yes
+                                    </span>
+                                @else
+                                    <span class="px-3 py-1 rounded-full bg-gray-50 text-gray-400 text-[10px] font-black uppercase tracking-wider">
+                                        No
+                                    </span>
+                                @endif
+                            </td>
+                            
+                            <!-- Plan -->
+                            <td class="py-6 px-8">
+                                <a href="{{ url('/admin/plans') }}" class="inline-block hover:scale-105 transition-all">
+                                    @if(strtolower($agent->tier) === 'premium')
+                                        <span class="px-3 py-1 rounded-full bg-purple-50 text-purple-500 text-[10px] font-black uppercase tracking-wider">
+                                            Premium
+                                        </span>
+                                    @elseif(strtolower($agent->tier) === 'enterprise')
+                                        <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-500 text-[10px] font-black uppercase tracking-wider">
+                                            Enterprise
+                                        </span>
+                                    @elseif(strtolower($agent->tier) === 'customise')
+                                        <span class="px-3 py-1 rounded-full bg-green-50 text-green-500 text-[10px] font-black uppercase tracking-wider">
+                                            Customise
+                                        </span>
                                     @else
-                                        @php
-                                            $initials = collect(explode(' ', $agent->name))->map(fn($n) => substr($n, 0, 1))->take(2)->join('');
-                                        @endphp
-                                        <span class="text-xs font-black text-muted-text/80 uppercase">{{ $initials }}</span>
+                                        <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider">
+                                            Standard
+                                        </span>
                                     @endif
-                                </div>
-                                <div>
-                                    <p class="text-sm font-bold text-foreground">{{ $agent->name }}</p>
-                                    <p class="text-[10px] text-muted-text font-medium">{{ $agent->email }} • {{ $agent->phone }}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="py-5 px-8">
-                            <p class="text-sm font-bold text-foreground">{{ $agent->created_at ? \Carbon\Carbon::parse($agent->created_at)->format('M d, Y') : 'N/A' }}</p>
-                        </td>
-                        <td class="py-5 px-8">
-                            <p class="text-[11px] font-black uppercase tracking-wider {{ strtolower($agent->tier) === 'premium' ? 'text-purple-500 bg-purple-50' : 'text-primary bg-primary/10' }} inline-block px-3 py-1 rounded-full">{{ $agent->tier ?? 'Basic' }}</p>
-                        </td>
-                        <td class="py-5 px-8">
-                            <p class="text-sm font-bold text-foreground">{{ strtolower($agent->tier) === 'premium' ? '₹4,999' : (strtolower($agent->tier) === 'enterprise' ? '₹9,999' : '₹0') }}</p>
-                        </td>
-                        <td class="py-5 px-8">
-                            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider {{ $agent->status === 'Active' ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500' }}">
-                                {{ $agent->status }}
-                            </span>
-                        </td>
-                        <td class="py-5 px-8">
-                            <div class="flex items-center gap-3">
-                                <a href="{{ url('/admin/agents/toggle/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-muted-text hover:text-primary transition-colors" title="Toggle Status">
-                                    <i data-lucide="power" size="14"></i>
                                 </a>
-                                <a href="{{ url('/admin/agents/delete/' . $agent->id) }}" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-400 hover:text-red-500 transition-colors" onclick="return confirm('Are you sure you want to remove this agent?');" title="Delete">
-                                    <i data-lucide="trash-2" size="14"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="py-10 text-center text-sm font-bold text-muted-text">No agents registered yet.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                            </td>
+                            
+                            <!-- Pending -->
+                            <td class="py-6 px-8 text-center">
+                                <span class="text-base font-black text-primary">
+                                    {{ sprintf('%02d', $agent->pending ?? 0) }}
+                                </span>
+                            </td>
+                            
+                            <!-- Approved -->
+                            <td class="py-6 px-8 text-center">
+                                <span class="text-base font-black text-green-600">
+                                    {{ sprintf('%02d', $agent->approved ?? 0) }}
+                                </span>
+                            </td>
+                            
+                            <!-- Status -->
+                            <td class="py-6 px-8 text-center">
+                                 <a href="{{ url('/admin/agents/toggle/' . $agent->id) }}" class="inline-flex items-center cursor-pointer">
+                                     <div class="relative inline-flex items-center">
+                                         <input type="checkbox" class="sr-only peer" {{ strtolower($agent->status) === 'active' ? 'checked' : '' }} disabled>
+                                         <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                     </div>
+                                 </a>
+                             </td>
+                            
+                            <!-- Actions -->
+                            <td class="py-6 px-8">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a 
+                                        href="{{ url('/admin/agents/edit/' . $agent->id) }}"
+                                        class="p-2.5 text-muted-text hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                                        title="Edit"
+                                    >
+                                        <i data-lucide="edit-3" size="18"></i>
+                                    </a>
+                                    <a 
+                                        href="{{ url('/admin/agents/delete/' . $agent->id) }}" 
+                                        onclick="return confirm('Are you sure you want to remove this agent?');"
+                                        class="p-2.5 text-muted-text hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                        title="Delete"
+                                    >
+                                        <i data-lucide="trash-2" size="18"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="10" class="py-12 text-center text-sm font-bold text-muted-text">No registered agents found.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Custom Pagination -->
+        <div class="p-8 bg-gray-50/50 border-t border-border-soft flex flex-col md:flex-row items-center justify-between gap-6">
+            <p class="text-sm font-bold text-muted-text">Showing {{ $agents->firstItem() ?? 0 }} to {{ $agents->lastItem() ?? 0 }} of {{ $agents->total() }} entries</p>
+            <div class="flex items-center gap-2">
+                @if($agents->onFirstPage())
+                    <button class="p-2 text-muted-text opacity-40 cursor-not-allowed" disabled><i data-lucide="chevron-left" size="20"></i></button>
+                @else
+                    <a href="{{ $agents->previousPageUrl() }}" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-left" size="20"></i></a>
+                @endif
+                
+                @foreach(range(1, $agents->lastPage()) as $i)
+                    @if($i == 1 || $i == $agents->lastPage() || abs($i - $agents->currentPage()) <= 1)
+                        @if($i == $agents->currentPage())
+                            <button class="w-10 h-10 rounded-full text-sm font-black bg-primary text-white shadow-lg shadow-primary/20 transition-all">
+                                {{ $i }}
+                            </button>
+                        @else
+                            <a href="{{ $agents->url($i) }}" class="w-10 h-10 rounded-full text-sm font-black transition-all text-muted-text hover:bg-white hover:text-primary flex items-center justify-center">
+                                {{ $i }}
+                            </a>
+                        @endif
+                    @elseif($i == 2 || $i == $agents->lastPage() - 1)
+                        <span class="text-muted-text font-black px-1">...</span>
+                    @endif
+                @endforeach
+                
+                @if($agents->hasMorePages())
+                    <a href="{{ $agents->nextPageUrl() }}" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-right" size="20"></i></a>
+                @else
+                    <button class="p-2 text-muted-text opacity-40 cursor-not-allowed" disabled><i data-lucide="chevron-right" size="20"></i></button>
+                @endif
+            </div>
+        </div>
     </div>
 </div>
 @endsection

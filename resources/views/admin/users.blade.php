@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editUser: { id: '', name: '', email: '', role: '' }, addRole: 'SUPER ADMIN' }">
+<div class="space-y-10 pb-12">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
@@ -9,10 +9,10 @@
             <h2 class="font-black text-foreground tracking-tight">Admin User</h2>
             <p class="text-muted-text font-medium">Manage and delegate access to your platform team.</p>
         </div>
-        <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3 group">
+        <a href="{{ url('/admin/users/create') }}" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3 group">
             <i data-lucide="plus" size="20" class="group-hover:rotate-90 transition-transform"></i>
             Add Admin User
-        </button>
+        </a>
     </div>
 
     <!-- Main Table Card -->
@@ -62,11 +62,15 @@
                         @endphp
                         <tr class="group hover:bg-gray-50/30 transition-colors">
                             <td class="py-6 px-8 text-sm font-bold text-muted-text opacity-60">{{ $srNo }}</td>
-                            <td class="py-6 px-8">
+                             <td class="py-6 px-8">
                                 <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-xl {{ $color }} flex items-center justify-center font-black text-xs uppercase">
-                                        {{ $initials }}
-                                    </div>
+                                    @if(!empty($user->avatar))
+                                        <img src="{{ $user->avatar }}" class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm" alt="{{ $user->name }}" />
+                                    @else
+                                        <div class="w-10 h-10 rounded-xl {{ $color }} flex items-center justify-center font-black text-xs uppercase">
+                                            {{ $initials }}
+                                        </div>
+                                    @endif
                                     <span class="text-sm font-black text-foreground">{{ $user->name }}</span>
                                 </div>
                             </td>
@@ -78,12 +82,12 @@
                             </td>
                             <td class="py-6 px-8">
                                 <div class="flex items-center justify-end gap-2">
-                                    <button 
-                                        @click="showEditModal = true; editUser = { id: '{{ $user->id }}', name: '{{ addslashes($user->name) }}', email: '{{ addslashes($user->email) }}', role: '{{ $user->role }}' }"
+                                    <a 
+                                        href="{{ url('/admin/users/edit/' . $user->id) }}"
                                         class="p-2.5 text-muted-text hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
-                                    </button>
+                                    </a>
                                     <a 
                                         href="{{ url('/admin/users/delete/' . $user->id) }}" 
                                         onclick="return confirm('Are you sure you want to remove this admin user?');"
@@ -175,147 +179,6 @@
                 </div>
                 <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/20 blur-3xl rounded-full transition-transform group-hover:scale-150"></div>
             </div>
-        </div>
-    </div>
-
-    <!-- ================= MODALS ================= -->
-
-    <!-- Add Admin User Modal -->
-    <div 
-        x-show="showAddModal" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        style="display: none;"
-    >
-        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
-            <div class="flex items-center justify-between border-b border-border-soft pb-4">
-                <div class="space-y-1">
-                    <h3 class="text-xl font-black text-foreground">Add Admin User</h3>
-                    <p class="text-xs text-muted-text font-medium">Create a new administrator credential for the platform.</p>
-                </div>
-                <button @click="showAddModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
-                    <i data-lucide="x" size="20"></i>
-                </button>
-            </div>
-            
-            <form action="{{ url('/admin/users/store') }}" method="POST" class="space-y-6">
-                @csrf
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Full Name<span class="text-primary">*</span></label>
-                    <input required type="text" name="name" placeholder="E.g. Siti Wahyuni" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
-                    <input required type="email" name="email" placeholder="E.g. siti.w@tourraja.id" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Access Role<span class="text-primary">*</span></label>
-                    <select required name="role" x-model="addRole" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                        <option value="SUPER ADMIN">SUPER ADMIN</option>
-                        <option value="MANAGER">MANAGER</option>
-                        <option value="EDITOR">EDITOR</option>
-                    </select>
-                </div>
-                
-                <!-- Warning for Super Admin role -->
-                <div x-show="addRole === 'SUPER ADMIN'" class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 transition-all" x-transition>
-                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-gray-100">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                    </div>
-                    <div class="space-y-1">
-                        <h5 class="text-xs font-bold text-gray-800">Security Profile: Full Access</h5>
-                        <p class="text-[11px] text-gray-500 leading-relaxed font-medium">
-                            The Super Admin role has unrestricted access to all modules including system configuration, financial reports, user access management, and global data deletion. All actions performed by this user are logged in the master audit trail.
-                        </p>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Password<span class="text-primary">*</span></label>
-                    <input required type="password" name="password" placeholder="Enter secure password" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                
-                <div class="flex items-center justify-end gap-4 pt-4">
-                    <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Admin User Modal -->
-    <div 
-        x-show="showEditModal" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        style="display: none;"
-    >
-        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
-            <div class="flex items-center justify-between border-b border-border-soft pb-4">
-                <div class="space-y-1">
-                    <h3 class="text-xl font-black text-foreground">Edit Admin User</h3>
-                    <p class="text-xs text-muted-text font-medium">Update the administrator credential and team permissions.</p>
-                </div>
-                <button @click="showEditModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
-                    <i data-lucide="x" size="20"></i>
-                </button>
-            </div>
-            
-            <form action="{{ url('/admin/users/update') }}" method="POST" class="space-y-6">
-                @csrf
-                <input type="hidden" name="id" x-model="editUser.id" />
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Full Name<span class="text-primary">*</span></label>
-                    <input required type="text" name="name" x-model="editUser.name" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
-                    <input required type="email" name="email" x-model="editUser.email" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Access Role<span class="text-primary">*</span></label>
-                    <select required name="role" x-model="editUser.role" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                        <option value="SUPER ADMIN">SUPER ADMIN</option>
-                        <option value="MANAGER">MANAGER</option>
-                        <option value="EDITOR">EDITOR</option>
-                    </select>
-                </div>
-
-                <!-- Warning for Super Admin role -->
-                <div x-show="editUser.role === 'SUPER ADMIN'" class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-4 transition-all" x-transition>
-                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-gray-100">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                    </div>
-                    <div class="space-y-1">
-                        <h5 class="text-xs font-bold text-gray-800">Security Profile: Full Access</h5>
-                        <p class="text-[11px] text-gray-500 leading-relaxed font-medium">
-                            The Super Admin role has unrestricted access to all modules including system configuration, financial reports, user access management, and global data deletion. All actions performed by this user are logged in the master audit trail.
-                        </p>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Password<span class="text-muted-text"> (Leave blank to keep current)</span></label>
-                    <input type="password" name="password" placeholder="Enter new password if updating" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                
-                <div class="flex items-center justify-end gap-4 pt-4">
-                    <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

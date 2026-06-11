@@ -67,10 +67,6 @@
                                     'name' => 'Paid user',
                                     'icon' => 'user-plus',
                                     'href' => '/admin/registered-agents',
-                                    'children' => [
-                                        ['name' => 'All paid user', 'href' => '/admin/registered-agents'],
-                                        ['name' => 'Add Paid User', 'href' => '/admin/agents'],
-                                    ]
                                 ],
                                 ['name' => 'Lead Management', 'icon' => 'target', 'href' => '/admin/leads'],
                             ]

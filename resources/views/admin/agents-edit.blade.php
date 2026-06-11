@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ tier: 'Premium', status: 'Active' }">
+<div class="space-y-10 pb-12" x-data="{ tier: '{{ $agent->tier ?? 'Premium' }}', status: '{{ $agent->status ?? 'Active' }}' }">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border-soft pb-6">
         <div class="flex items-center gap-4">
@@ -9,23 +9,24 @@
                 <i data-lucide="arrow-left" size="20"></i>
             </a>
             <div class="space-y-1">
-                <h2 class="text-3xl font-black text-foreground tracking-tight">Add New Paid User/Agent</h2>
-                <p class="text-muted-text font-semibold text-sm">Onboard a new agency partner to the platform hub ecosystem.</p>
+                <h2 class="text-3xl font-black text-foreground tracking-tight">Edit Travel Agent</h2>
+                <p class="text-muted-text font-semibold text-sm">Update agency partner details in the platform hub ecosystem.</p>
             </div>
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ url('/admin/registered-agents') }}" class="px-6 py-3.5 border-2 border-dashed border-gray-200 hover:border-gray-300 text-gray-500 rounded-2xl font-bold text-sm transition-all flex items-center gap-2">
                 Discard Changes
             </a>
-            <button type="submit" form="agentForm" class="px-6 py-3.5 bg-primary hover:bg-primary-hover text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2">
-                Submit Application
+            <button type="submit" form="agentForm" class="px-6 py-3.5 bg-[#af3a03] hover:bg-[#8f2f02] text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2">
+                Save Changes
             </button>
         </div>
     </div>
 
     <!-- Onboard Agent Form -->
-    <form id="agentForm" action="{{ url('/admin/agents/store') }}" method="POST" enctype="multipart/form-data">
+    <form id="agentForm" action="{{ url('/admin/agents/update') }}" method="POST" enctype="multipart/form-data">
         @csrf
+        <input type="hidden" name="id" value="{{ $agent->id }}" />
         <input type="hidden" name="tier" x-model="tier" />
         <input type="hidden" name="status" x-model="status" />
         
@@ -34,7 +35,7 @@
             <!-- COLUMN 1: Company Profile Image & Service Configuration (lg:col-span-3) -->
             <div class="lg:col-span-3 space-y-8">
                 <!-- Company Profile Image Card -->
-                <div class="bg-white rounded-[32px] border border-border-soft p-6 flex flex-col items-center text-center space-y-4" x-data="{ imagePreview: null }">
+                <div class="bg-white rounded-[32px] border border-border-soft p-6 flex flex-col items-center text-center space-y-4" x-data="{ imagePreview: '{{ $agent->logo ? asset($agent->logo) : null }}' }">
                     <div class="relative">
                         <!-- Dashed Box / Preview -->
                         <div class="w-32 h-32 rounded-[28px] border-2 border-dashed border-orange-200 bg-orange-50/10 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-orange-50/20 transition-all" @click="$refs.fileInput.click()">
@@ -88,7 +89,7 @@
                                 <p class="text-[10px] text-muted-text font-semibold uppercase">Enable automated SLA</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="service_guaranteed" value="1" class="sr-only peer" checked>
+                                <input type="checkbox" name="service_guaranteed" value="1" class="sr-only peer" {{ $agent->service_guaranteed ? 'checked' : '' }}>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -108,50 +109,61 @@
                     <div class="space-y-5">
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Company Name</label>
-                            <input required type="text" name="name" placeholder="Ascent Global Ventures" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                            <input required type="text" name="name" value="{{ $agent->name }}" placeholder="Ascent Global Ventures" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Mobile Number</label>
-                                <input required type="text" name="phone" placeholder="+1 (555) 000-0000" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <input required type="text" name="phone" value="{{ $agent->phone }}" placeholder="+91 00000 00000" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Phone Number</label>
-                                <input type="text" name="landline" placeholder="+1 (555) 123-4567" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <input type="text" name="landline" value="{{ $agent->landline }}" placeholder="+1 (555) 123-4567" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Official Email</label>
-                            <input required type="email" name="email" placeholder="admin@company.com" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                            <input required type="email" name="email" value="{{ $agent->email }}" placeholder="admin@company.com" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Country</label>
-                                <input type="text" name="country" placeholder="United States" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <input type="text" name="country" value="{{ $agent->country }}" placeholder="United States" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">State/Province</label>
-                                <input type="text" name="state" placeholder="California" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <input type="text" name="state" value="{{ $agent->state }}" placeholder="California" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">City</label>
-                                <input type="text" name="city" placeholder="San Francisco" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <input type="text" name="city" value="{{ $agent->city }}" placeholder="San Francisco" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Pincode/Zip</label>
-                                <input type="text" name="pincode" placeholder="94105" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <input type="text" name="pincode" value="{{ $agent->pincode }}" placeholder="94105" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Full Address</label>
-                            <textarea name="address" rows="3" placeholder="Suite 400, 101 California St." class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm resize-none"></textarea>
+                            <textarea name="address" rows="3" placeholder="Suite 400, 101 California St." class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm resize-none">{{ $agent->address }}</textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Pending Bookings/Leads</label>
+                                <input required type="number" name="pending" min="0" value="{{ $agent->pending ?? 0 }}" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Approved Bookings/Leads</label>
+                                <input required type="number" name="approved" min="0" value="{{ $agent->approved ?? 0 }}" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -181,7 +193,7 @@
                     <div class="space-y-4">
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">About Us / Bio</label>
-                            <textarea name="about" rows="3" placeholder="Brief description of the agency's mission and history..." class="w-full border border-gray-200 rounded-2xl py-3.5 px-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm resize-none"></textarea>
+                            <textarea name="about" rows="3" placeholder="Brief description of the agency's mission and history..." class="w-full border border-gray-200 rounded-2xl py-3.5 px-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm resize-none">{{ $agent->about }}</textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -189,13 +201,13 @@
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="facebook" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="facebook" placeholder="Facebook URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="facebook" value="{{ $agent->facebook }}" placeholder="Facebook URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="twitter" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="twitter" placeholder="Twitter URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="twitter" value="{{ $agent->twitter }}" placeholder="Twitter URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                         </div>
 
@@ -204,13 +216,13 @@
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="linkedin" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="linkedin" placeholder="LinkedIn URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="linkedin" value="{{ $agent->linkedin }}" placeholder="LinkedIn URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="globe" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="google_plus" placeholder="Google Plus" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="google_plus" value="{{ $agent->google_plus }}" placeholder="Google Plus" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                         </div>
 
@@ -219,23 +231,23 @@
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="instagram" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="instagram" placeholder="Instagram URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="instagram" value="{{ $agent->instagram }}" placeholder="Instagram URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="message-square" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="skype" placeholder="Skype ID" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="skype" value="{{ $agent->skype }}" placeholder="Skype ID" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Website URL</label>
                             <div class="relative flex items-center">
-                                <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
+                                <div class="">
                                     <i data-lucide="globe" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="website" placeholder="https://www.example.com" class="w-full border border-gray-200 rounded-2xl py-3.5 pl-11 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm">
+                                <input type="text" name="website" value="{{ $agent->website }}" placeholder="https://www.example.com" class="w-full border border-gray-200 rounded-2xl py-3.5 pl-11 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm">
                             </div>
                         </div>
                     </div>
@@ -267,11 +279,11 @@
                 <!-- Bottom Form Buttons -->
                 <div class="flex items-center justify-end gap-4">
                     <a href="{{ url('/admin/registered-agents') }}" class="px-6 py-4 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-3xl font-black text-sm transition-all flex items-center justify-center gap-2">
-                        Save Draft
+                        Cancel Changes
                     </a>
                     <button type="submit" class="px-6 py-4 bg-primary hover:bg-primary-hover text-white rounded-3xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-2 group">
-                        Create User Account
-                        <i data-lucide="rocket" size="16" class="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                        Save Changes
+                        <i data-lucide="save" size="16" class="group-hover:scale-110 transition-transform"></i>
                     </button>
                 </div>
             </div>

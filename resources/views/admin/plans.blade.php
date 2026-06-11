@@ -1,192 +1,289 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editPlan: { id: '', name: '', price: '', duration: '', status: '' } }">
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-10 pb-12" x-data="{ showFilter: false }">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6">
         <div class="space-y-2">
-            <h2 class="font-black text-foreground tracking-tight">Subscription Plans</h2>
-            <p class="text-muted-text font-medium">Define and configure agent-tier subscription levels and benefits.</p>
+            <h2 class="font-black text-foreground tracking-tight text-3xl">Subscription Records</h2>
+            <p class="text-muted-text font-semibold text-sm">View and manage your previous payment transactions</p>
         </div>
-        <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
-            <i data-lucide="plus" size="20"></i> Create New Tier
-        </button>
+        <div class="flex items-center gap-3">
+            <a href="{{ url('/admin/dashboard') }}" class="px-6 py-3.5 border-2 border-dashed border-gray-200 hover:border-gray-300 text-gray-700 rounded-2xl font-bold text-sm transition-all flex items-center gap-2">
+                Go to User dashboard
+            </a>
+            <a href="{{ url('/admin/plans/create') }}" class="px-6 py-3.5 bg-primary hover:bg-primary-hover text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2">
+                <i data-lucide="plus" size="18"></i>
+                Add New Plan
+            </a>
+        </div>
     </div>
 
-    <!-- Tier Comparison Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        @forelse($plans as $plan)
-            @php
-                $features = json_decode($plan->features, true) ?? ['Access to standard packages'];
-                $activeUsersCount = \DB::table('paid_users')->where('plan', $plan->name)->count();
-            @endphp
-            <div class="bg-white p-10 rounded-[40px] shadow-premium border border-border-soft relative overflow-hidden group hover-lift transition-all">
-                @if($loop->first)
-                    <div class="absolute top-8 -right-12 bg-primary text-white text-[10px] font-black uppercase tracking-widest px-12 py-1 rotate-45 shadow-lg">Premium</div>
-                @endif
-                <div class="space-y-8">
-                    <div class="space-y-4">
-                        <span class="px-4 py-1.5 rounded-full bg-primary/5 text-primary text-[10px] font-black uppercase tracking-widest">
-                            {{ $plan->name }}
-                        </span>
-                        <div class="flex items-baseline gap-1">
-                            <h2 class="font-black text-foreground">₹{{ number_format($plan->price, 2) }}</h2>
-                            <span class="text-muted-text font-bold text-sm">/ {{ $plan->duration }}</span>
-                        </div>
-                    </div>
+    <!-- Stats Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Spent Card -->
+        <div class="bg-white p-6 rounded-[32px] border border-border-soft flex items-center gap-5 shadow-sm">
+            <div class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-primary">
+                <i data-lucide="wallet" size="24"></i>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Spent</p>
+                <h3 class="text-2xl font-black text-gray-800">$4,250.00</h3>
+            </div>
+        </div>
 
-                    <div class="space-y-4 border-t border-border-soft pt-8">
-                        @foreach($features as $feature)
-                            <div class="flex items-center gap-3">
-                                <div class="w-5 h-5 bg-green-50 text-green-500 rounded-full flex items-center justify-center">
-                                    <i data-lucide="check" size="12"></i>
+        <!-- Current Plan Card -->
+        <div class="bg-white p-6 rounded-[32px] border border-border-soft flex items-center gap-5 shadow-sm">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500">
+                <i data-lucide="star" size="24"></i>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Current Plan</p>
+                <h3 class="text-2xl font-black text-gray-800">Welcome Offer 1</h3>
+            </div>
+        </div>
+
+        <!-- Next Renewal Card -->
+        <div class="bg-white p-6 rounded-[32px] border border-border-soft flex items-center gap-5 shadow-sm">
+            <div class="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-500">
+                <i data-lucide="calendar" size="24"></i>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Next Renewal</p>
+                <h3 class="text-2xl font-black text-gray-800">Oct 24, 2024</h3>
+            </div>
+        </div>
+
+        <!-- Remaining Credits Card -->
+        <div class="bg-white p-6 rounded-[32px] border border-border-soft flex items-center gap-5 shadow-sm">
+            <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500">
+                <i data-lucide="history" size="24"></i>
+            </div>
+            <div class="space-y-1">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Remaining Credits</p>
+                <h3 class="text-2xl font-black text-gray-800">12 Listings</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Table Card -->
+    <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
+        <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-1">
+                <h3 class="text-xl font-black text-gray-800">Subscription Records</h3>
+                <p class="text-xs text-muted-text font-semibold">View and manage your previous payment transactions</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button @click="showFilter = !showFilter" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors">
+                    <i data-lucide="sliders-horizontal" size="14"></i> Filter
+                </button>
+                <a href="{{ url('/admin/plans/export') }}" class="px-4 py-2 border border-gray-200 text-gray-600 rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-colors">
+                    <i data-lucide="download" size="14"></i> Export
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Area -->
+        <div x-show="showFilter" x-collapse class="p-8 bg-gray-50/50 border-b border-border-soft space-y-4" style="display: none;">
+            <form method="GET" action="{{ url('/admin/plans') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Search Plan Name</label>
+                    <input type="text" name="search" value="{{ $search ?? '' }}" placeholder="E.g. Premium" class="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary/20 text-sm font-medium" />
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Plan Status</label>
+                    <select name="status" class="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary/20 text-sm font-medium">
+                        <option value="">All Statuses</option>
+                        <option value="Active" {{ ($status ?? '') === 'Active' ? 'selected' : '' }}>Active</option>
+                        <option value="Inactive" {{ ($status ?? '') === 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+                </div>
+                <div class="flex items-end gap-3">
+                    <button type="submit" class="flex-1 bg-primary hover:bg-primary-hover text-white py-3.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-md transition-all">Apply Filter</button>
+                    <a href="{{ url('/admin/plans') }}" class="flex-1 bg-white border border-gray-200 text-center text-gray-700 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-50 transition-all">Reset</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="admin-table-container">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-gray-50/50">
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">#</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Plan Name</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Plan Status</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Start Date</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">End Date</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">No. of Package Listing</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border-soft">
+                    @forelse($plans as $index => $plan)
+                        @php
+                            $srNo = str_pad($plans->firstItem() + $index, 2, '0', STR_PAD_LEFT);
+                            $firstLetter = substr($plan->name, 0, 1);
+                            
+                            // Color schemes for plan avatars
+                            $avatarColors = [
+                                'W' => 'bg-orange-50 text-orange-500 border-orange-100',
+                                'S' => 'bg-orange-50 text-orange-500 border-orange-100',
+                                'P' => 'bg-blue-50 text-blue-500 border-blue-100',
+                                'E' => 'bg-gray-100 text-gray-600 border-gray-200',
+                                'C' => 'bg-purple-50 text-purple-500 border-purple-100',
+                            ];
+                            $avatarColor = $avatarColors[$firstLetter] ?? 'bg-gray-50 text-gray-500 border-gray-200';
+                        @endphp
+                        <tr class="group hover:bg-gray-50/30 transition-colors">
+                            <!-- Serial Number -->
+                            <td class="py-6 px-8 text-sm font-bold text-muted-text opacity-60">
+                                {{ $index + 1 }}
+                            </td>
+                            
+                            <!-- Plan Name with Circular Icon -->
+                            <td class="py-6 px-8">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-8 h-8 rounded-full border flex items-center justify-center font-black text-xs {{ $avatarColor }}">
+                                        {{ $firstLetter }}
+                                    </div>
+                                    <span class="text-sm font-black text-gray-800 uppercase tracking-tight">
+                                        {{ $plan->name }}
+                                    </span>
                                 </div>
-                                <span class="text-sm font-medium text-muted-text">{{ $feature }}</span>
-                            </div>
-                        @endforeach
-                    </div>
+                            </td>
+                            
+                             <!-- Plan Status Toggle -->
+                             <td class="py-6 px-8">
+                                 <a href="{{ url('/admin/plans/toggle/' . $plan->id) }}" class="inline-flex items-center cursor-pointer">
+                                     <div class="relative inline-flex items-center">
+                                         <input type="checkbox" class="sr-only peer" {{ strtolower($plan->status ?? 'active') === 'active' ? 'checked' : '' }} disabled>
+                                         <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                     </div>
+                                 </a>
+                             </td>
+                            
+                            <!-- Start Date -->
+                            <td class="py-6 px-8 text-sm font-semibold text-gray-500">
+                                {{ $plan->created_at ? \Carbon\Carbon::parse($plan->created_at)->format('d M Y') : 'N/A' }}
+                            </td>
+                            
+                            <!-- End Date -->
+                            <td class="py-6 px-8 text-sm font-semibold text-gray-500">
+                                {{ $plan->created_at ? \Carbon\Carbon::parse($plan->created_at)->addMonth()->format('d M Y') : 'N/A' }}
+                            </td>
+                            
+                            <!-- Package Listings -->
+                            <td class="py-6 px-8 text-center">
+                                <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">
+                                    {{ $plan->package_limit ?? 15 }}
+                                </span>
+                            </td>
+                            
+                            <!-- Actions -->
+                            <td class="py-6 px-8">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a 
+                                        href="{{ url('/admin/plans/preview/' . $plan->id) }}"
+                                        class="p-2.5 text-muted-text hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
+                                        title="View Plan details"
+                                    >
+                                        <i data-lucide="eye" size="18"></i>
+                                    </a>
+                                    <a 
+                                        href="{{ url('/admin/plans/delete/' . $plan->id) }}" 
+                                        onclick="return confirm('Are you sure you want to delete this subscription plan tier?');"
+                                        class="p-2.5 text-muted-text hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                        title="Delete Plan"
+                                    >
+                                        <i data-lucide="trash-2" size="18"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="py-12 text-center text-sm font-bold text-muted-text">No subscription plans registered.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-                    <div class="pt-4">
-                        <div class="flex items-center justify-between text-[10px] font-bold text-muted-text uppercase tracking-widest mb-2">
-                            <span>Active Subscriptions</span>
-                            <span>{{ $activeUsersCount }}</span>
-                        </div>
-                        <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                            <div class="h-full bg-primary rounded-full" style="width: {{ min(100, max(5, ($activeUsersCount / 100) * 100)) }}%"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 pt-2">
-                        <button 
-                            @click="showEditModal = true; editPlan = { id: '{{ $plan->id }}', name: '{{ addslashes($plan->name) }}', price: '{{ $plan->price }}', duration: '{{ addslashes($plan->duration) }}', status: '{{ $plan->status }}' }"
-                            class="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-foreground text-xs font-black uppercase tracking-widest rounded-xl transition-all"
-                        >
-                            Edit Tier
-                        </button>
-                        <a 
-                            href="{{ url('/admin/plans/delete/' . $plan->id) }}" 
-                            onclick="return confirm('Are you sure you want to delete this subscription plan tier?');"
-                            class="p-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl transition-all"
-                        >
-                            <i data-lucide="trash-2" size="16"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-span-3 py-12 text-center text-sm font-bold text-muted-text">No subscription plans registered.</div>
-        @endforelse
-    </div>
-
-    <!-- ================= MODALS ================= -->
-
-    <!-- Add Plan Modal -->
-    <div 
-        x-show="showAddModal" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        style="display: none;"
-    >
-        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
-            <div class="flex items-center justify-between border-b border-border-soft pb-4">
-                <div class="space-y-1">
-                    <h3 class="text-xl font-black text-foreground">Create Plan Tier</h3>
-                    <p class="text-xs text-muted-text font-medium">Log a new global agent subscription tier.</p>
-                </div>
-                <button @click="showAddModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
-                    <i data-lucide="x" size="20"></i>
-                </button>
-            </div>
-            
-            <form action="{{ url('/admin/plans/store') }}" method="POST" class="space-y-6">
-                @csrf
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Plan Tier Name<span class="text-primary">*</span></label>
-                    <input required type="text" name="name" placeholder="E.g. Gold Plus" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Price (INR)<span class="text-primary">*</span></label>
-                        <input required type="number" step="0.01" name="price" placeholder="E.g. 1999" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Duration</label>
-                        <input required type="text" name="duration" placeholder="E.g. Month, Year" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
-                    <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    </select>
-                </div>
+        <!-- Custom Pagination -->
+        <div class="p-8 bg-gray-50/50 border-t border-border-soft flex flex-col md:flex-row items-center justify-between gap-6">
+            <p class="text-sm font-bold text-muted-text">Showing {{ $plans->firstItem() ?? 0 }} to {{ $plans->lastItem() ?? 0 }} of {{ $plans->total() }} entries</p>
+            <div class="flex items-center gap-2">
+                @if($plans->onFirstPage())
+                    <button class="p-2 text-muted-text opacity-40 cursor-not-allowed" disabled><i data-lucide="chevron-left" size="20"></i></button>
+                @else
+                    <a href="{{ $plans->previousPageUrl() }}" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-left" size="20"></i></a>
+                @endif
                 
-                <div class="flex items-center justify-end gap-4 pt-4">
-                    <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Tier</button>
-                </div>
-            </form>
+                @foreach(range(1, $plans->lastPage()) as $i)
+                    @if($i == 1 || $i == $plans->lastPage() || abs($i - $plans->currentPage()) <= 1)
+                        @if($i == $plans->currentPage())
+                            <button class="w-10 h-10 rounded-full text-sm font-black bg-primary text-white shadow-lg shadow-primary/20 transition-all">
+                                {{ $i }}
+                            </button>
+                        @else
+                            <a href="{{ $plans->url($i) }}" class="w-10 h-10 rounded-full text-sm font-black transition-all text-muted-text hover:bg-white hover:text-primary flex items-center justify-center">
+                                {{ $i }}
+                            </a>
+                        @endif
+                    @elseif($i == 2 || $i == $plans->lastPage() - 1)
+                        <span class="text-muted-text font-black px-1">...</span>
+                    @endif
+                @endforeach
+                
+                @if($plans->hasMorePages())
+                    <a href="{{ $plans->nextPageUrl() }}" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="chevron-right" size="20"></i></a>
+                @else
+                    <button class="p-2 text-muted-text opacity-40 cursor-not-allowed" disabled><i data-lucide="chevron-right" size="20"></i></button>
+                @endif
+            </div>
         </div>
     </div>
 
-    <!-- Edit Plan Modal -->
-    <div 
-        x-show="showEditModal" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        style="display: none;"
-    >
-        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
-            <div class="flex items-center justify-between border-b border-border-soft pb-4">
-                <div class="space-y-1">
-                    <h3 class="text-xl font-black text-foreground">Edit Tier Settings</h3>
-                    <p class="text-xs text-muted-text font-medium">Modify pricing and duration thresholds.</p>
-                </div>
-                <button @click="showEditModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
-                    <i data-lucide="x" size="20"></i>
-                </button>
+    <style>
+        .banner-container {
+            --banner-left-width: 100%;
+            --banner-right-width: 100%;
+        }
+        @media (min-width: 1024px) {
+            .banner-container {
+                --banner-left-width: calc(50% - 1rem);
+                --banner-right-width: calc(50% - 1rem);
+            }
+        }
+    </style>
+
+    <!-- Bottom Banners -->
+    <div class="banner-container flex flex-col lg:flex-row gap-8 pt-4 w-full items-stretch justify-between">
+        <!-- Expand Your Inventory Banner -->
+        <div class="banner-left w-full bg-cover bg-center overflow-hidden min-h-[240px] relative flex flex-col justify-end p-8 text-white shadow-lg border border-border-soft" style="width: var(--banner-left-width); flex-shrink: 0; border-radius: 32px; background-image: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.15)), url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=800');">
+            <div class="space-y-2 z-10 max-w-md">
+                <h3 class="text-2xl font-black leading-tight text-white">Expand Your Inventory</h3>
+                <p class="text-white/80 text-xs font-semibold leading-relaxed">Unlock unlimited package listings with our Enterprise Tier. Perfect for high-volume agencies.</p>
+                <a href="#" class="inline-flex items-center gap-2 text-primary font-black text-xs hover:gap-3 transition-all pt-2">
+                    Learn More <i data-lucide="arrow-right" size="14"></i>
+                </a>
             </div>
-            
-            <form action="{{ url('/admin/plans/update') }}" method="POST" class="space-y-6">
-                @csrf
-                <input type="hidden" name="id" x-model="editPlan.id" />
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Plan Tier Name<span class="text-primary">*</span></label>
-                    <input required type="text" name="name" x-model="editPlan.name" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Price (INR)<span class="text-primary">*</span></label>
-                        <input required type="number" step="0.01" name="price" x-model="editPlan.price" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Duration</label>
-                        <input required type="text" name="duration" x-model="editPlan.duration" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
-                    <select name="status" x-model="editPlan.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                    </select>
-                </div>
-                
-                <div class="flex items-center justify-end gap-4 pt-4">
-                    <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
-                </div>
-            </form>
+        </div>
+
+        <!-- Need Help Banner -->
+        <div class="banner-right w-full bg-[#FAF9F5] border border-border-soft p-8 flex flex-col justify-between shadow-sm space-y-4" style="width: var(--banner-right-width); flex-shrink: 0; border-radius: 32px;">
+            <div class="space-y-2">
+                <h3 class="text-2xl font-black text-primary leading-tight">Need Help?</h3>
+                <p class="text-gray-500 text-xs font-semibold leading-relaxed">Our dedicated billing support team is available 24/7 to assist with your transaction inquiries.</p>
+            </div>
+            <div class="flex items-center gap-3 pt-2">
+                <a href="#" class="px-6 py-3.5 bg-primary hover:bg-primary-hover text-white rounded-2xl font-black text-xs transition-all shadow-md">
+                    Contact Support
+                </a>
+                <a href="#" class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 rounded-2xl font-black text-xs border border-gray-200 transition-all shadow-sm">
+                    Billing FAQ
+                </a>
+            </div>
         </div>
     </div>
 </div>

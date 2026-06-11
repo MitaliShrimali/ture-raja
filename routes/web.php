@@ -84,6 +84,8 @@ Route::prefix('admin')->group(function () {
 
     Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('admin.login.submit');
     Route::get('/users', [AdminController::class, 'users']);
+    Route::get('/users/create', [AdminController::class, 'createAdminUser']);
+    Route::get('/users/edit/{id}', [AdminController::class, 'editAdminUser']);
     Route::get('/customers', [AdminController::class, 'customers']);
     Route::get('/customers/delete/{id}', [AdminController::class, 'deleteCustomer']);
     Route::get('/agents', [AdminController::class, 'agents']);
@@ -119,6 +121,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/users/toggle/{id}', [AdminController::class, 'toggleUser']);
 
     Route::post('/agents/store', [AdminController::class, 'storeAgent']);
+    Route::get('/agents/edit/{id}', [AdminController::class, 'editAgent']);
     Route::post('/agents/update', [AdminController::class, 'updateAgent']);
     Route::get('/agents/delete/{id}', [AdminController::class, 'deleteAgent']);
     Route::get('/agents/toggle/{id}', [AdminController::class, 'toggleAgent']);
@@ -139,6 +142,7 @@ Route::prefix('admin')->group(function () {
 
     Route::post('/packages/store', [AdminController::class, 'storePackage']);
     Route::post('/packages/update', [AdminController::class, 'updatePackage']);
+    Route::get('/packages/edit/{id}', [AdminController::class, 'editPackage']);
     Route::get('/packages/delete/{id}', [AdminController::class, 'deletePackage']);
     Route::get('/packages/toggle/{id}', [AdminController::class, 'togglePackage']);
 
@@ -175,6 +179,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/ads/delete/{id}', [AdminController::class, 'deleteAd']);
     Route::get('/ads/toggle/{id}', [AdminController::class, 'toggleAd']);
 
+    Route::get('/plans/create', [AdminController::class, 'createPlan']);
+    Route::get('/plans/edit/{id}', [AdminController::class, 'editPlan']);
+    Route::get('/plans/preview/{id}', [AdminController::class, 'previewPlan']);
+    Route::get('/plans/duplicate/{id}', [AdminController::class, 'duplicatePlan']);
+    Route::get('/plans/export', [AdminController::class, 'exportPlans']);
     Route::post('/plans/store', [AdminController::class, 'storePlan']);
     Route::post('/plans/update', [AdminController::class, 'updatePlan']);
     Route::get('/plans/delete/{id}', [AdminController::class, 'deletePlan']);

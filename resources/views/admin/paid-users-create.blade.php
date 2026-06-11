@@ -177,7 +177,7 @@
                         </div>
                         <div class="relative group">
                             <i data-lucide="globe-2" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
-                            <input type="url" name="google_plus_url" placeholder="G-Google Plus" class="w-full bg-[#F8F9FA] border-none rounded-xl py-3 pl-10 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground text-sm" />
+                            <input type="url" name="google_plus_url" placeholder="Google Plus" class="w-full bg-[#F8F9FA] border-none rounded-xl py-3 pl-10 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground text-sm" />
                         </div>
                     </div>
 

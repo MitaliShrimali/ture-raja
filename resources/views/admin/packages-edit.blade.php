@@ -1,24 +1,36 @@
 @extends('layouts.admin')
 
-@section('admin_title', 'Add New Package')
+@section('admin_title', 'Edit Package')
 
 @section('content')
+@php
+    $galleryUrls = json_decode($pkg->gallery, true) ?: [];
+    $included = json_decode($pkg->included, true) ?: [];
+    $excluded = json_decode($pkg->excluded, true) ?: [];
+    $itinerary = json_decode($pkg->itinerary, true) ?: [];
+    $agentData = json_decode($pkg->agent, true) ?: [];
+    $agentName = $agentData['name'] ?? 'Miths Holidays';
+@endphp
 <div class="space-y-8 pb-12" x-data="{ 
     step: 1,
-    title: 'The Ultimate Bali Escape',
-    location: 'Ubud, Seminyak, Uluwatu',
-    duration: '5 Days / 4 Nights',
-    price: '45999',
-    old_price: '55000',
-    stock: '10 Left',
-    category: 'domestic',
-    badge: 'New Delhi',
-    group_size: 'Direct Flight',
-    rating: '4.8',
-    reviews: '10',
-    previewUrl: '', 
-    galleryPreviews: [],
-    brochureName: '',
+    title: '{{ addslashes($pkg->title) }}',
+    location: '{{ addslashes($pkg->location) }}',
+    duration: '{{ addslashes($pkg->duration) }}',
+    price: '{{ $pkg->price }}',
+    old_price: '{{ $pkg->old_price ?? '' }}',
+    stock: '{{ addslashes($pkg->stock) }}',
+    category: '{{ strtolower($pkg->category ?? 'domestic') }}',
+    badge: '{{ addslashes($pkg->badge ?? '') }}',
+    group_size: '{{ addslashes($pkg->group_size ?? 'Direct Flight') }}',
+    rating: '{{ $pkg->rating ?? '4.8' }}',
+    reviews: '{{ $pkg->reviews ?? '10' }}',
+    previewUrl: '{{ $pkg->image }}', 
+    galleryPreviews: [
+        @foreach($galleryUrls as $url)
+            { url: '{{ $url }}', name: '{{ basename($url) }}', size: 'Existing' },
+        @endforeach
+    ],
+    brochureName: '{{ $pkg->brochure ? basename($pkg->brochure) : '' }}',
     showInclusions: true,
     showExclusions: true,
     hidePrice: false,
@@ -32,10 +44,7 @@
     newHotelImage: '',
     showAddTransfer: false,
     showAddHotel: false,
-    days: [
-        { title: 'Red Fort', desc: 'Historical Guided Tour', duration: '3 Hours' },
-        { title: 'Chandni Chowk', desc: 'Street Food & Rickshaw Ride', duration: '2 Hours' }
-    ],
+    days: {!! count($itinerary) > 0 ? json_encode($itinerary) : json_encode([['title' => 'Day 1', 'desc' => 'Arrival & check-in', 'duration' => '3 Hours']]) !!},
     addDay() {
         this.days.push({ title: '', desc: '', duration: '3 Hours' });
     },
@@ -152,12 +161,6 @@
             color: #B33A00;
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        /* Meal pill toggle */
-        .meal-pill input:checked ~ span { color: #ffffff; }
-        .meal-pill:has(input:checked) {
-            background-color: #B33A00;
-            border-color: #B33A00;
-        }
     </style>
 
     <!-- Header Actions Panel -->
@@ -167,7 +170,7 @@
                 <i data-lucide="arrow-left" size="20"></i>
             </a>
             <div>
-                <h2 class="font-black text-gray-800 tracking-tight text-2xl" x-text="step === 1 ? 'Create Travel Package' : 'Build Your Journey'"></h2>
+                <h2 class="font-black text-gray-800 tracking-tight text-2xl" x-text="step === 1 ? 'Edit Travel Package' : 'Build Your Journey'"></h2>
                 <p class="text-muted-text font-medium text-xs mt-0.5" x-text="step === 1 ? 'Step 1: Configure core metadata, location, logistics & base pricing.' : 'Step 2: Upload brochures, edit itineraries, and add gallery portfolio.'"></p>
             </div>
         </div>
@@ -205,8 +208,9 @@
     </div>
 
     <!-- Form Container -->
-    <form id="packageMainForm" action="{{ url('/admin/packages/store') }}" method="POST" enctype="multipart/form-data" class="space-y-10">
+    <form id="packageMainForm" action="{{ url('/admin/packages/update') }}" method="POST" enctype="multipart/form-data" class="space-y-10">
         @csrf
+        <input type="hidden" name="id" value="{{ $pkg->id }}" />
 
         <!-- ==================== STEP 1: IDENTITY & LOGISTICS ==================== -->
         <div x-show="step === 1" class="space-y-8" x-transition>
@@ -346,7 +350,7 @@
 
                     <!-- Hide Price Toggle -->
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" name="hide_price" x-model="hidePrice" class="w-5 h-5 rounded border-gray-300 text-[#B33A00] focus:ring-[#B33A00]/25 cursor-pointer" />
+                        <input type="checkbox" name="hide_price" x-model="hidePrice" class="w-5 h-5 rounded border-gray-300 text-[#B33A00] focus:ring-0 cursor-pointer" />
                         <span class="text-xs font-bold text-gray-600">Hide price from package listing</span>
                     </label>
                 </div>
@@ -412,196 +416,170 @@
         </div>
 
         <!-- ==================== STEP 2: ITINERARY, MEALS & PHOTOS ==================== -->
-        <div x-show="step === 2" class="space-y-8" x-transition>
-
-            <!-- ── Full-width row: Upload Brochure  OR  Add Your Itinerary ── -->
-            <div class="flex flex-col md:flex-row gap-4 items-stretch">
-
-                <!-- Brochure card  ~33% -->
-                <div class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                            <i data-lucide="file-text" size="16" class="text-[#B33A00]"></i>
-                        </div>
-                        <h4 class="text-sm font-bold text-gray-800">Upload Brochure</h4>
-                    </div>
-                    <div class="flex-1 w-full rounded-2xl p-5 border-2 border-dashed border-red-200 text-center cursor-pointer hover:bg-orange-50/30 transition-all flex flex-col items-center justify-center min-h-[200px]" @click="$refs.brochureInput.click()">
-                        <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mb-3">
-                            <i data-lucide="upload-cloud" class="text-[#B33A00]" size="22"></i>
-                        </div>
-                        <span class="text-sm font-bold text-gray-800" x-text="brochureName ? brochureName : 'Drop your brochure here'"></span>
-                        <span class="text-xs text-gray-400 font-medium mt-1">Or click to browse from your computer</span>
-                        <button type="button" class="mt-3 px-5 py-2 border border-gray-200 bg-white rounded-full text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all" @click.stop="$refs.brochureInput.click()">Choose File</button>
-                        <span class="text-[10px] text-gray-400 font-medium mt-2 uppercase tracking-wide">PDF FORMAT ONLY &bull; MAX 5MB</span>
-                        <input type="file" name="brochure_file" x-ref="brochureInput" accept=".pdf" class="hidden" @change="brochureName = $event.target.files[0] ? $event.target.files[0].name : ''" />
-                    </div>
-                </div>
-
-                <!-- OR divider -->
-                <div class="flex items-center justify-center shrink-0 px-2">
-                    <span class="text-xs font-black text-gray-400 uppercase tracking-widest">OR</span>
-                </div>
-
-                <!-- Itinerary card  ~65% -->
-                <div class="flex-1 bg-white rounded-[28px] border border-gray-100 p-6 space-y-3 shadow-sm flex flex-col">
-                    <div class="flex items-center gap-2">
-                        <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                            <i data-lucide="pencil" size="16" class="text-[#B33A00]"></i>
-                        </div>
-                        <h4 class="text-sm font-bold text-gray-800">Add Your Itinerary</h4>
-                    </div>
-                    <div class="flex-1 bg-[#F8F8F8] rounded-2xl overflow-hidden border border-gray-100 flex flex-col">
-                        <div class="flex items-center gap-1 px-4 py-2.5 border-b border-gray-200 bg-white">
-                            <button type="button" onclick="itineraryFormat('bold')" title="Bold" class="w-7 h-7 rounded-md flex items-center justify-center text-sm font-black text-gray-500 hover:bg-orange-50 hover:text-[#B33A00] transition-all">B</button>
-                            <button type="button" onclick="itineraryFormat('italic')" title="Italic" class="w-7 h-7 rounded-md flex items-center justify-center text-sm italic font-black text-gray-500 hover:bg-orange-50 hover:text-[#B33A00] transition-all">I</button>
-                            <div class="w-px h-4 bg-gray-200 mx-1"></div>
-                            <button type="button" onclick="itineraryFormat('list')" title="Bullet list" class="w-7 h-7 rounded-md flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-[#B33A00] transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                            </button>
-                            <button type="button" onclick="itineraryFormat('link')" title="Insert link" class="w-7 h-7 rounded-md flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-[#B33A00] transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                            </button>
-                        </div>
-                        <textarea id="itinerary-textarea" name="editorial_itinerary" rows="9" placeholder="Explain why this tour is unique..." class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none"></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── 3-col layout: left content + right sidebar ── -->
+        <div x-show="step === 2" class="space-y-10" x-transition>
+            <!-- Multi-column Layout -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-
+                
                 <!-- Left 2 Columns -->
                 <div class="lg:col-span-2 space-y-8">
+                    <!-- Brochure Upload & Itinerary Text Area -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Brochure upload -->
+                        <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-4 shadow-sm flex flex-col justify-between">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="file-text" size="18" class="text-[#B33A00]"></i>
+                                <h4 class="text-sm font-black text-gray-800">Upload Brochure</h4>
+                            </div>
+                            
+                            <div class="w-full bg-[#F5F5F5] rounded-2xl p-6 border-2 border-dashed border-gray-200 text-center cursor-pointer hover:bg-gray-100 transition-all flex flex-col items-center justify-center min-h-[140px]" @click="$refs.brochureInput.click()">
+                                <i data-lucide="upload-cloud" class="text-gray-400 mb-2" size="24"></i>
+                                <span class="text-xs font-bold text-gray-800" x-text="brochureName ? brochureName : 'Drop your brochure here'">Drop your brochure here</span>
+                                <span class="text-[9px] text-gray-400 font-semibold mt-1">PDF FORMAT ONLY &bull; MAX 5MB</span>
+                                <input type="file" name="brochure_file" x-ref="brochureInput" accept=".pdf" class="hidden" @change="brochureName = $event.target.files[0] ? $event.target.files[0].name : ''" />
+                            </div>
+                        </div>
+
+                        <!-- Add Your Itinerary -->
+                        <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-4 shadow-sm">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="pencil" size="18" class="text-[#B33A00]"></i>
+                                <h4 class="text-sm font-black text-gray-800">Add Your Itinerary</h4>
+                            </div>
+                            <textarea name="editorial_itinerary" rows="6" placeholder="Explain why this tour is unique..." class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#B33A00]/25 transition-all font-bold text-foreground text-sm resize-none">{{ $pkg->editorial_itinerary }}</textarea>
+                        </div>
+                    </div>
 
                     <!-- Editorial Details Card -->
-                    <div class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-6 shadow-sm">
-                        <h3 class="text-lg font-bold text-gray-900">Editorial Details</h3>
+                    <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6 shadow-sm">
+                        <h3 class="text-lg font-black text-gray-800">Editorial Details</h3>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Transfers sub-card -->
-                            <div class="bg-[#FFF5F0] rounded-2xl p-5 space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Transfers -->
+                            <div class="space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B33A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-                                        <span class="text-sm font-bold text-gray-800">Transfers</span>
+                                    <div class="flex items-center gap-1.5 pl-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B33A00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
+                                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest">Transfers</label>
                                     </div>
-                                    <button type="button" @click="const name = prompt('Enter transfer details:'); if(name) transfers.push(name);" class="flex items-center gap-1 text-[#B33A00] text-xs font-bold hover:underline">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                        Add
+                                    <button type="button" @click="const name = prompt('Enter transfer details:'); if(name) transfers.push(name);" class="text-[10px] font-black text-[#B33A00] hover:underline flex items-center gap-0.5">
+                                        <i data-lucide="plus" size="10"></i> Add
                                     </button>
                                 </div>
+                                
                                 <div class="space-y-2">
                                     <template x-for="(tr, idx) in transfers" :key="idx">
-                                        <div class="bg-white rounded-xl py-2.5 px-4 flex items-center justify-between text-xs font-semibold text-gray-700 shadow-sm">
+                                        <div class="w-full bg-[#F5F5F5] rounded-2xl py-3 px-4 flex items-center justify-between text-xs font-bold text-foreground shadow-sm">
                                             <span x-text="tr"></span>
-                                            <button type="button" @click="transfers.splice(idx, 1)" class="text-gray-300 hover:text-gray-500 ml-2">
+                                            <button type="button" @click="transfers.splice(idx, 1)" class="text-gray-400 hover:text-red-500">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                                             </button>
                                         </div>
                                     </template>
                                     <template x-if="transfers.length === 0">
-                                        <p class="text-xs text-gray-400 bg-white rounded-xl py-2.5 px-4">No transfers added yet</p>
+                                        <div class="w-full bg-[#F5F5F5] rounded-2xl py-3 px-4 text-xs font-bold text-muted-text pl-4 italic">No transfers added yet</div>
                                     </template>
                                 </div>
                             </div>
 
-                            <!-- Hotels sub-card -->
-                            <div class="bg-[#FFF5F0] rounded-2xl p-5 space-y-3">
+                            <!-- Hotels -->
+                            <div class="space-y-2">
                                 <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B33A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h20"/><path d="M22 4v16"/><rect x="6" y="12" width="4" height="4"/><rect x="14" y="12" width="4" height="4"/></svg>
-                                        <span class="text-sm font-bold text-gray-800">Hotels</span>
+                                    <div class="flex items-center gap-1.5 pl-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#B33A00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h20"/><path d="M22 4v16"/><path d="M2 12h20"/><path d="M2 16h20"/></svg>
+                                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest">Hotels</label>
                                     </div>
-                                    <button type="button" @click="const name = prompt('Enter Hotel Name:'); if(name) { const details = prompt('Enter Room Type / Details:'); hotels.push({ name: name, room: details, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100' }); }" class="flex items-center gap-1 text-[#B33A00] text-xs font-bold hover:underline">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                                        Add
+                                    <button type="button" @click="const name = prompt('Enter Hotel Name:'); if(name) { const details = prompt('Enter Room Type / Details:'); hotels.push({ name: name, room: details, image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100' }); }" class="text-[10px] font-black text-[#B33A00] hover:underline flex items-center gap-0.5">
+                                        <i data-lucide="plus" size="10"></i> Add
                                     </button>
                                 </div>
-                                <div class="space-y-2">
+
+                                <div class="space-y-3">
                                     <template x-for="(ht, idx) in hotels" :key="idx">
-                                        <div class="bg-white rounded-xl p-3 flex items-center justify-between shadow-sm">
+                                        <div class="w-full bg-[#F5F5F5] rounded-2xl p-4 flex items-center justify-between border border-transparent hover:border-gray-200/50 transition-all shadow-sm">
                                             <div class="flex items-center gap-3">
-                                                <img :src="ht.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'" class="w-11 h-11 rounded-xl object-cover" />
-                                                <div>
-                                                    <p class="text-xs font-bold text-gray-800" x-text="ht.name"></p>
-                                                    <p class="text-[10px] text-gray-400 font-medium" x-html="ht.room || 'Standard Room'"></p>
+                                                <img :src="ht.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'" class="w-10 h-10 rounded-xl object-cover" />
+                                                <div class="space-y-0.5">
+                                                    <p class="text-xs font-black text-gray-800" x-text="ht.name"></p>
+                                                    <p class="text-[9px] text-muted-text font-bold uppercase" x-html="ht.room || 'Standard Room'"></p>
                                                 </div>
                                             </div>
-                                            <button type="button" @click="hotels.splice(idx, 1)" class="text-gray-300 hover:text-gray-500 ml-2 text-lg leading-none">&times;</button>
+                                            <button type="button" @click="hotels.splice(idx, 1)" class="text-gray-400 hover:text-red-500">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                                            </button>
                                         </div>
                                     </template>
                                     <template x-if="hotels.length === 0">
-                                        <p class="text-xs text-gray-400 bg-white rounded-xl py-2.5 px-4">No hotels added yet</p>
+                                        <p class="text-xs text-muted-text font-bold pl-1 italic">No hotels added yet</p>
                                     </template>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Meals Included - pill style -->
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Meals Included</label>
-                            <div class="flex items-center gap-3">
-                                <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Breakfast" checked class="hidden">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    <span class="text-xs font-semibold">Breakfast</span>
+                        <!-- Meals Included -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Meals Included</label>
+                            <div class="flex items-center gap-4">
+                                <label class="flex items-center gap-2 bg-[#F5F5F5] px-4 py-2.5 rounded-full cursor-pointer select-none">
+                                    <input type="checkbox" name="included[]" value="Breakfast" checked class="rounded border-gray-300 text-[#B33A00] focus:ring-0 cursor-pointer accent-[#B33A00]">
+                                    <span class="text-xs font-bold text-gray-700">Breakfast</span>
                                 </label>
-                                <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Lunch" class="hidden">
-                                    <span class="text-xs font-semibold text-gray-700">Lunch</span>
+                                <label class="flex items-center gap-2 bg-[#F5F5F5] px-4 py-2.5 rounded-full cursor-pointer select-none">
+                                    <input type="checkbox" name="included[]" value="Lunch" class="rounded border-gray-300 text-[#B33A00] focus:ring-0 cursor-pointer accent-[#B33A00]">
+                                    <span class="text-xs font-bold text-gray-700">Lunch</span>
                                 </label>
-                                <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Dinner" checked class="hidden">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    <span class="text-xs font-semibold">Dinner</span>
+                                <label class="flex items-center gap-2 bg-[#F5F5F5] px-4 py-2.5 rounded-full cursor-pointer select-none">
+                                    <input type="checkbox" name="included[]" value="Dinner" checked class="rounded border-gray-300 text-[#B33A00] focus:ring-0 cursor-pointer accent-[#B33A00]">
+                                    <span class="text-xs font-bold text-gray-700">Dinner</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- Terms & Conditions -->
                         <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Terms & Conditions</label>
-                            <textarea name="excluded[]" rows="3" placeholder="Specific booking policies for this package..." class="w-full bg-[#F8F8F8] border-none rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-[#B33A00]/15 transition-all text-sm text-gray-600 resize-none"></textarea>
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Terms & Conditions</label>
+                            <textarea name="excluded[]" rows="3" placeholder="Specify booking policies for this package..." class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#B33A00]/25 transition-all font-bold text-foreground text-sm resize-none"></textarea>
                         </div>
                     </div>
 
-                    <!-- Sightseeing Details Card -->
-                    <div class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-5 shadow-sm">
+                    <!-- Sightseeing Details Card (Itinerary Days Builder) -->
+                    <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c7ed6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                <h3 class="text-lg font-bold text-gray-900">Sightseeing Details</h3>
+                                <div class="w-10 h-10 bg-orange-50 text-[#B33A00] rounded-xl flex items-center justify-center">
+                                    <i data-lucide="eye" size="20"></i>
+                                </div>
+                                <h3 class="text-lg font-black text-gray-800">Sightseeing Details</h3>
                             </div>
-                            <button type="button" @click="addDay()" class="px-5 py-2.5 bg-[#B33A00] hover:bg-[#943000] text-white rounded-full text-sm font-semibold transition-all flex items-center gap-1.5" style="background-color: #B33A00 !important; color: #ffffff !important;">
-                                + Add Point
+                            <button type="button" @click="addDay()" class="px-5 py-2.5 bg-[#B33A00] hover:bg-[#943000] text-white rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-lg shadow-orange-700/10" style="background-color: #B33A00 !important; color: #ffffff !important;">
+                                <i data-lucide="plus" size="14"></i> Add Point
                             </button>
                         </div>
 
                         <div class="overflow-hidden border border-gray-100 rounded-2xl">
                             <table class="w-full text-left border-collapse">
                                 <thead>
-                                    <tr class="border-b border-gray-100">
-                                        <th class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Location</th>
-                                        <th class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Activity</th>
-                                        <th class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Duration</th>
-                                        <th class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
+                                    <tr class="bg-[#F5F5F5] border-b border-gray-100">
+                                        <th class="py-4 px-6 text-[10px] font-black text-muted-text uppercase tracking-widest">Location</th>
+                                        <th class="py-4 px-6 text-[10px] font-black text-muted-text uppercase tracking-widest">Activity</th>
+                                        <th class="py-4 px-6 text-[10px] font-black text-muted-text uppercase tracking-widest">Duration</th>
+                                        <th class="py-4 px-6 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <template x-for="(day, index) in days" :key="index">
-                                        <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-all">
+                                        <tr class="border-b border-gray-100/50 hover:bg-gray-50/30 transition-all">
                                             <td class="py-4 px-6">
                                                 <input required type="text" name="itinerary_titles[]" x-model="day.title" class="w-full bg-transparent border-none outline-none font-bold text-gray-800 focus:ring-0 p-0 text-sm" placeholder="e.g. Red Fort" />
                                             </td>
                                             <td class="py-4 px-6">
-                                                <input required type="text" name="itinerary_descriptions[]" x-model="day.desc" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. Historical Guided Tour" />
+                                                <input required type="text" name="itinerary_descriptions[]" x-model="day.desc" class="w-full bg-transparent border-none outline-none font-medium text-gray-600 focus:ring-0 p-0 text-sm" placeholder="e.g. Historical Guided Tour" />
                                             </td>
                                             <td class="py-4 px-6">
-                                                <input type="text" name="itinerary_durations[]" x-model="day.duration" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. 3 Hours" />
+                                                <input type="text" name="itinerary_durations[]" x-model="day.duration" class="w-full bg-transparent border-none outline-none font-medium text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. 3 Hours" />
                                             </td>
                                             <td class="py-4 px-6 text-right">
-                                                <button type="button" @click="removeDay(index)" class="p-1.5 text-gray-300 hover:text-red-400 transition-all" x-show="days.length > 1" title="Remove">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                                                <button type="button" @click="removeDay(index)" class="p-1 text-muted-text hover:text-red-500 transition-all" x-show="days.length > 1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                                                 </button>
                                             </td>
                                         </tr>
@@ -612,51 +590,41 @@
                     </div>
 
                     <!-- Inclusions & Exclusions Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Inclusions Card -->
-                        <div class="bg-[#F0FAF5] rounded-[28px] border border-green-100 p-6 space-y-4 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2 text-[#2f9e44]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                    <h4 class="text-sm font-bold">Inclusions</h4>
-                                </div>
-                                <button type="button" class="w-6 h-6 rounded-full border border-green-300 flex items-center justify-center text-[#2f9e44] hover:bg-green-100 transition-all text-base font-bold">+</button>
+                        <div class="bg-[#F2FBF7] rounded-[32px] border border-green-100 p-8 space-y-4 shadow-sm">
+                            <div class="flex items-center gap-2 text-[#0ca678]">
+                                <i data-lucide="check-circle" size="20"></i>
+                                <h4 class="text-sm font-black uppercase tracking-wider">Inclusions</h4>
                             </div>
-                            <ul class="space-y-2">
-                                <li class="flex items-center gap-2 text-xs font-medium text-gray-700">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#2f9e44] shrink-0"></span>
-                                    All airport transfers
-                                    <input type="hidden" name="included[]" value="All airport transfers">
-                                </li>
-                                <li class="flex items-center gap-2 text-xs font-medium text-gray-700">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#2f9e44] shrink-0"></span>
-                                    Daily breakfast and dinner
-                                    <input type="hidden" name="included[]" value="Daily breakfast and dinner">
-                                </li>
-                            </ul>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-3 cursor-pointer select-none">
+                                    <input type="checkbox" name="included[]" value="All airport transfers" checked class="rounded text-[#0ca678] focus:ring-0 accent-[#0ca678]">
+                                    <span class="text-xs font-semibold text-gray-700">All airport transfers</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer select-none">
+                                    <input type="checkbox" name="included[]" value="Daily breakfast and dinner" checked class="rounded text-[#0ca678] focus:ring-0 accent-[#0ca678]">
+                                    <span class="text-xs font-semibold text-gray-700">Daily breakfast and dinner</span>
+                                </label>
+                            </div>
                         </div>
 
                         <!-- Exclusions Card -->
-                        <div class="bg-[#FFF5F5] rounded-[28px] border border-red-100 p-6 space-y-4 shadow-sm">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2 text-[#e03131]">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                                    <h4 class="text-sm font-bold">Exclusions</h4>
-                                </div>
-                                <button type="button" class="w-6 h-6 rounded-full border border-red-300 flex items-center justify-center text-[#e03131] hover:bg-red-100 transition-all text-base font-bold">+</button>
+                        <div class="bg-[#FFF5F5] rounded-[32px] border border-red-100 p-8 space-y-4 shadow-sm">
+                            <div class="flex items-center gap-2 text-[#f03e3e]">
+                                <i data-lucide="x-circle" size="20"></i>
+                                <h4 class="text-sm font-black uppercase tracking-wider">Exclusions</h4>
                             </div>
-                            <ul class="space-y-2">
-                                <li class="flex items-center gap-2 text-xs font-medium text-gray-700">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#e03131] shrink-0"></span>
-                                    International Airfare
-                                    <input type="hidden" name="excluded[]" value="International Airfare">
-                                </li>
-                                <li class="flex items-center gap-2 text-xs font-medium text-gray-700">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#e03131] shrink-0"></span>
-                                    Travel Insurance
-                                    <input type="hidden" name="excluded[]" value="Travel Insurance">
-                                </li>
-                            </ul>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-3 cursor-pointer select-none">
+                                    <input type="checkbox" name="excluded[]" value="International flights" checked class="rounded text-[#f03e3e] focus:ring-0 accent-[#f03e3e]">
+                                    <span class="text-xs font-semibold text-gray-700">International flights</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer select-none">
+                                    <input type="checkbox" name="excluded[]" value="Travel insurance" checked class="rounded text-[#f03e3e] focus:ring-0 accent-[#f03e3e]">
+                                    <span class="text-xs font-semibold text-gray-700">Travel insurance</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -666,7 +634,7 @@
 
                     <!-- Pricing & Dates -->
                     <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6 shadow-sm">
-                        <h4 class="text-lg font-black text-muted-text uppercase tracking-widest pl-1">Pricing & Dates</h4>
+                        <h4 class="text-xs font-black text-muted-text uppercase tracking-widest pl-1">Pricing & Dates</h4>
                         
                         <div class="space-y-4">
                             <!-- Base Price -->
@@ -775,7 +743,7 @@
                         </div>
                     </div>
                 </div>
-
+ 
                 <!-- Primary featured photo upload hidden input -->
                 <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex items-center justify-between gap-4">
                     <div class="space-y-1">
@@ -792,7 +760,7 @@
                 </div>
             </div>
         </div>
-
+ 
         <!-- Footer Actions Panel -->
         <div class="flex items-center justify-between pt-8 border-t border-border-soft mt-8">
             <button type="button" x-show="step === 2" @click="step = 1" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2">
@@ -817,46 +785,5 @@
     document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
     });
-
-    // Inserts formatting at cursor / wraps selection in the itinerary textarea
-    function itineraryFormat(type) {
-        const ta = document.getElementById('itinerary-textarea');
-        if (!ta) return;
-
-        const start  = ta.selectionStart;
-        const end    = ta.selectionEnd;
-        const before = ta.value.substring(0, start);
-        const sel    = ta.value.substring(start, end);
-        const after  = ta.value.substring(end);
-
-        let insert = '';
-        let cursorOffset = 0;
-
-        if (type === 'bold') {
-            insert = sel ? `**${sel}**` : '**bold text**';
-            cursorOffset = sel ? insert.length : 2; // land inside the stars if no selection
-        } else if (type === 'italic') {
-            insert = sel ? `_${sel}_` : '_italic text_';
-            cursorOffset = sel ? insert.length : 1;
-        } else if (type === 'list') {
-            // Add bullet on new line
-            const prefix = before.length > 0 && !before.endsWith('\n') ? '\n' : '';
-            insert = `${prefix}• ${sel || 'List item'}`;
-            cursorOffset = insert.length;
-        } else if (type === 'link') {
-            const url = prompt('Enter URL (e.g. https://example.com):');
-            if (!url) return;
-            const label = sel || 'Link text';
-            insert = `[${label}](${url})`;
-            cursorOffset = insert.length;
-        }
-
-        ta.value = before + insert + after;
-
-        // Restore focus and place cursor after the inserted text
-        ta.focus();
-        const newPos = start + cursorOffset;
-        ta.setSelectionRange(newPos, newPos);
-    }
 </script>
 @endsection

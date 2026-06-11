@@ -252,6 +252,16 @@ class AdminController extends Controller
         return view('admin.packages-create', compact('agents'));
     }
 
+    public function editPackage($id)
+    {
+        $pkg = DB::table('packages')->where('id', $id)->first();
+        if (!$pkg) {
+            return redirect('/admin/packages')->with('error', 'Package not found!');
+        }
+        $agents = DB::table('agents')->orderBy('name', 'asc')->get();
+        return view('admin.packages-edit', compact('pkg', 'agents'));
+    }
+
     public function storePackage(Request $request)
     {
         $request->validate(['title' => 'required', 'price' => 'required|numeric']);
@@ -755,6 +765,21 @@ class AdminController extends Controller
         return view('admin.users', compact('users', 'search'));
     }
 
+    public function createAdminUser()
+    {
+        return view('admin.users-create');
+    }
+
+    public function editAdminUser($id)
+    {
+        $user = DB::table('users')->where('id', $id)->first();
+        if (!$user) {
+            return redirect('/admin/users')->with('error', 'User not found!');
+        }
+        $user->permissions = json_decode($user->permissions ?? '{}', true) ?: [];
+        return view('admin.users-edit', compact('user'));
+    }
+
     // CUSTOMERS (Normal Users)
     public function customers(Request $request)
     {
@@ -783,17 +808,26 @@ class AdminController extends Controller
     {
         $request->validate(['name' => 'required', 'email' => 'required|email|unique:users,email']);
         
+        $avatarPath = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($request->name);
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/avatars'), $fileName);
+            $avatarPath = '/uploads/avatars/' . $fileName;
+        }
+
         DB::table('users')->insert([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password ?? 'password123'),
             'role' => $request->role ?? 'SUPER ADMIN',
-            'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($request->name),
+            'avatar' => $avatarPath,
+            'permissions' => json_encode($request->input('permissions', [])),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Admin user created!');
+        return redirect('/admin/users')->with('success', 'Admin user created!');
     }
 
     public function updateUser(Request $request)
@@ -804,8 +838,16 @@ class AdminController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role ?? 'SUPER ADMIN',
+            'permissions' => json_encode($request->input('permissions', [])),
             'updated_at' => now(),
         ];
+
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/avatars'), $fileName);
+            $updateData['avatar'] = '/uploads/avatars/' . $fileName;
+        }
 
         if ($request->password) {
             $updateData['password'] = Hash::make($request->password);
@@ -813,7 +855,7 @@ class AdminController extends Controller
 
         DB::table('users')->where('id', $request->id)->update($updateData);
 
-        return redirect()->back()->with('success', 'Admin user details updated!');
+        return redirect('/admin/users')->with('success', 'Admin user details updated!');
     }
 
     public function deleteUser($id)
@@ -841,58 +883,136 @@ class AdminController extends Controller
 
     public function registeredAgents(Request $request)
     {
-        $agents = DB::table('agents')->orderBy('id', 'desc')->get();
+        $agents = DB::table('agents')->orderBy('id', 'desc')->paginate(10);
         return view('admin.registered-agents', compact('agents'));
     }
 
-    public function storeAgent(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email',
-            'logo' => 'nullable|image|max:2048'
-        ]);
-
-        $logoUrl = null;
-        if ($request->hasFile('logo')) {
-            $file = $request->file('logo');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/agents'), $fileName);
-            $logoUrl = '/uploads/agents/' . $fileName;
-        }
-        
-        DB::table('agents')->insert([
-            'name' => $request->name,
-            'logo' => $logoUrl,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'region' => $request->region ?? 'Asia Pacific',
-            'tier' => $request->tier ?? 'Premium',
-            'status' => $request->status ?? 'Active',
-            'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
-            'api_access' => $request->has('api_access') ? true : false,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        return redirect()->back()->with('success', 'New Travel Agent onboarded successfully!');
-    }
-
-    public function deleteAgent($id)
-    {
-        DB::table('agents')->where('id', $id)->delete();
-        return redirect()->back()->with('success', 'Agent removed successfully!');
-    }
-
-    public function toggleAgent($id)
-    {
-        $agent = DB::table('agents')->where('id', $id)->first();
-        if ($agent) {
-            $newStatus = $agent->status === 'Active' ? 'Inactive' : 'Active';
-            DB::table('agents')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
-        }
-        return redirect()->back()->with('success', 'Agent status toggled!');
-    }
+     public function storeAgent(Request $request)
+     {
+         $request->validate([
+             'name' => 'required',
+             'email' => 'required|email',
+             'logo' => 'nullable|image|max:2048'
+         ]);
+ 
+         $logoUrl = null;
+         if ($request->hasFile('logo')) {
+             $file = $request->file('logo');
+             $fileName = time() . '_' . $file->getClientOriginalName();
+             $file->move(public_path('uploads/agents'), $fileName);
+             $logoUrl = '/uploads/agents/' . $fileName;
+         }
+         
+         DB::table('agents')->insert([
+             'name' => $request->name,
+             'logo' => $logoUrl,
+             'email' => $request->email,
+             'phone' => $request->phone,
+             'landline' => $request->landline,
+             'country' => $request->country,
+             'state' => $request->state,
+             'city' => $request->city,
+             'pincode' => $request->pincode,
+             'address' => $request->address,
+             'about' => $request->about,
+             'facebook' => $request->facebook,
+             'twitter' => $request->twitter,
+             'linkedin' => $request->linkedin,
+             'google_plus' => $request->google_plus,
+             'instagram' => $request->instagram,
+             'skype' => $request->skype,
+             'website' => $request->website,
+             'region' => $request->region ?? 'Asia Pacific',
+             'tier' => $request->tier ?? 'Premium',
+             'status' => $request->status ?? 'Active',
+             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
+             'api_access' => $request->has('api_access') ? true : false,
+             'pending' => $request->pending ?? 0,
+             'approved' => $request->approved ?? 0,
+             'created_at' => now(),
+             'updated_at' => now(),
+         ]);
+ 
+         return redirect('/admin/registered-agents')->with('success', 'New Travel Agent onboarded successfully!');
+     }
+ 
+     public function editAgent($id)
+     {
+         $agent = DB::table('agents')->where('id', $id)->first();
+         if (!$agent) {
+             return redirect()->back()->with('error', 'Agent not found.');
+         }
+         return view('admin.agents-edit', compact('agent'));
+     }
+ 
+     public function updateAgent(Request $request)
+     {
+         $request->validate([
+             'id' => 'required',
+             'name' => 'required',
+             'email' => 'required|email',
+         ]);
+ 
+         $agent = DB::table('agents')->where('id', $request->id)->first();
+         if (!$agent) {
+             return redirect()->back()->with('error', 'Agent not found.');
+         }
+ 
+         $logoUrl = $agent->logo;
+         if ($request->hasFile('logo')) {
+             $file = $request->file('logo');
+             $fileName = time() . '_' . $file->getClientOriginalName();
+             $file->move(public_path('uploads/agents'), $fileName);
+             $logoUrl = '/uploads/agents/' . $fileName;
+         }
+ 
+         DB::table('agents')->where('id', $request->id)->update([
+             'name' => $request->name,
+             'logo' => $logoUrl,
+             'email' => $request->email,
+             'phone' => $request->phone,
+             'landline' => $request->landline,
+             'country' => $request->country,
+             'state' => $request->state,
+             'city' => $request->city,
+             'pincode' => $request->pincode,
+             'address' => $request->address,
+             'about' => $request->about,
+             'facebook' => $request->facebook,
+             'twitter' => $request->twitter,
+             'linkedin' => $request->linkedin,
+             'google_plus' => $request->google_plus,
+             'instagram' => $request->instagram,
+             'skype' => $request->skype,
+             'website' => $request->website,
+             'region' => $request->region ?? 'Asia Pacific',
+             'tier' => $request->tier ?? 'Premium',
+             'status' => $request->status ?? 'Active',
+             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
+             'api_access' => $request->has('api_access') ? true : false,
+             'pending' => $request->pending ?? 0,
+             'approved' => $request->approved ?? 0,
+             'updated_at' => now(),
+         ]);
+ 
+         return redirect('/admin/registered-agents')->with('success', 'Travel Agent updated successfully!');
+     }
+ 
+     public function deleteAgent($id)
+     {
+         DB::table('agents')->where('id', $id)->delete();
+         return redirect()->back()->with('success', 'Agent removed successfully!');
+     }
+ 
+     public function toggleAgent($id)
+     {
+         $agent = DB::table('agents')->where('id', $id)->first();
+         if ($agent) {
+             $newStatus = strtolower($agent->status) === 'active' ? 'Inactive' : 'Active';
+             DB::table('agents')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+         }
+         return redirect('/admin/registered-agents')->with('success', 'Agent status toggled!');
+     }
 
     // LEAD MANAGEMENT
     public function leads(Request $request)
@@ -1245,46 +1365,168 @@ class AdminController extends Controller
     // PLAN
     public function plans(Request $request)
     {
-        $plans = DB::table('plans')->orderBy('id', 'asc')->paginate(5);
-        return view('admin.plans', compact('plans'));
+        $search = $request->input('search');
+        $status = $request->input('status');
+        
+        $query = DB::table('plans');
+        
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        $plans = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
+        return view('admin.plans', compact('plans', 'search', 'status'));
+    }
+
+    public function createPlan()
+    {
+        return view('admin.plans-create');
     }
 
     public function storePlan(Request $request)
     {
-        $request->validate(['name' => 'required', 'price' => 'required|numeric']);
+        $request->validate([
+            'name' => 'required',
+            'price' => 'required|numeric',
+            'package_limit' => 'required|integer'
+        ]);
         
         DB::table('plans')->insert([
             'name' => $request->name,
             'price' => $request->price,
+            'package_limit' => $request->package_limit,
             'duration' => $request->duration ?? '1 Month',
-            'features' => json_encode($request->features ?? ['Standard Travel Package options']),
-            'status' => $request->status ?? 'Active',
+            'description' => $request->description,
+            'features' => json_encode([$request->package_limit . ' package listings']),
+            'status' => $request->has('status') ? 'Active' : 'Inactive',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Plan created!');
+        return redirect('/admin/plans')->with('success', 'Plan created successfully!');
+    }
+
+    public function editPlan($id)
+    {
+        $plan = DB::table('plans')->where('id', $id)->first();
+        if (!$plan) {
+            return redirect('/admin/plans')->with('error', 'Plan not found!');
+        }
+        return view('admin.plans-edit', compact('plan'));
     }
 
     public function updatePlan(Request $request)
     {
-        $request->validate(['id' => 'required', 'name' => 'required']);
+        $request->validate([
+            'id' => 'required',
+            'name' => 'required',
+            'price' => 'required|numeric',
+            'package_limit' => 'required|integer'
+        ]);
         
         DB::table('plans')->where('id', $request->id)->update([
             'name' => $request->name,
             'price' => $request->price,
+            'package_limit' => $request->package_limit,
             'duration' => $request->duration,
-            'status' => $request->status ?? 'Active',
+            'description' => $request->description,
+            'features' => json_encode([$request->package_limit . ' package listings']),
+            'status' => $request->has('status') ? 'Active' : 'Inactive',
             'updated_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Plan updated!');
+        return redirect('/admin/plans')->with('success', 'Plan updated successfully!');
     }
 
     public function deletePlan($id)
     {
         DB::table('plans')->where('id', $id)->delete();
         return redirect()->back()->with('success', 'Plan deleted!');
+    }
+
+    public function duplicatePlan($id)
+    {
+        $plan = DB::table('plans')->where('id', $id)->first();
+        if (!$plan) {
+            return redirect('/admin/plans')->with('error', 'Plan not found!');
+        }
+
+        DB::table('plans')->insert([
+            'name' => $plan->name . ' (Copy)',
+            'price' => $plan->price,
+            'package_limit' => $plan->package_limit,
+            'duration' => $plan->duration,
+            'description' => $plan->description,
+            'features' => $plan->features,
+            'status' => 'Active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect('/admin/plans')->with('success', 'Plan duplicated successfully!');
+    }
+
+    public function previewPlan($id)
+    {
+        $plan = DB::table('plans')->where('id', $id)->first();
+        if (!$plan) {
+            return redirect('/admin/plans')->with('error', 'Plan not found!');
+        }
+
+        $tier = 'Standard';
+        $nameLower = strtolower($plan->name);
+        if (str_contains($nameLower, 'premium')) {
+            $tier = 'Premium';
+        } elseif (str_contains($nameLower, 'enterprise')) {
+            $tier = 'Enterprise';
+        } elseif (str_contains($nameLower, 'customise') || str_contains($nameLower, 'custom')) {
+            $tier = 'Customise';
+        }
+
+        $subscribedAgents = DB::table('agents')
+            ->where('tier', 'like', '%' . $tier . '%')
+            ->get();
+
+        return view('admin.plans-preview', compact('plan', 'subscribedAgents'));
+    }
+
+    public function exportPlans()
+    {
+        $plans = DB::table('plans')->orderBy('id', 'asc')->get();
+        $csvFileName = 'plans_export_' . time() . '.csv';
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$csvFileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['ID', 'Plan Name', 'Price', 'Package Limit', 'Duration', 'Status', 'Created At'];
+
+        $callback = function() use($plans, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($plans as $plan) {
+                fputcsv($file, [
+                    $plan->id,
+                    $plan->name,
+                    $plan->price,
+                    $plan->package_limit,
+                    $plan->duration,
+                    $plan->status,
+                    $plan->created_at
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function togglePlan($id)
