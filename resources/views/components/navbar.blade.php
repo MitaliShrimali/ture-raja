@@ -140,7 +140,24 @@
                     @endif
                 </a>
             @endif
+
+            <!-- Chef & Tour Manager Trigger (Desktop) -->
+            <button 
+                @click="$dispatch('open-chef-modal')"
+                class="hidden md:flex items-center gap-2 px-4.5 py-2.5 bg-gradient-to-r from-[#E85D26] to-[#ff7e40] text-white text-[12px] font-bold rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 ml-2 cursor-pointer"
+            >
+                <i data-lucide="sparkles" class="w-4 h-4 text-[#FFF4CE] animate-pulse"></i>
+                Chef & Manager
+            </button>
             
+            <!-- Mobile Chef & Tour Manager Trigger -->
+            <button 
+                @click="$dispatch('open-chef-modal')"
+                class="lg:hidden relative flex items-center justify-center w-10 h-10 bg-[#E85D26]/10 text-[#E85D26] rounded-full border border-[#E85D26]/20 cursor-pointer"
+            >
+                <i data-lucide="sparkles" class="w-4 h-4 animate-pulse"></i>
+            </button>
+
             <!-- Mobile Wishlist Icon -->
             <button 
                 @click="{{ Auth::check() ? 'window.location.href=\''.url('/profile').'\'' : '$dispatch(\'open-login-modal\')' }}"

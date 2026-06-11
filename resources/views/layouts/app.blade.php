@@ -22,9 +22,10 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body 
-    x-data="{ isScrolled: false, isMobileMenuOpen: false, isHome: {{ request()->is('/') ? 'true' : 'false' }}, showLoginModal: false }" 
+    x-data="{ isScrolled: false, isMobileMenuOpen: false, isHome: {{ request()->is('/') ? 'true' : 'false' }}, showLoginModal: false, showChefModal: false }" 
     @scroll.window="isScrolled = window.pageYOffset > 50"
     @open-login-modal.window="showLoginModal = true"
+    @open-chef-modal.window="showChefModal = true"
     class="min-h-full flex flex-col font-body bg-background text-text-main"
     :class="{ 'overflow-hidden': isMobileMenuOpen }"
 >
@@ -44,6 +45,9 @@
     <!-- Login Modal -->
     <x-login-modal />
 
+    <!-- Chef & Tour Manager Modal -->
+    <x-chef-manager-modal />
+
     <style>
         .wishlist-btn.active svg {
             fill: currentColor !important;
@@ -55,6 +59,13 @@
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             updateWishlistUI();
+
+            // Auto-trigger Chef & Tour Manager modal after 1.5 seconds on Home Page
+            if (window.location.pathname === '/' || window.location.pathname === '/index.php') {
+                setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('open-chef-modal'));
+                }, 1500);
+            }
         });
 
         // ── Wishlist Logic ───────────────────────────────────────────────────
