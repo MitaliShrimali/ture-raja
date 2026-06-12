@@ -205,7 +205,47 @@
       <h2 class="font-black text-foreground tracking-tight font-heading mb-6 md:mb-8 text-center" style="font-size: 28px;">Popular Transits</h2>
       <div class="flex flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth items-start justify-around gap-6 md:gap-10 pb-4 md:pb-0 px-2">
         @php
-          $dbTransits = DB::table('transits')->where('status', 'Active')->get();
+          try {
+              $dbTransits = DB::table('transits')->where('status', 'Active')->get();
+          } catch (\Exception $e) {
+              $dbTransits = collect();
+          }
+
+          if ($dbTransits->isEmpty()) {
+              $dbTransits = collect([
+                  (object)[
+                      'name' => 'Flight Package',
+                      'selected_icon' => 'plane',
+                      'svg_icon' => null,
+                      'image' => null,
+                  ],
+                  (object)[
+                      'name' => 'Train Package',
+                      'selected_icon' => 'train',
+                      'svg_icon' => null,
+                      'image' => null,
+                  ],
+                  (object)[
+                      'name' => 'Bus Package',
+                      'selected_icon' => 'bus',
+                      'svg_icon' => null,
+                      'image' => null,
+                  ],
+                  (object)[
+                      'name' => 'Cruise Package',
+                      'selected_icon' => 'ship',
+                      'svg_icon' => null,
+                      'image' => null,
+                  ],
+                  (object)[
+                      'name' => 'Helicopter Package',
+                      'selected_icon' => 'helicopter',
+                      'svg_icon' => null,
+                      'image' => null,
+                  ],
+              ]);
+          }
+
           $gifMap = [
               'flight' => 'https://s13.gifyu.com/images/bIHxe.gif',
               'plane' => 'https://s13.gifyu.com/images/bIHxe.gif',
