@@ -203,7 +203,7 @@
   <section id="popular-transits-section" class="bg-white pt-6 pb-4 md:pt-8 md:pb-6">
     <div class="container-custom">
       <h2 class="font-black text-foreground tracking-tight font-heading mb-6 md:mb-8 text-center" style="font-size: 28px;">Popular Transits</h2>
-      <div class="flex flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth items-start justify-around gap-6 md:gap-10 pb-4 md:pb-0 px-2">
+      <div class="flex flex-wrap justify-center items-start gap-4 md:gap-8 lg:gap-10 pb-4 md:pb-0 px-2 mx-auto w-full">
         @php
           try {
               $dbTransits = DB::table('transits')->where('status', 'Active')->get();
@@ -277,7 +277,7 @@
               $label = str_replace(" Package", "\nPackage", $t->name);
           @endphp
           <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
-            class="group flex-none md:flex-1 w-24 md:w-auto flex flex-col items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+            class="group flex-none w-24 md:w-28 lg:w-32 flex flex-col items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity">
             <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
               <img src="{{ $imgUrl }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
             </div>

@@ -1462,6 +1462,13 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        if ($request->has('email')) {
+            DB::table('agents')->where('email', $request->email)->update([
+                'service_guaranteed' => $request->input('service_guaranteed', 0),
+                'updated_at' => now(),
+            ]);
+        }
+
         return redirect()->back()->with('success', 'Payment log entered successfully!');
     }
 
@@ -1486,6 +1493,11 @@ class AdminController extends Controller
             'payment_id' => $request->payment_id,
             'date' => $request->date,
             'status' => $request->status,
+            'updated_at' => now(),
+        ]);
+
+        DB::table('agents')->where('email', $request->email)->update([
+            'service_guaranteed' => $request->input('service_guaranteed', 0),
             'updated_at' => now(),
         ]);
 
