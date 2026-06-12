@@ -66,28 +66,22 @@
                             'label' => 'ADMIN CENTRAL',
                             'items' => [
                                 ['name' => 'Global Dashboard', 'icon' => 'layout-dashboard', 'href' => '/admin/dashboard'],
-                                ['name' => 'Admin User', 'icon' => 'user-round', 'href' => '/admin/users'],
-                                ['name' => 'Customers', 'icon' => 'user', 'href' => '/admin/customers'],
-                                [
-                                    'name' => 'Paid user',
-                                    'icon' => 'user-plus',
-                                    'href' => '/admin/registered-agents',
-                                ],
-                                ['name' => 'Lead Management', 'icon' => 'target', 'href' => '/admin/leads'],
+                                ['name' => 'Admin User',       'icon' => 'user-round',       'href' => '/admin/users'],
                             ]
                         ],
                         [
-                            'label' => 'INVENTORY & STAYS',
+                            'label' => 'AGENT MANAGEMENT',
                             'items' => [
+                                ['name' => 'Paid User',     'icon' => 'user-plus', 'href' => '/admin/registered-agents'],
                                 [
-                                    'name' => 'Tour Packages', 
-                                    'icon' => 'package', 
-                                    'href' => '/admin/packages',
+                                    'name'     => 'Tour Packages',
+                                    'icon'     => 'package',
+                                    'href'     => '/admin/packages',
                                     'children' => [
-                                        ['name' => 'All Packages', 'href' => '/admin/packages'],
-                                        ['name' => 'Add New Package', 'href' => '/admin/packages/create'],
+                                        ['name' => 'All Packages',           'href' => '/admin/packages'],
+                                        ['name' => 'Add New Package',        'href' => '/admin/packages/create'],
                                         ['name' => 'International Packages', 'href' => '/admin/packages/international'],
-                                        ['name' => 'Domestic Packages', 'href' => '/admin/packages/domestic'],
+                                        ['name' => 'Domestic Packages',      'href' => '/admin/packages/domestic'],
                                     ]
                                 ],
                             ]
@@ -95,31 +89,37 @@
                         [
                             'label' => 'SUBSCRIPTION OVERSIGHT',
                             'items' => [
+                                ['name' => 'Advertisement',    'icon' => 'megaphone',      'href' => '/admin/ads'],
+                                ['name' => 'Lead Management',  'icon' => 'target',         'href' => '/admin/leads'],
+                                ['name' => 'Plan',             'icon' => 'clipboard-list', 'href' => '/admin/plans'],
+                            ]
+                        ],
+                        [
+                            'label' => 'FINANCIAL REPORTS',
+                            'items' => [
                                 ['name' => 'Payment', 'icon' => 'credit-card', 'href' => '/admin/payments'],
-                                ['name' => 'Advertisement', 'icon' => 'megaphone', 'href' => '/admin/ads'],
-                                ['name' => 'Plan', 'icon' => 'clipboard-list', 'href' => '/admin/plans'],
                             ]
                         ],
                         [
                             'label' => 'PLATFORM SETTINGS',
                             'items' => [
                                 [
-                                    'name' => 'Home Page', 
-                                    'icon' => 'home', 
-                                    'href' => '/admin/home-editor',
+                                    'name'     => 'Home Page',
+                                    'icon'     => 'home',
+                                    'href'     => '/admin/home-editor',
                                     'children' => [
-                                        ['name' => 'Home Editor', 'href' => '/admin/home-editor'],
+                                        ['name' => 'Home Editor',    'href' => '/admin/home-editor'],
                                         ['name' => 'Offer Stickers', 'href' => '/admin/offer-stickers'],
                                     ]
                                 ],
-                                ['name' => 'Notification', 'icon' => 'bell', 'href' => '/admin/notifications'],
-                                ['name' => 'Pages', 'icon' => 'file-text', 'href' => '/admin/cms'],
-                                ['name' => 'Contact US', 'icon' => 'message-square', 'href' => '/admin/contact'],
-                                ['name' => 'Subscriber', 'icon' => 'users', 'href' => '/admin/subscribers'],
-                                ['name' => 'Careers', 'icon' => 'briefcase', 'href' => '/admin/careers'],
-                                ['name' => 'Settings', 'icon' => 'settings', 'href' => '/admin/settings'],
+                                ['name' => 'Notification', 'icon' => 'bell',         'href' => '/admin/notifications'],
+                                ['name' => 'Pages',        'icon' => 'file-text',    'href' => '/admin/cms'],
+                                ['name' => 'Contact US',   'icon' => 'message-square','href' => '/admin/contact'],
+                                ['name' => 'Subscriber',   'icon' => 'users',        'href' => '/admin/subscribers'],
+                                ['name' => 'Careers',      'icon' => 'briefcase',    'href' => '/admin/careers'],
+                                ['name' => 'Settings',     'icon' => 'settings',     'href' => '/admin/settings'],
                             ]
-                        ]
+                        ],
                     ];
                 @endphp
 
