@@ -2712,6 +2712,136 @@ class AdminController extends Controller
         DB::table('themes')->where('id', $id)->delete();
         return redirect()->back()->with('success', 'Theme deleted successfully.');
     }
+
+    // ─── COUNTRIES ────────────────────────────────────────────────────────────
+    public function countries(Request $request)
+    {
+        // Auto-seed if empty
+        if (DB::table('countries')->count() === 0) {
+            DB::table('countries')->insert([
+                [
+                    'name' => 'Indonesia',
+                    'region' => 'Southeast Asia',
+                    'image' => 'https://images.unsplash.com/photo-1555899434-94d1368aa7af?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Vietnam',
+                    'region' => 'Southeast Asia',
+                    'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Thailand',
+                    'region' => 'Southeast Asia',
+                    'image' => 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Inactive',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Japan',
+                    'region' => 'East Asia',
+                    'image' => 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            ]);
+        }
+
+        $countries = DB::table('countries')->orderBy('id', 'asc')->paginate(10);
+        $totalCountries = DB::table('countries')->count();
+        $activeCountries = DB::table('countries')->where('status', 'Active')->count();
+
+        // Get the primary region
+        $primaryRegion = DB::table('countries')
+            ->where('status', 'Active')
+            ->select('region', DB::raw('count(*) as count'))
+            ->groupBy('region')
+            ->orderBy('count', 'desc')
+            ->first();
+            
+        $primaryRegionName = $primaryRegion ? $primaryRegion->region : 'N/A';
+
+        return view('admin.countries', compact('countries', 'totalCountries', 'activeCountries', 'primaryRegionName'));
+    }
+
+    public function storeCountry(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'region' => 'required|string|max:255',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_country_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/countries'), $fileName);
+            $imagePath = '/uploads/countries/' . $fileName;
+        } else {
+            $imagePath = 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=400';
+        }
+
+        DB::table('countries')->insert([
+            'name' => $request->name,
+            'region' => $request->region,
+            'image' => $imagePath,
+            'status' => $request->status ?? 'Active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Country added successfully!');
+    }
+
+    public function updateCountry(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'region' => 'required|string|max:255',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'region' => $request->region,
+            'status' => $request->status ?? 'Active',
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_country_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/countries'), $fileName);
+            $data['image'] = '/uploads/countries/' . $fileName;
+        }
+
+        DB::table('countries')->where('id', $request->id)->update($data);
+
+        return redirect()->back()->with('success', 'Country updated successfully!');
+    }
+
+    public function toggleCountry($id)
+    {
+        $country = DB::table('countries')->where('id', $id)->first();
+        if ($country) {
+            $newStatus = $country->status === 'Active' ? 'Inactive' : 'Active';
+            DB::table('countries')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'Country status updated!');
+    }
+
+    public function deleteCountry($id)
+    {
+        DB::table('countries')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Country deleted successfully.');
+    }
 }
 
 // Reusable custom timing function for activity feed

@@ -837,5 +837,41 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ]);
+
+        // Seed Countries
+        DB::table('countries')->insert([
+            [
+                'name' => 'Indonesia',
+                'region' => 'Southeast Asia',
+                'image' => 'https://images.unsplash.com/photo-1555899434-94d1368aa7af?auto=format&fit=crop&q=80&w=150',
+                'status' => 'Active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Vietnam',
+                'region' => 'Southeast Asia',
+                'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=150',
+                'status' => 'Active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Thailand',
+                'region' => 'Southeast Asia',
+                'image' => 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto=format&fit=crop&q=80&w=150',
+                'status' => 'Inactive',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Japan',
+                'region' => 'East Asia',
+                'image' => 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&q=80&w=150',
+                'status' => 'Active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
     }
 }

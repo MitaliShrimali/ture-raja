@@ -213,6 +213,13 @@ Route::prefix('admin')->group(function () {
             Route::post('/hotel-categories/update', [AdminController::class, 'updateHotelCategory']);
             Route::get('/hotel-categories/toggle/{id}', [AdminController::class, 'toggleHotelCategory']);
             Route::get('/hotel-categories/delete/{id}', [AdminController::class, 'deleteHotelCategory']);
+
+            // Countries
+            Route::get('/countries', [AdminController::class, 'countries']);
+            Route::post('/countries/store', [AdminController::class, 'storeCountry']);
+            Route::post('/countries/update', [AdminController::class, 'updateCountry']);
+            Route::get('/countries/toggle/{id}', [AdminController::class, 'toggleCountry']);
+            Route::get('/countries/delete/{id}', [AdminController::class, 'deleteCountry']);
         });
     });
 

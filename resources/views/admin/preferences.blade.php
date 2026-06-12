@@ -100,11 +100,11 @@
         </a>
 
         <!-- Country -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-start group opacity-75">
+        <a href="{{ url('admin/settings/preferences/countries') }}" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-start group">
             <div class="w-12 h-12 rounded-2xl bg-[#FFF5F2] flex items-center justify-center text-[#B23B06] mb-5 group-hover:scale-110 transition-transform">
                 <i data-lucide="globe" class="w-5 h-5"></i>
             </div>
-            <h3 class="text-base font-black text-gray-900 mb-1">Country</h3>
+            <h3 class="text-base font-black text-gray-900 mb-1 group-hover:text-[#B23B06] transition-colors">Country</h3>
             <p class="text-xs text-gray-400 font-semibold leading-relaxed">
                 Manage global country registry and visa templates.
             </p>
