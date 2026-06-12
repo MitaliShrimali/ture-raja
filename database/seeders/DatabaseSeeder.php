@@ -873,5 +873,55 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ]);
+
+        // Seed States
+        DB::table('states')->insert([
+            [
+                'name' => 'Rajasthan',
+                'country' => 'India',
+                'image' => 'https://images.unsplash.com/photo-1477584308802-dd6538a3a26b?auto=format&fit=crop&q=80&w=150',
+                'status' => 'Active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Tuscany',
+                'country' => 'Italy',
+                'image' => 'https://images.unsplash.com/photo-1543872084-c7bd3822856f?auto=format&fit=crop&q=80&w=150',
+                'status' => 'Active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Alberta',
+                'country' => 'Canada',
+                'image' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=150',
+                'status' => 'Inactive',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Munster',
+                'country' => 'Ireland',
+                'image' => 'https://images.unsplash.com/photo-1590089415225-4f3ed405cb6b?auto=format&fit=crop&q=80&w=150',
+                'status' => 'Active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        // Seed Default System Settings
+        DB::table('settings')->insert([
+            ['key' => 'mail_driver', 'value' => 'smtp', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_host', 'value' => 'smtp.gmail.com', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_port', 'value' => '587', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_encryption', 'value' => 'tls', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_username', 'value' => 'admin@tourraja.com', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_password', 'value' => 'password123', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_from_name', 'value' => 'Tourraja Concierge', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_from_address', 'value' => 'noreply@tourraja.com', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'gateway_api_key', 'value' => 's8J6Ji', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'merchant_salt', 'value' => 'MIIEvaIBADANBg', 'created_at' => now(), 'updated_at' => now()],
+        ]);
     }
 }

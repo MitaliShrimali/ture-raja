@@ -111,22 +111,22 @@
         </a>
 
         <!-- State -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-start group opacity-75">
+        <a href="{{ url('admin/settings/preferences/states') }}" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-start group">
             <div class="w-12 h-12 rounded-2xl bg-[#FFF5F2] flex items-center justify-center text-[#B23B06] mb-5 group-hover:scale-110 transition-transform">
                 <i data-lucide="disc" class="w-5 h-5"></i>
             </div>
-            <h3 class="text-base font-black text-gray-900 mb-1">State</h3>
+            <h3 class="text-base font-black text-gray-900 mb-1 group-hover:text-[#B23B06] transition-colors">State</h3>
             <p class="text-xs text-gray-400 font-semibold leading-relaxed">
                 List regional states, provinces, and territories.
             </p>
         </a>
 
         <!-- City -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-start group opacity-75">
+        <a href="{{ url('admin/settings/preferences/cities') }}" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-start group">
             <div class="w-12 h-12 rounded-2xl bg-[#FFF5F2] flex items-center justify-center text-[#B23B06] mb-5 group-hover:scale-110 transition-transform">
                 <i data-lucide="map-pin" class="w-5 h-5"></i>
             </div>
-            <h3 class="text-base font-black text-gray-900 mb-1">City</h3>
+            <h3 class="text-base font-black text-gray-900 mb-1 group-hover:text-[#B23B06] transition-colors">City</h3>
             <p class="text-xs text-gray-400 font-semibold leading-relaxed">
                 Organize travel destination cities and hot spots.
             </p>

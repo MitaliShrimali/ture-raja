@@ -154,6 +154,14 @@ Route::prefix('admin')->group(function () {
     // All Settings sub-routes under /settings/ prefix
     Route::prefix('/settings')->group(function () {
         Route::get('/preferences', [AdminController::class, 'preferences']);
+        Route::get('/mail-setup', [AdminController::class, 'mailSetup']);
+        Route::post('/mail-setup/update', [AdminController::class, 'updateMailSetup']);
+        Route::get('/payment-setup', [AdminController::class, 'paymentSetup']);
+        Route::post('/payment-setup/update', [AdminController::class, 'updatePaymentSetup']);
+        Route::get('/whatsapp-template', [AdminController::class, 'whatsappTemplate']);
+        Route::post('/whatsapp-template/update', [AdminController::class, 'updateWhatsappTemplate']);
+        Route::get('/email-template', [AdminController::class, 'emailTemplate']);
+        Route::post('/email-template/update', [AdminController::class, 'updateEmailTemplate']);
 
         // Redirects from old settings prefix directly to nested preferences prefix
         Route::get('/amenities', fn() => redirect('/admin/settings/preferences/amenities'));
@@ -220,6 +228,20 @@ Route::prefix('admin')->group(function () {
             Route::post('/countries/update', [AdminController::class, 'updateCountry']);
             Route::get('/countries/toggle/{id}', [AdminController::class, 'toggleCountry']);
             Route::get('/countries/delete/{id}', [AdminController::class, 'deleteCountry']);
+
+            // States
+            Route::get('/states', [AdminController::class, 'states']);
+            Route::post('/states/store', [AdminController::class, 'storeState']);
+            Route::post('/states/update', [AdminController::class, 'updateState']);
+            Route::get('/states/toggle/{id}', [AdminController::class, 'toggleState']);
+            Route::get('/states/delete/{id}', [AdminController::class, 'deleteState']);
+
+            // Cities
+            Route::get('/cities', [AdminController::class, 'cities']);
+            Route::post('/cities/store', [AdminController::class, 'storeCity']);
+            Route::post('/cities/update', [AdminController::class, 'updateCity']);
+            Route::get('/cities/toggle/{id}', [AdminController::class, 'toggleCity']);
+            Route::get('/cities/delete/{id}', [AdminController::class, 'deleteCity']);
         });
     });
 

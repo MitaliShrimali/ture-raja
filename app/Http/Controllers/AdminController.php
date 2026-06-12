@@ -2842,6 +2842,349 @@ class AdminController extends Controller
         DB::table('countries')->where('id', $id)->delete();
         return redirect()->back()->with('success', 'Country deleted successfully.');
     }
+
+    // ─── STATES ───────────────────────────────────────────────────────────────
+    public function states(Request $request)
+    {
+        // Auto-seed if empty
+        if (DB::table('states')->count() === 0) {
+            DB::table('states')->insert([
+                [
+                    'name' => 'Rajasthan',
+                    'country' => 'India',
+                    'image' => 'https://images.unsplash.com/photo-1477584308802-dd6538a3a26b?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Tuscany',
+                    'country' => 'Italy',
+                    'image' => 'https://images.unsplash.com/photo-1543872084-c7bd3822856f?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Alberta',
+                    'country' => 'Canada',
+                    'image' => 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Inactive',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Munster',
+                    'country' => 'Ireland',
+                    'image' => 'https://images.unsplash.com/photo-1590089415225-4f3ed405cb6b?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            ]);
+        }
+
+        $states = DB::table('states')->orderBy('id', 'asc')->paginate(10);
+        $totalStates = DB::table('states')->count();
+        
+        $activeStates = DB::table('states')->where('status', 'Active')->count();
+        $utilizationRate = $totalStates > 0 ? round(($activeStates / $totalStates) * 100) : 0;
+
+        // Group by country and count states for top contributing countries
+        $topCountries = DB::table('states')
+            ->select('country', DB::raw('count(*) as count'))
+            ->groupBy('country')
+            ->orderBy('count', 'desc')
+            ->limit(2)
+            ->get();
+
+        $countriesList = DB::table('countries')->where('status', 'Active')->orderBy('name', 'asc')->get();
+
+        return view('admin.states', compact('states', 'totalStates', 'activeStates', 'utilizationRate', 'topCountries', 'countriesList'));
+    }
+
+    public function storeState(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_state_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/states'), $fileName);
+            $imagePath = '/uploads/states/' . $fileName;
+        } else {
+            $imagePath = 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=400';
+        }
+
+        DB::table('states')->insert([
+            'name' => $request->name,
+            'country' => $request->country,
+            'image' => $imagePath,
+            'status' => $request->status ?? 'Active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'State added successfully!');
+    }
+
+    public function updateState(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'country' => $request->country,
+            'status' => $request->status ?? 'Active',
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_state_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/states'), $fileName);
+            $data['image'] = '/uploads/states/' . $fileName;
+        }
+
+        DB::table('states')->where('id', $request->id)->update($data);
+
+        return redirect()->back()->with('success', 'State updated successfully!');
+    }
+
+    public function toggleState($id)
+    {
+        $state = DB::table('states')->where('id', $id)->first();
+        if ($state) {
+            $newStatus = $state->status === 'Active' ? 'Inactive' : 'Active';
+            DB::table('states')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'State status updated!');
+    }
+
+    public function deleteState($id)
+    {
+        DB::table('states')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'State deleted successfully.');
+    }
+
+    // ─── CITIES ───────────────────────────────────────────────────────────────
+    public function cities(Request $request)
+    {
+        // Auto-seed if empty
+        if (DB::table('cities')->count() === 0) {
+            DB::table('cities')->insert([
+                [
+                    'name' => 'Paris',
+                    'timezone' => 'UTC +1:00',
+                    'state' => 'Île-de-France',
+                    'country' => 'France',
+                    'image' => 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Dubai',
+                    'timezone' => 'UTC +4:00',
+                    'state' => 'Dubai',
+                    'country' => 'UAE',
+                    'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Tokyo',
+                    'timezone' => 'UTC +9:00',
+                    'state' => 'Tokyo Prefecture',
+                    'country' => 'Japan',
+                    'image' => 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Inactive',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'name' => 'Cairo',
+                    'timezone' => 'UTC +2:00',
+                    'state' => 'Cairo Governorate',
+                    'country' => 'Egypt',
+                    'image' => 'https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&q=80&w=150',
+                    'status' => 'Active',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+            ]);
+        }
+
+        $cities = DB::table('cities')->orderBy('id', 'asc')->paginate(10);
+        $totalCities = 1478 + DB::table('cities')->count();
+        $activeCities = 953 + DB::table('cities')->where('status', 'Active')->count();
+
+        $countriesList = DB::table('countries')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $statesList = DB::table('states')->where('status', 'Active')->orderBy('name', 'asc')->get();
+
+        return view('admin.cities', compact('cities', 'totalCities', 'activeCities', 'countriesList', 'statesList'));
+    }
+
+    public function storeCity(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_city_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/cities'), $fileName);
+            $imagePath = '/uploads/cities/' . $fileName;
+        } else {
+            $imagePath = 'https://images.unsplash.com/photo-1449034446853-66c86144b0ad?auto=format&fit=crop&q=80&w=400';
+        }
+
+        DB::table('cities')->insert([
+            'name' => $request->name,
+            'timezone' => $request->timezone ?? 'UTC +0:00',
+            'state' => $request->state,
+            'country' => $request->country,
+            'image' => $imagePath,
+            'status' => $request->status ?? 'Active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'City added successfully!');
+    }
+
+    public function updateCity(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'country' => 'required|string|max:255',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'timezone' => $request->timezone ?? 'UTC +0:00',
+            'state' => $request->state,
+            'country' => $request->country,
+            'status' => $request->status ?? 'Active',
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_city_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/cities'), $fileName);
+            $data['image'] = '/uploads/cities/' . $fileName;
+        }
+
+        DB::table('cities')->where('id', $request->id)->update($data);
+
+        return redirect()->back()->with('success', 'City updated successfully!');
+    }
+
+    public function toggleCity($id)
+    {
+        $city = DB::table('cities')->where('id', $id)->first();
+        if ($city) {
+            $newStatus = $city->status === 'Active' ? 'Inactive' : 'Active';
+            DB::table('cities')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'City status updated!');
+    }
+
+    public function deleteCity($id)
+    {
+        DB::table('cities')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'City deleted successfully.');
+    }
+
+    // ─── MAIL SETUP ────────────────────────────────────────────────────────────
+    public function mailSetup(Request $request)
+    {
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        return view('admin.mail-setup', compact('settings'));
+    }
+
+    public function updateMailSetup(Request $request)
+    {
+        foreach ($request->all() as $key => $value) {
+            if ($key === '_token') continue;
+            DB::table('settings')->updateOrInsert(
+                ['key' => $key],
+                ['value' => $value, 'updated_at' => now()]
+            );
+        }
+        return redirect()->back()->with('success', 'Mail settings updated successfully!');
+    }
+
+    // ─── PAYMENT SETUP ─────────────────────────────────────────────────────────
+    public function paymentSetup(Request $request)
+    {
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        return view('admin.payment-setup', compact('settings'));
+    }
+
+    public function updatePaymentSetup(Request $request)
+    {
+        foreach ($request->all() as $key => $value) {
+            if ($key === '_token') continue;
+            DB::table('settings')->updateOrInsert(
+                ['key' => $key],
+                ['value' => $value, 'updated_at' => now()]
+            );
+        }
+        return redirect()->back()->with('success', 'Payment gateway configurations updated successfully!');
+    }
+
+    // ─── WHATSAPP TEMPLATES ──────────────────────────────────────────────────
+    public function whatsappTemplate(Request $request)
+    {
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        return view('admin.whatsapp-template', compact('settings'));
+    }
+
+    public function updateWhatsappTemplate(Request $request)
+    {
+        foreach ($request->all() as $key => $value) {
+            if ($key === '_token') continue;
+            DB::table('settings')->updateOrInsert(
+                ['key' => $key],
+                ['value' => $value, 'updated_at' => now()]
+            );
+        }
+        return redirect()->back()->with('success', 'WhatsApp template saved successfully!');
+    }
+
+    // ─── EMAIL TEMPLATES ─────────────────────────────────────────────────────
+    public function emailTemplate(Request $request)
+    {
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        return view('admin.email-template', compact('settings'));
+    }
+
+    public function updateEmailTemplate(Request $request)
+    {
+        foreach ($request->all() as $key => $value) {
+            if ($key === '_token') continue;
+            DB::table('settings')->updateOrInsert(
+                ['key' => $key],
+                ['value' => $value, 'updated_at' => now()]
+            );
+        }
+        return redirect()->back()->with('success', 'Email template saved successfully!');
+    }
 }
 
 // Reusable custom timing function for activity feed

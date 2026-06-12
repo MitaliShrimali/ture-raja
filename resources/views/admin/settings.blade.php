@@ -406,8 +406,8 @@
         </p>
     </div>
 
-    <!-- 8 Settings Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- 6 Settings Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         <!-- Card 1: General -->
         <a href="{{ url('admin/settings?tab=general') }}" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
             <div class="w-12 h-12 rounded-full bg-[#FFF4CE] flex items-center justify-center text-[#E85D26] mb-4 group-hover:scale-110 transition-transform">
@@ -431,7 +431,7 @@
         </a>
 
         <!-- Card 3: Mail Setup -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
+        <a href="{{ url('admin/settings/mail-setup') }}" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
             <div class="w-12 h-12 rounded-full bg-[#E0F2FE] flex items-center justify-center text-[#0284C7] mb-4 group-hover:scale-110 transition-transform">
                 <i data-lucide="mail" class="w-5 h-5"></i>
             </div>
@@ -441,19 +441,8 @@
             </p>
         </a>
 
-        <!-- Card 4: Homepage Banner -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
-            <div class="w-12 h-12 rounded-full bg-[#F3E8FF] flex items-center justify-center text-[#9333EA] mb-4 group-hover:scale-110 transition-transform">
-                <i data-lucide="layout-template" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-base font-bold text-gray-900 mb-2">Homepage Banner</h3>
-            <p class="text-xs text-gray-400 font-medium leading-relaxed max-w-[200px]">
-                Hero visuals and seasonal promotional messaging.
-            </p>
-        </a>
-
-        <!-- Card 5: Payment -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
+        <!-- Card 4: Payment -->
+        <a href="{{ url('admin/settings/payment-setup') }}" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
             <div class="w-12 h-12 rounded-full bg-[#DCFCE7] flex items-center justify-center text-[#16A34A] mb-4 group-hover:scale-110 transition-transform">
                 <i data-lucide="credit-card" class="w-5 h-5"></i>
             </div>
@@ -463,34 +452,23 @@
             </p>
         </a>
 
-        <!-- Card 6: Roles -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
-            <div class="w-12 h-12 rounded-full bg-[#FEF3C7] flex items-center justify-center text-[#D97706] mb-4 group-hover:scale-110 transition-transform">
-                <i data-lucide="shield-check" class="w-5 h-5"></i>
-            </div>
-            <h3 class="text-base font-bold text-gray-900 mb-2">Roles</h3>
-            <p class="text-xs text-gray-400 font-medium leading-relaxed max-w-[200px]">
-                Access controllers and administrative hierarchy.
-            </p>
-        </a>
-
-        <!-- Card 7: Whatsapp Template -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
+        <!-- Card 5: Whatsapp Template -->
+        <a href="{{ url('admin/settings/whatsapp-template') }}" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
             <div class="w-12 h-12 rounded-full bg-[#ECE9FE] flex items-center justify-center text-[#4F46E5] mb-4 group-hover:scale-110 transition-transform">
                 <i data-lucide="message-square" class="w-5 h-5"></i>
             </div>
-            <h3 class="text-base font-bold text-gray-900 mb-2">Whatsapp Template</h3>
+            <h3 class="text-base font-bold text-gray-900 mb-2 group-hover:text-[#4F46E5] transition-colors">Whatsapp Template</h3>
             <p class="text-xs text-gray-400 font-medium leading-relaxed max-w-[200px]">
                 Direct mobile messaging and alert structures.
             </p>
         </a>
 
-        <!-- Card 8: Email Template -->
-        <a href="#" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
+        <!-- Card 6: Email Template -->
+        <a href="{{ url('admin/settings/email-template') }}" class="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center group">
             <div class="w-12 h-12 rounded-full bg-[#FCE7F3] flex items-center justify-center text-[#DB2777] mb-4 group-hover:scale-110 transition-transform">
                 <i data-lucide="file-text" class="w-5 h-5"></i>
             </div>
-            <h3 class="text-base font-bold text-gray-900 mb-2">Email Template</h3>
+            <h3 class="text-base font-bold text-gray-900 mb-2 group-hover:text-[#DB2777] transition-colors">Email Template</h3>
             <p class="text-xs text-gray-400 font-medium leading-relaxed max-w-[200px]">
                 Rich HTML layouts for user lifecycle notifications.
             </p>
