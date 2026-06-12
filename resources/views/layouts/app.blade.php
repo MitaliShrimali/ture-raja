@@ -63,11 +63,11 @@
             updateWishlistUI();
 
             // Auto-trigger Chef & Tour Manager modal after 1.5 seconds on Home Page
-            if (window.location.pathname === '/' || window.location.pathname === '/index.php') {
+            @if(request()->is('/'))
                 setTimeout(() => {
                     window.dispatchEvent(new CustomEvent('open-chef-modal'));
                 }, 1500);
-            }
+            @endif
         });
 
         // ── Wishlist Logic ───────────────────────────────────────────────────
