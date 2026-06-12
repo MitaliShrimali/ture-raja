@@ -10,14 +10,19 @@
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="bg-background text-foreground font-body h-full overflow-x-hidden antialiased" x-data="{ 
+<body class="bg-background text-foreground font-body h-full overflow-hidden antialiased" x-data="{ 
         sidebarOpen: false, 
         sidebarDropdowns: {},
         showAddModal: false, 
         showEditModal: false, 
         addPreviewUrl: '', 
         editPreviewUrl: '', 
-        editPkg: { id: '', title: '', location: '', price: '', old_price: '', rating: '4.8', reviews: '10', duration: '', group_size: '4-6 guest', image: '', stock: '', status: '', category: '', badge: '', brochure: '', included: [], excluded: [] } 
+        editPkg: { id: '', title: '', location: '', price: '', old_price: '', rating: '4.8', reviews: '10', duration: '', group_size: '4-6 guest', image: '', stock: '', status: '', category: '', badge: '', brochure: '', included: [], excluded: [] },
+        editHotel: { id: '', name: '', category: '', location: '', rating: '', status: '' },
+        editItem: { id: '', name: '', icon: '', category: '', status: '' },
+        editCategory: { id: '', name: '', description: '', icon: 'bed' },
+        addIcon: 'bed',
+        addAmenityIcon: 'waves'
     }">
     <!-- Root Layout Wrapper -->
     <div class="flex h-full overflow-hidden w-screen max-w-full relative">
@@ -74,8 +79,6 @@
                         [
                             'label' => 'INVENTORY & STAYS',
                             'items' => [
-                                ['name' => 'Hotel Management', 'icon' => 'building-2', 'href' => '/admin/hotels'],
-                                ['name' => 'Amenities', 'icon' => 'clipboard-list', 'href' => '/admin/amenities'],
                                 [
                                     'name' => 'Tour Packages', 
                                     'icon' => 'package', 
@@ -87,8 +90,6 @@
                                         ['name' => 'Domestic Packages', 'href' => '/admin/packages/domestic'],
                                     ]
                                 ],
-                                ['name' => 'Holiday Types', 'icon' => 'layout', 'href' => '/admin/holiday-types'],
-                                ['name' => 'Activities', 'icon' => 'target', 'href' => '/admin/activities'],
                             ]
                         ],
                         [
@@ -166,6 +167,10 @@
                                 @else
                                     @php
                                         $isActive = request()->is(ltrim($item['href'], '/')) || request()->is(ltrim($item['href'], '/') . '/*');
+                                        // Highlight Settings for all settings sub-pages
+                                        if ($item['href'] === '/admin/settings') {
+                                            $isActive = $isActive || request()->is('admin/settings/*');
+                                        }
                                     @endphp
                                     <a 
                                         href="{{ url($item['href']) }}" 
@@ -365,6 +370,16 @@
         .custom-scroll::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.05); border-radius: 10px; }
         .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.1); }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+        document.addEventListener('alpine:init', function () {
+            setTimeout(function() {
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }, 100);
+        });
+    </script>
 </body>
 </html>
 

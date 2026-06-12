@@ -205,29 +205,43 @@
       <h2 class="font-black text-foreground tracking-tight font-heading mb-6 md:mb-8 text-center" style="font-size: 28px;">Popular Transits</h2>
       <div class="flex flex-nowrap overflow-x-auto hide-scrollbar scroll-smooth items-start justify-around gap-6 md:gap-10 pb-4 md:pb-0 px-2">
         @php
-          $transits = [
-            ['label' => "Land / customise\nPackage",   'gif' => 'https://s13.gifyu.com/images/bIHHY.png'],
-            ['label' => "Flight\nPackage",              'gif' => 'https://s13.gifyu.com/images/bIHxe.gif'],
-            ['label' => "Train\nPackage",               'gif' => 'https://s13.gifyu.com/images/bIHxG.gif'],
-            ['label' => "Bus\nPackage",                 'gif' => 'https://s13.gifyu.com/images/bIHxJ.gif'],
-            ['label' => "Bullet Ride\nPackage",         'gif' => 'https://s13.gifyu.com/images/bIHxP.gif'],
-            ['label' => "Cruise\nPackage",              'gif' => 'https://s13.gifyu.com/images/bIHxX.gif'],
-            ['label' => "Tracking\nPackage",            'gif' => 'https://s13.gifyu.com/images/bIHHt.png'],
-            ['label' => "Helicopter\nPackage",          'gif' => 'https://s13.gifyu.com/images/bIHH5.png'],
+          $dbTransits = DB::table('transits')->where('status', 'Active')->get();
+          $gifMap = [
+              'flight' => 'https://s13.gifyu.com/images/bIHxe.gif',
+              'plane' => 'https://s13.gifyu.com/images/bIHxe.gif',
+              'train' => 'https://s13.gifyu.com/images/bIHxG.gif',
+              'bus' => 'https://s13.gifyu.com/images/bIHxJ.gif',
+              'bike' => 'https://s13.gifyu.com/images/bIHxP.gif',
+              'motorcycle' => 'https://s13.gifyu.com/images/bIHxP.gif',
+              'ship' => 'https://s13.gifyu.com/images/bIHxX.gif',
+              'cruise' => 'https://s13.gifyu.com/images/bIHxX.gif',
+              'footprints' => 'https://s13.gifyu.com/images/bIHHt.png',
+              'user' => 'https://s13.gifyu.com/images/bIHHt.png',
+              'helicopter' => 'https://s13.gifyu.com/images/bIHH5.png',
+              'car' => 'https://s13.gifyu.com/images/bIHHY.png',
+              'map-pin' => 'https://s13.gifyu.com/images/bIHHY.png',
           ];
         @endphp
-        @foreach($transits as $t)
+        @foreach($dbTransits as $t)
           @php
-              $cleanType = str_replace("\n", " ", $t['label']);
-              if ($cleanType === 'Bullet Ride Package') $cleanType = 'Bullet Ride';
-              if ($cleanType === 'Land / customise Package') $cleanType = 'Other';
+              $imgUrl = '';
+              if ($t->svg_icon) {
+                  $imgUrl = asset($t->svg_icon);
+              } elseif ($t->image) {
+                  $imgUrl = asset($t->image);
+              } else {
+                  $imgUrl = $gifMap[$t->selected_icon] ?? 'https://s13.gifyu.com/images/bIHHY.png';
+              }
+              
+              $cleanType = $t->name;
+              $label = str_replace(" Package", "\nPackage", $t->name);
           @endphp
           <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
             class="group flex-none md:flex-1 w-24 md:w-auto flex flex-col items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity">
             <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
-              <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
+              <img src="{{ $imgUrl }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
             </div>
-            <span class="text-center text-xs md:text-sm font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $t['label'] }}</span>
+            <span class="text-center text-xs md:text-sm font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full">{{ $label }}</span>
           </a>
         @endforeach
       </div>

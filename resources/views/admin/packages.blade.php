@@ -134,15 +134,8 @@
                                 </a>
                             </td>
                             <td class="py-6 px-8 text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                     @php
-                                         $agentName = 'Miths Holidays';
-                                         if (!empty($pkg->agent)) {
-                                             $agentDecoded = json_decode($pkg->agent, true);
-                                    <a 
-                                        href="{{ url('/admin/packages/edit/' . $pkg->id) }}" 
-                                        class="p-2.5 text-muted-text hover:text-primary hover:bg-primary/5 rounded-xl transition-all"
-                                    >
+                                <div class="flex items-center justify-end gap-1">
+                                    <a href="{{ url('/admin/packages/edit/' . $pkg->id) }}" class="p-2.5 text-muted-text hover:text-primary hover:bg-primary/5 rounded-xl transition-all">
                                         <i data-lucide="edit-3" size="18"></i>
                                     </a>
                                     <a 

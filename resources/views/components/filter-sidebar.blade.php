@@ -40,7 +40,10 @@
         <div x-data="{ expanded: false }">
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Tour Type</h3>
             @php
-                $allTourTypes = ['Flight Package', 'Train Package', 'Bus Package', 'Bullet Ride', 'Cruise Package', 'Tracking Package', 'Helicopter Package', 'Other'];
+                $allTourTypes = DB::table('transits')->where('status', 'Active')->pluck('name')->toArray();
+                if (empty($allTourTypes)) {
+                    $allTourTypes = ['Flight Package', 'Train Package', 'Bus Package', 'Bullet Ride', 'Cruise Package', 'Tracking Package', 'Helicopter Package', 'Other'];
+                }
                 $visibleTypes = array_slice($allTourTypes, 0, 5);
                 $hiddenTypes = array_slice($allTourTypes, 5);
                 $selectedTypes = (array) request('tour_type', []);
@@ -233,7 +236,10 @@
         <div x-data="{ expanded: false }">
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Theme</h3>
             @php
-                $allThemes = ['Honeymoon', 'Solo', 'Adventure', 'Family/Group', 'Religious', 'Romantic', 'Nature'];
+                $allThemes = DB::table('themes')->where('status', 'Active')->pluck('name')->toArray();
+                if (empty($allThemes)) {
+                    $allThemes = ['Honeymoon', 'Solo', 'Adventure', 'Family/Group', 'Religious', 'Romantic', 'Nature'];
+                }
                 $visibleThemes = array_slice($allThemes, 0, 5);
                 $hiddenThemes = array_slice($allThemes, 5);
                 $selectedThemes = (array) request('theme', []);

@@ -14,34 +14,47 @@
         <!-- Centered Menu (Transit Icons) -->
         @php
           $isHome = request()->is('/');
-          $headerTransits = [
-            ['label' => 'Flight',     'gif' => 'https://s13.gifyu.com/images/bIHxe.gif'],
-            ['label' => 'Train',      'gif' => 'https://s13.gifyu.com/images/bIHxG.gif'],
-            ['label' => 'Bus',        'gif' => 'https://s13.gifyu.com/images/bIHxJ.gif'],
-            ['label' => 'Bullet',     'gif' => 'https://s13.gifyu.com/images/bIHxP.gif'],
-            ['label' => 'Cruise',     'gif' => 'https://s13.gifyu.com/images/bIHxX.gif'],
-            ['label' => 'Land',       'gif' => 'https://s13.gifyu.com/images/bIHHY.png'],
-            ['label' => 'Tracking',   'gif' => 'https://s13.gifyu.com/images/bIHHt.png'],
-            ['label' => 'Helicopter', 'gif' => 'https://s13.gifyu.com/images/bIHH5.png'],
+          $dbTransits = DB::table('transits')->where('status', 'Active')->get();
+          $gifMap = [
+              'flight' => 'https://s13.gifyu.com/images/bIHxe.gif',
+              'plane' => 'https://s13.gifyu.com/images/bIHxe.gif',
+              'train' => 'https://s13.gifyu.com/images/bIHxG.gif',
+              'bus' => 'https://s13.gifyu.com/images/bIHxJ.gif',
+              'bike' => 'https://s13.gifyu.com/images/bIHxP.gif',
+              'motorcycle' => 'https://s13.gifyu.com/images/bIHxP.gif',
+              'ship' => 'https://s13.gifyu.com/images/bIHxX.gif',
+              'cruise' => 'https://s13.gifyu.com/images/bIHxX.gif',
+              'footprints' => 'https://s13.gifyu.com/images/bIHHt.png',
+              'user' => 'https://s13.gifyu.com/images/bIHHt.png',
+              'helicopter' => 'https://s13.gifyu.com/images/bIHH5.png',
+              'car' => 'https://s13.gifyu.com/images/bIHHY.png',
+              'map-pin' => 'https://s13.gifyu.com/images/bIHHY.png',
           ];
         @endphp
         
         <div class="flex-1 relative flex justify-center items-center z-20">
             <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 flex w-full lg:w-auto overflow-x-auto hide-scrollbar lg:overflow-visible items-center justify-start lg:justify-center gap-4 xl:gap-8 px-4 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
-                @foreach($headerTransits as $t)
+                @foreach($dbTransits as $t)
                   @php
-                      $cleanType = $t['label'];
-                      if (in_array($cleanType, ['Flight', 'Train', 'Bus', 'Cruise', 'Tracking', 'Helicopter'])) {
-                          $cleanType .= ' Package';
-                      } elseif ($cleanType === 'Land') {
-                          $cleanType = 'Other';
+                      $imgUrl = '';
+                      if ($t->svg_icon) {
+                          $imgUrl = asset($t->svg_icon);
+                      } elseif ($t->image) {
+                          $imgUrl = asset($t->image);
+                      } else {
+                          $imgUrl = $gifMap[$t->selected_icon] ?? 'https://s13.gifyu.com/images/bIHHY.png';
+                      }
+                      $cleanType = $t->name;
+                      $shortLabel = str_replace(" Package", "", $t->name);
+                      if ($shortLabel === 'Int. tour by Car') {
+                          $shortLabel = 'Car';
                       }
                   @endphp
                   <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group flex-shrink-0">
                      <div class="w-10 h-10 xl:w-12 xl:h-12 flex items-center justify-center">
-                        <img src="{{ $t['gif'] }}" alt="{{ $t['label'] }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
+                        <img src="{{ $imgUrl }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
-                     <span class="text-[10px] xl:text-xs font-bold text-gray-800 group-hover:text-primary transition-colors mt-0.5">{{ $t['label'] }}</span>
+                     <span class="text-[10px] xl:text-xs font-bold text-gray-800 group-hover:text-primary transition-colors mt-0.5">{{ $shortLabel }}</span>
                   </a>
                 @endforeach
             </div>
@@ -141,22 +154,7 @@
                 </a>
             @endif
 
-            <!-- Chef & Tour Manager Trigger (Desktop) -->
-            <button 
-                @click="$dispatch('open-chef-modal')"
-                class="hidden md:flex items-center gap-2 px-4.5 py-2.5 bg-gradient-to-r from-[#E85D26] to-[#ff7e40] text-white text-[12px] font-bold rounded-full shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 ml-2 cursor-pointer"
-            >
-                <i data-lucide="sparkles" class="w-4 h-4 text-[#FFF4CE] animate-pulse"></i>
-                Chef & Manager
-            </button>
-            
-            <!-- Mobile Chef & Tour Manager Trigger -->
-            <button 
-                @click="$dispatch('open-chef-modal')"
-                class="lg:hidden relative flex items-center justify-center w-10 h-10 bg-[#E85D26]/10 text-[#E85D26] rounded-full border border-[#E85D26]/20 cursor-pointer"
-            >
-                <i data-lucide="sparkles" class="w-4 h-4 animate-pulse"></i>
-            </button>
+
 
             <!-- Mobile Wishlist Icon -->
             <button 

@@ -1,11 +1,17 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editItem: { id: '', name: '', icon: '', status: '' } }">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editItem: { id: '', name: '', icon: '', status: '' }, addIcon: 'umbrella' }">
     <div class="flex items-center justify-between">
         <div class="space-y-2">
-            <h2 class="font-black text-foreground tracking-tight">Holiday Types</h2>
-            <p class="text-muted-text font-medium">Categorize your travel offerings for better discovery.</p>
+            <div class="flex items-center gap-2 mb-1">
+                <a href="{{ url('admin/settings/preferences') }}" class="p-1.5 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                </a>
+                <span class="text-[10px] font-black text-primary uppercase tracking-[0.2em] opacity-80 block mb-1">Settings / Platform Preferences</span>
+            </div>
+            <h2 class="font-black text-foreground tracking-tight pl-9">Holiday Types</h2>
+            <p class="text-muted-text font-medium pl-9">Categorize your travel offerings for better discovery.</p>
         </div>
         <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
             <i data-lucide="plus" size="20"></i> Add Category
@@ -39,10 +45,12 @@
                                 </div>
                             </td>
                             <td class="py-6 px-10">
-                                <a href="{{ url('/admin/holiday-types/toggle/' . $item->id) }}" class="inline-block">
-                                    <span class="px-3 py-1 rounded-full {{ $item->status === 'Active' ? 'bg-green-50 text-green-500 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100' }} text-[10px] font-black uppercase tracking-wider transition-all">
-                                        {{ $item->status }}
-                                    </span>
+                                <a href="{{ url('/admin/settings/preferences/holiday-types/toggle/' . $item->id) }}" class="inline-flex items-center gap-2 cursor-pointer group/toggle">
+                                    <div class="relative inline-flex items-center">
+                                        <input type="checkbox" class="sr-only peer" {{ $item->status === 'Active' ? 'checked' : '' }} disabled>
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#B23B06] group-hover/toggle:opacity-80 transition-opacity"></div>
+                                    </div>
+                                    <span class="text-xs font-black {{ $item->status === 'Active' ? 'text-green-600' : 'text-gray-400' }}">{{ $item->status }}</span>
                                 </a>
                             </td>
                             <td class="py-6 px-10 text-right">
@@ -54,7 +62,7 @@
                                         <i data-lucide="edit-3" size="18"></i>
                                     </button>
                                     <a 
-                                        href="{{ url('/admin/holiday-types/delete/' . $item->id) }}" 
+                                        href="{{ url('/admin/settings/preferences/holiday-types/delete/' . $item->id) }}" 
                                         onclick="return confirm('Are you sure you want to delete this holiday type?');"
                                         class="p-2 text-muted-text hover:text-red-500 transition-all"
                                     >
@@ -132,26 +140,77 @@
                 </button>
             </div>
             
-            <form action="{{ url('/admin/holiday-types/store') }}" method="POST" class="space-y-6">
+            <form action="{{ url('/admin/settings/preferences/holiday-types/store') }}" method="POST" class="space-y-6">
                 @csrf
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Category Name<span class="text-primary">*</span></label>
                     <input required type="text" name="name" placeholder="E.g. Beach & Island" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Lucide Icon Class Name</label>
-                        <input required type="text" name="icon" placeholder="E.g. umbrella, mountain, ship, tree" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                <div class="space-y-3">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Icon Representation</label>
+                    <input type="hidden" name="icon" :value="addIcon">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Umbrella Icon -->
+                        <button type="button" @click="addIcon = 'umbrella'" 
+                            :class="addIcon === 'umbrella' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="umbrella" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Mountain Icon -->
+                        <button type="button" @click="addIcon = 'mountain'" 
+                            :class="addIcon === 'mountain' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="mountain" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Compass Icon -->
+                        <button type="button" @click="addIcon = 'compass'" 
+                            :class="addIcon === 'compass' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="compass" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Palmtree Icon -->
+                        <button type="button" @click="addIcon = 'palmtree'" 
+                            :class="addIcon === 'palmtree' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="palmtree" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Tent Icon -->
+                        <button type="button" @click="addIcon = 'tent'" 
+                            :class="addIcon === 'tent' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="tent" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Ship Icon -->
+                        <button type="button" @click="addIcon = 'ship'" 
+                            :class="addIcon === 'ship' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="ship" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Plus Button for Custom Icon -->
+                        <button type="button" @click="addIcon = 'custom'" 
+                            :class="(addIcon !== 'umbrella' && addIcon !== 'mountain' && addIcon !== 'compass' && addIcon !== 'palmtree' && addIcon !== 'tent' && addIcon !== 'ship') ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg' : 'border-2 border-dashed border-[#F4EBE3] text-[#A8988C] hover:bg-gray-50'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
-                        <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
+
+                    <!-- Custom input field -->
+                    <div x-show="(addIcon !== 'umbrella' && addIcon !== 'mountain' && addIcon !== 'compass' && addIcon !== 'palmtree' && addIcon !== 'tent' && addIcon !== 'ship')"
+                         class="pt-2 animate-fade-in" style="display: none;">
+                        <input type="text" placeholder="Type custom Lucide icon name (e.g. tree, map)..."
+                               x-on:input="if($el.value) addIcon = $el.value"
+                               :value="(addIcon !== 'umbrella' && addIcon !== 'mountain' && addIcon !== 'compass' && addIcon !== 'palmtree' && addIcon !== 'tent' && addIcon !== 'ship') ? addIcon : ''"
+                               class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-xs text-foreground shadow-sm" />
                     </div>
                 </div>
-                
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                    <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
                 <div class="flex items-center justify-end gap-4 pt-4">
                     <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
                     <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Category</button>
@@ -183,27 +242,78 @@
                 </button>
             </div>
             
-            <form action="{{ url('/admin/holiday-types/update') }}" method="POST" class="space-y-6">
+            <form action="{{ url('/admin/settings/preferences/holiday-types/update') }}" method="POST" class="space-y-6">
                 @csrf
                 <input type="hidden" name="id" x-model="editItem.id" />
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Category Name<span class="text-primary">*</span></label>
                     <input required type="text" name="name" x-model="editItem.name" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Lucide Icon Class Name<span class="text-primary">*</span></label>
-                        <input required type="text" name="icon" x-model="editItem.icon" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                <div class="space-y-3">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Icon Representation</label>
+                    <input type="hidden" name="icon" :value="editItem.icon">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Umbrella Icon -->
+                        <button type="button" @click="editItem.icon = 'umbrella'" 
+                            :class="editItem.icon === 'umbrella' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="umbrella" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Mountain Icon -->
+                        <button type="button" @click="editItem.icon = 'mountain'" 
+                            :class="editItem.icon === 'mountain' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="mountain" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Compass Icon -->
+                        <button type="button" @click="editItem.icon = 'compass'" 
+                            :class="editItem.icon === 'compass' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="compass" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Palmtree Icon -->
+                        <button type="button" @click="editItem.icon = 'palmtree'" 
+                            :class="editItem.icon === 'palmtree' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="palmtree" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Tent Icon -->
+                        <button type="button" @click="editItem.icon = 'tent'" 
+                            :class="editItem.icon === 'tent' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="tent" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Ship Icon -->
+                        <button type="button" @click="editItem.icon = 'ship'" 
+                            :class="editItem.icon === 'ship' ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg shadow-primary/10' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="ship" class="w-4 h-4"></i>
+                        </button>
+                        <!-- Plus Button for Custom Icon -->
+                        <button type="button" @click="editItem.icon = 'custom'" 
+                            :class="(editItem.icon !== 'umbrella' && editItem.icon !== 'mountain' && editItem.icon !== 'compass' && editItem.icon !== 'palmtree' && editItem.icon !== 'tent' && editItem.icon !== 'ship') ? 'ring-2 ring-primary ring-offset-2 bg-primary text-white shadow-lg' : 'border-2 border-dashed border-[#F4EBE3] text-[#A8988C] hover:bg-gray-50'"
+                            class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
-                        <select name="status" x-model="editItem.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
+
+                    <!-- Custom input field -->
+                    <div x-show="(editItem.icon !== 'umbrella' && editItem.icon !== 'mountain' && editItem.icon !== 'compass' && editItem.icon !== 'palmtree' && editItem.icon !== 'tent' && editItem.icon !== 'ship')"
+                         class="pt-2 animate-fade-in" style="display: none;">
+                        <input type="text" placeholder="Type custom Lucide icon name (e.g. tree, map)..."
+                               x-on:input="if($el.value) editItem.icon = $el.value"
+                               :value="(editItem.icon !== 'umbrella' && editItem.icon !== 'mountain' && editItem.icon !== 'compass' && editItem.icon !== 'palmtree' && editItem.icon !== 'tent' && editItem.icon !== 'ship') ? editItem.icon : ''"
+                               class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-xs text-foreground shadow-sm" />
                     </div>
                 </div>
-                
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                    <select name="status" x-model="editItem.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
                 <div class="flex items-center justify-end gap-4 pt-4">
                     <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
                     <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
@@ -213,3 +323,4 @@
     </div>
 </div>
 @endsection
+

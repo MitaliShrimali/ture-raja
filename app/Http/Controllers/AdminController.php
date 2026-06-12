@@ -697,18 +697,28 @@ class AdminController extends Controller
     // ACTIVITIES
     public function activities(Request $request)
     {
-        $activities = DB::table('activities')->orderBy('id', 'asc')->paginate(10);
-        return view('admin.activities', compact('activities'));
+        $query = DB::table('activities')->orderBy('id', 'asc');
+        if ($request->status === 'active') {
+            $query->where('status', 'Active');
+        } elseif ($request->status === 'inactive') {
+            $query->where('status', 'Inactive');
+        }
+        $activities    = $query->paginate(10)->withQueryString();
+        $totalCount    = DB::table('activities')->count();
+        $activeCount   = DB::table('activities')->where('status', 'Active')->count();
+        $inactiveCount = DB::table('activities')->where('status', 'Inactive')->count();
+        return view('admin.activities', compact('activities', 'totalCount', 'activeCount', 'inactiveCount'));
     }
 
     public function storeActivity(Request $request)
     {
         $request->validate(['name' => 'required', 'icon' => 'required']);
         DB::table('activities')->insert([
-            'name' => $request->name,
-            'icon' => $request->icon,
-            'intensity' => $request->intensity ?? 'Medium',
-            'status' => $request->status ?? 'Active',
+            'name'       => $request->name,
+            'icon'       => $request->icon,
+            'intensity'  => $request->intensity ?? 'Medium',
+            'price'      => $request->price ?? 0,
+            'status'     => $request->status ?? 'Active',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -719,10 +729,11 @@ class AdminController extends Controller
     {
         $request->validate(['id' => 'required', 'name' => 'required']);
         DB::table('activities')->where('id', $request->id)->update([
-            'name' => $request->name,
-            'icon' => $request->icon,
-            'intensity' => $request->intensity,
-            'status' => $request->status ?? 'Active',
+            'name'       => $request->name,
+            'icon'       => $request->icon,
+            'intensity'  => $request->intensity,
+            'price'      => $request->price ?? 0,
+            'status'     => $request->status ?? 'Active',
             'updated_at' => now(),
         ]);
         return redirect()->back()->with('success', 'Activity updated!');
@@ -2024,10 +2035,86 @@ class AdminController extends Controller
 
     public function updateSettings(Request $request)
     {
-        foreach ($request->except('_token') as $key => $value) {
+        foreach ($request->all() as $key => $value) {
+            if ($key === '_token') continue;
+            
+            if ($request->hasFile($key)) {
+                $file = $request->file($key);
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/settings'), $filename);
+                $value = '/uploads/settings/' . $filename;
+            }
+            
             DB::table('settings')->updateOrInsert(['key' => $key], ['value' => $value, 'updated_at' => now()]);
         }
         return redirect()->back()->with('success', 'Settings updated successfully!');
+    }
+
+    public function preferences(Request $request)
+    {
+        return view('admin.preferences');
+    }
+
+    public function hotelCategories(Request $request)
+    {
+        $categories = DB::table('hotel_categories')->orderBy('id', 'asc')->paginate(10);
+        return view('admin.hotel-categories', compact('categories'));
+    }
+
+    public function storeHotelCategory(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        DB::table('hotel_categories')->insert([
+            'name' => $request->name,
+            'description' => $request->description,
+            'icon' => $request->icon ?? 'bed',
+            'status' => $request->has('status') ? $request->status : true,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Hotel Category created successfully!');
+    }
+
+    public function updateHotelCategory(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'name' => 'required|string|max:255',
+        ]);
+
+        DB::table('hotel_categories')->where('id', $request->id)->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'icon' => $request->icon ?? 'bed',
+            'status' => $request->has('status') ? $request->status : true,
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Hotel Category updated successfully!');
+    }
+
+    public function toggleHotelCategory($id)
+    {
+        $category = DB::table('hotel_categories')->where('id', $id)->first();
+        if ($category) {
+            $newStatus = !$category->status;
+            DB::table('hotel_categories')->where('id', $id)->update([
+                'status' => $newStatus,
+                'updated_at' => now(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Hotel Category status updated!');
+    }
+
+    public function deleteHotelCategory($id)
+    {
+        DB::table('hotel_categories')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Hotel Category deleted successfully!');
     }
 
     public function updateProfile(Request $request)
@@ -2235,6 +2322,245 @@ class AdminController extends Controller
         $application->delete();
         
         return redirect()->back()->with('success', 'Career application deleted successfully.');
+    }
+
+    // ─── TRANSITS ─────────────────────────────────────────────────────────────
+    public function transits(Request $request)
+    {
+        $transits = DB::table('transits')->orderBy('id', 'asc')->paginate(10);
+        return view('admin.transits', compact('transits'));
+    }
+
+    public function storeTransit(Request $request)
+    {
+        $request->validate([
+            'name' => 'required'
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_img_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/transits'), $fileName);
+            $imagePath = '/uploads/transits/' . $fileName;
+        }
+
+        $svgPath = null;
+        if ($request->hasFile('svg_icon')) {
+            $file = $request->file('svg_icon');
+            $fileName = time() . '_svg_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/transits'), $fileName);
+            $svgPath = '/uploads/transits/' . $fileName;
+        }
+
+        DB::table('transits')->insert([
+            'name' => $request->name,
+            'image' => $imagePath,
+            'svg_icon' => $svgPath,
+            'selected_icon' => $request->selected_icon,
+            'description' => $request->description,
+            'status' => $request->status ?? 'Active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Transit package added successfully!');
+    }
+
+    public function updateTransit(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'name' => 'required'
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'selected_icon' => $request->selected_icon,
+            'description' => $request->description,
+            'status' => $request->status ?? 'Active',
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_img_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/transits'), $fileName);
+            $data['image'] = '/uploads/transits/' . $fileName;
+        }
+
+        if ($request->hasFile('svg_icon')) {
+            $file = $request->file('svg_icon');
+            $fileName = time() . '_svg_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/transits'), $fileName);
+            $data['svg_icon'] = '/uploads/transits/' . $fileName;
+        }
+
+        DB::table('transits')->where('id', $request->id)->update($data);
+
+        return redirect()->back()->with('success', 'Transit package updated successfully!');
+    }
+
+    public function deleteTransit($id)
+    {
+        DB::table('transits')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Transit package deleted successfully.');
+    }
+
+    public function toggleTransit($id)
+    {
+        $transit = DB::table('transits')->where('id', $id)->first();
+        if ($transit) {
+            $newStatus = $transit->status === 'Active' ? 'Inactive' : 'Active';
+            DB::table('transits')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'Transit status updated!');
+    }
+
+    // ─── DURATIONS ─────────────────────────────────────────────────────────────
+    public function durations(Request $request)
+    {
+        $durations = DB::table('durations')->orderBy('id', 'asc')->paginate(10);
+        
+        $totalDurations = DB::table('durations')->count();
+        $activeDurations = DB::table('durations')->where('status', 'Active')->count();
+        $avgLength = round(DB::table('durations')->avg('nights') + 1);
+
+        return view('admin.durations', compact('durations', 'totalDurations', 'activeDurations', 'avgLength'));
+    }
+
+    public function storeDuration(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'nights' => 'required|integer',
+            'status' => 'required|string',
+        ]);
+
+        DB::table('durations')->insert([
+            'name' => $request->name,
+            'nights' => $request->nights,
+            'status' => $request->status,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Duration added successfully!');
+    }
+
+    public function updateDuration(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'name' => 'required|string',
+            'nights' => 'required|integer',
+            'status' => 'required|string',
+        ]);
+
+        DB::table('durations')->where('id', $request->id)->update([
+            'name' => $request->name,
+            'nights' => $request->nights,
+            'status' => $request->status,
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Duration updated successfully!');
+    }
+
+    public function toggleDuration($id)
+    {
+        $duration = DB::table('durations')->where('id', $id)->first();
+        if ($duration) {
+            $newStatus = $duration->status === 'Active' ? 'Inactive' : 'Active';
+            DB::table('durations')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'Duration status updated!');
+    }
+
+    public function deleteDuration($id)
+    {
+        DB::table('durations')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Duration deleted successfully.');
+    }
+
+    // ─── THEMES ──────────────────────────────────────────────────────────────
+    public function themes(Request $request)
+    {
+        $themes = DB::table('themes')->orderBy('id', 'asc')->paginate(10);
+        $totalThemes = DB::table('themes')->count();
+        $activeThemes = DB::table('themes')->where('status', 'Active')->count();
+
+        return view('admin.themes', compact('themes', 'totalThemes', 'activeThemes'));
+    }
+
+    public function storeTheme(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_theme_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/themes'), $fileName);
+            $imagePath = '/uploads/themes/' . $fileName;
+        } else {
+            $imagePath = 'https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=400';
+        }
+
+        DB::table('themes')->insert([
+            'name' => $request->name,
+            'description' => $request->description,
+            'image' => $imagePath,
+            'status' => $request->status ?? 'Active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Theme added successfully!');
+    }
+
+    public function updateTheme(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer',
+            'name' => 'required|string|max:255',
+        ]);
+
+        $data = [
+            'name' => $request->name,
+            'description' => $request->description,
+            'status' => $request->status ?? 'Active',
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_theme_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/themes'), $fileName);
+            $data['image'] = '/uploads/themes/' . $fileName;
+        }
+
+        DB::table('themes')->where('id', $request->id)->update($data);
+
+        return redirect()->back()->with('success', 'Theme updated successfully!');
+    }
+
+    public function toggleTheme($id)
+    {
+        $theme = DB::table('themes')->where('id', $id)->first();
+        if ($theme) {
+            $newStatus = $theme->status === 'Active' ? 'Inactive' : 'Active';
+            DB::table('themes')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'Theme status updated!');
+    }
+
+    public function deleteTheme($id)
+    {
+        DB::table('themes')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Theme deleted successfully.');
     }
 }
 

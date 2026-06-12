@@ -78,9 +78,14 @@ Route::prefix('admin')->group(function () {
     Route::get('/packages/domestic', [AdminController::class, 'domesticPackages']);
     Route::get('/packages/create', [AdminController::class, 'createPackage']);
     Route::get('/hotels', [AdminController::class, 'hotels']);
-    Route::get('/amenities', [AdminController::class, 'amenities']);
-    Route::get('/holiday-types', [AdminController::class, 'holidayTypes']);
-    Route::get('/activities', [AdminController::class, 'activities']);
+
+    // Legacy redirects for old paths (keep for backward compat)
+    Route::get('/amenities', fn() => redirect('/admin/settings/preferences/amenities'));
+    Route::get('/holiday-types', fn() => redirect('/admin/settings/preferences/holiday-types'));
+    Route::get('/activities', fn() => redirect('/admin/settings/preferences/activities'));
+    Route::get('/transits', fn() => redirect('/admin/settings/preferences/transits'));
+    Route::get('/durations', fn() => redirect('/admin/settings/preferences/durations'));
+
 
     Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('admin.login.submit');
     Route::get('/users', [AdminController::class, 'users']);
@@ -135,11 +140,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/hotels/delete/{id}', [AdminController::class, 'deleteHotel']);
     Route::get('/hotels/toggle/{id}', [AdminController::class, 'toggleHotel']);
 
-    Route::post('/amenities/store', [AdminController::class, 'storeAmenity']);
-    Route::post('/amenities/update', [AdminController::class, 'updateAmenity']);
-    Route::get('/amenities/delete/{id}', [AdminController::class, 'deleteAmenity']);
-    Route::get('/amenities/toggle/{id}', [AdminController::class, 'toggleAmenity']);
-
     Route::post('/packages/store', [AdminController::class, 'storePackage']);
     Route::post('/packages/update', [AdminController::class, 'updatePackage']);
     Route::get('/packages/edit/{id}', [AdminController::class, 'editPackage']);
@@ -151,15 +151,71 @@ Route::prefix('admin')->group(function () {
     Route::get('/home-packages/delete/{id}', [AdminController::class, 'deleteHomePackage']);
     Route::get('/home-packages/toggle/{id}', [AdminController::class, 'toggleHomePackage']);
 
-    Route::post('/holiday-types/store', [AdminController::class, 'storeHolidayType']);
-    Route::post('/holiday-types/update', [AdminController::class, 'updateHolidayType']);
-    Route::get('/holiday-types/delete/{id}', [AdminController::class, 'deleteHolidayType']);
-    Route::get('/holiday-types/toggle/{id}', [AdminController::class, 'toggleHolidayType']);
+    // All Settings sub-routes under /settings/ prefix
+    Route::prefix('/settings')->group(function () {
+        Route::get('/preferences', [AdminController::class, 'preferences']);
 
-    Route::post('/activities/store', [AdminController::class, 'storeActivity']);
-    Route::post('/activities/update', [AdminController::class, 'updateActivity']);
-    Route::get('/activities/delete/{id}', [AdminController::class, 'deleteActivity']);
-    Route::get('/activities/toggle/{id}', [AdminController::class, 'toggleActivity']);
+        // Redirects from old settings prefix directly to nested preferences prefix
+        Route::get('/amenities', fn() => redirect('/admin/settings/preferences/amenities'));
+        Route::get('/holiday-types', fn() => redirect('/admin/settings/preferences/holiday-types'));
+        Route::get('/activities', fn() => redirect('/admin/settings/preferences/activities'));
+        Route::get('/transits', fn() => redirect('/admin/settings/preferences/transits'));
+        Route::get('/durations', fn() => redirect('/admin/settings/preferences/durations'));
+        Route::get('/hotel-categories', fn() => redirect('/admin/settings/preferences/hotel-categories'));
+        Route::get('/themes', fn() => redirect('/admin/settings/preferences/themes'));
+
+        Route::prefix('/preferences')->group(function () {
+            // Themes
+            Route::get('/themes', [AdminController::class, 'themes']);
+            Route::post('/themes/store', [AdminController::class, 'storeTheme']);
+            Route::post('/themes/update', [AdminController::class, 'updateTheme']);
+            Route::get('/themes/toggle/{id}', [AdminController::class, 'toggleTheme']);
+            Route::get('/themes/delete/{id}', [AdminController::class, 'deleteTheme']);
+
+            // Amenities
+            Route::get('/amenities', [AdminController::class, 'amenities']);
+            Route::post('/amenities/store', [AdminController::class, 'storeAmenity']);
+            Route::post('/amenities/update', [AdminController::class, 'updateAmenity']);
+            Route::get('/amenities/delete/{id}', [AdminController::class, 'deleteAmenity']);
+            Route::get('/amenities/toggle/{id}', [AdminController::class, 'toggleAmenity']);
+
+            // Holiday Types
+            Route::get('/holiday-types', [AdminController::class, 'holidayTypes']);
+            Route::post('/holiday-types/store', [AdminController::class, 'storeHolidayType']);
+            Route::post('/holiday-types/update', [AdminController::class, 'updateHolidayType']);
+            Route::get('/holiday-types/delete/{id}', [AdminController::class, 'deleteHolidayType']);
+            Route::get('/holiday-types/toggle/{id}', [AdminController::class, 'toggleHolidayType']);
+
+            // Activities
+            Route::get('/activities', [AdminController::class, 'activities']);
+            Route::post('/activities/store', [AdminController::class, 'storeActivity']);
+            Route::post('/activities/update', [AdminController::class, 'updateActivity']);
+            Route::get('/activities/delete/{id}', [AdminController::class, 'deleteActivity']);
+            Route::get('/activities/toggle/{id}', [AdminController::class, 'toggleActivity']);
+
+            // Transits
+            Route::get('/transits', [AdminController::class, 'transits']);
+            Route::post('/transits/store', [AdminController::class, 'storeTransit']);
+            Route::post('/transits/update', [AdminController::class, 'updateTransit']);
+            Route::get('/transits/delete/{id}', [AdminController::class, 'deleteTransit']);
+            Route::get('/transits/toggle/{id}', [AdminController::class, 'toggleTransit']);
+
+            // Durations
+            Route::get('/durations', [AdminController::class, 'durations']);
+            Route::post('/durations/store', [AdminController::class, 'storeDuration']);
+            Route::post('/durations/update', [AdminController::class, 'updateDuration']);
+            Route::get('/durations/toggle/{id}', [AdminController::class, 'toggleDuration']);
+            Route::get('/durations/delete/{id}', [AdminController::class, 'deleteDuration']);
+
+            // Hotel Categories
+            Route::get('/hotel-categories', [AdminController::class, 'hotelCategories']);
+            Route::post('/hotel-categories/store', [AdminController::class, 'storeHotelCategory']);
+            Route::post('/hotel-categories/update', [AdminController::class, 'updateHotelCategory']);
+            Route::get('/hotel-categories/toggle/{id}', [AdminController::class, 'toggleHotelCategory']);
+            Route::get('/hotel-categories/delete/{id}', [AdminController::class, 'deleteHotelCategory']);
+        });
+    });
+
 
     Route::post('/paid-users/store', [AdminController::class, 'storePaidUser']);
     Route::post('/paid-users/update', [AdminController::class, 'updatePaidUser']);
@@ -216,6 +272,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/subscribers/toggle/{id}', [AdminController::class, 'toggleSubscriber']);
 
     Route::post('/settings/update', [AdminController::class, 'updateSettings']);
+
+    // Durations legacy redirect
+    Route::get('/durations', fn() => redirect('/admin/settings/preferences/durations'));
+    Route::get('/durations/toggle/{id}', [AdminController::class, 'toggleDuration']);
+    Route::get('/durations/delete/{id}', [AdminController::class, 'deleteDuration']);
     Route::get('/profile', [AdminController::class, 'adminProfile']);
     Route::post('/profile/update', [AdminController::class, 'updateProfile']);
 

@@ -355,29 +355,41 @@
             <h2 class="font-black text-foreground text-center mb-10 tracking-tight font-heading" style="font-size: 28px;">Browse by Travel Theme</h2>
 
             <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 lg:gap-6 items-start w-full">
-                @php
-                    $themes = [
-                        ['label' => 'Family/Group', 'image' => 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=400&v=1'],
-                        ['label' => 'Religious', 'image' => 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&q=80&w=400&v=1'],
-                        ['label' => 'Honeymoon', 'image' => 'https://images.unsplash.com/photo-1573152958734-1922c188fba3?auto=format&fit=crop&q=80&w=400&v=1'],
-                        ['label' => 'Solo', 'image' => 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=400&v=1'],
-                        ['label' => 'Adventure', 'image' => 'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&q=80&w=400&v=1'],
-                        ['label' => 'Cruise', 'image' => 'https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&q=80&w=400&v=1'],
-                        ['label' => 'WaterPark', 'image' => 'https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?auto=format&fit=crop&q=80&w=400&v=1'],
-                        ['label' => 'Pilgrimage', 'image' => 'https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&q=80&w=400&v=1'],
-                    ];
-                @endphp
-
-                @foreach($themes as $theme)
-                    <a href="{{ url('/discover?theme=' . urlencode($theme['label'])) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer w-full max-w-20 md:max-w-24 lg:max-w-28 mx-auto">
-                        <div class="w-full aspect-square rounded-lg overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
-                            <img src="{{ $theme['image'] }}" alt="{{ $theme['label'] }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                        </div>
-                        <h4 class="font-semibold text-foreground group-hover:text-primary transition-colors text-xs md:text-sm tracking-tight whitespace-nowrap">
-                            {{ $theme['label'] }}
-                        </h4>
-                    </a>
-                @endforeach
+                @if(isset($themes) && !$themes->isEmpty())
+                    @foreach($themes as $theme)
+                        <a href="{{ url('/discover?theme=' . urlencode($theme->name)) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer w-full max-w-20 md:max-w-24 lg:max-w-28 mx-auto animate-hover">
+                            <div class="w-full aspect-square rounded-lg overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
+                                <img src="{{ $theme->image }}" alt="{{ $theme->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            </div>
+                            <h4 class="font-semibold text-foreground group-hover:text-primary transition-colors text-xs md:text-sm tracking-tight whitespace-nowrap">
+                                {{ $theme->name }}
+                            </h4>
+                        </a>
+                    @endforeach
+                @else
+                    @php
+                        $fallbackThemes = [
+                            ['label' => 'Family/Group', 'image' => 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=400&v=1'],
+                            ['label' => 'Religious', 'image' => 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&q=80&w=400&v=1'],
+                            ['label' => 'Honeymoon', 'image' => 'https://images.unsplash.com/photo-1573152958734-1922c188fba3?auto=format&fit=crop&q=80&w=400&v=1'],
+                            ['label' => 'Solo', 'image' => 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=400&v=1'],
+                            ['label' => 'Adventure', 'image' => 'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&q=80&w=400&v=1'],
+                            ['label' => 'Cruise', 'image' => 'https://images.unsplash.com/photo-1548574505-5e239809ee19?auto=format&fit=crop&q=80&w=400&v=1'],
+                            ['label' => 'WaterPark', 'image' => 'https://images.unsplash.com/photo-1582650625119-3a31f8fa2699?auto=format&fit=crop&q=80&w=400&v=1'],
+                            ['label' => 'Pilgrimage', 'image' => 'https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&q=80&w=400&v=1'],
+                        ];
+                    @endphp
+                    @foreach($fallbackThemes as $theme)
+                        <a href="{{ url('/discover?theme=' . urlencode($theme['label'])) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer w-full max-w-20 md:max-w-24 lg:max-w-28 mx-auto">
+                            <div class="w-full aspect-square rounded-lg overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
+                                <img src="{{ $theme['image'] }}" alt="{{ $theme['label'] }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                            </div>
+                            <h4 class="font-semibold text-foreground group-hover:text-primary transition-colors text-xs md:text-sm tracking-tight whitespace-nowrap">
+                                {{ $theme['label'] }}
+                            </h4>
+                        </a>
+                    @endforeach
+                @endif
             </div>
         </div>
     </section>

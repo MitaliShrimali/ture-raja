@@ -119,7 +119,14 @@ class UserController extends Controller
             $offerStickers = collect();
         }
 
-        return view('welcome', compact('packages', 'heroBanners', 'homeAd', 'homeInternational', 'homeDomestic', 'offerStickers', 'domesticAds', 'footerAds'));
+        // Pull active themes
+        try {
+            $themes = DB::table('themes')->where('status', 'Active')->orderBy('id', 'asc')->get();
+        } catch (\Exception $e) {
+            $themes = collect();
+        }
+
+        return view('welcome', compact('packages', 'heroBanners', 'homeAd', 'homeInternational', 'homeDomestic', 'offerStickers', 'domesticAds', 'footerAds', 'themes'));
     }
 
     // ─── SEARCH ───────────────────────────────────────────────────────

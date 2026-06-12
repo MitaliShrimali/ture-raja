@@ -48,6 +48,8 @@
     <!-- Chef & Tour Manager Modal -->
     <x-chef-manager-modal />
 
+
+
     <style>
         .wishlist-btn.active svg {
             fill: currentColor !important;
