@@ -25,7 +25,7 @@
     x-data="{ isScrolled: false, isMobileMenuOpen: false, isHome: {{ request()->is('/') ? 'true' : 'false' }}, showLoginModal: false, showChefModal: false }" 
     @scroll.window="isScrolled = window.pageYOffset > 50"
     @open-login-modal.window="showLoginModal = true"
-    @open-chef-modal.window="showChefModal = true"
+    @open-chef-modal.window="showChefModal = true; setTimeout(() => { showChefModal = false }, 5000)"
     class="min-h-full flex flex-col font-body bg-background text-text-main"
     :class="{ 'overflow-hidden': isMobileMenuOpen }"
 >
@@ -61,13 +61,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             updateWishlistUI();
-
-            // Auto-trigger Chef & Tour Manager modal after 1.5 seconds on Home Page
-            @if(request()->is('/'))
-                setTimeout(() => {
-                    window.dispatchEvent(new CustomEvent('open-chef-modal'));
-                }, 1500);
-            @endif
         });
 
         // ── Wishlist Logic ───────────────────────────────────────────────────

@@ -33,7 +33,7 @@
         @endphp
         
         <div class="flex-1 relative flex justify-center items-center z-20">
-            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 flex w-full lg:w-auto overflow-x-auto hide-scrollbar lg:overflow-visible items-center justify-start lg:justify-center gap-4 xl:gap-8 px-4 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
+            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 flex flex-nowrap w-[60%] sm:w-[50%] md:w-[45%] lg:w-[40vw] xl:w-[45vw] overflow-hidden items-center justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 xl:gap-6 px-1 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
                 @foreach($dbTransits as $t)
                   @php
                       $imgUrl = '';
@@ -50,11 +50,11 @@
                           $shortLabel = 'Car';
                       }
                   @endphp
-                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group flex-shrink-0">
-                     <div class="w-10 h-10 xl:w-12 xl:h-12 flex items-center justify-center">
+                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group flex-1 min-w-0 max-w-[55px] sm:max-w-[65px] md:max-w-[75px] lg:max-w-[85px] xl:max-w-[95px] flex-shrink">
+                     <div class="w-9 h-9 md:w-11 md:h-11 xl:w-13 xl:h-13 flex items-center justify-center">
                         <img src="{{ $imgUrl }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
-                     <span class="text-[10px] xl:text-xs font-bold text-gray-800 group-hover:text-primary transition-colors mt-0.5">{{ $shortLabel }}</span>
+                     <span class="text-[8px] md:text-[9px] lg:text-[9.5px] xl:text-[10px] font-bold text-gray-800 tracking-tight group-hover:text-primary transition-colors mt-0.5 truncate w-full text-center">{{ $shortLabel }}</span>
                   </a>
                 @endforeach
             </div>
