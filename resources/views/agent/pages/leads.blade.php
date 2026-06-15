@@ -3,12 +3,7 @@
 @section('title', 'Leads - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Leads</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Leads</h2>
-            </div>
-        </div>
+
 
         <!-- Search Bar -->
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8">
@@ -40,40 +35,54 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        <?php 
-                        $leads = [
-                            ['id' => 1, 'srl' => '103', 'name' => 'John Doe', 'loc' => 'Rajkot, Gujarat', 'status' => 'Convert', 'color' => 'bg-green-500', 'email' => 'john@gmail.com', 'phone' => '+91 98765 43210'],
-                            ['id' => 2, 'srl' => '104', 'name' => 'Sarah Smith', 'loc' => 'Morbi, Rajkot', 'status' => 'No use', 'color' => 'bg-red-500', 'email' => 'sarah@gmail.com', 'phone' => '+91 88888 88888'],
-                            ['id' => 3, 'srl' => '105', 'name' => 'Michael Brown', 'loc' => 'Ahmedabad, Gujarat', 'status' => 'Pending', 'color' => 'bg-yellow-400', 'email' => 'michael@gmail.com', 'phone' => '+91 77777 77777'],
-                            ['id' => 4, 'srl' => '106', 'name' => 'Emma Wilson', 'loc' => 'Surat, Gujarat', 'status' => 'Working', 'color' => 'bg-blue-400', 'email' => 'emma@gmail.com', 'phone' => '+91 66666 66666'],
-                        ];
-                        foreach($leads as $l): ?>
-                        <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap" id="lead-row-<?php echo $l['id']; ?>">
-                            <td class="py-4 pl-4 text-xs font-bold text-gray-800"><?php echo $l['srl']; ?></td>
+                        @foreach($leads as $index => $l)
+                        @php
+                            $status = $l->status ?? 'Pending';
+                            $color = 'bg-gray-500';
+                            if (strtolower($status) === 'convert') $color = 'bg-green-500';
+                            elseif (strtolower($status) === 'no use' || strtolower($status) === 'no_use' || strtolower($status) === 'no-use') $color = 'bg-red-500';
+                            elseif (strtolower($status) === 'pending') $color = 'bg-yellow-400';
+                            elseif (strtolower($status) === 'working') $color = 'bg-blue-400';
+                            
+                            $srl = 100 + $index + 1;
+                            
+                            $leadJson = json_encode([
+                                'id' => $l->id,
+                                'srl' => $srl,
+                                'name' => $l->name,
+                                'loc' => $l->subject ?? 'Website Inquiry',
+                                'status' => $status,
+                                'color' => $color,
+                                'email' => $l->email,
+                                'phone' => $l->phone ?? 'N/A'
+                            ]);
+                        @endphp
+                        <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap" id="lead-row-{{ $l->id }}">
+                            <td class="py-4 pl-4 text-xs font-bold text-gray-800">{{ $srl }}</td>
                             <td class="py-4">
                                 <div class="flex items-center">
-                                    <img src="https://i.pravatar.cc/100?u=<?php echo $l['id']; ?>" class="w-10 h-10 rounded-xl object-cover mr-3 border border-gray-100">
+                                    <img src="https://i.pravatar.cc/100?u={{ $l->id }}" class="w-10 h-10 rounded-xl object-cover mr-3 border border-gray-100">
                                     <div>
-                                        <p class="text-[10px] font-bold text-gray-800 lead-name"><?php echo $l['name']; ?></p>
-                                        <p class="text-[8px] text-gray-400 font-medium lead-loc"><?php echo $l['loc']; ?></p>
+                                        <p class="text-[10px] font-bold text-gray-800 lead-name">{{ $l->name }}</p>
+                                        <p class="text-[8px] text-gray-400 font-medium lead-loc">{{ $l->subject ?? 'Website Inquiry' }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="py-4">
-                                <span class="<?php echo $l['color']; ?> text-white px-3 py-1 rounded-lg text-[8px] font-bold lead-status">
-                                    <?php echo $l['status']; ?>
+                                <span class="{{ $color }} text-white px-3 py-1 rounded-lg text-[8px] font-bold lead-status">
+                                    {{ $status }}
                                 </span>
                             </td>
-                            <td class="py-4 text-[10px] font-bold text-gray-800 lead-email"><?php echo $l['email']; ?></td>
-                            <td class="py-4 text-[10px] font-bold text-gray-800 lead-phone"><?php echo $l['phone']; ?></td>
+                            <td class="py-4 text-[10px] font-bold text-gray-800 lead-email">{{ $l->email }}</td>
+                            <td class="py-4 text-[10px] font-bold text-gray-800 lead-phone">{{ $l->phone ?? 'N/A' }}</td>
                             <td class="py-4 text-center">
                                 <div class="flex items-center justify-center space-x-3">
-                                    <button onclick="editLead(<?php echo htmlspecialchars(json_encode($l)); ?>)" class="text-[9px] font-bold text-gray-400 hover:text-gray-800 transition-colors">Edit</button>
-                                    <button onclick="deleteLead(<?php echo $l['id']; ?>)" class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors">Delete</button>
+                                    <button onclick="editLead({!! htmlspecialchars($leadJson, ENT_QUOTES, 'UTF-8') !!})" class="text-[9px] font-bold text-gray-400 hover:text-gray-800 transition-colors">Edit</button>
+                                    <button onclick="deleteLead({{ $l->id }})" class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors">Delete</button>
                                 </div>
                             </td>
                         </tr>
-                        <?php endforeach; ?>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -113,6 +122,18 @@
             <div>
                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Phone</label>
                 <input type="text" id="editLeadPhone" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium">
+            </div>
+            <div>
+                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Status</label>
+                <div class="relative">
+                    <select id="editLeadStatus" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
+                        <option value="Convert">Convert</option>
+                        <option value="No use">No use</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Working">Working</option>
+                    </select>
+                    <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
+                </div>
             </div>
             <div class="flex items-center justify-end space-x-6 pt-2">
                 <button type="button" onclick="toggleLeadModal()" class="text-xs font-bold text-gray-800 hover:text-gray-400 transition-colors">Cancel</button>
@@ -226,6 +247,7 @@ function editLead(lead) {
     document.getElementById('editLeadName').value = lead.name;
     document.getElementById('editLeadEmail').value = lead.email;
     document.getElementById('editLeadPhone').value = lead.phone;
+    document.getElementById('editLeadStatus').value = lead.status;
     toggleLeadModal();
 }
 
@@ -235,14 +257,49 @@ function handleLeadSubmit(e) {
     const name = document.getElementById('editLeadName').value;
     const email = document.getElementById('editLeadEmail').value;
     const phone = document.getElementById('editLeadPhone').value;
+    const status = document.getElementById('editLeadStatus').value;
     
-    const row = document.getElementById('lead-row-' + id);
-    row.querySelector('.lead-name').innerText = name;
-    row.querySelector('.lead-email').innerText = email;
-    row.querySelector('.lead-phone').innerText = phone;
-    
-    toastr.success('Lead updated successfully');
-    toggleLeadModal();
+    fetch('{{ route("agent.leads.update") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ id, name, email, phone, status })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            const row = document.getElementById('lead-row-' + id);
+            row.querySelector('.lead-name').innerText = name;
+            row.querySelector('.lead-email').innerText = email;
+            row.querySelector('.lead-phone').innerText = phone;
+            
+            const statusBadge = row.querySelector('.lead-status');
+            statusBadge.innerText = status;
+            
+            let color = 'bg-gray-500';
+            if (status.toLowerCase() === 'convert') color = 'bg-green-500';
+            else if (status.toLowerCase() === 'no use' || status.toLowerCase() === 'no_use' || status.toLowerCase() === 'no-use') color = 'bg-red-500';
+            else if (status.toLowerCase() === 'pending') color = 'bg-yellow-400';
+            else if (status.toLowerCase() === 'working') color = 'bg-blue-400';
+            
+            statusBadge.className = `${color} text-white px-3 py-1 rounded-lg text-[8px] font-bold lead-status`;
+            
+            const editBtn = row.querySelector('button[onclick^="editLead"]');
+            const leadData = { id, srl: row.cells[0].innerText, name, loc: row.querySelector('.lead-loc').innerText, status, color, email, phone };
+            editBtn.setAttribute('onclick', `editLead(${JSON.stringify(leadData)})`);
+            
+            toastr.success('Lead updated successfully');
+            toggleLeadModal();
+        } else {
+            toastr.error('Failed to update lead');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        toastr.error('An error occurred');
+    });
 }
 
 function deleteLead(id) {
@@ -257,18 +314,31 @@ function deleteLead(id) {
         borderRadius: '2rem'
     }).then((result) => {
         if (result.isConfirmed) {
-            const row = document.getElementById('lead-row-' + id);
-            row.classList.add('opacity-0', 'scale-95');
-            setTimeout(() => {
-                row.remove();
-                Swal.fire({
-                    title: 'Deleted!',
-                    text: 'Lead has been removed.',
-                    icon: 'success',
-                    confirmButtonColor: '#F0642F',
-                    borderRadius: '2rem'
-                });
-            }, 300);
+            fetch('/agent/leads/delete/' + id, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const row = document.getElementById('lead-row-' + id);
+                    row.classList.add('opacity-0', 'scale-95');
+                    setTimeout(() => {
+                        row.remove();
+                        Swal.fire({
+                            title: 'Deleted!',
+                            text: 'Lead has been removed.',
+                            icon: 'success',
+                            confirmButtonColor: '#F0642F',
+                            borderRadius: '2rem'
+                        });
+                    }, 300);
+                } else {
+                    toastr.error('Failed to delete lead');
+                }
+            });
         }
     });
 }

@@ -3,12 +3,7 @@
 @section('title', 'Add Hotel - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Add Hotel Name / Add Hotel</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Add Hotel</h2>
-            </div>
-        </div>
+
 
         <!-- Form Container -->
         <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100">

@@ -1,48 +1,33 @@
 @extends('agent.layouts.app')
 
-@section('title', 'Edit Package - Tour Raja Agent')
+@section('title', 'Create Package - Tour Raja Agent')
 
 @section('content')
 <!-- Load AlpineJS and Lucide for this view -->
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 
-@php
-    $galleryUrls = json_decode($pkg->gallery, true) ?: [];
-    $included = json_decode($pkg->included, true) ?: [];
-    $excluded = json_decode($pkg->excluded, true) ?: [];
-    $itinerary = json_decode($pkg->itinerary, true) ?: [];
-    $agentData = json_decode($pkg->agent, true) ?: [];
-    $agentName = $agentData['name'] ?? 'Miths Holidays';
-@endphp
-
 <div class="space-y-8 pb-12" x-data="{ 
     step: 1,
-    title: {{ json_encode($pkg->title) }},
-    location: {{ json_encode($pkg->location) }},
-    duration: {{ json_encode($pkg->duration) }},
-    price: {{ json_encode($pkg->price) }},
-    old_price: {{ json_encode($pkg->old_price ?? '') }},
-    stock: {{ json_encode($pkg->stock) }},
-    category: {{ json_encode(strtolower($pkg->category ?? 'domestic')) }},
-    badge: {{ json_encode($pkg->badge ?? '') }},
-    group_size: {{ json_encode($pkg->group_size ?? 'Direct Flight') }},
-    rating: {{ json_encode($pkg->rating ?? '4.8') }},
-    reviews: {{ json_encode($pkg->reviews ?? '10') }},
-    previewUrl: {{ json_encode($pkg->image) }}, 
-    galleryPreviews: {{ json_encode(array_values(array_map(function($url) {
-        return [
-            'url' => $url,
-            'name' => basename($url),
-            'size' => 'Existing'
-        ];
-    }, $galleryUrls))) }},
-    brochureName: {{ json_encode($pkg->brochure ? basename($pkg->brochure) : '') }},
-    inclusions: {{ json_encode($included) }},
-    exclusions: {{ json_encode($excluded) }},
+    title: 'The Ultimate Bali Escape',
+    location: 'Ubud, Seminyak, Uluwatu',
+    duration: '5 Days / 4 Nights',
+    price: '45999',
+    old_price: '55000',
+    stock: '10 Left',
+    category: 'domestic',
+    badge: 'New Delhi',
+    group_size: 'Direct Flight',
+    rating: '4.8',
+    reviews: '10',
+    previewUrl: '', 
+    galleryPreviews: [],
+    brochureName: '',
+    inclusions: ['Hotel Stay', 'Daily Breakfast', 'Airport Transfers'],
+    exclusions: ['International Airfare', 'Travel Insurance'],
     newInclusion: '',
     newExclusion: '',
-    cities: {{ json_encode(array_values(array_filter(array_map('trim', explode(',', $pkg->location ?? ''))))) }},
+    cities: ['Ubud', 'Seminyak', 'Uluwatu'],
     newCity: '',
     keywords: ['Bali Beaches', 'Scuba Diving', 'Temple Tour', 'Nightlife'],
     newKeyword: '',
@@ -85,7 +70,10 @@
     newHotelImage: '',
     showAddTransfer: false,
     showAddHotel: false,
-    days: {{ (is_array($itinerary) && count($itinerary) > 0) ? json_encode($itinerary) : json_encode([['title' => 'Day 1', 'desc' => 'Arrival & check-in', 'duration' => '3 Hours']]) }},
+    days: [
+        { title: 'Red Fort', desc: 'Historical Guided Tour', duration: '3 Hours' },
+        { title: 'Chandni Chowk', desc: 'Street Food & Rickshaw Ride', duration: '2 Hours' }
+    ],
     addDay() {
         this.days.push({ title: '', desc: '', duration: '3 Hours' });
     },
@@ -218,7 +206,7 @@
                 <i data-lucide="arrow-left" size="20"></i>
             </a>
             <div>
-                <h2 class="font-black text-gray-800 tracking-tight text-2xl" x-text="step === 1 ? 'Edit Travel Package' : 'Build Your Journey'"></h2>
+                <h2 class="font-black text-gray-800 tracking-tight text-2xl" x-text="step === 1 ? 'Create Travel Package' : 'Build Your Journey'"></h2>
                 <p class="text-gray-400 font-medium text-xs mt-0.5" x-text="step === 1 ? 'Step 1: Configure core metadata, location, logistics & base pricing.' : 'Step 2: Upload brochures, edit itineraries, and add gallery portfolio.'"></p>
             </div>
         </div>
@@ -256,9 +244,8 @@
     </div>
 
     <!-- Form Container -->
-    <form id="packageMainForm" action="{{ route('agent.packages.update') }}" method="POST" enctype="multipart/form-data" class="space-y-10">
+    <form id="packageMainForm" action="{{ route('agent.packages.store') }}" method="POST" enctype="multipart/form-data" class="space-y-10">
         @csrf
-        <input type="hidden" name="id" value="{{ $pkg->id }}" />
 
         <!-- ==================== STEP 1: IDENTITY & LOGISTICS ==================== -->
         <div x-show="step === 1" class="space-y-8" x-transition>
@@ -503,7 +490,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                             </button>
                         </div>
-                        <textarea id="itinerary-textarea" name="editorial_itinerary" rows="9" placeholder="Explain why this tour is unique..." class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none">{{ $pkg->editorial_itinerary ?? '' }}</textarea>
+                        <textarea id="itinerary-textarea" name="editorial_itinerary" rows="9" placeholder="Explain why this tour is unique..." class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none"></textarea>
                     </div>
                 </div>
             </div>
@@ -720,7 +707,7 @@
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Base Price</label>
                                 <div class="relative">
                                     <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">₹</span>
-                                    <input type="number" name="old_price" x-model="old_price" placeholder="55000" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none transition-all font-bold text-foreground text-sm" />
+                                    <input type="number" name="old_price" placeholder="55000" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none transition-all font-bold text-foreground text-sm" />
                                 </div>
                             </div>
 

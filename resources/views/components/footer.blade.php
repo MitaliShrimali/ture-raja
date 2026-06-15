@@ -15,7 +15,7 @@
         <a href="{{ url('/') }}">
           <x-logo-white class="h-10 w-auto text-white" />
         </a>
-        <a href="{{ url('https://emperorsmartsolutions.com/Tour_Raja_Agent/') }}"
+        <a href="{{ route('agent.login') }}"
            class="inline-block border border-white text-white text-xs font-bold px-5 py-2.5 rounded-md hover:bg-white hover:text-[#e85d26] transition-all">
           Become Agent/Login
         </a>

@@ -1,36 +1,49 @@
-<nav class="flex items-center justify-between p-2 sm:p-4 mb-4 sm:mb-6">
-    <div class="flex items-center gap-2 sm:gap-3 overflow-hidden">
-        <!-- Hamburger for mobile -->
-        <button onclick="openSidebar()" class="lg:hidden w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-gray-500 hover:text-primary hover:bg-white rounded-lg sm:rounded-xl transition-all shadow-sm border border-gray-100 bg-white flex-shrink-0">
-            <i class="fas fa-bars text-sm"></i>
+<header class="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-6 lg:px-8 sticky top-0 z-50 shrink-0 mb-6">
+    <div class="flex items-center gap-4">
+        <!-- Mobile Menu Button -->
+        <button onclick="openSidebar()" class="lg:hidden p-2 hover:bg-gray-50 rounded-xl text-gray-400">
+            <i class="fas fa-bars text-lg"></i>
         </button>
-        <div class="truncate">
-            <p class="text-[10px] text-gray-400 font-medium hidden sm:block truncate">{{ $page_breadcrumb ?? 'Pages / Dashboard' }}</p>
-            <h2 class="text-base sm:text-3xl font-bold text-gray-800 tracking-tight truncate">{{ $page_title ?? 'Main Dashboard' }}</h2>
+        
+        <div class="flex flex-col">
+            <p class="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] leading-none mb-1">Agent Portal</p>
+            <h2 class="text-sm sm:text-lg font-black text-gray-800 tracking-tight leading-none">{{ $page_title ?? 'Dashboard' }}</h2>
         </div>
     </div>
 
-    <div class="flex items-center bg-white p-1 sm:p-2 rounded-full shadow-sm border border-gray-100 space-x-0.5 sm:space-x-2 flex-shrink-0">
-        <!-- Search (hidden on very small screens) -->
-        <div class="hidden md:flex items-center bg-gray-50 px-4 py-2 rounded-full border border-gray-100 group focus-within:border-primary transition-all">
-            <i class="fas fa-search text-gray-400 text-sm mr-2 group-focus-within:text-primary"></i>
-            <input type="text" placeholder="Type here..." class="bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300 w-32 lg:w-48">
-        </div>
-        
-        <a href="{{ route('agent.notifications') }}" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
-            <i class="fas fa-bell text-xs sm:text-base"></i>
-        </a>
-        
-        <a href="{{ route('agent.settings') }}" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center text-gray-400 hover:text-primary transition-colors">
-            <i class="fas fa-cog text-xs sm:text-base"></i>
-        </a>
-        
-        <a href="{{ route('agent.about') }}" class="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-gray-400 text-white rounded-full transition-colors hover:bg-gray-500 hidden xs:flex">
-            <i class="fas fa-info text-[8px] sm:text-[10px]"></i>
-        </a>
+    <div class="flex items-center gap-4">
+        <!-- Pill Container for Search, Icons, and Profile -->
+        <div class="flex items-center bg-white rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05),0_10px_20px_-2px_rgba(0,0,0,0.02)] p-1 pl-3 gap-3 md:gap-5 border border-gray-50">
+            
+            <!-- Search -->
+            <div class="flex items-center bg-white border border-gray-200 rounded-full w-24 sm:w-32 md:w-48 overflow-hidden focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                <div class="pl-2.5 flex items-center justify-center text-gray-400 pointer-events-none">
+                    <i class="fas fa-search text-xs"></i>
+                </div>
+                <input 
+                    type="text" 
+                    placeholder="Type" 
+                    class="w-full bg-transparent border-none py-1.5 pl-2 pr-3 text-xs font-semibold text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-0"
+                >
+            </div>
 
-        <a href="{{ route('agent.profile') }}" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-primary text-white font-bold text-[10px] sm:text-sm shadow-sm transition-all border-2 border-white">
-            AU
-        </a>
+            <!-- Icons -->
+            <div class="flex items-center gap-1 md:gap-1.5">
+                <a href="{{ route('agent.notifications') }}" class="relative p-1.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
+                    <i class="fas fa-bell text-sm"></i>
+                </a>
+                <a href="{{ route('agent.settings') }}" class="p-1.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
+                    <i class="fas fa-cog text-sm"></i>
+                </a>
+                <a href="{{ route('agent.about') }}" class="p-1.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
+                    <i class="fas fa-info-circle text-sm"></i>
+                </a>
+            </div>
+
+            <!-- User Profile Avatar -->
+            <a href="{{ route('agent.profile') }}" class="block shrink-0 pr-1">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Agent" alt="Profile" class="w-8 h-8 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
+            </a>
+        </div>
     </div>
-</nav>
+</header>

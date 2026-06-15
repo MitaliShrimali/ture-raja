@@ -59,7 +59,7 @@
             </div>
 
             <!-- Navigation Links -->
-            <nav id="sidebar-nav" class="flex-1 overflow-y-auto px-4 py-6 space-y-8 hide-scrollbar">
+            <nav id="sidebar-nav" class="flex-1 overflow-y-auto px-3 py-3 space-y-2 hide-scrollbar">
                 @php
                     $menuGroups = [
                         [
@@ -124,10 +124,10 @@
                 @endphp
 
                 @foreach($menuGroups as $group)
-                    <div class="space-y-3">
-                        <p class="px-4 text-[10px] font-black text-text-muted uppercase tracking-[0.2em] opacity-60">
+                    <div class="">
+                        <div class="px-3 pt-4 pb-2 font-black text-text-muted uppercase tracking-[0.25em] opacity-60" style="font-size: 9px !important; letter-spacing: 0.25em !important; line-height: 1.2 !important;">
                             {{ $group['label'] }}
-                        </p>
+                        </div>
                         <div class="space-y-1">
                             @foreach($group['items'] as $item)
                                 @if(isset($item['children']))
@@ -139,25 +139,25 @@
                                             }
                                         }
                                     @endphp
-                                    <div x-data="{ open: {{ $hasActiveChild ? 'true' : 'false' }} }" class="space-y-1">
+                                    <div x-data="{ open: {{ $hasActiveChild ? 'true' : 'false' }} }" class="space-y-0.5">
                                         <button 
                                             @click="open = !open" 
-                                            class="w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 {{ $hasActiveChild ? 'bg-primary/5 text-primary' : 'text-text-muted hover:bg-gray-50 hover:text-foreground' }}"
+                                            class="w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-300 {{ $hasActiveChild ? 'bg-primary/5 text-primary' : 'text-text-muted hover:bg-gray-50 hover:text-foreground' }}"
                                         >
-                                            <div class="flex items-center gap-4">
-                                                <i data-lucide="{{ $item['icon'] }}" size="20"></i>
+                                            <div class="flex items-center gap-3">
+                                                <i data-lucide="{{ $item['icon'] }}" size="18"></i>
                                                 <span class="text-sm font-black tracking-tight">{{ $item['name'] }}</span>
                                             </div>
-                                            <i data-lucide="chevron-down" size="16" class="transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
+                                            <i data-lucide="chevron-down" size="14" class="transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
                                         </button>
-                                        <div x-show="open" x-collapse class="pl-12 space-y-1 pt-1" style="display: none;">
+                                        <div x-show="open" x-collapse class="space-y-0.5 pt-0.5" style="display: none; padding-left: 2.2rem !important;">
                                             @foreach($item['children'] as $child)
                                                 @php
                                                     $isChildActive = request()->is(ltrim($child['href'], '/'));
                                                 @endphp
                                                 <a 
                                                     href="{{ url($child['href']) }}" 
-                                                    class="block py-2.5 px-4 rounded-xl text-xs font-bold transition-all {{ $isChildActive ? 'text-primary bg-primary/5 font-black border-l-2 border-primary pl-3' : 'text-text-muted hover:text-foreground hover:bg-gray-50/50' }}"
+                                                    class="block py-1.5 px-3 rounded-lg text-xs font-bold transition-all {{ $isChildActive ? 'text-primary bg-primary/5 font-black border-l-2 border-primary pl-2' : 'text-text-muted hover:text-foreground hover:bg-gray-50/50' }}"
                                                 >
                                                     {{ $child['name'] }}
                                                 </a>
@@ -174,9 +174,9 @@
                                     @endphp
                                     <a 
                                         href="{{ url($item['href']) }}" 
-                                        class="group flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 {{ $isActive ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-muted hover:bg-gray-50 hover:text-foreground' }}"
+                                        class="group flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 {{ $isActive ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-text-muted hover:bg-gray-50 hover:text-foreground' }}"
                                     >
-                                        <i data-lucide="{{ $item['icon'] }}" size="20"></i>
+                                        <i data-lucide="{{ $item['icon'] }}" size="18"></i>
                                         <span class="text-sm font-black tracking-tight">{{ $item['name'] }}</span>
                                     </a>
                                 @endif

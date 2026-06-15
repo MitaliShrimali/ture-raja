@@ -3,16 +3,7 @@
 @section('title', 'Profile - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-12">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Profile</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Profile</h2>
-            </div>
-            <div class="flex space-x-3">
-                <button class="px-8 py-2.5 rounded-2xl text-xs font-bold text-gray-400 bg-gray-100 hover:bg-gray-200 transition-colors">Discard</button>
-                <button class="px-8 py-2.5 rounded-2xl text-xs font-bold text-white bg-orange-800 shadow-xl shadow-orange-100 hover:scale-105 transition-all">Save Changes</button>
-            </div>
-        </div>
+
 
         <div class="mb-6">
             <p class="text-[10px] font-bold text-orange-800 uppercase tracking-[3px] mb-2">ACCOUNT CONFIGURATION</p>

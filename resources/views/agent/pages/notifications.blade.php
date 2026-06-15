@@ -3,12 +3,7 @@
 @section('title', 'Notifications - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Notification</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Notification</h2>
-            </div>
-        </div>
+
 
         <!-- Search Bar -->
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-12">

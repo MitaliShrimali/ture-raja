@@ -3,12 +3,7 @@
 @section('title', 'Add Branch - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / ADD BRANCH</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Add Branch</h2>
-            </div>
-        </div>
+
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <!-- Left Side: Form -->

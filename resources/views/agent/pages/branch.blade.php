@@ -3,12 +3,7 @@
 @section('title', 'Branch - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Branch</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Branch</h2>
-            </div>
-        </div>
+
 
         <!-- Search Bar -->
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8">

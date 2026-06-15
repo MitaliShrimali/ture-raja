@@ -372,9 +372,10 @@ class AdminController extends Controller
             'brochure' => $brochureUrl,
             'included' => json_encode($included),
             'excluded' => json_encode($excluded),
-            'itinerary' => json_encode($itinerary),
-            'created_at' => now(),
-            'updated_at' => now(),
+            'itinerary'            => json_encode($itinerary),
+            'editorial_itinerary'  => $request->editorial_itinerary ?? null,
+            'created_at'           => now(),
+            'updated_at'           => now(),
         ]);
 
         return redirect('/admin/packages')->with('success', 'Package created successfully!');
@@ -497,8 +498,9 @@ class AdminController extends Controller
             'brochure' => $brochureUrl,
             'included' => json_encode($included),
             'excluded' => json_encode($excluded),
-            'itinerary' => json_encode($itinerary),
-            'updated_at' => now(),
+            'itinerary'            => json_encode($itinerary),
+            'editorial_itinerary'  => $request->editorial_itinerary ?? null,
+            'updated_at'           => now(),
         ]);
 
         return redirect()->back()->with('success', 'Package updated successfully!');

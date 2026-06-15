@@ -3,32 +3,31 @@
 @section('title', 'Edit Images - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-8">
             <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / My Packages / Edit Package</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Edit Package</h2>
-                <p class="text-[10px] text-gray-400 font-medium">Update your package details to attract more travelers.</p>
+                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Create New Package</h2>
+                <p class="text-[10px] text-gray-400 font-medium">Upload photos to showcase your package.</p>
             </div>
             <div class="flex space-x-3">
-                <button class="px-6 py-2 rounded-xl text-xs font-bold text-gray-500 bg-white border border-gray-100">Discard</button>
-                <a href="my-packages.php" class="px-6 py-2 rounded-xl text-xs font-bold text-white bg-orange-800 hover:bg-orange-900 transition-colors">Save And Exit</a>
+                <a href="{{ route('agent.my-packages') }}" class="px-6 py-2 rounded-xl text-xs font-bold text-gray-500 bg-white border border-gray-100 flex items-center justify-center">Discard</a>
+                <a href="{{ route('agent.my-packages') }}" class="px-6 py-2 rounded-xl text-xs font-bold text-white bg-[#e85d26] hover:bg-orange-600 transition-colors flex items-center justify-center shadow-lg shadow-orange-100">Save & Exit</a>
             </div>
         </div>
 
         <!-- Step Indicator -->
         <div class="relative flex items-center justify-between max-w-4xl mx-auto mb-12">
             <div class="flex flex-col items-center z-10">
-                <div class="w-10 h-10 bg-orange-50 text-primary border-2 border-primary rounded-full flex items-center justify-center text-xs font-bold shadow-xl shadow-orange-100"><i class="fas fa-check"></i></div>
+                <div class="w-10 h-10 bg-orange-50 text-[#e85d26] border-2 border-[#e85d26] rounded-full flex items-center justify-center text-xs font-bold shadow-xl shadow-orange-100"><i class="fas fa-check"></i></div>
                 <p class="text-[9px] font-bold text-gray-400 mt-2 uppercase tracking-widest">Details</p>
             </div>
             <div class="absolute left-0 top-5 w-full h-[1px] bg-orange-200 -z-0"></div>
             <div class="flex flex-col items-center z-10">
-                <div class="w-10 h-10 bg-orange-50 text-primary border-2 border-primary rounded-full flex items-center justify-center text-xs font-bold shadow-xl shadow-orange-100"><i class="fas fa-check"></i></div>
+                <div class="w-10 h-10 bg-orange-50 text-[#e85d26] border-2 border-[#e85d26] rounded-full flex items-center justify-center text-xs font-bold shadow-xl shadow-orange-100"><i class="fas fa-check"></i></div>
                 <p class="text-[9px] font-bold text-gray-400 mt-2 uppercase tracking-widest">Pricing</p>
             </div>
             <div class="flex flex-col items-center z-10">
-                <div class="w-10 h-10 bg-orange-700 text-white rounded-full flex items-center justify-center text-xs font-bold shadow-xl shadow-orange-100">3</div>
-                <p class="text-[9px] font-bold text-primary mt-2 uppercase tracking-widest">Images</p>
+                <div class="w-10 h-10 bg-[#e85d26] text-white rounded-full flex items-center justify-center text-xs font-bold shadow-xl shadow-orange-100">3</div>
+                <p class="text-[9px] font-bold text-[#e85d26] mt-2 uppercase tracking-widest">Images</p>
             </div>
         </div>
 
@@ -86,10 +85,10 @@
         </div>
 
         <div class="mt-20 flex items-center justify-between pb-8">
-            <a href="edit-itinerary.php" class="px-10 py-3 rounded-xl text-xs font-bold text-gray-500 bg-white border border-gray-100 flex items-center hover:bg-gray-50 transition-colors"><i class="fas fa-arrow-left mr-3"></i> Previous</a>
+            <a href="{{ route('agent.edit-itinerary') }}" class="px-10 py-3 rounded-xl text-xs font-bold text-gray-500 bg-white border border-gray-100 flex items-center hover:bg-gray-50 transition-colors"><i class="fas fa-arrow-left mr-3"></i> Previous</a>
             <div class="flex space-x-3 items-center">
-                <button class="text-xs font-bold text-gray-400 hover:text-gray-800 transition-colors mr-6 uppercase tracking-widest">Discard</button>
-                <a href="my-packages.php" class="px-10 py-3 rounded-xl text-xs font-bold text-white bg-orange-800 shadow-xl shadow-orange-100 hover:scale-[1.02] transition-all uppercase">Save And Exit</a>
+                <a href="{{ route('agent.my-packages') }}" class="text-xs font-bold text-gray-400 hover:text-gray-800 transition-colors mr-6 uppercase tracking-widest">Discard</a>
+                <a href="{{ route('agent.my-packages') }}" class="px-10 py-3 rounded-xl text-xs font-bold text-white bg-[#e85d26] shadow-xl shadow-orange-100 hover:scale-[1.02] transition-all uppercase flex items-center justify-center">Save And Exit</a>
             </div>
         </div>
     

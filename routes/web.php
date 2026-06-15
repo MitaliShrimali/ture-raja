@@ -319,7 +319,14 @@ Route::prefix('admin')->group(function () {
 
 // ─── AGENT ROUTES ────────────────────────────────────────────────────────────
 Route::prefix('agent')->name('agent.')->group(function () {
-    Route::get('/login', [AgentController::class, 'login'])->name('login');
+    // --- Auth (no middleware) ---
+    Route::get('/login',  [AgentController::class, 'login'])->name('login');
+    Route::post('/login', [AgentController::class, 'loginSubmit'])->name('login.submit');
+    Route::get('/signup',  [AgentController::class, 'signup'])->name('signup');
+    Route::post('/signup', [AgentController::class, 'signupSubmit'])->name('signup.submit');
+    Route::get('/logout',  [AgentController::class, 'logout'])->name('logout');
+
+    // --- Protected agent pages ---
     Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
     Route::get('/about', [AgentController::class, 'about'])->name('about');
     Route::get('/add-branch', [AgentController::class, 'addBranch'])->name('add-branch');
@@ -327,12 +334,17 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/branch', [AgentController::class, 'branch'])->name('branch');
     Route::get('/edit-images', [AgentController::class, 'editImages'])->name('edit-images');
     Route::get('/edit-itinerary', [AgentController::class, 'editItinerary'])->name('edit-itinerary');
-    Route::get('/edit-package', [AgentController::class, 'editPackage'])->name('edit-package');
+    Route::get('/packages/create', [AgentController::class, 'createPackage'])->name('packages.create');
+    Route::get('/packages/edit/{id}', [AgentController::class, 'editPackage'])->name('packages.edit');
+    Route::post('/packages/store', [AgentController::class, 'storePackage'])->name('packages.store');
+    Route::post('/packages/update', [AgentController::class, 'updatePackage'])->name('packages.update');
     Route::get('/feedback', [AgentController::class, 'feedback'])->name('feedback');
     Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
     Route::get('/hotels', [AgentController::class, 'hotels'])->name('hotels');
     Route::get('/invoice', [AgentController::class, 'invoice'])->name('invoice');
     Route::get('/leads', [AgentController::class, 'leads'])->name('leads');
+    Route::post('/leads/update', [AgentController::class, 'updateLead'])->name('leads.update');
+    Route::post('/leads/delete/{id}', [AgentController::class, 'deleteLead'])->name('leads.delete');
     Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
     Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
     Route::get('/payment', [AgentController::class, 'payment'])->name('payment');

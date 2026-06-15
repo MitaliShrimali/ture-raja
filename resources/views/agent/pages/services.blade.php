@@ -3,12 +3,7 @@
 @section('title', 'Services - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Services</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Services</h2>
-            </div>
-        </div>
+
 
         <!-- Services Grid -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">

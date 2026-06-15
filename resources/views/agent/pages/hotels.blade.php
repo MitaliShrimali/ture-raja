@@ -3,12 +3,7 @@
 @section('title', 'Hotels - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Add Hotel Name</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Add Hotel Name</h2>
-            </div>
-        </div>
+
 
         <!-- Search Bar -->
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8">
@@ -51,10 +46,10 @@
                     <tbody class="divide-y divide-gray-50" id="hotelTableBody">
                         <?php
                         $hotels = [
-                            ['id' => 1, 'srl' => '103', 'name' => 'Rahi Coral Beach Resort', 'loc' => 'GOA', 'status' => 'Online', 'cat' => 'Deluxe', 'state' => 'Goa', 'country' => 'India'],
-                            ['id' => 2, 'srl' => '104', 'name' => 'Grand Hyatt', 'loc' => 'Mumbai', 'status' => 'Offline', 'cat' => 'Luxury', 'state' => 'Maharashtra', 'country' => 'India'],
-                            ['id' => 3, 'srl' => '105', 'name' => 'The Taj Mahal Palace', 'loc' => 'Mumbai', 'status' => 'Online', 'cat' => 'Luxury', 'state' => 'Maharashtra', 'country' => 'India'],
-                            ['id' => 4, 'srl' => '106', 'name' => 'Oberoi Amarvilas', 'loc' => 'Agra', 'status' => 'Online', 'cat' => 'Luxury', 'state' => 'UP', 'country' => 'India'],
+                            ['id' => 1, 'srl' => '103', 'name' => 'Rahi Coral Beach Resort', 'loc' => 'GOA', 'status' => 'Online', 'cat' => 'Deluxe', 'state' => 'Goa', 'country' => 'India', 'address' => 'GOA'],
+                            ['id' => 2, 'srl' => '104', 'name' => 'Grand Hyatt', 'loc' => 'Mumbai', 'status' => 'Offline', 'cat' => 'Luxury', 'state' => 'Maharashtra', 'country' => 'India', 'address' => 'Mumbai'],
+                            ['id' => 3, 'srl' => '105', 'name' => 'The Taj Mahal Palace', 'loc' => 'Mumbai', 'status' => 'Online', 'cat' => 'Luxury', 'state' => 'Maharashtra', 'country' => 'India', 'address' => 'Mumbai'],
+                            ['id' => 4, 'srl' => '106', 'name' => 'Oberoi Amarvilas', 'loc' => 'Agra', 'status' => 'Online', 'cat' => 'Luxury', 'state' => 'UP', 'country' => 'India', 'address' => 'Agra'],
                         ];
                         foreach ($hotels as $h): ?>
                             <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap" id="hotel-row-<?php echo $h['id']; ?>">
@@ -73,14 +68,14 @@
                                 </td>
                                 <td class="py-4">
                                     <span
-                                        class="px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-tighter <?php echo $h['status'] == 'Online' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'; ?>">
+                                        class="px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-tighter hotel-status <?php echo $h['status'] == 'Online' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'; ?>">
                                         <?php echo $h['status']; ?>
                                     </span>
                                 </td>
-                                <td class="py-4 text-[10px] font-bold text-gray-800">+ Add</td>
+                                <td class="py-4 text-[10px] font-bold text-gray-800 hotel-address"><?php echo isset($h['address']) ? $h['address'] : $h['loc']; ?></td>
                                 <td class="py-4 text-[10px] font-bold text-gray-800 hotel-cat"><?php echo $h['cat']; ?></td>
-                                <td class="py-4 text-[10px] font-bold text-gray-800"><?php echo $h['state']; ?></td>
-                                <td class="py-4 text-[10px] font-bold text-gray-800"><?php echo $h['country']; ?></td>
+                                <td class="py-4 text-[10px] font-bold text-gray-800 hotel-state"><?php echo $h['state']; ?></td>
+                                <td class="py-4 text-[10px] font-bold text-gray-800 hotel-country"><?php echo $h['country']; ?></td>
                                 <td class="py-4 text-center">
                                     <div class="flex items-center justify-center space-x-3">
                                         <button onclick="editHotel(<?php echo htmlspecialchars(json_encode($h)); ?>)"
@@ -143,18 +138,81 @@
                 </div>
             </div>
 
-            <div>
-                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Category</label>
-                <div class="relative">
-                    <select id="hotelCategory"
-                        class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
-                        <option value="">Select Category</option>
-                        <option value="Deluxe">Deluxe</option>
-                        <option value="Luxury">Luxury</option>
-                        <option value="Standard">Standard</option>
-                    </select>
-                    <i
-                        class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Status</label>
+                    <div class="relative">
+                        <select id="hotelStatus" required
+                            class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
+                            <option value="Online">Online</option>
+                            <option value="Offline">Offline</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Address</label>
+                    <div class="relative">
+                        <select id="hotelAddress" required
+                            class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
+                            <option value="GOA">GOA</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Agra">Agra</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Uluwatu">Uluwatu</option>
+                            <option value="Seminyak">Seminyak</option>
+                            <option value="Ubud">Ubud</option>
+                            <option value="Marina Bay">Marina Bay</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Category</label>
+                    <div class="relative">
+                        <select id="hotelCategory" required
+                            class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
+                            <option value="Standard">Standard</option>
+                            <option value="Deluxe">Deluxe</option>
+                            <option value="Luxury">Luxury</option>
+                            <option value="Budget">Budget</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">State</label>
+                    <div class="relative">
+                        <select id="hotelState" required
+                            class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
+                            <option value="Goa">Goa</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="UP">UP</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bali">Bali</option>
+                            <option value="Singapore">Singapore</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Country</label>
+                    <div class="relative">
+                        <select id="hotelCountry" required
+                            class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
+                            <option value="India">India</option>
+                            <option value="Indonesia">Indonesia</option>
+                            <option value="Singapore">Singapore</option>
+                            <option value="Thailand">Thailand</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
+                    </div>
                 </div>
             </div>
 
@@ -195,7 +253,11 @@
                 document.getElementById('hotelId').value = '';
                 document.getElementById('hotelName').value = '';
                 document.getElementById('hotelCity').value = '';
-                document.getElementById('hotelCategory').value = '';
+                document.getElementById('hotelCategory').value = 'Deluxe';
+                document.getElementById('hotelStatus').value = 'Online';
+                document.getElementById('hotelAddress').value = 'GOA';
+                document.getElementById('hotelState').value = 'Goa';
+                document.getElementById('hotelCountry').value = 'India';
             }
             modal.classList.remove('hidden');
             setTimeout(() => {
@@ -222,6 +284,10 @@
         document.getElementById('hotelName').value = hotel.name;
         document.getElementById('hotelCity').value = hotel.loc;
         document.getElementById('hotelCategory').value = hotel.cat;
+        document.getElementById('hotelStatus').value = hotel.status;
+        document.getElementById('hotelAddress').value = hotel.address || 'GOA';
+        document.getElementById('hotelState').value = hotel.state || 'Goa';
+        document.getElementById('hotelCountry').value = hotel.country || 'India';
 
         toggleHotelModal('edit');
     }
@@ -260,6 +326,10 @@
         const name = document.getElementById('hotelName').value;
         const city = document.getElementById('hotelCity').value;
         const category = document.getElementById('hotelCategory').value;
+        const status = document.getElementById('hotelStatus').value;
+        const address = document.getElementById('hotelAddress').value;
+        const state = document.getElementById('hotelState').value;
+        const country = document.getElementById('hotelCountry').value;
 
         if (id) {
             // Mock Update
@@ -267,9 +337,61 @@
             row.querySelector('.hotel-name').innerText = name;
             row.querySelector('.hotel-loc').innerText = city;
             row.querySelector('.hotel-cat').innerText = category;
+            
+            const statusBadge = row.querySelector('.hotel-status');
+            statusBadge.innerText = status;
+            statusBadge.className = `px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-tighter hotel-status ${status == 'Online' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}`;
+            
+            row.querySelector('.hotel-address').innerText = address;
+            row.querySelector('.hotel-state').innerText = state;
+            row.querySelector('.hotel-country').innerText = country;
+
+            // Update parameters in edit function call
+            const editBtn = row.querySelector('button[onclick^="editHotel"]');
+            const hotelData = { id: parseInt(id), srl: row.cells[0].innerText, name, loc: city, status, cat: category, address, state, country };
+            editBtn.setAttribute('onclick', `editHotel(${JSON.stringify(hotelData)})`);
+
             toastr.success('Hotel updated successfully');
         } else {
             // Mock Add
+            const tbody = document.getElementById('hotelTableBody');
+            const newId = Date.now();
+            const srl = '10' + (tbody.children.length + 3);
+            const hotelData = { id: newId, srl, name, loc: city, status, cat: category, address, state, country };
+            
+            const newRowHtml = `
+                <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap" id="hotel-row-${newId}">
+                    <td class="py-4 pl-4 text-xs font-bold text-gray-800">${srl}</td>
+                    <td class="py-4">
+                        <div class="flex items-center">
+                            <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=50&auto=format&fit=crop"
+                                class="w-10 h-10 rounded-xl object-cover mr-3 border border-gray-100 shadow-sm">
+                            <div>
+                                <p class="text-[10px] font-bold text-gray-800 hotel-name">${name}</p>
+                                <p class="text-[8px] text-gray-400 font-medium hotel-loc">${city}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4">
+                        <span class="px-3 py-1 rounded-full text-[8px] font-bold uppercase tracking-tighter hotel-status ${status == 'Online' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'}">
+                            ${status}
+                        </span>
+                    </td>
+                    <td class="py-4 text-[10px] font-bold text-gray-800 hotel-address">${address}</td>
+                    <td class="py-4 text-[10px] font-bold text-gray-800 hotel-cat">${category}</td>
+                    <td class="py-4 text-[10px] font-bold text-gray-800 hotel-state">${state}</td>
+                    <td class="py-4 text-[10px] font-bold text-gray-800 hotel-country">${country}</td>
+                    <td class="py-4 text-center">
+                        <div class="flex items-center justify-center space-x-3">
+                            <button onclick='editHotel(${JSON.stringify(hotelData)})'
+                                class="text-[9px] font-bold text-gray-400 hover:text-gray-800 transition-colors">Edit</button>
+                            <button onclick="deleteHotel(${newId})"
+                                class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', newRowHtml);
             toastr.success('Hotel added successfully');
         }
 

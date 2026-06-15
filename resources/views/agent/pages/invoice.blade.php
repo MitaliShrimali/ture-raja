@@ -3,12 +3,7 @@
 @section('title', 'Invoice - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Invoice</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Invoice</h2>
-            </div>
-        </div>
+
 
         <div class="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
             <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-8">Billing Information</h3>

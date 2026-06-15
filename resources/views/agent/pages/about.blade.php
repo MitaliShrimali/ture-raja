@@ -3,12 +3,7 @@
 @section('title', 'About - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
-            <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / Why US</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">About Us</h2>
-            </div>
-        </div>
+
 
         <div class="space-y-24 max-w-6xl mx-auto">
             <!-- Our Mission -->

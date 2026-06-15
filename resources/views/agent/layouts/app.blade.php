@@ -52,6 +52,16 @@
             will-change: transform;
         }
 
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .scrollbar-none {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+
         /* Prevent body scroll when mobile sidebar is open */
         body.sidebar-open {
             overflow: hidden;
@@ -108,21 +118,23 @@
         @include('agent.components.sidebar')
 
         <!-- Main Content -->
-        <main class="flex-grow min-w-0 ml-0 lg:ml-72 p-4 sm:p-6 lg:p-8 overflow-x-hidden transition-all duration-300">
+        <main class="flex-grow min-w-0 ml-0 lg:ml-56 overflow-x-hidden transition-all duration-300 flex flex-col">
             <!-- Navbar -->
             @include('agent.components.navbar')
 
-            @yield('content')
+            <div class="flex-grow p-4 sm:p-6 lg:p-8">
+                @yield('content')
 
-            <footer class="mt-12 flex flex-col lg:flex-row items-center justify-between py-6 border-t border-gray-100">
-                <p class="text-xs text-gray-400 font-medium mb-4 lg:mb-0">Copyright © 2026 Tour Raja Private Limited, India. All rights reserved.</p>
-                <div class="flex space-x-6 text-xs text-gray-400 font-medium">
-                    <a href="#" class="hover:text-primary">About Us</a>
-                    <a href="#" class="hover:text-primary">License</a>
-                    <a href="#" class="hover:text-primary">Terms of Services</a>
-                    <a href="#" class="hover:text-primary">Privacy Policy</a>
-                </div>
-            </footer>
+                <footer class="mt-12 flex flex-col lg:flex-row items-center justify-between py-6 border-t border-gray-100">
+                    <p class="text-xs text-gray-400 font-medium mb-4 lg:mb-0">Copyright © 2026 Tour Raja Private Limited, India. All rights reserved.</p>
+                    <div class="flex space-x-6 text-xs text-gray-400 font-medium">
+                        <a href="#" class="hover:text-primary">About Us</a>
+                        <a href="#" class="hover:text-primary">License</a>
+                        <a href="#" class="hover:text-primary">Terms of Services</a>
+                        <a href="#" class="hover:text-primary">Privacy Policy</a>
+                    </div>
+                </footer>
+            </div>
         </main>
     </div>
 

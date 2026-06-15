@@ -3,15 +3,14 @@
 @section('title', 'Edit Itinerary - Tour Raja Agent')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-8">
             <div>
-                <p class="text-xs text-gray-400 font-medium">Pages / My Packages / Edit Package</p>
-                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Edit Package</h2>
-                <p class="text-[10px] text-gray-400 font-medium">Update your package details to attract more travelers.</p>
+                <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Create New Package</h2>
+                <p class="text-[10px] text-gray-400 font-medium">Specify your itinerary and meals details.</p>
             </div>
             <div class="flex space-x-3">
-                <button class="px-6 py-2 rounded-xl text-xs font-bold text-gray-500 bg-white border border-gray-100">Discard</button>
-                <a href="edit-images.php" class="px-6 py-2 rounded-xl text-xs font-bold text-white bg-orange-800 hover:bg-orange-900 transition-colors">Save & Next</a>
+                <a href="{{ route('agent.my-packages') }}" class="px-6 py-2 rounded-xl text-xs font-bold text-gray-500 bg-white border border-gray-100 flex items-center justify-center">Discard</a>
+                <a href="{{ route('agent.edit-images') }}" class="px-6 py-2 rounded-xl text-xs font-bold text-white bg-[#e85d26] hover:bg-orange-600 transition-colors flex items-center justify-center shadow-lg shadow-orange-100">Save & Next</a>
             </div>
         </div>
 
@@ -22,19 +21,19 @@
             
             <!-- Step 1 -->
             <div class="flex flex-col items-center z-10">
-                <div class="w-10 h-10 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                <div class="w-10 h-10 bg-orange-50 text-[#e85d26] border border-[#e85d26] rounded-full flex items-center justify-center text-xs font-bold"><i class="fas fa-check"></i></div>
                 <p class="text-[9px] font-bold text-gray-400 mt-3 uppercase tracking-widest">Identity & Logistics</p>
             </div>
             
             <!-- Step 2 (Active) -->
             <div class="flex flex-col items-center z-10">
-                <div class="w-10 h-10 bg-orange-100 text-primary rounded-full flex items-center justify-center text-xs font-bold shadow-lg shadow-orange-50">2</div>
-                <p class="text-[9px] font-bold text-primary mt-3 uppercase tracking-widest">Itinerary & Meals</p>
+                <div class="w-10 h-10 bg-[#e85d26] text-white rounded-full flex items-center justify-center text-xs font-bold shadow-lg shadow-orange-50">2</div>
+                <p class="text-[9px] font-bold text-[#e85d26] mt-3 uppercase tracking-widest">Itinerary & Meals</p>
             </div>
             
             <!-- Step 3 -->
             <div class="flex flex-col items-center z-10">
-                <div class="w-10 h-10 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                <div class="w-10 h-10 bg-white border-2 border-gray-100 text-gray-300 rounded-full flex items-center justify-center text-xs font-bold">3</div>
                 <p class="text-[9px] font-bold text-gray-400 mt-3 uppercase tracking-widest">Inclusions & Final</p>
             </div>
         </div>
