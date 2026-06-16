@@ -52,6 +52,49 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+    
+    .package-gallery-details-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    .package-gallery-images-col {
+        grid-column: span 1 / span 1 !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        height: 240px !important;
+        gap: 0.5rem !important;
+    }
+    .package-gallery-details-col {
+        grid-column: span 1 / span 1 !important;
+    }
+    @media (min-width: 1024px) {
+        .package-gallery-details-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        }
+        .package-gallery-images-col {
+            grid-column: span 3 / span 3 !important;
+            height: 320px !important;
+        }
+        .package-gallery-details-col {
+            grid-column: span 1 / span 1 !important;
+        }
+    }
+    
+    .package-meta-details-container {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 1rem !important;
+        margin-bottom: 1.5rem !important;
+    }
+    @media (min-width: 1024px) {
+        .package-meta-details-container {
+            display: block !important;
+        }
+        .package-meta-details-container > div + div {
+            margin-top: 1.5rem !important;
+        }
+    }
 </style>
 
 <div class="bg-[#F8F9FA] min-h-screen pt-24 lg:pt-32" x-data="{ showBookingModal: false }">
@@ -193,9 +236,9 @@
                     @endphp
 
                     {{-- Gallery & Details Container --}}
-                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.5rem;">
+                    <div class="package-gallery-details-grid">
                         {{-- Left Column: Images Grid (Takes 3/4 space on desktop) --}}
-                        <div class="lg:col-span-3 grid grid-cols-3 gap-2 w-full overflow-hidden relative" style="grid-column: span 3 / span 3; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); height: 320px; gap: 0.5rem;">
+                        <div class="package-gallery-images-col relative w-full overflow-hidden">
                             {{-- Large Left Image --}}
                             <div class="col-span-2 h-full w-full relative cursor-pointer hover:opacity-95 transition overflow-hidden" style="grid-column: span 2 / span 2;" @click="openGallery(0)">
                                 <img :src="slides[0]" class="w-full h-full object-cover" alt="Package Main Image">
@@ -219,8 +262,8 @@
                         </div>
 
                         {{-- Right Column: Package Details (Duration, Group Size, Type, Inquiry Now) --}}
-                        <div class="lg:col-span-1 flex flex-col justify-between py-1.5 space-y-6" style="grid-column: span 1 / span 1;">
-                            <div class="space-y-6" style="margin-bottom: 1.5rem;">
+                        <div class="package-gallery-details-col flex flex-col justify-between py-1.5 space-y-6">
+                            <div class="package-meta-details-container">
                                 <div>
                                     <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest" style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">DURATION</p>
                                     <p class="font-extrabold text-gray-800 text-base" style="font-size: 16px; font-family: 'Outfit', sans-serif;">{{ $formattedDuration }}</p>
@@ -286,10 +329,10 @@
                 </div>
 
                 {{-- Document / Brochure Download Section --}}
-                <div class="bg-white rounded-lg border border-gray-150 p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm mb-6">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-md bg-orange-50 flex items-center justify-center shrink-0" style="color: #e85d26;">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <div class="bg-white rounded-lg border border-gray-150 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm mb-6">
+                    <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-orange-50 flex items-center justify-center shrink-0" style="color: #e85d26;">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                                 <polyline points="14 2 14 8 20 8"></polyline>
                                 <line x1="16" y1="13" x2="8" y2="13"></line>
@@ -298,12 +341,12 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="font-bold text-gray-800 text-base">Travel Guide &amp; Itinerary Brochure</h4>
-                            <p class="text-xs text-gray-400 font-semibold font-medium">Download the complete tour handbook in PDF format</p>
+                            <h4 class="font-bold text-gray-800 text-sm sm:text-base leading-snug">Travel Guide &amp; Itinerary Brochure</h4>
+                            <p class="text-[11px] sm:text-xs text-gray-400 font-semibold font-medium mt-0.5">Download the complete tour handbook in PDF format</p>
                         </div>
                     </div>
                     @if(!empty($package['brochure']))
-                        <a href="{{ asset($package['brochure']) }}" target="_blank" style="background-color: #e85d26;" class="w-full sm:w-auto px-6 py-3.5 text-white text-[11px] font-black uppercase tracking-widest rounded-md transition-all shadow-sm hover:shadow-lg text-center flex items-center justify-center gap-2 hover:opacity-90">
+                        <a href="{{ asset($package['brochure']) }}" target="_blank" style="background-color: #e85d26;" class="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 text-white text-center flex items-center justify-center gap-2 hover:opacity-90 text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-md transition-all shadow-sm hover:shadow-lg">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -312,7 +355,7 @@
                             <span>Download PDF</span>
                         </a>
                     @else
-                        <button disabled class="w-full sm:w-auto px-6 py-3.5 bg-gray-100 text-gray-400 text-[11px] font-black uppercase tracking-widest rounded-md text-center cursor-not-allowed">
+                        <button disabled class="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3.5 bg-gray-100 text-gray-400 text-[10px] sm:text-[11px] font-black uppercase tracking-widest rounded-md text-center cursor-not-allowed">
                             Not Available
                         </button>
                     @endif

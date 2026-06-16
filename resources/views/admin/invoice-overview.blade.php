@@ -68,6 +68,9 @@
                 <i data-lucide="edit-3" size="16"></i> 
                 <span x-text="editMode ? 'View Invoice' : 'Edit Details'">Edit Details</span>
             </button>
+            <button onclick="downloadPDF()" style="background-color: #2e7d32 !important;" class="flex-1 sm:flex-none justify-center hover:bg-[#1b5e20] text-white px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-green-500/10 flex items-center gap-2">
+                <i data-lucide="download" size="16"></i> Download PDF
+            </button>
             <button onclick="window.print()" style="background-color: #D35400 !important;" class="flex-1 sm:flex-none justify-center hover:bg-[#b84500] text-white px-6 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-orange-500/10 flex items-center gap-2">
                 <i data-lucide="printer" size="16"></i> Print Invoice
             </button>
@@ -197,10 +200,44 @@
         <div class="flex flex-col md:flex-row justify-between items-start gap-8 border-b border-slate-100 pb-10">
             <!-- Company Info & Logo -->
             <div class="space-y-4">
-                <div class="flex items-center gap-3">
-                    <!-- Official Tourraja Logo component (small 30px height) -->
-                    <x-logo class="h-[30px] w-auto" />
-                </div>
+                <svg style="height: 30px; width: auto;" height="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.1 414.1">
+                  <defs>
+                    <linearGradient id="tourraja-gradient-invoice" x1="131.4" y1="428.13" x2="297.8" y2="428.13" gradientTransform="translate(0 -181.39)" gradientUnits="userSpaceOnUse">
+                      <stop offset="0" stop-color="#f9703b"/>
+                      <stop offset="1" stop-color="#e44100"/>
+                    </linearGradient>
+                  </defs>
+                  
+                  <!-- "tour" part (Orange) -->
+                  <g fill="#f15922">
+                    <path d="M123.6,268.6c-2.5-2.8-5.6-4.2-9.2-4.2h-10.3c-8,0-14.6-3.1-19.8-9.3-5.3-6.2-7.9-14.1-7.9-23.5v-81.6h30.3c4.1,0,7.4-1.2,10-3.7s3.8-5.4,3.8-8.9-1.3-7.3-3.8-9.7c-2.6-2.4-5.9-3.6-10-3.6h-30.3v-47.7c0-4.3-1.4-7.8-4.2-10.6-2.8-2.8-6.5-4.2-11-4.2s-7.8,1.4-10.6,4.2c-2.8,2.8-4.2,6.3-4.2,10.6v47.7h-16.8c-4.1,0-7.4,1.2-10,3.6s-3.9,5.6-3.9,9.7,1.3,6.4,3.9,8.9,5.9,3.7,10,3.7h16.8v81.6c0,12,2.5,22.7,7.6,32.1,5.1,9.3,11.9,16.8,20.7,22.2,8.7,5.5,18.5,8.2,29.5,8.2h6.1c4.9,0,9-1.4,12.2-4.2s4.8-6.4,4.8-10.6-1.2-7.8-3.7-10.6v-.1h0Z"/>
+                    <path d="M468.9,117.4c-4.3,0-7.9,1.4-10.6,4.2-2.8,2.8-4.2,6.4-4.2,11v92.5c0,8.2-2.3,15.5-6.8,21.9s-10.6,11.6-18.2,15.5-16.3,5.8-26,5.8-19.2-2-27.2-6c-8.1-4-14.5-10-19.2-18.1-4.7-8.1-7.1-18.3-7.1-30.8v-80.9c0-4.3-1.5-7.9-4.4-10.8s-6.5-4.4-10.8-4.4-7.9,1.4-10.8,4.4c-2.9,2.9-4.4,6.5-4.4,10.8v80.9c0,17.6,3.4,32.6,10.3,44.8,6.9,12.3,16.2,21.5,28.1,27.9,11.8,6.3,25.3,9.5,40.3,9.5s26.9-3.1,38.2-9.2c6.8-3.7,12.8-8.3,17.9-13.6v6.1c0,4.5,1.4,8.2,4.2,11,2.8,2.8,6.3,4.2,10.6,4.2s8.2-1.4,11-4.2,4.2-6.4,4.2-11v-146.4c0-4.5-1.4-8.2-4.2-11-2.8-2.8-6.4-4.2-11-4.2l.1.1h0Z"/>
+                    <path d="M601.7,121.1c-6-3.8-14.9-5.6-26.8-5.6s-24.3,3-35,9c-2.1,1.2-4,2.5-6,3.8-.5-3-1.6-5.4-3.4-7.2-2.5-2.5-6.2-3.7-11.1-3.7s-8.4,1.3-11,3.9-3.9,6.2-3.9,11v146.7c0,4.9,1.3,8.7,3.9,11.1,2.6,2.5,6.2,3.7,11,3.7s8.6-1.3,11.1-3.9,3.7-6.2,3.7-11v-94.8c0-10.1,3-18.5,9-25.1,6-6.7,14.3-11.3,24.7-14.2,7.5-2.1,7.7-2,21.8-1,3.1.2,5.8.9,8.4.6,2.6-.2,4.8-1.1,6.6-2.6s3.2-3.8,4-6.8c1.3-5.6-1.1-10.3-7.1-14l.1.1h0Z"/>
+                  </g>
+                  
+                  <!-- 'u' base (Dark orange) -->
+                  <path fill="#e44100" d="M285.5,146.3c-4.4-4.4-7.2-9.7-7.2-9.7-8.6-9.8-18.7-16.8-31-21.9-10-4.1-21.3-6.4-32.8-6.4s-22.8,2.3-32.8,6.4c-12.3,5.1-22.4,12.1-31,21.9,0,0-2.8,5.3-7.2,9.7,2.9-5.1,4.6-9.9,8.5-14.3h0c8.4-9.6,18.9-17.2,30.8-22.1,9.8-4,20.4-6.3,31.7-6.3s21.9,2.2,31.7,6.3c11.9,4.9,22.5,12.5,30.8,22.1h0c3.9,4.4,5.6,9.2,8.5,14.3"/>
+                  
+                  <!-- 'u' smile (Gradient) -->
+                  <path fill="url(#tourraja-gradient-invoice)" d="M297.8,204.8c0,45.9-37,90.2-82.9,90.2s-83.5-44.5-83.5-90.5c0-2,0-4,.3-6,3,43.2,48.5,61.4,82.9,62.6,25.7.9,79.9-19.2,83-62.4.1,2,.2,4.1.2,6.2"/>
+                
+                  <!-- "raja" part & eyes (Hardcoded Dark Gray / Black) -->
+                  <g fill="#1a1a1a" fill-rule="evenodd">
+                    <path d="M143.6,174.6c0,5.6-4.5,10.1-10.1,10.1s-10.1-4.5-10.1-10.1,4.5-10.1,10.1-10.1,10.1,4.5,10.1,10.1"/>
+                    <path d="M307.5,174.6c0,5.6-4.5,10.1-10.1,10.1s-10.1-4.5-10.1-10.1,4.5-10.1,10.1-10.1,10.1,4.5,10.1,10.1"/>
+                    <path d="M746.7,135.5c1.3-5.6-1.1-10.3-7.1-14-6-3.8-14.9-5.6-26.8-5.6s-24.3,3-35,9c-7.6,4.3-14.1,9.7-19.5,16.2v-8.5c0-4.9-1.2-8.7-3.7-11.1-2.5-2.5-6.2-3.7-11.1-3.7s-8.4,1.3-11,3.9-3.9,6.2-3.9,11v146.7c0,4.9,1.3,8.7,3.9,11.1,2.6,2.5,6.2,3.7,11,3.7s8.7-1.3,11.1-3.9c2.5-2.6,3.7-6.2,3.7-11v-94.8c0-10.1,3-18.5,9-25.1,6-6.7,14.2-11.4,24.7-14.2,10.4-2.8,22.3-3.1,35.6-1,3,.6,5.8.9,8.4.6,2.6-.2,4.8-1.1,6.6-2.6s3.2-3.8,4-6.8l.1.1Z"/>
+                    <path d="M893.2,290c2.9,2.9,6.5,4.4,10.8,4.4s8.2-1.5,11-4.4,4.2-6.5,4.2-10.8v-73.2c0-17-3.9-32.2-11.8-45.8-7.8-13.5-18.4-24.2-31.8-32.1-13.3-7.8-28.5-11.8-45.5-11.8s-31.9,3.9-45.3,11.8c-13.4,7.8-24.1,18.5-31.9,31.9-7.8,13.4-11.8,28.8-11.8,45.9s3.7,32.2,11,45.8c7.3,13.5,17.3,24.2,30,31.9s27,11.6,42.9,11.6,30-3.8,42.4-11.4c8.3-5.1,15.5-11.5,21.4-19.1v14.5c0,4.3,1.5,7.9,4.4,10.8h0ZM860.9,260.4c-8.9,5.5-19.2,8.2-30.8,8.2s-21.3-2.7-30.5-8.2c-9.1-5.5-16.3-12.9-21.6-22.4s-7.9-20.1-7.9-31.9,2.6-22.8,7.9-32.2c5.3-9.5,12.5-16.9,21.6-22.4s19.3-8.2,30.5-8.2,21.9,2.7,30.8,8.2c8.9,5.5,16,13,21.3,22.4,5.3,9.5,7.9,20.2,7.9,32.2s-2.6,22.5-7.9,31.9c-5.3,9.5-12.4,16.9-21.3,22.4h0Z"/>
+                    <path d="M1179.7,160.3c-7.8-13.5-18.4-24.2-31.8-32.1-13.3-7.8-28.5-11.8-45.5-11.8s-31.9,3.9-45.3,11.8c-13.4,7.8-24.1,18.5-31.9,31.9s-11.8,28.8-11.8,45.9,3.7,32.2,11,45.8c7.3,13.5,17.3,24.2,30,31.9s27,11.6,42.9,11.6,30-3.8,42.4-11.4c8.3-5.1,15.5-11.5,21.4-19.1v14.5c0,4.3,1.5,7.9,4.4,10.8s6.5,4.4,10.8,4.4,8.2-1.5,11-4.4,4.2-6.5,4.2-10.8v-73.2c0-17-3.9-32.2-11.8-45.8h0ZM1133.3,260.4c-8.9,5.5-19.2,8.2-30.8,8.2s-21.3-2.7-30.5-8.2c-9.1-5.5-16.3-12.9-21.6-22.4-5.3-9.5-7.9-20.1-7.9-31.9s2.6-22.8,7.9-32.2c5.3-9.5,12.5-16.9,21.6-22.4s19.3-8.2,30.5-8.2,21.9,2.7,30.8,8.2,16,13,21.3,22.4c5.3,9.5,7.9,20.2,7.9,32.2s-2.6,22.5-7.9,31.9c-5.3,9.5-12.4,16.9-21.3,22.4h0Z"/>
+                    <path d="M951.2,139.4v152.3c0,8.8-2,16.6-6,23.4s-9.4,12.1-16.3,16.1c-6.9,4-14.8,5.9-23.9,5.9s-7.8,1.4-10.6,4.2-4.2,6.5-4.2,11,1.4,8.2,4.2,11,6.4,4.2,10.6,4.2c15,0,28.3-3.3,39.7-9.8,11.4-6.6,20.3-15.5,26.8-26.9s9.7-24.4,9.7-39v-152.2c-9.9-1.5-19.9-1.6-30,0v-.2h0Z"/>
+                    <path d="M993.7,102.7c-6.4,1.6-12,4.4-17,8.6-.4.3-.6,1-.6,1.6,0,1.6.1,3.2.2,4.8-1.5-3.5-2.6-7-4-10.3-1.5-3.4-3.4-6.5-6.4-9.1-5.7,5.3-8,12.3-10,19.4,0-1.5-.2-2.9,0-4.3.2-1.2-.3-2.1-1.3-2.7-3.2-1.9-6.3-4-9.6-5.7-2.2-1.1-4.7-1.7-7.1-2.6,0,.2-.2.3-.2.4,3.3,7.8,5.8,15.9,7.7,24.1.3,1.1,1,.8,1.7.7,1.4-.3,2.9-.5,4.3-.7,1.6-.3,3.2-.4,4.8-.6,6.7-.7,13.5-.6,20.2,0,1.7.2,3.3.4,5,.7,1.2.2,2.4.4,3.6.6,1.3.3,1.7,0,2-1.3,1-3.9,2-7.8,3.2-11.7,1.3-4,2.8-8,4.2-12h-.4l-.3.1h0Z"/>
+                    <path d="M984.7,131c-1.2-.2-2.4-.3-3.6-.5-2.8-.4-5.5-.9-8.3-1-5.9-.2-11.9,0-17.9.3-1.3,0-2.5.2-3.8.4-1.7.3-3.3.6-5.1.9.2,1.4.3,2.5.5,3.9,1.5-.3,3.1-.5,4.6-.8,10-1.5,20-1.4,30,0,1.3.2,2.7.4,4,.7.2-1.1.3-1.9.4-2.7,0-.7,0-1.2-.9-1.3l.1.1Z"/>
+                    <path d="M966,94.5c1.5,0,2.8-1.3,2.8-2.8s-1.3-2.8-2.9-2.8-2.9,1.3-2.9,2.8c0,1.6,1.3,2.8,2.9,2.8h.1Z"/>
+                    <path d="M998.5,94.1c-1.7,0-2.8,1.2-2.8,2.8s1.3,2.8,2.9,2.8,2.8-1.3,2.7-3c0-1.6-1.2-2.7-2.8-2.7v.1h0Z"/>
+                    <path d="M933.6,99.8c1.6,0,2.8-1.2,2.9-2.8,0-1.7-1.1-2.8-2.8-2.8s-2.8,1.1-2.8,2.8c0,1.6,1.2,2.8,2.8,2.8h-.1Z"/>
+                    <path d="M1206.9,84.2c-10.2,0-18.4,8.2-18.4,18.4s8.2,18.4,18.4,18.4,18.4-8.2,18.4-18.4-8.2-18.4-18.4-18.4ZM1206.9,118.2c-8.6,0-15.6-7-15.6-15.6s7-15.6,15.6-15.6,15.6,7,15.6,15.6-7,15.6-15.6,15.6Z"/>
+                    <path d="M1214,99.8c0-1.5-.6-2.9-1.7-4s-2.5-1.7-4-1.7h-5.7c-.8,0-1.4.6-1.4,1.4v14.2c0,.8.6,1.4,1.4,1.4s1.4-.6,1.4-1.4v-4.2h3.8l3.5,5.1c.4.6,1.3.8,2,.4.6-.4.8-1.3.4-2l-2.8-4.1c.5-.3,1-.6,1.4-1,1.1-1.1,1.7-2.5,1.7-4v-.1h0ZM1210.4,101.8c-.5.5-1.1.7-1.7.8h-4.4v-5.7h4.2c.8,0,1.5.3,2,.8s.8,1.3.8,2-.3,1.5-.8,2c0,0-.1.1-.1.1Z"/>
+                  </g>
+                </svg>
 
                 <div class="space-y-1 text-xs text-slate-500 font-medium leading-relaxed">
                     <p class="font-bold text-slate-900 text-sm">Tour Raja Private Limited</p>
@@ -440,5 +477,83 @@
         margin: 1.5cm 1cm 1.5cm 1cm;
     }
 }
+
+/* Single page PDF generation overrides */
+.generating-pdf {
+    padding: 0.3in !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0px !important;
+}
+.generating-pdf .pb-10 {
+    padding-bottom: 1rem !important;
+}
+.generating-pdf .py-10 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+}
+.generating-pdf .my-8 {
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+}
+.generating-pdf .gap-12 {
+    gap: 1rem !important;
+}
+.generating-pdf .pt-6 {
+    padding-top: 0.75rem !important;
+}
+.generating-pdf .py-4 {
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+}
+.generating-pdf .pt-8 {
+    padding-top: 1rem !important;
+}
+.generating-pdf .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0 !important;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse))) !important;
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse)) !important;
+}
+.generating-pdf .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0 !important;
+    margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse))) !important;
+    margin-bottom: calc(0.75rem * var(--tw-space-y-reverse)) !important;
+}
+.generating-pdf .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0 !important;
+    margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse))) !important;
+    margin-bottom: calc(0.5rem * var(--tw-space-y-reverse)) !important;
+}
 </style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    function downloadPDF() {
+        const element = document.getElementById('invoice-sheet');
+        
+        // Save original styles
+        const originalBoxShadow = element.style.boxShadow;
+        const originalBorderRadius = element.style.borderRadius;
+        const originalBorder = element.style.border;
+        
+        // Apply single-page print formatting class
+        element.classList.add('generating-pdf');
+        
+        const opt = {
+            margin:       0.15,
+            filename:     '{{ $invoiceData["invoice_no"] }}.pdf',
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(element).save().then(() => {
+            // Restore original styles
+            element.classList.remove('generating-pdf');
+            element.style.boxShadow = originalBoxShadow;
+            element.style.borderRadius = originalBorderRadius;
+            element.style.border = originalBorder;
+        });
+    }
+</script>
 @endsection
