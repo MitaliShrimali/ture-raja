@@ -423,88 +423,7 @@
                         </div>
                     @endif
                 </div>
-            <!-- Select State Modal -->
-            <div 
-                x-show="stateModalOpen" 
-                class="fixed inset-0 z-[150] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
-                x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-200"
-                x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95"
-                style="display: none;"
-            >
-                <div @click.away="stateModalOpen = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-8 space-y-6 flex flex-col max-h-[80vh]">
-                    <!-- Header -->
-                    <div class="flex items-center justify-between border-b border-gray-100 pb-4 shrink-0">
-                        <h3 class="text-xl font-black text-foreground">Select State</h3>
-                        <button type="button" @click="stateModalOpen = false" class="p-2 text-muted-text hover:text-primary transition-colors">
-                            <i data-lucide="x" size="20"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- Accordion Body -->
-                    <div class="flex-1 overflow-y-auto space-y-4 pr-2 py-2">
-                        @foreach($locationCatalog as $state => $cities)
-                            @php
-                                $stateTotal = array_sum($cities);
-                                $stateSlug = \Illuminate\Support\Str::slug($state);
-                            @endphp
-                            <div class="border border-gray-100 rounded-2xl overflow-hidden bg-gray-50/30">
-                                <!-- State Header -->
-                                <div 
-                                    @click="expandedStates['{{ $stateSlug }}'] = !expandedStates['{{ $stateSlug }}']"
-                                    class="flex items-center justify-between p-4 bg-gray-50/50 hover:bg-gray-50 cursor-pointer select-none transition-colors"
-                                >
-                                    <span class="font-extrabold text-sm text-foreground">
-                                        {{ $state }} <span class="text-xs text-muted-text/60">({{ $stateTotal }})</span>
-                                    </span>
-                                    <i data-lucide="chevron-down" class="text-gray-400 transition-transform duration-300" :class="expandedStates['{{ $stateSlug }}'] ? 'rotate-180' : ''" size="16"></i>
-                                </div>
-                                
-                                <!-- Cities list -->
-                                <div 
-                                    x-show="expandedStates['{{ $stateSlug }}']"
-                                    class="p-4 bg-white border-t border-gray-50 space-y-3"
-                                    x-transition.opacity
-                                >
-                                    @foreach($cities as $city => $count)
-                                        <label class="flex items-center gap-3 cursor-pointer group select-none pl-2">
-                                            <input type="checkbox" name="selected_cities[]" value="{{ strtolower($city) }}" {{ in_array(strtolower($city), request('selected_cities', [])) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">
-                                                {{ $city }} <span class="text-[10px] text-gray-400">({{ $count }})</span>
-                                            </span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                    
-                    <!-- Footer -->
-                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 shrink-0">
-                        <button 
-                            type="button" 
-                            @click="
-                                $el.closest('form').querySelectorAll('input[name=\'selected_cities[]\']').forEach(cb => cb.checked = false);
-                                stateModalOpen = false;
-                                $el.closest('form').dispatchEvent(new Event('submit'));
-                            "
-                            class="px-6 py-3 hover:bg-gray-50 rounded-xl text-xs font-black text-primary uppercase tracking-widest transition-all"
-                        >
-                            Clear
-                        </button>
-                        <button 
-                            type="submit" 
-                            @click="stateModalOpen = false"
-                            class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all"
-                        >
-                            Apply
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <!-- Modal placeholder (moved to root for relative viewport alignment) -->
         </form>
     </div>
     @push('scripts')
@@ -635,5 +554,89 @@
     };
     </script>
     @endpush
+
+    <!-- Select State Modal -->
+    <div 
+        x-show="stateModalOpen" 
+        class="fixed inset-0 flex items-center justify-center p-4 md:p-6 bg-black/60 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        style="display: none; z-index: 999999 !important;"
+    >
+        <div @click.away="stateModalOpen = false" class="bg-white rounded-[32px] md:rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-6 md:p-8 space-y-4 md:space-y-6 flex flex-col max-h-[90%] md:max-h-[85%]">
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b border-gray-100 pb-4 shrink-0">
+                <h3 class="text-lg md:text-xl font-black text-foreground">Select State</h3>
+                <button type="button" @click="stateModalOpen = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                    <i data-lucide="x" size="20"></i>
+                </button>
+            </div>
+            
+            <!-- Accordion Body -->
+            <div class="flex-1 overflow-y-auto space-y-3 md:space-y-4 pr-2 py-2">
+                @foreach($locationCatalog as $state => $cities)
+                    @php
+                        $stateTotal = array_sum($cities);
+                        $stateSlug = \Illuminate\Support\Str::slug($state);
+                    @endphp
+                    <div class="border border-gray-100 rounded-2xl overflow-hidden bg-gray-50/30">
+                        <!-- State Header -->
+                        <div 
+                            @click="expandedStates['{{ $stateSlug }}'] = !expandedStates['{{ $stateSlug }}']"
+                            class="flex items-center justify-between p-3.5 bg-gray-50/50 hover:bg-gray-50 cursor-pointer select-none transition-colors"
+                        >
+                            <span class="font-extrabold text-xs md:text-sm text-foreground">
+                                {{ $state }} <span class="text-[10px] md:text-xs text-muted-text/60">({{ $stateTotal }})</span>
+                            </span>
+                            <i data-lucide="chevron-down" class="text-gray-400 transition-transform duration-300" :class="expandedStates['{{ $stateSlug }}'] ? 'rotate-180' : ''" size="14"></i>
+                        </div>
+                        
+                        <!-- Cities list -->
+                        <div 
+                            x-show="expandedStates['{{ $stateSlug }}']"
+                            class="p-3.5 bg-white border-t border-gray-50 space-y-2.5"
+                            x-transition.opacity
+                        >
+                            @foreach($cities as $city => $count)
+                                <label class="flex items-center gap-3 cursor-pointer group select-none pl-2">
+                                    <input type="checkbox" name="selected_cities[]" form="filter-form" value="{{ strtolower($city) }}" {{ in_array(strtolower($city), request('selected_cities', [])) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">
+                                        {{ $city }} <span class="text-[10px] text-gray-400">({{ $count }})</span>
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+            
+            <!-- Footer -->
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 shrink-0">
+                <button 
+                    type="button" 
+                    @click="
+                        document.querySelectorAll('input[name=\'selected_cities[]\']').forEach(cb => cb.checked = false);
+                        stateModalOpen = false;
+                        document.getElementById('filter-form').dispatchEvent(new Event('submit'));
+                    "
+                    class="px-5 py-2.5 hover:bg-gray-50 rounded-xl text-xs font-black text-primary uppercase tracking-widest transition-all"
+                >
+                    Clear
+                </button>
+                <button 
+                    type="submit" 
+                    form="filter-form"
+                    @click="stateModalOpen = false"
+                    class="px-5 py-2.5 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all"
+                >
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
 
 @endsection
