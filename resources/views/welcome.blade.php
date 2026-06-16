@@ -156,7 +156,7 @@
     @endif
 
     <!-- Section 7: Offer Stickers -->
-    <section class="py-10 relative" style="background-color: #FFF4CE;">
+    <section class="py-5 md:py-10 relative" style="background-color: #FFF4CE;">
         <div class="container-custom">
             <div class="px-4 py-8 md:px-8 md:py-10 relative flex items-center justify-between">
                 
@@ -300,11 +300,11 @@
     </section>
 
     <!-- Section 3: Why Travel With TourRaja -->
-    <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
+    <div class="max-w-7xl mx-auto px-6 py-6 md:py-12 lg:py-16">
         <x-section-title subtitle="The TourRaja Advantage" align="center">
             Why Travel With TourRaja?
             <x-slot:description>The best booking platform you can trust</x-slot:description>
-        </x-section-title><br>
+        </x-section-title><br class="hidden md:block">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Card 1: Security Assurance -->
@@ -350,7 +350,7 @@
     </div>
 
     <!-- Section 6: Browse by Travel Theme -->
-    <section class="py-16 bg-white border-t border-border-soft/30 animate-fade-up">
+    <section class="py-8 md:py-16 bg-white border-t border-border-soft/30 animate-fade-up">
         <div class="container-custom">
             <h2 class="font-black text-foreground text-center mb-10 tracking-tight font-heading" style="font-size: 28px;">Browse by Travel Theme</h2>
 
@@ -395,7 +395,7 @@
     </section>
 
     <!-- Section 2: Featured Travel Packages -->
-    <section class="py-16 lg:py-20 bg-background">
+    <section class="py-8 md:py-16 lg:py-20 bg-background">
         <div class="container-custom">
             <!-- Header with Filters -->
             <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12" style="z-index: 40; position: relative;">
@@ -575,7 +575,7 @@
             </div>
 
             <!-- Load More Button -->
-            <div class="mt-20 flex justify-center animate-fade-up" id="load-more-container">
+            <div class="mt-8 md:mt-20 flex justify-center animate-fade-up" id="load-more-container">
                 <button onclick="loadMoreFeatured()" class="bg-black text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-premium">
                     Load More Packages
                 </button>
@@ -585,7 +585,7 @@
 
 
     <!-- Section 7.5: Top Categories Packages -->
-    <section class="py-16 lg:py-24 bg-white">
+    <section class="py-8 md:py-16 lg:pt-12 lg:pb-24 bg-white">
         <div class="container-custom">
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-10 gap-3">
@@ -733,7 +733,7 @@
     </section>
 
     <!-- Section 8: Testimonials -->
-    <section class="pt-16 lg:pt-24 bg-white overflow-hidden">
+    <section class="pt-8 md:pt-16 lg:pt-12 bg-white overflow-hidden">
         <div class="container-custom">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 animate-fade-up gap-6">
                 <div class="space-y-2">
