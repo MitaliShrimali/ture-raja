@@ -99,14 +99,31 @@
             }
         }
 
-        /* Make sure sidebar backdrop is always below sidebar but above content */
-        #sidebarBackdrop {
-            transition: opacity 0.3s ease;
-        }
-
-        /* Main layout shift smoothly */
-        main {
-            min-height: 100vh;
+        /* Responsive fixes for screens <= 1023px */
+        @media (max-width: 1023px) {
+            .grid {
+                grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+            }
+            .sm\:grid-cols-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+            .flex-row-responsive {
+                flex-direction: column !important;
+            }
+            .w-full-responsive {
+                width: 100% !important;
+            }
+            /* Make tables horizontal scrollable */
+            .table-responsive, .overflow-x-auto {
+                overflow-x: auto !important;
+                display: block !important;
+                width: 100% !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            /* Sidebar active states fix */
+            #sidebar {
+                z-index: 60 !important;
+            }
         }
     </style>
 </head>

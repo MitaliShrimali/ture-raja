@@ -26,8 +26,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-        class="relative w-full max-w-5xl flex flex-row items-center justify-center px-4 md:px-0"
-        style="height: 550px;"
+        class="relative w-full max-w-5xl flex flex-row items-center justify-center px-4 md:px-0 max-h-[90vh] md:h-[550px]"
         @click.stop
     >
         <!-- Image Side (Left) - Shorter to give overlapping effect -->
@@ -36,7 +35,7 @@
         </div>
 
         <!-- Form Side (Right) - Taller with shadow and negative margin to overlap image -->
-        <div class="bg-white rounded-3xl p-8 md:p-10 relative flex flex-col justify-center h-full max-h-[550px] shadow-[-10px_0_30px_rgba(0,0,0,0.15)] z-10 md:-ml-8 w-full md:w-[58%]" 
+        <div class="bg-white rounded-3xl p-6 md:p-10 relative flex flex-col justify-center h-full md:max-h-[550px] shadow-[-10px_0_30px_rgba(0,0,0,0.15)] z-10 md:-ml-8 w-full md:w-[58%] overflow-y-auto" 
              x-data="{ 
                 showPassword: false,
                 showForgotPassword: false,

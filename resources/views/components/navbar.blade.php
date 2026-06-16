@@ -33,7 +33,7 @@
         @endphp
         
         <div class="flex-1 relative flex justify-center items-center z-20">
-            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 flex flex-nowrap w-[60%] sm:w-[50%] md:w-[45%] lg:w-[40vw] xl:w-[45vw] overflow-hidden items-center justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 xl:gap-6 px-1 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
+            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-[60%] sm:w-[50%] md:w-[45%] lg:w-[40vw] xl:w-[45vw] overflow-hidden items-center justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 xl:gap-6 px-1 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
                 @foreach($dbTransits as $t)
                   @php
                       $imgUrl = '';
@@ -159,7 +159,7 @@
             <!-- Mobile Wishlist Icon -->
             <button 
                 @click="{{ Auth::check() ? 'window.location.href=\''.url('/profile').'\'' : '$dispatch(\'open-login-modal\')' }}"
-                class="lg:hidden relative flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-full border border-primary/20"
+                class="hidden relative flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-full border border-primary/20"
             >
                 <i data-lucide="heart" size="18" class="fill-primary"></i>
             </button>

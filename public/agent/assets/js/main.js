@@ -1,5 +1,5 @@
 // Sidebar open/close for mobile
-function openSidebar() {
+window.openSidebar = function() {
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('sidebarBackdrop');
     if (sidebar) sidebar.classList.remove('-translate-x-full');
@@ -7,7 +7,7 @@ function openSidebar() {
     document.body.classList.add('sidebar-open');
 }
 
-function closeSidebar() {
+window.closeSidebar = function() {
     const sidebar = document.getElementById('sidebar');
     const backdrop = document.getElementById('sidebarBackdrop');
     if (sidebar) sidebar.classList.add('-translate-x-full');

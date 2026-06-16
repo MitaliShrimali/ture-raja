@@ -25,7 +25,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-        class="relative w-full max-w-5xl bg-white rounded-[32px] shadow-2xl flex flex-col md:flex-row z-10 border border-white/20"
+        class="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto md:overflow-y-visible bg-white rounded-[32px] shadow-2xl flex flex-col md:flex-row z-10 border border-white/20"
         @click.stop
     >
         <!-- Close Button (Outside the modal container in the top-right corner) -->
@@ -37,7 +37,7 @@
         </button>
 
         <!-- Left Side: Text Details (62% width on desktop) -->
-        <div class="w-full md:w-[62%] p-8 md:p-12 flex flex-col justify-between bg-white rounded-t-[32px] md:rounded-t-none md:rounded-l-[32px] relative">
+        <div class="w-full md:w-[62%] p-6 md:p-12 flex flex-col justify-between bg-white rounded-t-[32px] md:rounded-t-none md:rounded-l-[32px] relative">
             <div class="space-y-6">
                 <!-- Badge -->
                 <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase border" style="background-color: #FFF4CE !important; color: #E85D26 !important; border-color: #FFE7A3 !important;">
@@ -47,12 +47,12 @@
 
                 <!-- Main Heading -->
                 <div class="space-y-3">
-                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">
+                    <h2 class="text-2xl md:text-4xl font-extrabold text-gray-900 leading-tight">
                         Travel in Style with <br class="hidden md:inline" />
                         <span style="color: #E85D26 !important;">Private Chef</span> & <br class="hidden md:inline" />
                         <span style="color: #E85D26 !important;">Tour Manager</span>
                     </h2>
-                    <p class="text-gray-500 font-medium text-sm md:text-base leading-relaxed">
+                    <p class="text-gray-500 font-medium text-xs md:text-base leading-relaxed">
                         Make your journey more comfortable, personalized and unforgettable.
                     </p>
                     <div class="w-24 h-1 rounded-full mt-2" style="background-color: #E85D26 !important;"></div>
@@ -85,7 +85,7 @@
             </div>
 
             <!-- Bottom Action Row -->
-            <div class="mt-8 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="mt-6 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #FFF4CE !important; color: #E85D26 !important;">
                         <i data-lucide="sparkles" class="w-5 h-5"></i>
@@ -106,7 +106,7 @@
         </div>
 
         <!-- Right Side: Interactive Card Visuals with Real Images (38% width on desktop) -->
-        <div class="w-full md:w-[38%] bg-[#F0F2F5] p-6 md:p-8 flex flex-col justify-between relative overflow-hidden min-h-[350px] md:min-h-auto rounded-b-[32px] md:rounded-b-none md:rounded-r-[32px]">
+        <div class="hidden md:flex w-full md:w-[38%] bg-[#F0F2F5] p-6 md:p-8 flex flex-col justify-between relative overflow-hidden min-h-[350px] md:min-h-auto rounded-b-[32px] md:rounded-b-none md:rounded-r-[32px]">
             <!-- Overlapping Cards Area -->
             <div class="relative flex-grow flex items-center justify-center min-h-[280px] my-auto">
                 
