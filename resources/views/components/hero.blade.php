@@ -6,6 +6,20 @@
       color: #ffffff !important;
       opacity: 1 !important;
     }
+    @media (max-width: 767px) {
+      .hero-mobile-title {
+        font-size: 20px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 12px !important;
+      }
+      .hero-content-wrapper {
+        padding-top: 80px !important;
+      }
+      .hero-sound-toggle-wrapper {
+        bottom: 6px !important;
+        right: 16px !important;
+      }
+    }
   </style>
 
   <section class="relative overflow-hidden" style="height:55vh; min-height:400px; max-height:550px;">
@@ -50,7 +64,7 @@
       <audio id="heroBgMusic" src="{{ asset('audio/bg_music.mp3') }}?v={{ time() }}" autoplay loop></audio>
     </div>
 
-    <div class="absolute bottom-8 right-8 z-40 select-none">
+    <div class="absolute bottom-2 right-4 md:bottom-8 md:right-8 z-40 select-none hero-sound-toggle-wrapper">
       <button type="button" onclick="toggleHeroSound()" id="heroSoundToggle" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none" style="background-color: #e85d26; box-shadow: 0 0 10px rgba(232, 93, 38, 0.3);">
         <span id="heroSoundKnob" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out" style="transform: translateX(20px);"></span>
       </button>
@@ -62,12 +76,12 @@
     <div class="absolute inset-0 z-10 pointer-events-none" style="background:linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 25%, transparent 60%, rgba(0,0,0,0.4) 100%);"></div>
 
     {{-- ── Main Hero Content (Centered Text + Search Form) ── --}}
-    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 md:px-8">
+    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 md:px-8 pt-16 md:pt-0 hero-content-wrapper">
       
       {{-- Main Headline --}}
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-black leading-snug w-full mb-6"
+      <h1 class="text-xl sm:text-4xl md:text-5xl lg:text-5xl font-black leading-snug w-full mb-3 md:mb-6 hero-mobile-title"
           style="color:#ffffff !important; text-shadow:0 2px 12px rgba(0,0,0,0.5);">
-        Discover Exclusive Travel Packages<br class="hidden sm:block">from Local Agents Near You!
+        Discover Exclusive Travel Packages <br class="hidden sm:block">from Local Agents Near You!
       </h1>
 
       {{-- Glassmorphism Search Bar --}}
