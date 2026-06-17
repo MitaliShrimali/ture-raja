@@ -10,9 +10,9 @@
     }
 </style>
 
-<aside class="w-full bg-white rounded-lg overflow-hidden font-sans border-0 shadow-sm">
+<aside class="w-full bg-white rounded-lg font-sans border-0 shadow-sm">
     <!-- Header -->
-    <div class="bg-primary text-white py-4 px-5 flex items-center justify-between">
+    <div class="bg-primary text-white py-4 px-5 flex items-center justify-between rounded-t-lg">
         <h2 class="font-bold uppercase tracking-wide" style="font-size: 26px;">Filters</h2>
         <button type="button" onclick="clearAllFilters()" class="text-[10px] font-bold bg-white/20 hover:bg-white text-white hover:text-primary px-3 py-1.5 rounded-lg transition-all uppercase tracking-wider">
             Clear All
@@ -111,13 +111,13 @@
                     <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
                         <i data-lucide="user" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Tour Manager Included
                     </span>
-                </label>
+                </label><br>
             </div>
             <hr class="mt-5 border-gray-100">
-        <div x-data="rangeSlider({{ request('min_nights', 2) }}, {{ request('max_nights', 11) }}, 1, 20)">
+        <div x-data="rangeSlider({{ request('min_nights', 2) }}, {{ request('max_nights', 11) }}, 1, 20)" class="pt-6">
             <h3 class="font-bold text-gray-900 mb-5 uppercase tracking-wide" style="font-size: 20px;">Duration (Nights)</h3>
             
-            <div class="px-2 mb-6 relative h-1.5 bg-gray-200 rounded-full">
+            <div class="px-2 mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <!-- Track Highlight -->
                 <div class="absolute h-full bg-primary rounded-full" :style="'left: ' + minPercent + '%; right: ' + (100 - maxPercent) + '%'"></div>
                 
@@ -145,11 +145,11 @@
         </div>
 
         <!-- 3. Price -->
-        <div x-data="rangeSlider({{ request('min_price', 1000) }}, {{ request('max_price', 100000) }}, 0, 150000)">
+        <div x-data="rangeSlider({{ request('min_price', 1000) }}, {{ request('max_price', 100000) }}, 0, 150000)" class="pt-6">
             <h3 class="font-bold text-gray-900 mb-5 uppercase tracking-wide" style="font-size: 20px;">Price</h3>
             
             <!-- Price Slider -->
-            <div class="px-2 mb-6 relative h-1.5 bg-gray-200 rounded-full">
+            <div class="px-2 mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <div class="absolute h-full bg-primary rounded-full" :style="'left: ' + minPercent + '%; right: ' + (100 - maxPercent) + '%'"></div>
                 <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1000" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" style="z-index: 3;">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + minPercent + '%'" style="z-index: 2;"></div>
@@ -170,7 +170,7 @@
             </div>
 
             <!-- Price Radios -->
-            <div class="space-y-2">
+            <div class="space-y-2.5 mt-6">
                 @php $pr = request('price_radio', 'all'); @endphp
                 @foreach([
                     'all' => 'All Price',
@@ -189,7 +189,7 @@
         </div>
 
         <!-- 4. City -->
-        <div x-data="{ expanded: false }">
+        <div x-data="{ expanded: false }" class="pt-6">
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">City</h3>
             <div class="relative mb-3">
                 <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
@@ -306,24 +306,13 @@
             </div>
         </div>
         <!-- 8. Travel Company -->
-        <div>
+        <div class="pt-6">
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Travel Company</h3>
-            @php
-                $agentsList = \DB::table('agents')->where('status', 'Active')->get();
-            @endphp
             <div class="relative group mb-3">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i data-lucide="building" class="text-gray-400" size="14"></i>
                 </div>
-                <select name="agent_id" onchange="this.form.dispatchEvent(new Event('submit'))" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 pr-10 text-xs font-semibold text-gray-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all appearance-none cursor-pointer" style="padding-left: 2.5rem;">
-                    <option value="" class="py-2 text-gray-800 font-semibold">All Companies</option>
-                    @foreach($agentsList as $a)
-                        <option value="{{ $a->id }}" {{ request('agent_id') == $a->id ? 'selected' : '' }} class="py-2 text-gray-800">{{ $a->name }}</option>
-                    @endforeach
-                </select>
-                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                    <i data-lucide="chevron-down" class="text-gray-400" size="14"></i>
-                </div>
+                <input type="text" name="company" placeholder="Search Travel Company..." value="{{ request('company') }}" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2.5 pr-4 text-xs font-semibold text-gray-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all cursor-text" style="padding-left: 2.5rem;" autocomplete="off">
             </div>
             <hr class="mt-5 border-gray-100">
         </div>

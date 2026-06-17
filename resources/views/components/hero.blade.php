@@ -99,7 +99,7 @@
       <div class="w-full max-w-7xl">
         <form action="{{ route('search') }}" method="GET">
           <div style="background:rgba(255,255,255,0.3); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.35); border-radius:8px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);"
-              class="flex flex-col md:flex-row items-center gap-0 overflow-hidden">
+              class="flex flex-col md:flex-row items-center gap-0">
 
             {{-- Destination Field --}}
             <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4" style="border-right: 1px solid rgba(255,255,255,0.2);">

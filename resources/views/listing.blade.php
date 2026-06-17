@@ -430,7 +430,7 @@
     <script>
     function loadMorePackages() {
         const hiddenItems = document.querySelectorAll('.package-item.hidden');
-        for (let i = 0; i < 6 && i < hiddenItems.length; i++) {
+        for (let i = 0; i < 20 && i < hiddenItems.length; i++) {
             hiddenItems[i].classList.remove('hidden');
         }
         if (document.querySelectorAll('.package-item.hidden').length === 0) {
@@ -495,7 +495,10 @@
         };
 
         // Intercept manual submit
-        form.addEventListener('submit', handleFilterUpdate);
+        form.addEventListener('submit', (e) => {
+            clearTimeout(searchTimeout);
+            handleFilterUpdate(e);
+        });
 
         // Auto update on input/change events
         form.querySelectorAll('input[type="checkbox"], input[type="range"], select').forEach(input => {

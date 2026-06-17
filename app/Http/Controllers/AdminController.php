@@ -939,6 +939,7 @@ class AdminController extends Controller
              'tier' => $request->tier ?? 'Premium',
              'status' => $request->status ?? 'Active',
              'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
+             'generate_bill' => $request->has('generate_bill') ? true : false,
              'api_access' => $request->has('api_access') ? true : false,
              'pending' => $request->pending ?? 0,
              'approved' => $request->approved ?? 0,
@@ -1032,6 +1033,7 @@ class AdminController extends Controller
              'tier' => $request->tier ?? 'Premium',
              'status' => $request->status ?? 'Active',
              'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
+             'generate_bill' => $request->has('generate_bill') ? true : false,
              'api_access' => $request->has('api_access') ? true : false,
              'pending' => $request->pending ?? 0,
              'approved' => $request->approved ?? 0,
@@ -1340,7 +1342,7 @@ class AdminController extends Controller
 
         $payment = DB::table('payments')
             ->leftJoin('agents', 'payments.email', '=', 'agents.email')
-            ->select('payments.*', 'agents.service_guaranteed')
+            ->select('payments.*', 'agents.service_guaranteed', 'agents.generate_bill')
             ->where('payments.id', $id)
             ->first();
 
@@ -1359,6 +1361,7 @@ class AdminController extends Controller
 
         $invoiceData = json_decode($payment->invoice_data ?? '', true);
         if (!$invoiceData) {
+            $price = ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') ? 0 : $payment->amount;
             $invoiceData = [
                 'invoice_no' => 'TR-INV-2024-' . str_pad($payment->id, 3, '0', STR_PAD_LEFT),
                 'invoice_date' => \Carbon\Carbon::parse($payment->date)->format('F d, Y'),
@@ -1377,12 +1380,21 @@ class AdminController extends Controller
                         'description' => 'Subscription package fee for ' . $payment->plan_type,
                         'sac_hsn' => '998522',
                         'qty' => 1,
-                        'price' => $payment->amount,
-                        'total' => $payment->amount
+                        'price' => $price,
+                        'total' => $price
                     ]
                 ],
                 'notes' => "All payments should be made in favor of Tour Raja Private Limited.\nInterest at 18% p.a. will be charged if the bill is not paid by the due date.\nGoods/Services once sold cannot be returned.\nSubject to Noida Jurisdiction only."
             ];
+        } else {
+            if ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') {
+                if (isset($invoiceData['services'])) {
+                    foreach ($invoiceData['services'] as &$svc) {
+                        $svc['price'] = 0;
+                        $svc['total'] = 0;
+                    }
+                }
+            }
         }
 
         return view('admin.invoice-overview', compact('payment', 'invoiceData'));
@@ -1391,6 +1403,14 @@ class AdminController extends Controller
     public function updatePaymentInvoice(Request $request)
     {
         $id = $request->input('id');
+        $payment = DB::table('payments')
+            ->leftJoin('agents', 'payments.email', '=', 'agents.email')
+            ->select('payments.*', 'agents.generate_bill')
+            ->where('payments.id', $id)
+            ->first();
+
+        $isFree = $payment && ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0');
+
         $invoiceData = [
             'invoice_no' => $request->input('invoice_no'),
             'invoice_date' => $request->input('invoice_date'),
@@ -1417,7 +1437,7 @@ class AdminController extends Controller
         foreach ($serviceNames as $index => $name) {
             if (!empty($name)) {
                 $qty = intval($serviceQtys[$index] ?? 1);
-                $price = floatval($servicePrices[$index] ?? 0);
+                $price = $isFree ? 0 : floatval($servicePrices[$index] ?? 0);
                 $total = $qty * $price;
                 $totalAmount += $total;
 

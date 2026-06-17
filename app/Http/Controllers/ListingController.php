@@ -26,12 +26,46 @@ class ListingController extends Controller
             }
         }
 
-        // Assign correct agent to DB packages if they are empty
-        $dbPackages = array_map(function($pkg) use ($staticAgents) {
+        $stateMapping = [
+            'manali' => 'Himachal Pradesh',
+            'shimla' => 'Himachal Pradesh',
+            'kasol' => 'Himachal Pradesh',
+            'goa' => 'Goa',
+            'rishikesh' => 'Uttarakhand',
+            'haridwar' => 'Uttarakhand',
+            'munnar' => 'Kerala',
+            'kochi' => 'Kerala',
+            'darjeeling' => 'West Bengal',
+            'rajkot' => 'Gujarat',
+            'monaco' => 'Monaco',
+            'hanoi' => 'Vietnam',
+            'dubai' => 'UAE',
+            'bali' => 'Indonesia',
+            'paris' => 'France',
+        ];
+
+        // Assign correct agent and city to DB packages if they are empty
+        $dbPackages = array_map(function($pkg) use ($staticAgents, $stateMapping) {
             $pkg = (array) $pkg;
             $slug = strtolower($pkg['slug'] ?? '');
             if ((empty($pkg['agent']) || $pkg['agent'] === 'Nomad Ventures') && isset($staticAgents[$slug])) {
                 $pkg['agent'] = $staticAgents[$slug];
+            }
+            
+            // Resolve city if empty
+            if (empty($pkg['city'])) {
+                $city = '';
+                $loc = strtolower($pkg['location'] ?? '');
+                foreach (array_keys($stateMapping) as $c) {
+                    if (str_contains($loc, $c)) {
+                        $city = ucfirst($c);
+                        break;
+                    }
+                }
+                if (!$city) {
+                    $city = trim($pkg['location'] ?? 'Other');
+                }
+                $pkg['city'] = $city;
             }
             return $pkg;
         }, $dbPackages);
@@ -58,13 +92,35 @@ class ListingController extends Controller
                 return in_array($badge, $popularBadges) ? 2 : (!empty($badge) ? 1 : 0);
             })->values();
 
-        // ── Search by destination / title ──────────────────────────
+        // ── Search by destination / title / agent name ──────────────
         if ($request->filled('search')) {
-            $search = strtolower($request->search);
+            $searchVal = $request->search;
+            $search = strtolower(is_array($searchVal) ? implode(' ', $searchVal) : (string)$searchVal);
             $packages = $packages->filter(function($pkg) use ($search) {
                 $pkg = (array) $pkg;
-                return str_contains(strtolower($pkg['title'] ?? ''), $search)
-                    || str_contains(strtolower($pkg['location'] ?? ''), $search);
+                $title = strtolower((string)($pkg['title'] ?? ''));
+                $location = strtolower((string)($pkg['location'] ?? ''));
+                
+                $agentName = '';
+                if (isset($pkg['agent'])) {
+                    if (is_array($pkg['agent'])) {
+                        $agentName = $pkg['agent']['name'] ?? '';
+                    } elseif (is_string($pkg['agent'])) {
+                        $decoded = json_decode($pkg['agent'], true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                            $agentName = $decoded['name'] ?? '';
+                        } else {
+                            $agentName = $pkg['agent'];
+                        }
+                    } elseif (is_object($pkg['agent'])) {
+                        $agentName = $pkg['agent']->name ?? '';
+                    }
+                }
+                $agent = strtolower((string)$agentName);
+                
+                return str_contains($title, $search)
+                    || str_contains($location, $search)
+                    || ($agent && str_contains($agent, $search));
             });
         }
 
@@ -215,7 +271,28 @@ class ListingController extends Controller
 
         // ── Agent Filter ───────────────────────────────────────────
         $agent = null;
-        if ($request->filled('agent_id')) {
+        if ($request->filled('company')) {
+            $companyName = strtolower(trim($request->company));
+            $packages = $packages->filter(function($pkg) use ($companyName) {
+                $pkg = (array) $pkg;
+                $pAgentName = '';
+                if (isset($pkg['agent'])) {
+                    if (is_array($pkg['agent'])) {
+                        $pAgentName = $pkg['agent']['name'] ?? '';
+                    } elseif (is_string($pkg['agent'])) {
+                        $decoded = json_decode($pkg['agent'], true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                            $pAgentName = $decoded['name'] ?? '';
+                        } else {
+                            $pAgentName = $pkg['agent'];
+                        }
+                    } elseif (is_object($pkg['agent'])) {
+                        $pAgentName = $pkg['agent']->name ?? '';
+                    }
+                }
+                return str_contains(strtolower(trim($pAgentName)), $companyName);
+            });
+        } elseif ($request->filled('agent_id')) {
             $agentId = intval($request->agent_id);
             $agent = \DB::table('agents')->where('id', $agentId)->first();
             

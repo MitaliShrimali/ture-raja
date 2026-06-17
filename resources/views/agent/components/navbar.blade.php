@@ -42,7 +42,11 @@
 
             <!-- User Profile Avatar -->
             <a href="{{ route('agent.profile') }}" class="block shrink-0 pr-1">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Agent" alt="Profile" class="w-8 h-8 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
+                @php
+                    $navAgent = \DB::table('agents')->where('id', session('agent_id'))->first();
+                    $navLogo = ($navAgent && $navAgent->logo) ? $navAgent->logo : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode(session('agent_name', 'Agent'));
+                @endphp
+                <img src="{{ $navLogo }}" alt="Profile" class="w-8 h-8 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
             </a>
         </div>
     </div>

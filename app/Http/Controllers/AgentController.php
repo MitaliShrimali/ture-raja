@@ -82,9 +82,7 @@ class AgentController extends Controller
 
         $id = DB::table('agents')->insertGetId($data);
 
-        session(['agent_id' => $id, 'agent_name' => $request->name, 'agent_email' => $request->email]);
-
-        return redirect()->route('agent.dashboard')->with('success', 'Agent account created! Welcome, ' . $request->name . '!');
+        return redirect()->route('agent.login')->with('success', 'Agent account created successfully! Please login to continue.');
     }
 
     public function logout()
@@ -95,9 +93,43 @@ class AgentController extends Controller
 
     public function dashboard()
     {
+        $agentId = session('agent_id');
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        
+        $packagesCount = 0;
+        if ($agent) {
+            $allPackages = DB::table('packages')->get();
+            $packagesCount = $allPackages->filter(function ($pkg) use ($agentId, $agent) {
+                if (!$pkg->agent) return false;
+                $agentData = json_decode($pkg->agent, true);
+                if (!$agentData) return false;
+                return (isset($agentData['id']) && $agentData['id'] == $agentId)
+                    || (isset($agentData['name']) && $agentData['name'] === $agent->name);
+            })->count();
+        }
+
+        $isNew = ($packagesCount === 0);
+
         return view('agent.pages.dashboard', [
             'page_title' => 'Dashboard',
-            'page_breadcrumb' => 'Pages / Dashboard'
+            'page_breadcrumb' => 'Pages / Dashboard',
+            'agent' => $agent,
+            'isNew' => $isNew,
+            'totalPackages' => $isNew ? 0 : 200,
+            'activePackages' => $isNew ? 0 : 20,
+            'pendingPackages' => $isNew ? 0 : 2,
+            'expiredPackages' => $isNew ? 0 : 0,
+            'totalLeads' => $isNew ? 0 : 682,
+            'profilePackages' => $isNew ? 0 : 28,
+            'profileLeads' => $isNew ? 0 : 643,
+            'profileReviews' => $isNew ? 0 : 76,
+            'recentLeads' => $isNew ? [] : [
+                ['name' => 'Chakra Soft UI Version', 'icon' => 'fab fa-xbox text-purple-500', 'budget' => '$14,000', 'prog' => '60%', 'color' => 'bg-primary'],
+                ['name' => 'Add Progress Track', 'icon' => 'fas fa-chart-line text-blue-500', 'budget' => '$3,000', 'prog' => '10%', 'color' => 'bg-blue-500'],
+                ['name' => 'Fix Platform Errors', 'icon' => 'fas fa-exclamation-triangle text-red-500', 'budget' => 'Not set', 'prog' => '100%', 'color' => 'bg-green-500'],
+                ['name' => 'Launch our Mobile App', 'icon' => 'fab fa-spotify text-green-500', 'budget' => '$32,000', 'prog' => '100%', 'color' => 'bg-green-500'],
+            ],
+            'chartData' => $isNew ? [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] : [40, 70, 55, 65, 50, 90, 60, 80, 45, 75, 55, 65]
         ]);
     }
 
@@ -583,10 +615,7 @@ class AgentController extends Controller
 
     public function profile()
     {
-        return view('agent.pages.profile', [
-            'page_title' => 'Profile',
-            'page_breadcrumb' => 'Pages / Profile'
-        ]);
+        return redirect()->route('agent.settings');
     }
 
     public function services()
@@ -603,5 +632,47 @@ class AgentController extends Controller
             'page_title' => 'Settings',
             'page_breadcrumb' => 'Pages / Settings'
         ]);
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please login first.');
+        }
+
+        $data = [
+            'name' => $request->input('name'),
+            'agency_name' => $request->input('name'),
+            'phone' => $request->input('phone'),
+            'landline' => $request->input('landline'),
+            'email' => $request->input('email'),
+            'address' => $request->input('address'),
+            'state' => $request->input('state'),
+            'city' => $request->input('city'),
+            'pincode' => $request->input('pincode'),
+            'updated_at' => now()
+        ];
+
+        // Create uploads directory if not exists
+        if (!file_exists(public_path('uploads/agents'))) {
+            mkdir(public_path('uploads/agents'), 0775, true);
+        }
+
+        if ($request->hasFile('logo_file')) {
+            $file = $request->file('logo_file');
+            if ($file->isValid()) {
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/agents'), $fileName);
+                $data['logo'] = '/uploads/agents/' . $fileName;
+            }
+        }
+
+        DB::table('agents')->where('id', $agentId)->update($data);
+
+        // Update session name if changed
+        session(['agent_name' => $request->input('name')]);
+
+        return redirect()->back()->with('success', 'Profile settings updated successfully!');
     }
 }

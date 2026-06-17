@@ -149,9 +149,25 @@
                                         <i data-lucide="star" size="20" fill="currentColor"></i>
                                         <span>{{ $pkg['rating'] }} ({{ $pkg['reviews'] }} Reviews)</span>
                                     </div>
+                                    @php
+                                        $durationDisplay = $pkg['duration'];
+                                        if ($durationDisplay) {
+                                            $days = 0;
+                                            $nights = 0;
+                                            if (preg_match('/(\d+)\s*[dD]ays?/i', $durationDisplay, $m)) {
+                                                $days = (int)$m[1];
+                                            }
+                                            if (preg_match('/(\d+)\s*[nN]ights?/i', $durationDisplay, $m)) {
+                                                $nights = (int)$m[1];
+                                            }
+                                            if ($days > 0 && $nights > 0) {
+                                                $durationDisplay = $nights . ($nights == 1 ? ' Night' : ' Nights') . ' / ' . $days . ($days == 1 ? ' Day' : ' Days');
+                                            }
+                                        }
+                                    @endphp
                                     <div class="flex items-center gap-2 text-gray-400 font-medium">
                                         <i data-lucide="clock" size="20"></i>
-                                        <span>{{ $pkg['duration'] }}</span>
+                                        <span>{{ $durationDisplay }}</span>
                                     </div>
                                 </div>
                             </div>

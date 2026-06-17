@@ -11,7 +11,7 @@
     step: 1,
     title: 'The Ultimate Bali Escape',
     location: 'Ubud, Seminyak, Uluwatu',
-    duration: '5 Days / 4 Nights',
+    duration: '4 Nights / 5 Days',
     price: '45999',
     old_price: '55000',
     stock: '10 Left',
@@ -229,18 +229,6 @@
             </div>
         </div>
         
-        <!-- Header Step Actions -->
-        <div class="flex items-center gap-3 shrink-0">
-            <a href="{{ url('/admin/packages') }}" class="px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all">
-                Discard
-            </a>
-            <button type="button" @click="step = 2" x-show="step === 1" class="px-6 py-3 text-white rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">
-                Save & Next <i data-lucide="chevron-right" size="14"></i>
-            </button>
-            <button type="submit" form="packageMainForm" x-show="step === 2" class="px-6 py-3 text-white rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-lg shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">
-                Save And Exit <i data-lucide="check" size="14"></i>
-            </button>
-        </div>
     </div>
 
     <!-- Step Tracker Bar -->
@@ -324,10 +312,10 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Duration</label>
                         <select name="duration" x-model="duration" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                            <option value="3 Days / 2 Nights">3 Days / 2 Nights</option>
-                            <option value="5 Days / 4 Nights">5 Days / 4 Nights</option>
-                            <option value="7 Days / 6 Nights">7 Days / 6 Nights</option>
-                            <option value="10 Days / 9 Nights">10 Days / 9 Nights</option>
+                            <option value="2 Nights / 3 Days">2 Nights / 3 Days</option>
+                            <option value="4 Nights / 5 Days">4 Nights / 5 Days</option>
+                            <option value="6 Nights / 7 Days">6 Nights / 7 Days</option>
+                            <option value="9 Nights / 10 Days">9 Nights / 10 Days</option>
                         </select>
                     </div>
 
@@ -813,22 +801,23 @@
                 </div>
             </div>
 
-            <!-- Footer Actions Panel -->
-            <div class="flex items-center justify-between pt-8 border-t border-gray-100 mt-8">
-                <button type="button" x-show="step === 2" @click="step = 1" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2">
-                    <i data-lucide="chevron-left" size="14"></i> Previous
+        </div>
+        
+        <!-- Footer Actions Panel -->
+        <div class="flex items-center justify-between pt-8 border-t border-gray-100 mt-8">
+            <button type="button" x-show="step === 2" @click="step = 1" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2">
+                <i data-lucide="chevron-left" size="14"></i> Previous
+            </button>
+            <div class="flex items-center gap-3 ml-auto">
+                <a href="{{ url('/admin/packages') }}" class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all">
+                    Discard
+                </a>
+                <button type="button" @click="step = 2" x-show="step === 1" class="px-8 py-3.5 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">
+                    Save & Next
                 </button>
-                <div class="flex items-center gap-3 ml-auto">
-                    <a href="{{ url('/admin/packages') }}" class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all">
-                        Discard
-                    </a>
-                    <button type="button" @click="step = 2" x-show="step === 1" class="px-8 py-3.5 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">
-                        Save & Next
-                    </button>
-                    <button type="submit" x-show="step === 2" class="px-8 py-3.5 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">
-                        Save And Exit
-                    </button>
-                </div>
+                <button type="submit" x-show="step === 2" class="px-8 py-3.5 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">
+                    Save And Exit
+                </button>
             </div>
         </div>
     </form>

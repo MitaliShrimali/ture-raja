@@ -576,9 +576,9 @@
 
             <!-- Load More Button -->
             <div class="mt-8 md:mt-20 flex justify-center animate-fade-up" id="load-more-container">
-                <button onclick="loadMoreFeatured()" class="bg-black text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-premium">
+                <a href="{{ url('/discover') }}" class="bg-black text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-premium inline-block text-center">
                     Load More Packages
-                </button>
+                </a>
             </div>
         </div>
     </section>

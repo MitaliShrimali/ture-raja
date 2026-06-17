@@ -58,26 +58,51 @@
                     <div class="w-24 h-1 rounded-full mt-2" style="background-color: #E85D26 !important;"></div>
                 </div>
 
+<style>
+    .chef-hover-item {
+        transition: all 0.2s ease-in-out !important;
+        border: 1px solid transparent !important;
+    }
+    .chef-hover-item:hover {
+        background-color: #FFF4CE !important;
+        border-color: #FFE7A3 !important;
+    }
+    .chef-hover-item:hover h4 {
+        color: #E85D26 !important;
+    }
+    .manager-hover-item {
+        transition: all 0.2s ease-in-out !important;
+        border: 1px solid transparent !important;
+    }
+    .manager-hover-item:hover {
+        background-color: #FFE4E6 !important;
+        border-color: #FECDD3 !important;
+    }
+    .manager-hover-item:hover h4 {
+        color: #E11D48 !important;
+    }
+</style>
+
                 <!-- Features list -->
                 <div class="space-y-4 pt-2">
                     <!-- Feature 1 -->
-                    <a href="{{ url('/discover?private_chef=1') }}" class="flex items-start gap-4 p-3 rounded-2xl border border-transparent hover:border-[#E85D26]/20 hover:bg-orange-50/20 transition-all duration-200 cursor-pointer block group">
+                    <a href="{{ url('/discover?private_chef=1') }}" class="flex items-start gap-4 p-3 rounded-2xl chef-hover-item cursor-pointer block group">
                         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200" style="background-color: #FFF4CE !important; color: #E85D26 !important;">
                             <i data-lucide="utensils" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-gray-900 text-base group-hover:text-[#E85D26] transition-colors">Private Chef</h4>
+                            <h4 class="font-bold text-gray-900 text-base transition-colors">Private Chef</h4>
                             <p class="text-xs text-gray-500 font-medium mt-0.5">Enjoy hygienic, delicious meals made just the way you like.</p>
                         </div>
                     </a>
 
                     <!-- Feature 2 -->
-                    <a href="{{ url('/discover?tour_manager=1') }}" class="flex items-start gap-4 p-3 rounded-2xl border border-transparent hover:border-rose-500/20 hover:bg-rose-50/20 transition-all duration-200 cursor-pointer block group">
+                    <a href="{{ url('/discover?tour_manager=1') }}" class="flex items-start gap-4 p-3 rounded-2xl manager-hover-item cursor-pointer block group">
                         <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200" style="background-color: #FFE4E6 !important; color: #E11D48 !important;">
                             <i data-lucide="map-pin" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-gray-900 text-base group-hover:text-rose-600 transition-colors">Tour Manager</h4>
+                            <h4 class="font-bold text-gray-900 text-base transition-colors">Tour Manager</h4>
                             <p class="text-xs text-gray-500 font-medium mt-0.5">Personal guidance, local expertise and stress-free travel.</p>
                         </div>
                     </a>

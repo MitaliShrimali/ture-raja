@@ -3,9 +3,9 @@
 @section('title', 'Settings - Tour Raja Agent')
 
 @section('content')
-
-
-
+@php
+    $agent = \DB::table('agents')->where('id', session('agent_id'))->first();
+@endphp
 
         <div class="max-w-6xl mx-auto">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -14,7 +14,7 @@
                     <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 space-y-2 sticky top-8">
                         <button onclick="switchTab('general')" id="tab-general" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl bg-primary text-white shadow-lg shadow-orange-100 transition-all font-bold text-sm">
                             <i class="fas fa-user-circle"></i>
-                            <span>General</span>
+                            <span>General settings</span>
                         </button>
                         <button onclick="switchTab('security')" id="tab-security" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-50 transition-all font-bold text-sm">
                             <i class="fas fa-lock"></i>
@@ -23,10 +23,6 @@
                         <button onclick="switchTab('notifications')" id="tab-notifications" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-50 transition-all font-bold text-sm">
                             <i class="fas fa-bell"></i>
                             <span>Notifications</span>
-                        </button>
-                        <button onclick="switchTab('appearance')" id="tab-appearance" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-gray-50 transition-all font-bold text-sm">
-                            <i class="fas fa-palette"></i>
-                            <span>Appearance</span>
                         </button>
                         <button onclick="switchTab('delete')" id="tab-delete" class="tab-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-50 transition-all font-bold text-sm">
                             <i class="fas fa-trash-alt"></i>
@@ -40,75 +36,150 @@
                     
                     <!-- General Settings Section -->
                     <div id="content-general" class="tab-content space-y-8">
-                        <!-- Profile Card -->
-                        <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
-                            <div class="flex items-center justify-between mb-10">
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-800">Profile Information</h3>
-                                    <p class="text-sm text-gray-400 mt-1">Update your account details and profile picture.</p>
-                                </div>
-                                <button onclick="toastr.success('Settings saved successfully')" class="px-6 py-2 bg-primary text-white text-xs font-bold rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all">Save Changes</button>
-                            </div>
+                        <form action="{{ route('agent.settings.update') }}" method="POST" enctype="multipart/form-data" class="space-y-8">
+                            @csrf
+                            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                                <!-- Left Side: Identity & Location -->
+                                <div class="lg:col-span-8 space-y-8">
+                                    <!-- Agency Identity -->
+                                    <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                                        <div class="flex items-center mb-8">
+                                            <div class="w-1.5 h-6 bg-orange-800 rounded-full mr-4"></div>
+                                            <h4 class="text-lg font-bold text-gray-800 tracking-tight">Agency Identity</h4>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COMPANY NAME</label>
+                                                <input type="text" name="name" value="{{ $agent->agency_name ?? $agent->name ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SINCE</label>
+                                                <input type="text" name="since" value="{{ $agent->since ?? '2026' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PRIMARY MOBILE</label>
+                                                <input type="text" name="phone" value="{{ $agent->phone ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SECONDARY MOBILE</label>
+                                                <input type="text" name="landline" value="{{ $agent->landline ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICIAL EMAIL ADDRESS</label>
+                                                <input type="email" name="email" value="{{ $agent->email ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                        </div>
+                                    </div>
 
-                            <div class="flex flex-col md:flex-row items-start md:items-center gap-8 mb-10">
-                                <div class="relative group">
-                                    <div class="w-32 h-32 rounded-[2rem] bg-primary flex items-center justify-center text-white text-4xl font-black shadow-xl shadow-orange-100">AU</div>
-                                    <button class="absolute -bottom-2 -right-2 w-10 h-10 bg-white text-primary rounded-xl shadow-lg flex items-center justify-center hover:scale-110 transition-transform">
-                                        <i class="fas fa-camera"></i>
-                                    </button>
+                                    <!-- Location & Presence -->
+                                    <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                                        <div class="flex items-center mb-8">
+                                            <div class="w-1.5 h-6 bg-orange-800 rounded-full mr-4"></div>
+                                            <h4 class="text-lg font-bold text-gray-800 tracking-tight">Location & Presence</h4>
+                                        </div>
+
+                                        <div class="space-y-6">
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICE ADDRESS</label>
+                                                <input type="text" name="address" value="{{ $agent->address ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COUNTRY</label>
+                                                    <select name="country" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium appearance-none">
+                                                        <option value="India" {{ ($agent->country ?? 'India') === 'India' ? 'selected' : '' }}>India</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">STATE</label>
+                                                    <input type="text" name="state" value="{{ $agent->state ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">CITY</label>
+                                                    <input type="text" name="city" value="{{ $agent->city ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                </div>
+                                            </div>
+                                            <div class="w-1/3">
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PINCODE</label>
+                                                <input type="text" name="pincode" value="{{ $agent->pincode ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Save Button -->
+                                    <div class="flex justify-end pt-4">
+                                        <button type="submit" class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-orange-100 transition-all">Save Profile Settings</button>
+                                    </div>
                                 </div>
-                                <div class="space-y-2">
-                                    <h4 class="text-lg font-bold text-gray-800">Profile Photo</h4>
-                                    <p class="text-xs text-gray-400 max-w-xs leading-relaxed">Accepted formats: JPG, PNG, GIF. Max file size: 2MB. Recommended dimensions: 400x400px.</p>
-                                    <div class="flex gap-3 pt-2">
-                                        <button class="px-4 py-2 bg-orange-50 text-primary text-[10px] font-black rounded-lg uppercase tracking-widest">Upload New</button>
-                                        <button class="px-4 py-2 text-gray-300 text-[10px] font-black rounded-lg uppercase tracking-widest hover:text-red-500 transition-colors">Remove</button>
+
+                                <!-- Right Side: Branding, Tax, Social -->
+                                <div class="lg:col-span-4 space-y-8">
+                                    <!-- Agency Branding -->
+                                    <div class="bg-white p-2 rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+                                        <div class="bg-orange-100 h-28 rounded-t-[30px] relative">
+                                            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-14 h-14 bg-orange-800 rounded-xl flex items-center justify-center text-white shadow-xl overflow-hidden cursor-pointer" onclick="document.getElementById('logo_file').click()">
+                                                @if($agent && $agent->logo)
+                                                    <img src="{{ $agent->logo }}" class="w-full h-full object-cover">
+                                                @else
+                                                    <i class="fas fa-camera-retro text-lg"></i>
+                                                @endif
+                                            </div>
+                                            <input type="file" name="logo_file" id="logo_file" class="hidden" accept="image/*">
+                                        </div>
+                                        <div class="p-6 pt-10 text-center">
+                                            <h4 class="text-xs font-bold text-gray-800 mb-1">Agency Branding</h4>
+                                            <p class="text-[8px] text-gray-400 font-medium mb-4">Click logo icon above or button below to upload your company logo.</p>
+                                            <button type="button" onclick="document.getElementById('logo_file').click()" class="w-full py-2.5 bg-white border border-gray-100 rounded-xl text-[9px] font-bold text-orange-800 uppercase tracking-widest hover:bg-gray-50">Upload Logo</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tax & Compliance -->
+                                    <div class="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 relative overflow-hidden group">
+                                        <div class="absolute top-0 left-0 w-full h-1 bg-orange-800"></div>
+                                        <h4 class="text-xs font-bold text-gray-800 mb-6 tracking-tight">Tax & Compliance</h4>
+                                        <div class="space-y-4">
+                                            <div>
+                                                <label class="block text-[8px] font-bold text-gray-300 uppercase mb-1.5 tracking-widest">PAN NUMBER</label>
+                                                <input type="text" name="pan_number" value="ABCDE1234F" class="w-full px-4 py-2.5 rounded-lg bg-gray-50 border-none text-[10px] font-bold text-gray-800 uppercase">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[8px] font-bold text-gray-300 uppercase mb-1.5 tracking-widest">GST NUMBER</label>
+                                                <input type="text" name="gst_number" value="29ABCDE1234F1Z5" class="w-full px-4 py-2.5 rounded-lg bg-gray-50 border-none text-[10px] font-bold text-gray-800 uppercase">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Social Integration -->
+                                    <div class="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
+                                        <h4 class="text-xs font-bold text-gray-800 mb-6 tracking-tight">Social Integration</h4>
+                                        <div class="space-y-3.5">
+                                            @php
+                                                $socials = [
+                                                    ['name' => 'Facebook Profile', 'icon' => 'fab fa-facebook-f', 'color' => 'text-blue-600'],
+                                                    ['name' => 'Twitter (X)', 'icon' => 'fab fa-twitter', 'color' => 'text-cyan-500'],
+                                                    ['name' => 'LinkedIn Company', 'icon' => 'fab fa-linkedin-in', 'color' => 'text-blue-800'],
+                                                    ['name' => 'Google+ Profile', 'icon' => 'fab fa-google-plus-g', 'color' => 'text-red-500'],
+                                                    ['name' => 'Instagram Feed', 'icon' => 'fab fa-instagram', 'color' => 'text-pink-500'],
+                                                    ['name' => 'Skype ID', 'icon' => 'fab fa-skype', 'color' => 'text-cyan-400'],
+                                                ];
+                                            @endphp
+                                            @foreach($socials as $soc)
+                                            <div class="flex items-center justify-between group cursor-pointer">
+                                                <div class="flex items-center">
+                                                    <div class="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-lg transition-all">
+                                                        <i class="{{ $soc['icon'] }} {{ $soc['color'] }} text-[10px]"></i>
+                                                    </div>
+                                                    <span class="text-[9px] text-gray-400 font-medium">{{ $soc['name'] }}</span>
+                                                </div>
+                                                <i class="fas fa-link text-[7px] text-gray-200 group-hover:text-primary transition-colors"></i>
+                                            </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
-                                    <input type="text" value="Admin User" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold">
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
-                                    <input type="email" value="admin@tourraja.com" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold">
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Phone Number</label>
-                                    <input type="text" value="+91 98765 43210" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold">
-                                </div>
-                                <div class="space-y-2">
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Location</label>
-                                    <input type="text" value="Rajkot, Gujarat, India" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Preferences Section -->
-                        <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
-                            <h3 class="text-xl font-bold text-gray-800 mb-8">System Preferences</h3>
-                            <div class="space-y-6">
-                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-primary shadow-sm">
-                                            <i class="fas fa-language"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-gray-800">Language</p>
-                                            <p class="text-[10px] text-gray-400">Select your preferred language</p>
-                                        </div>
-                                    </div>
-                                    <select class="bg-transparent border-none text-xs font-bold text-gray-500 focus:ring-0">
-                                        <option>English (US)</option>
-                                        <option>Gujarati</option>
-                                        <option>Hindi</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+                        </form>
                     </div>
 
                     <!-- Security Section -->
@@ -191,41 +262,6 @@
                                     </div>
                                 </div>
                                 <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Appearance Section -->
-                    <div id="content-appearance" class="tab-content hidden space-y-8">
-                        <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
-                            <h3 class="text-xl font-bold text-gray-800 mb-8">Interface Appearance</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div class="space-y-4">
-                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Theme Mode</p>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <button class="flex flex-col items-center p-4 rounded-3xl border-2 border-primary bg-orange-50 space-y-3">
-                                            <div class="w-full h-20 bg-white rounded-xl border border-gray-100 flex items-center justify-center">
-                                                <i class="fas fa-sun text-primary text-2xl"></i>
-                                            </div>
-                                            <span class="text-xs font-bold text-primary">Light Mode</span>
-                                        </button>
-                                        <button class="flex flex-col items-center p-4 rounded-3xl border-2 border-transparent bg-gray-50 space-y-3 hover:border-gray-200 transition-all">
-                                            <div class="w-full h-20 bg-gray-800 rounded-xl flex items-center justify-center">
-                                                <i class="fas fa-moon text-white text-2xl"></i>
-                                            </div>
-                                            <span class="text-xs font-bold text-gray-500">Dark Mode</span>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="space-y-4">
-                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1">Accent Color</p>
-                                    <div class="grid grid-cols-4 gap-4 pt-2">
-                                        <button class="w-10 h-10 rounded-full bg-[#F0642F] ring-4 ring-orange-100 ring-offset-2"></button>
-                                        <button class="w-10 h-10 rounded-full bg-blue-500 hover:scale-110 transition-transform"></button>
-                                        <button class="w-10 h-10 rounded-full bg-purple-500 hover:scale-110 transition-transform"></button>
-                                        <button class="w-10 h-10 rounded-full bg-green-500 hover:scale-110 transition-transform"></button>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

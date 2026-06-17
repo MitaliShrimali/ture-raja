@@ -21,6 +21,22 @@
         $title    = $pkgArr['title']    ?? $title;
         $image    = $pkgArr['image']    ?? $image;
         $duration = $pkgArr['duration'] ?? $duration;
+        
+        // Format duration to show Nights first if present
+        if ($duration) {
+            $days = 0;
+            $nights = 0;
+            if (preg_match('/(\d+)\s*[dD]ays?/i', $duration, $m)) {
+                $days = (int)$m[1];
+            }
+            if (preg_match('/(\d+)\s*[nN]ights?/i', $duration, $m)) {
+                $nights = (int)$m[1];
+            }
+            if ($days > 0 && $nights > 0) {
+                $duration = $nights . ($nights == 1 ? ' Night' : ' Nights') . ' / ' . $days . ($days == 1 ? ' Day' : ' Days');
+            }
+        }
+
         $groupSize= $pkgArr['groupSize']?? $groupSize;
         $rating   = $pkgArr['rating']   ?? $rating;
         $reviews  = $pkgArr['reviews']  ?? $reviews;

@@ -84,12 +84,7 @@
 
             <p class="text-[9px] font-bold text-gray-400 uppercase px-2 mt-4 mb-2 tracking-wider">Account Related</p>
 
-            <a href="{{ route('agent.profile') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.profile') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
-                <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.profile') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
-                    <i class="fas fa-user-circle text-xs"></i>
-                </div>
-                <span class="text-xs">Profile</span>
-            </a>
+
 
             <a href="{{ route('agent.services') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.services') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
                 <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.services') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">

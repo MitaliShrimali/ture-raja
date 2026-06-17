@@ -25,6 +25,7 @@ Route::get('/terms-and-conditions', function () { return view('terms'); });
 
 // Search from hero bar → redirect to listing
 Route::get('/search', [UserController::class, 'search'])->name('search');
+Route::get('/api/search-suggestions', [UserController::class, 'suggestions']);
 
 // Ad click tracking
 Route::get('/ad/click/{id}', [UserController::class, 'trackAdClick'])->name('ad.click');
@@ -348,9 +349,10 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
     Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
     Route::get('/payment', [AgentController::class, 'payment'])->name('payment');
-    Route::get('/profile', [AgentController::class, 'profile'])->name('profile');
+    Route::get('/profile', function() { return redirect()->route('agent.settings'); })->name('profile');
     Route::get('/services', [AgentController::class, 'services'])->name('services');
     Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
+    Route::post('/settings/update', [AgentController::class, 'updateSettings'])->name('settings.update');
 });
 
 Route::get('/tour/{slug}', function($slug) {

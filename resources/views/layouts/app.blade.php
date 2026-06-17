@@ -55,6 +55,55 @@
             fill: currentColor !important;
         }
         [x-cloak] { display: none !important; }
+
+        /* Search Autocomplete Suggestions Styling */
+        .search-suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            z-index: 99999;
+            margin-top: 4px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .search-suggestions-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 400;
+            color: #1f2937;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .search-suggestions-item strong {
+            font-weight: 700;
+            color: #000000;
+        }
+        .search-suggestions-item:hover, .search-suggestions-item.active {
+            background-color: #f3f4f6;
+            color: #e85d26;
+        }
+        .search-suggestions-item:hover strong, .search-suggestions-item.active strong {
+            color: #e85d26;
+        }
+        .search-suggestions-item .suggest-icon {
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .search-suggestions-item:hover .suggest-icon, .search-suggestions-item.active .suggest-icon {
+            color: #e85d26;
+        }
     </style>
 
     <script>
@@ -173,6 +222,181 @@
                 }
             });
         };
+
+        // ── Search suggestions autocomplete initialization ────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('input[name="destination"], input[name="search"], input[name="from_city"], input[name="city"], input[name="company"]');
+            
+            inputs.forEach(input => {
+                const parent = input.closest('div');
+                if (parent) {
+                    parent.style.position = 'relative';
+                }
+                
+                const dropdown = document.createElement('div');
+                dropdown.className = 'search-suggestions-dropdown';
+                dropdown.style.display = 'none';
+                if (parent) {
+                    parent.appendChild(dropdown);
+                }
+                
+                let activeIndex = -1;
+                let suggestionItems = [];
+                
+                let typeParam = 'destination';
+                if (input.name === 'from_city' || input.name === 'city') {
+                    typeParam = 'agent_location';
+                } else if (input.name === 'company') {
+                    typeParam = 'company';
+                }
+                
+                const fetchSuggestions = debounce(async (query) => {
+                    if (query.trim().length < 1) {
+                        dropdown.innerHTML = '';
+                        dropdown.style.display = 'none';
+                        return;
+                    }
+                    
+                    try {
+                        const res = await fetch(`/api/search-suggestions?q=${encodeURIComponent(query)}&type=${typeParam}`);
+                        const data = await res.json();
+                        
+                        if (data.length === 0) {
+                            dropdown.innerHTML = '';
+                            dropdown.style.display = 'none';
+                            return;
+                        }
+                        
+
+                                                suggestionItems = data;
+                        activeIndex = -1;
+                        
+                        dropdown.innerHTML = data.map((item, idx) => {
+                            const typedText = query.toLowerCase();
+                            const itemText = item.text;
+                            let displayHtml = itemText;
+                            
+                            const matchIdx = itemText.toLowerCase().indexOf(typedText);
+                            if (matchIdx !== -1) {
+                                const before = itemText.substring(0, matchIdx);
+                                const match = itemText.substring(matchIdx, matchIdx + typedText.length);
+                                const after = itemText.substring(matchIdx + typedText.length);
+                                
+                                displayHtml = '';
+                                if (before) {
+                                    displayHtml += `<strong>${before}</strong>`;
+                                }
+                                displayHtml += `<span style="font-weight: 400;">${match}</span>`;
+                                if (after) {
+                                    displayHtml += `<strong>${after}</strong>`;
+                                }
+                            } else {
+                                displayHtml = `<strong>${itemText}</strong>`;
+                            }
+                            
+                            const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="suggest-icon"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`;
+                                
+                            return `
+                                <div class="search-suggestions-item" data-index="${idx}">
+                                    ${iconSvg}
+                                    <span>${displayHtml}</span>
+                                </div>
+                            `;
+                        }).join('');
+                        
+                        dropdown.style.display = 'block';
+                        
+                        dropdown.querySelectorAll('.search-suggestions-item').forEach(itemEl => {
+                            itemEl.addEventListener('click', () => {
+                                const index = itemEl.getAttribute('data-index');
+                                selectSuggestion(suggestionItems[index]);
+                            });
+                        });
+                        
+                    } catch (err) {
+                        console.error('Error fetching search suggestions:', err);
+                    }
+                }, 150);
+                
+                input.addEventListener('input', (e) => {
+                    fetchSuggestions(e.target.value);
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    const items = dropdown.querySelectorAll('.search-suggestions-item');
+                    if (dropdown.style.display === 'none' || items.length === 0) return;
+                    
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        if (activeIndex < items.length - 1) {
+                            activeIndex++;
+                            updateActiveItem(items);
+                        }
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        if (activeIndex > 0) {
+                            activeIndex--;
+                            updateActiveItem(items);
+                        }
+                    } else if (e.key === 'Enter') {
+                        if (activeIndex > -1) {
+                            e.preventDefault();
+                            selectSuggestion(suggestionItems[activeIndex]);
+                        }
+                    } else if (e.key === 'Escape') {
+                        dropdown.style.display = 'none';
+                    }
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+                
+                input.addEventListener('focus', () => {
+                    if (input.value.length > 0) {
+                        fetchSuggestions(input.value);
+                    }
+                });
+                
+                function updateActiveItem(items) {
+                    items.forEach((item, idx) => {
+                        if (idx === activeIndex) {
+                            item.classList.add('active');
+                            item.scrollIntoView({ block: 'nearest' });
+                        } else {
+                            item.classList.remove('active');
+                        }
+                    });
+                }
+                
+                function selectSuggestion(item) {
+                    input.value = item.text;
+                    dropdown.style.display = 'none';
+                    
+                    // Dispatch input event so AJAX filter listener triggers correctly
+                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                    
+                    const form = input.closest('form');
+                    if (form) {
+                        const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
+                        form.dispatchEvent(submitEvent);
+                        if (!submitEvent.defaultPrevented) {
+                            form.submit();
+                        }
+                    }
+                }
+            });
+            
+            function debounce(func, wait) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), wait);
+                };
+            }
+        });
     </script>
     @stack('scripts')
 </body>

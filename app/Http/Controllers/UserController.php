@@ -149,9 +149,15 @@ class UserController extends Controller
             // silently ignore DB errors
         }
 
-        // Redirect to discover/listing page with the search term
-        $searchTerm = !empty($destination) ? $destination : $fromCity;
-        return redirect()->route('discover', ['search' => $searchTerm]);
+        // Redirect to discover/listing page with the search terms
+        $params = [];
+        if (!empty($destination)) {
+            $params['search'] = $destination;
+        }
+        if (!empty($fromCity)) {
+            $params['city'] = $fromCity;
+        }
+        return redirect()->route('discover', $params);
     }
 
     // ─── AD CLICK TRACKING ────────────────────────────────────────────
@@ -711,6 +717,148 @@ class UserController extends Controller
             }
             // Render a generic signup view for customers/agents if it exists
             return view('signup', ['type' => $type]);
+        }
+
+        // ─── SEARCH SUGGESTIONS API ──────────────────────────────────────────────
+        public function suggestions(Request $request)
+        {
+            $q = trim(strtolower($request->query('q', '')));
+            $type = $request->query('type', 'destination'); // destination, agent_location, or company
+
+            if (strlen($q) < 1) {
+                return response()->json([]);
+            }
+
+            $results = [];
+
+            if ($type === 'company') {
+                $companies = [];
+                try {
+                    $dbCompanies = \DB::table('agents')
+                        ->where('status', 'Active')
+                        ->where('name', 'like', "%{$q}%")
+                        ->pluck('name')
+                        ->toArray();
+                    $companies = array_merge($companies, $dbCompanies);
+                } catch (\Exception $e) {}
+
+                $staticCompanies = ['Miths Holidays', 'Nomad Ventures', 'Explore Horizons', 'Trek & Trail Co.', 'Vikas Travels', 'Shikhar Tour'];
+                foreach ($staticCompanies as $sc) {
+                    if (stripos($sc, $q) !== false) {
+                        $companies[] = $sc;
+                    }
+                }
+
+                $companies = array_values(array_unique(array_filter($companies)));
+                foreach (array_slice($companies, 0, 8) as $company) {
+                    $results[] = [
+                        'text' => $company,
+                        'type' => 'company',
+                        'icon' => 'building'
+                    ];
+                }
+            } elseif ($type === 'agent_location') {
+                // Suggest cities and regions of active agents
+                $cities = [];
+                try {
+                    $dbCities = \DB::table('agents')
+                        ->where('status', 'Active')
+                        ->whereNotNull('city')
+                        ->where('city', '!=', '')
+                        ->where('city', 'like', "%{$q}%")
+                        ->pluck('city')
+                        ->toArray();
+                    $dbRegions = \DB::table('agents')
+                        ->where('status', 'Active')
+                        ->whereNotNull('region')
+                        ->where('region', '!=', '')
+                        ->where('region', 'like', "%{$q}%")
+                        ->pluck('region')
+                        ->toArray();
+                    $cities = array_merge($cities, $dbCities, $dbRegions);
+                } catch (\Exception $e) {}
+
+                // Static backup of popular cities
+                $staticCities = ['New Delhi', 'Delhi', 'Mumbai', 'Bangalore', 'Kolkata', 'Chennai', 'Pune', 'Hyderabad', 'Jaipur', 'Goa', 'Dehradun', 'Singapore', 'Thailand', 'Bali'];
+                foreach ($staticCities as $sc) {
+                    if (stripos($sc, $q) !== false) {
+                        $cities[] = $sc;
+                    }
+                }
+
+                $cities = array_values(array_unique(array_filter($cities)));
+                foreach (array_slice($cities, 0, 8) as $city) {
+                    $results[] = [
+                        'text' => $city,
+                        'type' => 'location',
+                        'icon' => 'map-pin'
+                    ];
+                }
+            } else {
+                // 1. Suggest Places (Package Locations/Cities)
+                $places = [];
+                try {
+                    $locations = \DB::table('packages')
+                        ->where('status', 'Active')
+                        ->pluck('location')
+                        ->toArray();
+                    foreach ($locations as $loc) {
+                        $parts = explode(',', $loc);
+                        foreach ($parts as $part) {
+                            $part = trim($part);
+                            if ($part && stripos($part, $q) !== false) {
+                                $places[] = $part;
+                            }
+                        }
+                    }
+                } catch (\Exception $e) {}
+
+                // Static backup of popular destinations
+                $staticDestinations = ['Bali', 'Singapore', 'Monaco', 'Vietnam', 'Char Dham', 'Goa', 'Spiti Valley', 'Kerala', 'Dubai', 'Ubud', 'Seminyak', 'Uluwatu', 'New Delhi'];
+                foreach ($staticDestinations as $sd) {
+                    if (stripos($sd, $q) !== false) {
+                        $places[] = $sd;
+                    }
+                }
+
+                $places = array_values(array_unique(array_filter($places)));
+                foreach (array_slice($places, 0, 5) as $place) {
+                    $results[] = [
+                        'text' => $place,
+                        'type' => 'place',
+                        'icon' => 'map-pin'
+                    ];
+                }
+
+                // 2. Suggest Agents
+                $agents = [];
+                try {
+                    $dbAgents = \DB::table('agents')
+                        ->where('status', 'Active')
+                        ->where('name', 'like', "%{$q}%")
+                        ->pluck('name')
+                        ->toArray();
+                    $agents = array_merge($agents, $dbAgents);
+                } catch (\Exception $e) {}
+
+                $staticAgents = ['Miths Holidays', 'Nomad Ventures', 'Explore Horizons', 'Trek & Trail Co.', 'Vikas Travels', 'Shikhar Tour'];
+                foreach ($staticAgents as $sa) {
+                    if (stripos($sa, $q) !== false) {
+                        $agents[] = $sa;
+                    }
+                }
+
+                $agents = array_values(array_unique(array_filter($agents)));
+                foreach (array_slice($agents, 0, 5) as $agent) {
+                    $results[] = [
+                        'text' => $agent,
+                        'type' => 'agent',
+                        'icon' => 'user'
+                    ];
+                }
+            }
+
+            return response()->json($results);
         }
 
 }
