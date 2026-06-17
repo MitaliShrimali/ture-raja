@@ -263,6 +263,20 @@
 
                         {{-- Right Column: Package Details (Duration, Group Size, Type, Inquiry Now) --}}
                         <div class="package-gallery-details-col flex flex-col justify-between py-1.5 space-y-6">
+                            @php
+                                $hasChef = false;
+                                $hasManager = false;
+                                if (isset($package['included'])) {
+                                    $incList = is_string($package['included']) ? json_decode($package['included'], true) : $package['included'];
+                                    if (is_array($incList)) {
+                                        foreach ($incList as $inc) {
+                                            if (str_contains(strtolower($inc), 'chef')) $hasChef = true;
+                                            if (str_contains(strtolower($inc), 'manager')) $hasManager = true;
+                                        }
+                                    }
+                                }
+                            @endphp
+
                             <div class="package-meta-details-container">
                                 <div>
                                     <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest" style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">DURATION</p>
@@ -277,6 +291,24 @@
                                     <p class="font-extrabold text-gray-800 text-base uppercase" style="font-size: 16px; font-family: 'Outfit', sans-serif;">{{ $package['category'] }}</p>
                                 </div>
                             </div>
+
+                            @if($hasChef || $hasManager)
+                            <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 space-y-3">
+                                <p class="text-[11px] font-black text-gray-500 uppercase tracking-widest" style="font-size: 11px; letter-spacing: 0.1em;">SERVICES PROVIDED</p>
+                                <div class="flex flex-wrap gap-2">
+                                    @if($hasChef)
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 text-xs font-bold border border-green-200">
+                                            <i data-lucide="utensils" class="w-4 h-4"></i> Private Chef Included
+                                        </span>
+                                    @endif
+                                    @if($hasManager)
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
+                                            <i data-lucide="user" class="w-4 h-4"></i> Tour Manager Included
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
                             
                             <div>
                                 <a href="#contact-form" onclick="event.preventDefault(); document.getElementById('contact-form').scrollIntoView({behavior:'smooth', block:'start'}); return false;" style="background-color: #e85d26; display: flex; align-items: center; justify-content: center;" class="block w-full py-3.5 text-white text-center font-black text-xs uppercase tracking-widest rounded-md hover:opacity-90 transition-opacity shadow-sm">

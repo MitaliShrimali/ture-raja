@@ -157,6 +157,41 @@ class ListingController extends Controller
                 return in_array(strtolower($pkg['theme'] ?? ''), $themes);
             });
         }
+        
+        // ── Service filters (Private Chef / Tour Manager) ──────────
+        if ($request->filled('private_chef') && $request->private_chef == 1) {
+            $packages = $packages->filter(function($pkg) {
+                $pkg = (array) $pkg;
+                $included = $pkg['included'] ?? [];
+                if (is_string($included)) {
+                    $included = json_decode($included, true) ?: [];
+                }
+                if (!is_array($included)) $included = [];
+                foreach ($included as $item) {
+                    if (str_contains(strtolower($item), 'chef')) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
+
+        if ($request->filled('tour_manager') && $request->tour_manager == 1) {
+            $packages = $packages->filter(function($pkg) {
+                $pkg = (array) $pkg;
+                $included = $pkg['included'] ?? [];
+                if (is_string($included)) {
+                    $included = json_decode($included, true) ?: [];
+                }
+                if (!is_array($included)) $included = [];
+                foreach ($included as $item) {
+                    if (str_contains(strtolower($item), 'manager')) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
 
         // ── Badge filter ───────────────────────────────────────────
         if ($request->filled('badge')) {

@@ -65,8 +65,20 @@
     </div>
 
     <div class="absolute bottom-2 right-4 md:bottom-8 md:right-8 z-40 select-none hero-sound-toggle-wrapper">
-      <button type="button" onclick="toggleHeroSound()" id="heroSoundToggle" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none" style="background-color: #e85d26; box-shadow: 0 0 10px rgba(232, 93, 38, 0.3);">
-        <span id="heroSoundKnob" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out" style="transform: translateX(20px);"></span>
+      <button type="button" onclick="toggleHeroSound()" id="heroSoundToggle" class="w-8 h-8 rounded-full bg-[#e85d26] hover:bg-orange-600 flex items-center justify-center text-white transition-all shadow-md focus:outline-none" style="box-shadow: 0 0 10px rgba(232, 93, 38, 0.4);">
+        <!-- Music On Icon -->
+        <svg id="musicOnIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white">
+          <path d="M9 18V5l12-2v13"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
+        <!-- Music Off Icon (hidden by default) -->
+        <svg id="musicOffIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-white hidden">
+          <line x1="2" y1="2" x2="22" y2="22"></line>
+          <path d="M9 13V5l12-2v9"></path>
+          <circle cx="6" cy="18" r="3"></circle>
+          <circle cx="18" cy="16" r="3"></circle>
+        </svg>
       </button>
     </div>
 
@@ -76,18 +88,17 @@
     <div class="absolute inset-0 z-10 pointer-events-none" style="background:linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 25%, transparent 60%, rgba(0,0,0,0.4) 100%);"></div>
 
     {{-- ── Main Hero Content (Centered Text + Search Form) ── --}}
-    <div class="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 md:px-8 pt-16 md:pt-0 hero-content-wrapper">
+    <div class="absolute inset-0 z-20 flex flex-col items-center justify-end text-center px-4 md:px-8 pb-10 md:pb-14 hero-content-wrapper">
       
       {{-- Main Headline --}}
       <h1 class="text-xl sm:text-4xl md:text-5xl lg:text-5xl font-black leading-snug w-full mb-3 md:mb-6 hero-mobile-title"
           style="color:#ffffff !important; text-shadow:0 2px 12px rgba(0,0,0,0.5);">
         Discover Exclusive Travel Packages <br class="hidden sm:block">from Local Agents Near You!
-      </h1>
+      </h1><br>
 
-      {{-- Glassmorphism Search Bar --}}
       <div class="w-full max-w-7xl">
         <form action="{{ route('search') }}" method="GET">
-          <div style="background:rgba(255,255,255,0.15); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.25); border-radius:8px;"
+          <div style="background:rgba(255,255,255,0.3); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.35); border-radius:8px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);"
               class="flex flex-col md:flex-row items-center gap-0 overflow-hidden">
 
             {{-- Destination Field --}}
@@ -158,14 +169,17 @@
       
       function updateSoundToggleState(isEnabled) {
         const toggle = document.getElementById('heroSoundToggle');
-        const knob = document.getElementById('heroSoundKnob');
-        if (!toggle || !knob) return;
+        const onIcon = document.getElementById('musicOnIcon');
+        const offIcon = document.getElementById('musicOffIcon');
+        if (!toggle) return;
         if (isEnabled) {
           toggle.style.backgroundColor = '#e85d26';
-          knob.style.transform = 'translateX(20px)';
+          if (onIcon) onIcon.classList.remove('hidden');
+          if (offIcon) offIcon.classList.add('hidden');
         } else {
           toggle.style.backgroundColor = '#4b5563';
-          knob.style.transform = 'translateX(0)';
+          if (onIcon) onIcon.classList.add('hidden');
+          if (offIcon) offIcon.classList.remove('hidden');
         }
       }
       

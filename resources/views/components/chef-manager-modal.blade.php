@@ -61,26 +61,26 @@
                 <!-- Features list -->
                 <div class="space-y-4 pt-2">
                     <!-- Feature 1 -->
-                    <div class="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors duration-200">
-                        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background-color: #FFF4CE !important; color: #E85D26 !important;">
+                    <a href="{{ url('/discover?private_chef=1') }}" class="flex items-start gap-4 p-3 rounded-2xl border border-transparent hover:border-[#E85D26]/20 hover:bg-orange-50/20 transition-all duration-200 cursor-pointer block group">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200" style="background-color: #FFF4CE !important; color: #E85D26 !important;">
                             <i data-lucide="utensils" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-gray-900 text-base">Private Chef</h4>
+                            <h4 class="font-bold text-gray-900 text-base group-hover:text-[#E85D26] transition-colors">Private Chef</h4>
                             <p class="text-xs text-gray-500 font-medium mt-0.5">Enjoy hygienic, delicious meals made just the way you like.</p>
                         </div>
-                    </div>
+                    </a>
 
                     <!-- Feature 2 -->
-                    <div class="flex items-start gap-4 p-3 rounded-2xl hover:bg-gray-50 transition-colors duration-200">
-                        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm" style="background-color: #FFE4E6 !important; color: #E11D48 !important;">
+                    <a href="{{ url('/discover?tour_manager=1') }}" class="flex items-start gap-4 p-3 rounded-2xl border border-transparent hover:border-rose-500/20 hover:bg-rose-50/20 transition-all duration-200 cursor-pointer block group">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200" style="background-color: #FFE4E6 !important; color: #E11D48 !important;">
                             <i data-lucide="map-pin" class="w-6 h-6"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-gray-900 text-base">Tour Manager</h4>
+                            <h4 class="font-bold text-gray-900 text-base group-hover:text-rose-600 transition-colors">Tour Manager</h4>
                             <p class="text-xs text-gray-500 font-medium mt-0.5">Personal guidance, local expertise and stress-free travel.</p>
                         </div>
-                    </div>
+                    </a>
                 </div>
             </div>
 
@@ -111,7 +111,7 @@
             <div class="relative flex-grow flex items-center justify-center min-h-[280px] my-auto">
                 
                 <!-- Card 1: Private Chef (Top Left, Tilted Left) -->
-                <div class="absolute top-2 left-4 w-[180px] bg-white rounded-2xl p-3 shadow-xl border border-gray-100/50 transform -rotate-6 hover:rotate-0 transition-transform duration-300 z-20">
+                <a href="{{ url('/discover?private_chef=1') }}" class="absolute top-2 left-4 w-[180px] bg-white rounded-2xl p-3 shadow-xl border border-gray-100/50 transform -rotate-6 hover:rotate-0 hover:scale-105 transition-all duration-300 z-20 block cursor-pointer group">
                     <div class="absolute top-2 left-2 bg-[#22C55E] text-white text-[8px] font-black tracking-wider uppercase px-2 py-0.5 rounded flex items-center gap-1">
                         <i data-lucide="sun" class="w-2.5 h-2.5"></i> PRIVATE CHEF
                     </div>
@@ -119,13 +119,13 @@
                         <img 
                             src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=300" 
                             alt="Chef at Work" 
-                            class="w-full h-full object-cover rounded-xl"
+                            class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500"
                         />
                     </div>
-                </div>
+                </a>
 
                 <!-- Card 2: Tour Manager (Bottom Right, Tilted Right) -->
-                <div class="absolute bottom-2 right-4 w-[190px] bg-white rounded-2xl p-3 shadow-2xl border border-gray-100/50 transform rotate-6 hover:rotate-0 transition-transform duration-300 z-10">
+                <a href="{{ url('/discover?tour_manager=1') }}" class="absolute bottom-2 right-4 w-[190px] bg-white rounded-2xl p-3 shadow-2xl border border-gray-100/50 transform rotate-6 hover:rotate-0 hover:scale-105 transition-all duration-300 z-10 block cursor-pointer group">
                     <div class="absolute top-2 left-2 bg-[#2563EB] text-white text-[8px] font-black tracking-wider uppercase px-2 py-0.5 rounded flex items-center gap-1">
                         <i data-lucide="user" class="w-2.5 h-2.5"></i> TOUR MANAGER
                     </div>
@@ -133,7 +133,7 @@
                         <img 
                             src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=300" 
                             alt="Travel Tour Manager" 
-                            class="w-full h-full object-cover rounded-xl"
+                            class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500"
                         />
                     </div>
 
@@ -146,7 +146,7 @@
                             <p class="text-[8px] font-extrabold text-gray-800 leading-tight">Trusted • Verified</p>
                         </div>
                     </div>
-                </div>
+                </a>
 
             </div>
 
