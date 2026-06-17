@@ -304,48 +304,51 @@ a {
 }
 
 @media (max-width: 1023px) {
+
   /* Customer Profile page mobile alignment & wrapping overrides */
   .pf-row {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 8px !important;
   }
-  
+
   .pf-edit {
     align-self: flex-start !important;
   }
-  
+
   .pf-inp {
     max-width: 100% !important;
   }
-  
+
   .pf-dest-grid--4 {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
-  
+
   .pf-news {
     flex-direction: column !important;
   }
-  
+
   .pf-news-img {
     width: 100% !important;
     height: 150px !important;
   }
-  
+
   /* Tables scrolling on small screens */
-  .overflow-x-auto, .admin-table-container, .table-responsive {
+  .overflow-x-auto,
+  .admin-table-container,
+  .table-responsive {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
     max-width: 100% !important;
     display: block !important;
   }
-  
+
   /* Header adjustments for Admin/Customer dashboard to avoid layout squishing */
   header .flex.items-center.bg-white.rounded-full {
     gap: 0.5rem !important;
     padding-left: 0.5rem !important;
   }
-  
+
   header input {
     font-size: 11px !important;
   }
@@ -356,13 +359,16 @@ a {
 }
 
 @media (max-width: 640px) {
+
   /* Hide minor elements on very narrow screens to prevent text overflow */
   .hidden-xs {
     display: none !important;
   }
-  
+
   /* Ensure grids stack appropriately */
-  .grid-cols-2, .grid-cols-3, .grid-cols-4 {
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
     grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
   }
 
@@ -371,9 +377,11 @@ a {
   form[action*="discover"] .shrink-0 {
     padding: 0.5rem 0.75rem !important;
   }
+
   form[action*="discover"] input {
     font-size: 12px !important;
   }
+
   form[action*="discover"] button[type="submit"] {
     padding: 0.5rem !important;
     font-size: 12px !important;

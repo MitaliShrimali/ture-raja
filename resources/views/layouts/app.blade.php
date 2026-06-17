@@ -62,7 +62,7 @@
             top: 100%;
             left: 0;
             right: 0;
-            background: #ffffff;
+            background: #ffffff !important;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
@@ -79,30 +79,36 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 400;
-            color: #1f2937;
+            color: #1f2937 !important;
             transition: all 0.2s;
             text-align: left;
         }
+        .search-suggestions-item span {
+            color: #1f2937 !important;
+        }
         .search-suggestions-item strong {
             font-weight: 700;
-            color: #000000;
+            color: #000000 !important;
         }
         .search-suggestions-item:hover, .search-suggestions-item.active {
-            background-color: #f3f4f6;
-            color: #e85d26;
+            background-color: #f3f4f6 !important;
+            color: #e85d26 !important;
+        }
+        .search-suggestions-item:hover span, .search-suggestions-item.active span {
+            color: #e85d26 !important;
         }
         .search-suggestions-item:hover strong, .search-suggestions-item.active strong {
-            color: #e85d26;
+            color: #e85d26 !important;
         }
         .search-suggestions-item .suggest-icon {
-            color: #9ca3af;
+            color: #9ca3af !important;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
         }
         .search-suggestions-item:hover .suggest-icon, .search-suggestions-item.active .suggest-icon {
-            color: #e85d26;
+            color: #e85d26 !important;
         }
     </style>
 
@@ -258,7 +264,7 @@
                     }
                     
                     try {
-                        const res = await fetch(`/api/search-suggestions?q=${encodeURIComponent(query)}&type=${typeParam}`);
+                        const res = await fetch(`{{ url('/api/search-suggestions') }}?q=${encodeURIComponent(query)}&type=${typeParam}`);
                         const data = await res.json();
                         
                         if (data.length === 0) {
