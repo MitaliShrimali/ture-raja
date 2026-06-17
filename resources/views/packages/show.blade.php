@@ -748,10 +748,20 @@
 
                     <form action="{{ route('contact.submit') }}" method="POST" class="space-y-3">
                         @csrf
+                        @php
+                            $agentNameForForm = $package['agent'] ?? '';
+                            if (is_array($agentNameForForm)) {
+                                $agentNameForForm = $agentNameForForm['name'] ?? 'Tour Raja';
+                            }
+                        @endphp
                         <input type="hidden" name="subject" value="Inquiry for {{ $package['title'] }}">
+                        <input type="hidden" name="agent_name" value="{{ $agentNameForForm }}">
+                        <input type="hidden" name="package_name" value="{{ $package['title'] }}">
                         <input type="text" name="name" required placeholder="Enter your name"
                             class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
                         <input type="email" name="email" required placeholder="Enter your email"
+                            class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                        <input type="tel" name="phone" required placeholder="Enter your phone number"
                             class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
                         <textarea name="message" required rows="3" placeholder="Go ahead, we are listening..."
                             class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400 resize-none"></textarea>

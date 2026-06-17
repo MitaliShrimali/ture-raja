@@ -205,6 +205,7 @@ class UserController extends Controller
         $request->validate([
             'name'    => 'required|string|max:255',
             'email'   => 'required|email',
+            'phone'   => 'required|string|max:30',
             'message' => 'required|string',
         ]);
 
@@ -224,7 +225,7 @@ class UserController extends Controller
             // Store in user_inquiries
             DB::table('user_inquiries')->insert($data);
 
-            // Mirror into admin contacts table so admin sees it immediately
+            // Mirror into contacts table so agent panel sees it
             DB::table('contacts')->insert([
                 'name'       => $request->name,
                 'email'      => $request->email,
@@ -235,6 +236,20 @@ class UserController extends Controller
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            // Mirror into leads table so admin lead panel sees it
+            DB::table('leads')->insert([
+                'name'       => $request->name,
+                'email'      => $request->email,
+                'phone'      => $request->phone,
+                'agent'      => $request->agent_name ?? 'Website Inquiry',
+                'package'    => $request->package_name ?? ($request->subject ?? 'Website Inquiry'),
+                'status'     => 'New',
+                'message'    => $request->message,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Could not send your message. Please try again.');
         }

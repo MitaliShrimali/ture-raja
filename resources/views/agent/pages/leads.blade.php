@@ -19,7 +19,7 @@
         <!-- Leads Table -->
         <div class="bg-white rounded-[32px] p-4 sm:p-8 shadow-sm border border-gray-100">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest">Contact Us</h3>
+                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest">Inquiry Leads</h3>
             </div>
 
             <div class="overflow-x-auto">
@@ -27,10 +27,12 @@
                     <thead>
                         <tr class="text-[9px] font-bold text-gray-300 uppercase tracking-widest border-b border-gray-50 whitespace-nowrap">
                             <th class="pb-4 pl-4">Srl No.</th>
-                            <th class="pb-4">Names</th>
+                            <th class="pb-4">Name</th>
+                            <th class="pb-4">Package / Subject</th>
                             <th class="pb-4">Status</th>
                             <th class="pb-4">Email</th>
                             <th class="pb-4">Phone</th>
+                            <th class="pb-4">Message</th>
                             <th class="pb-4 text-center">Actions</th>
                         </tr>
                     </thead>
@@ -64,10 +66,10 @@
                                     <img src="https://i.pravatar.cc/100?u={{ $l->id }}" class="w-10 h-10 rounded-xl object-cover mr-3 border border-gray-100">
                                     <div>
                                         <p class="text-[10px] font-bold text-gray-800 lead-name">{{ $l->name }}</p>
-                                        <p class="text-[8px] text-gray-400 font-medium lead-loc">{{ $l->subject ?? 'Website Inquiry' }}</p>
                                     </div>
                                 </div>
                             </td>
+                            <td class="py-4 text-[10px] font-bold text-primary lead-loc">{{ $l->subject ?? 'Website Inquiry' }}</td>
                             <td class="py-4">
                                 <span class="{{ $color }} text-white px-3 py-1 rounded-lg text-[8px] font-bold lead-status">
                                     {{ $status }}
@@ -75,6 +77,13 @@
                             </td>
                             <td class="py-4 text-[10px] font-bold text-gray-800 lead-email">{{ $l->email }}</td>
                             <td class="py-4 text-[10px] font-bold text-gray-800 lead-phone">{{ $l->phone ?? 'N/A' }}</td>
+                            <td class="py-4 max-w-[180px]">
+                                @if(!empty($l->message))
+                                    <p class="text-[9px] text-gray-500 font-medium leading-relaxed line-clamp-2 whitespace-normal" title="{{ $l->message }}">{{ $l->message }}</p>
+                                @else
+                                    <span class="text-[9px] text-gray-300">&mdash;</span>
+                                @endif
+                            </td>
                             <td class="py-4 text-center">
                                 <div class="flex items-center justify-center space-x-3">
                                     <button onclick="editLead({!! htmlspecialchars($leadJson, ENT_QUOTES, 'UTF-8') !!})" class="text-[9px] font-bold text-gray-400 hover:text-gray-800 transition-colors">Edit</button>

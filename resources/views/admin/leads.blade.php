@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editLead: { id: '', name: '', email: '', phone: '', agent: '', package: '', status: '' } }">
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editLead: { id: '', name: '', email: '', phone: '', agent: '', package: '', status: '', message: '' } }">
     <!-- Header -->
     <div class="space-y-4">
         <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Admin / Leads</p>
@@ -62,6 +62,7 @@
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">SR. NO</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">TRAVELER NAME</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">AGENT / PACKAGE</th>
+                        <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">MESSAGE</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">STATUS</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">ACTIONS</th>
                     </tr>
@@ -78,6 +79,7 @@
                                        str_contains(strtolower($lead->agent), strtolower($a->name));
                             });
                             $agentProfileUrl = $matchedAgent ? url('/admin/agents/profile/' . $matchedAgent->id) : '#';
+                            $leadMsgEscaped  = addslashes($lead->message ?? '');
                         @endphp
                         <tr class="group hover:bg-gray-50/30 transition-colors">
                             <td class="py-6 px-10 text-sm font-bold text-muted-text opacity-40">{{ $srNo }}</td>
@@ -97,6 +99,13 @@
                                     <p class="text-[10px] text-muted-text font-black uppercase tracking-widest">{{ $lead->package }}</p>
                                 </div>
                             </td>
+                            <td class="py-6 px-10 max-w-[220px]">
+                                @if($lead->message)
+                                    <p class="text-xs text-muted-text font-medium leading-relaxed line-clamp-2" title="{{ $lead->message }}">{{ $lead->message }}</p>
+                                @else
+                                    <span class="text-[10px] text-muted-text opacity-40">—</span>
+                                @endif
+                            </td>
                             <td class="py-6 px-10 text-center">
                                 <span class="px-3 py-1 rounded-full 
                                     {{ $lead->status === 'Booked' ? 'bg-green-50 text-green-500' : 
@@ -109,7 +118,7 @@
                             <td class="py-6 px-10 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button 
-                                        @click="showEditModal = true; editLead = { id: '{{ $lead->id }}', name: '{{ addslashes($lead->name) }}', email: '{{ addslashes($lead->email) }}', phone: '{{ addslashes($lead->phone) }}', agent: '{{ addslashes($lead->agent) }}', package: '{{ addslashes($lead->package) }}', status: '{{ $lead->status }}' }"
+                                        @click="showEditModal = true; editLead = { id: '{{ $lead->id }}', name: '{{ addslashes($lead->name) }}', email: '{{ addslashes($lead->email) }}', phone: '{{ addslashes($lead->phone) }}', agent: '{{ addslashes($lead->agent) }}', package: '{{ addslashes($lead->package) }}', status: '{{ $lead->status }}', message: '{{ $leadMsgEscaped }}' }"
                                         class="p-2 text-muted-text hover:text-primary transition-all"
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
@@ -126,7 +135,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="py-12 text-center text-sm font-bold text-muted-text">No travelers or leads logged.</td>
+                            <td colspan="6" class="py-12 text-center text-sm font-bold text-muted-text">No travelers or leads logged.</td>
                         </tr>
                     @endforelse
                 </tbody>
