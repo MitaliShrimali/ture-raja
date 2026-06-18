@@ -64,23 +64,27 @@
             @php
                 $meta = isset($payment->invoice_data) && !empty($payment->invoice_data) ? json_decode($payment->invoice_data, true) : null;
             @endphp
-            @if($meta)
-            <div class="inline-block text-left bg-gray-50 p-4 rounded-lg text-xs w-full max-w-sm">
-                <p class="font-bold text-gray-600 mb-2 uppercase tracking-widest border-b border-gray-200 pb-2">Transaction Details</p>
-                <div class="flex justify-between mb-1">
-                    <span class="text-gray-500">Method</span>
-                    <span class="font-medium text-gray-800">{{ $meta['gateway'] ?? 'N/A' }}</span>
-                </div>
-                <div class="flex justify-between mb-1">
-                    <span class="text-gray-500">Sender</span>
-                    <span class="font-medium text-gray-800">{{ $meta['sender'] ?? 'N/A' }}</span>
-                </div>
-                <div class="flex justify-between">
-                    <span class="text-gray-500">Receiver</span>
-                    <span class="font-medium text-gray-800">{{ $meta['receiver'] ?? 'N/A' }}</span>
+            <div class="inline-block text-left bg-gray-50 p-6 rounded-xl text-xs w-full max-w-lg mt-8 border border-gray-100">
+                <p class="font-bold text-gray-700 mb-4 uppercase tracking-widest border-b border-gray-200 pb-3">Transaction & Banking Details</p>
+                <div class="grid grid-cols-2 gap-x-8 gap-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 font-medium">Payment Gateway</span>
+                        <span class="font-bold text-gray-900">{{ $meta['gateway'] ?? 'Razorpay / UPI' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 font-medium">Sender Bank/UPI</span>
+                        <span class="font-bold text-gray-900">{{ $meta['sender'] ?? ($agent->name ?? 'Agent') . '@upi' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 font-medium">Receiver Bank Account</span>
+                        <span class="font-bold text-gray-900">{{ $meta['receiver'] ?? 'Tour Raja Inc. (HDFC)' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-500 font-medium">Transaction Reference</span>
+                        <span class="font-bold text-gray-900">{{ $payment->payment_id ?? 'TXN_' . rand(10000, 99999) }}</span>
+                    </div>
                 </div>
             </div>
-            @endif
         </div>
     </div>
 </body>

@@ -59,6 +59,9 @@
                     <input type="hidden" name="id" value="{{ $id }}">
                     <input type="hidden" name="amount" value="{{ $amount }}">
                     <input type="hidden" name="item_name" value="{{ $itemName }}">
+                    @if(request()->has('package_id'))
+                        <input type="hidden" name="package_id" value="{{ request('package_id') }}">
+                    @endif
 
                     <!-- Payment Options -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">

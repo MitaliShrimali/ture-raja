@@ -683,6 +683,14 @@
                         }
                     }
 
+                    $serviceGuaranteed = false;
+                    if (!isset($dbAgent)) {
+                        $dbAgent = \DB::table('agents')->where('id', $agentId)->first();
+                    }
+                    if ($dbAgent) {
+                        $serviceGuaranteed = $dbAgent->service_guaranteed ?? false;
+                    }
+
                     $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentId);
                 @endphp
                 <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-4">
@@ -697,7 +705,12 @@
                     </div>
 
                     <div>
-                        <p class="font-black text-gray-900 text-lg" style="font-family: 'Outfit', sans-serif;">{{ $agentName }}</p>
+                        <p class="font-black text-gray-900 text-lg flex items-center gap-1.5" style="font-family: 'Outfit', sans-serif;">
+                            {{ $agentName }}
+                            @if($serviceGuaranteed)
+                                <i data-lucide="check-circle" class="text-blue-500" size="20" title="Trusted Agent"></i>
+                            @endif
+                        </p>
                     </div>
 
                     <div class="space-y-3 text-sm text-gray-700" style="margin-top: 1rem; margin-bottom: 1rem;">

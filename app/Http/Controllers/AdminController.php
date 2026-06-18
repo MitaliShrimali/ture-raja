@@ -1096,7 +1096,10 @@ class AdminController extends Controller
              $agent->landline = "0281-2233445";
          }
 
-         return view('admin.agent-profile', compact('agent'));
+         $activePlan = DB::table('plans')->where('id', $agent->plan_id ?? null)->first();
+         $payments = DB::table('payments')->where('email', $agent->email)->orderBy('id', 'desc')->get();
+
+         return view('admin.agent-profile', compact('agent', 'activePlan', 'payments'));
      }
  
      public function updateAgent(Request $request)

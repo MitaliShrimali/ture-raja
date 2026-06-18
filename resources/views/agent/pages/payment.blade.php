@@ -88,13 +88,19 @@
             
             <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-2">
                 <div class="p-6 border-b border-gray-50 flex justify-between items-center">
-                    <h4 class="text-lg font-bold text-gray-900">Boost Active Tours</h4>
-                    <p class="text-xs font-medium text-gray-400">Boost your tours for featured placements.</p>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900">Boost Active Tours</h4>
+                        <p class="text-xs font-medium text-gray-400">Boost your tours for featured placements.</p>
+                    </div>
+                    <select id="boostFilter" onchange="filterBoosts()" class="text-xs border border-gray-200 rounded-lg text-gray-600 outline-none focus:ring-[#ea580c] focus:border-[#ea580c] py-1.5 px-3">
+                        <option value="all">All Packages</option>
+                        <option value="active">Active Boosts</option>
+                    </select>
                 </div>
                 
                 <!-- Dynamic Promo Items -->
                 @forelse($agentPackages as $pkg)
-                <div class="p-4 flex flex-wrap sm:flex-nowrap items-center justify-between hover:bg-gray-50 rounded-2xl transition-colors">
+                <div class="p-4 flex flex-wrap sm:flex-nowrap items-center justify-between hover:bg-gray-50 rounded-2xl transition-colors boost-card" data-status="{{ $pkg->is_boosted ? 'active' : 'inactive' }}">
                     <div class="flex items-center mb-4 sm:mb-0 cursor-pointer" onclick="window.location.href='{{ url('/packages/edit/' . $pkg->id) }}'">
                         <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-4 shrink-0">
                             @php
@@ -112,7 +118,11 @@
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Price</p>
                             <p class="text-sm font-black text-[#ea580c]">₹12.50<span class="text-[10px] text-gray-400 font-medium">/day</span></p>
                         </div>
-                        <a href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id]) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-6 py-2.5 rounded-full transition-colors inline-block">Boost</a>
+                        @if($pkg->is_boosted)
+                            <button class="bg-orange-100 text-[#ea580c] font-bold text-xs px-6 py-2.5 rounded-full cursor-default inline-block border border-orange-200" disabled>Active</button>
+                        @else
+                            <a href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id]) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-6 py-2.5 rounded-full transition-colors inline-block">Boost</a>
+                        @endif
                     </div>
                 </div>
                 @empty
@@ -128,16 +138,41 @@
                 <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest">Ad Placements</h3>
             </div>
             
-            <div class="bg-[#f8fafc] rounded-[2rem] border border-gray-100 shadow-sm p-6 flex flex-col h-full">
+            <!-- Trusted Agent -->
+            <div class="bg-blue-50/50 rounded-[2rem] border border-blue-100 shadow-sm p-6 mb-6">
                 <div class="flex justify-between items-start mb-4">
-                    <h4 class="text-lg font-bold text-gray-900">AD Subscription</h4>
+                    <h4 class="text-lg font-bold text-gray-900">Trusted Agent</h4>
+                    <i class="fas fa-check-circle text-blue-500"></i>
+                </div>
+                <p class="text-xs text-gray-500 font-medium mb-4 leading-relaxed">Stand out with a Blue Tick and Service Guaranteed badge.</p>
+                @if(isset($agent) && $agent->service_guaranteed)
+                    <button class="w-full bg-blue-100 text-blue-600 font-bold text-sm py-4 rounded-xl cursor-default border border-blue-200 block text-center">Active - Trusted Agent</button>
+                @else
+                    <a href="{{ route('agent.checkout', ['type' => 'ad', 'id' => 'blue_tick', 'name' => 'Trusted Agent Verification', 'amount' => 1499]) }}" class="w-full bg-blue-500 text-white font-bold text-sm py-4 rounded-xl hover:bg-blue-600 transition-colors shadow-lg block text-center shadow-blue-200">Get Verified - ₹1499</a>
+                @endif
+            </div>
+
+            <div class="bg-[#f8fafc] rounded-[2rem] border border-gray-100 shadow-sm p-6">
+                <div class="flex justify-between items-start mb-4">
+                    <h4 class="text-lg font-bold text-gray-900">AD Placement</h4>
                     <i class="fas fa-star text-[#ea580c]"></i>
                 </div>
-                <p class="text-xs text-gray-500 font-medium mb-6 leading-relaxed">Secure prime real estate on the Horizon Ascent homepage and triple your package impressions.</p>
+                <p class="text-xs text-gray-500 font-medium mb-6 leading-relaxed">Secure prime real estate and triple your package impressions.</p>
                 
-                <form action="{{ route('agent.checkout') }}" method="GET" class="flex flex-col h-full">
+                <form action="{{ route('agent.checkout') }}" method="GET">
                     <input type="hidden" name="type" value="ad">
-                    <div class="space-y-3 mb-8 flex-grow">
+                    
+                    <div class="mb-4">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 block">Select Package to Advertise</label>
+                        <select name="package_id" class="w-full border-gray-200 rounded-xl text-xs focus:ring-[#ea580c] focus:border-[#ea580c] p-3 outline-none" required>
+                            <option value="">Choose a package...</option>
+                            @foreach($agentPackages as $pkg)
+                                <option value="{{ $pkg->id }}">{{ $pkg->title }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="space-y-3 mb-6">
                         <!-- Option 1 -->
                         <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
                             <div class="flex items-center">
@@ -185,21 +220,9 @@
                             </div>
                             <span class="text-sm font-black text-[#ea580c]">₹599</span>
                         </label>
-
-                        <!-- Option 5 (Blue Tick) -->
-                        <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-blue-300 transition-colors mt-4">
-                            <div class="flex items-center">
-                                <input type="radio" name="name" value="Trusted Agent Verification" class="w-4 h-4 text-blue-500 focus:ring-blue-500">
-                                <div class="ml-3">
-                                    <p class="text-sm font-bold text-gray-900 flex items-center">Trusted Agent <i class="fas fa-check-circle text-blue-500 ml-1.5"></i></p>
-                                    <p class="text-[10px] text-gray-400">Blue Tick & Service Guaranteed</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-black text-blue-500">₹1499</span>
-                        </label>
                     </div>
 
-                    <button type="submit" class="w-full bg-[#1e293b] text-white font-bold text-sm py-4 rounded-xl hover:bg-black transition-colors shadow-lg mt-auto">Purchase Subscription</button>
+                    <button type="submit" class="w-full bg-[#1e293b] text-white font-bold text-sm py-4 rounded-xl hover:bg-black transition-colors shadow-lg">Purchase Placement</button>
                 </form>
             </div>
         </div>
@@ -400,4 +423,19 @@
 </script>
 @endif
 
+
+
+<script>
+function filterBoosts() {
+    const filter = document.getElementById('boostFilter').value;
+    const cards = document.querySelectorAll('.boost-card');
+    cards.forEach(card => {
+        if (filter === 'all') {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = card.dataset.status === filter ? 'flex' : 'none';
+        }
+    });
+}
+</script>
 @endsection

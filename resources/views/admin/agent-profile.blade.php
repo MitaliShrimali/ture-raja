@@ -191,26 +191,70 @@
         </div>
     </div>
 
-    <!-- Portfolio Banner -->
-    <div class="bg-white border border-slate-100 rounded-[40px] shadow-premium overflow-hidden grid grid-cols-1 lg:grid-cols-5 min-h-[300px]">
-        <!-- Text details -->
-        <div class="lg:col-span-2 p-10 md:p-12 flex flex-col justify-between items-start space-y-6">
-            <div class="space-y-3">
-                <h3 class="text-2xl font-extrabold text-slate-950 tracking-tight leading-tight">Your Portfolio is your Journal.</h3>
-                <p class="text-xs text-slate-500 font-medium leading-relaxed">
-                    Showcase your curated packages with high-resolution imagery and detailed itineraries to convert leads faster than ever.
-                </p>
-            </div>
-            <button class="px-6 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-800 font-black text-xs uppercase tracking-widest rounded-2xl shadow-sm transition-all">
-                Explore Insights
-            </button>
+    <!-- Plan & Purchases Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+        <!-- Current Plan Status -->
+        <div class="bg-white border border-slate-100 rounded-[32px] p-8 shadow-premium">
+            <h3 class="text-xl font-black text-slate-900 mb-6">Plan Status</h3>
+            @if($activePlan)
+                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6 mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-blue-600 font-bold uppercase tracking-wider text-xs">Active Plan</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-black rounded-full uppercase">Active</span>
+                    </div>
+                    <h4 class="text-3xl font-black text-slate-900 mb-2">{{ $activePlan->name }}</h4>
+                    <p class="text-sm font-medium text-slate-600">₹{{ number_format($activePlan->price) }} / mo</p>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex justify-between border-b border-slate-100 pb-3">
+                        <span class="text-sm font-bold text-slate-500">Package Limit</span>
+                        <span class="text-sm font-black text-slate-900">{{ $activePlan->package_limit >= 9999 ? 'Unlimited' : $activePlan->package_limit }}</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-100 pb-3">
+                        <span class="text-sm font-bold text-slate-500">Duration</span>
+                        <span class="text-sm font-black text-slate-900">{{ $activePlan->duration ?? 'Monthly' }}</span>
+                    </div>
+                    <div class="flex justify-between pb-3">
+                        <span class="text-sm font-bold text-slate-500">Service Guaranteed</span>
+                        <span class="text-sm font-black text-slate-900">{{ $agent->service_guaranteed ? 'Yes (Verified)' : 'No' }}</span>
+                    </div>
+                </div>
+            @else
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
+                    <p class="text-slate-500 font-medium">No active premium plan.</p>
+                </div>
+                <div class="mt-6 space-y-4">
+                    <div class="flex justify-between border-b border-slate-100 pb-3">
+                        <span class="text-sm font-bold text-slate-500">Service Guaranteed</span>
+                        <span class="text-sm font-black text-slate-900">{{ $agent->service_guaranteed ? 'Yes (Verified)' : 'No' }}</span>
+                    </div>
+                </div>
+            @endif
         </div>
 
-        <!-- Banner Images Grid -->
-        <div class="lg:col-span-3 grid grid-cols-3 min-h-[200px] lg:min-h-full">
-            <div class="bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&q=80&w=300');"></div>
-            <div class="bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1598977123418-45f04b01d1e3?auto=format&fit=crop&q=80&w=300');"></div>
-            <div class="bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=300');"></div>
+        <!-- Purchase History -->
+        <div class="bg-white border border-slate-100 rounded-[32px] p-8 shadow-premium overflow-hidden">
+            <h3 class="text-xl font-black text-slate-900 mb-6">Purchase History</h3>
+            @if($payments && $payments->count() > 0)
+                <div class="space-y-4 overflow-y-auto max-h-[300px] pr-2">
+                    @foreach($payments as $payment)
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 flex items-center justify-between">
+                            <div>
+                                <h5 class="text-sm font-bold text-slate-900">{{ $payment->plan_type }}</h5>
+                                <p class="text-xs font-medium text-slate-500 mt-1">{{ \Carbon\Carbon::parse($payment->date)->format('M d, Y') }} • {{ $payment->payment_id }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-sm font-black text-slate-900">₹{{ number_format($payment->amount) }}</span>
+                                <span class="block mt-1 text-[10px] font-black uppercase tracking-wider {{ $payment->status === 'Success' || $payment->status === 'Completed' ? 'text-green-500' : 'text-red-500' }}">{{ $payment->status }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center">
+                    <p class="text-slate-500 font-medium">No purchase history available.</p>
+                </div>
+            @endif
         </div>
     </div>
 

@@ -707,7 +707,17 @@ class AgentController extends Controller
     public function invoice()
     {
         $agentId = session('agent_id');
-        $payments = DB::table('payments')->where('agent_id', $agentId)->orderBy('created_at', 'desc')->get();
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        
+        $payments = DB::table('payments')
+            ->where(function($q) use ($agentId, $agent) {
+                $q->where('agent_id', $agentId);
+                if ($agent) {
+                    $q->orWhere('email', $agent->email);
+                }
+            })
+            ->orderBy('created_at', 'desc')->get();
+            
         return view('agent.pages.invoice', [
             'page_title' => 'Invoice',
             'page_breadcrumb' => 'Pages / Invoice',
@@ -718,7 +728,17 @@ class AgentController extends Controller
     public function downloadInvoice($id)
     {
         $agentId = session('agent_id');
-        $payment = DB::table('payments')->where('id', $id)->where('agent_id', $agentId)->first();
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        
+        $payment = DB::table('payments')
+            ->where('id', $id)
+            ->where(function($q) use ($agentId, $agent) {
+                $q->where('agent_id', $agentId);
+                if ($agent) {
+                    $q->orWhere('email', $agent->email);
+                }
+            })->first();
+            
         if (!$payment) {
             return redirect()->back()->with('error', 'Invoice not found.');
         }
@@ -858,7 +878,14 @@ class AgentController extends Controller
         }
 
         $plans = DB::table('plans')->where('status', 'Active')->orderBy('price', 'asc')->get();
-        $payments = DB::table('payments')->where('agent_id', $agentId)->orderByDesc('id')->get();
+        $payments = DB::table('payments')
+            ->where(function($q) use ($agentId, $agent) {
+                $q->where('agent_id', $agentId);
+                if ($agent) {
+                    $q->orWhere('email', $agent->email);
+                }
+            })
+            ->orderByDesc('id')->take(5)->get();
         
         $agentName = session('agent_name');
         $allPackages = DB::table('packages')->get();
@@ -867,7 +894,7 @@ class AgentController extends Controller
             if (!$agentData) return false;
             return (isset($agentData['id']) && $agentData['id'] == $agentId) 
                 || (isset($agentData['name']) && $agentData['name'] === $agentName);
-        })->take(2)->values();
+        })->values();
 
         return view('agent.pages.payment', [
             'page_title' => 'Payment & Billing',
@@ -1007,6 +1034,28 @@ class AgentController extends Controller
                 'plan_status' => 'active',
                 'updated_at' => now()
             ]);
+        } elseif ($type == 'boost') {
+            DB::table('packages')->where('id', $id)->update([
+                'is_boosted' => 1,
+                'boost_expires_at' => now()->addDays(7),
+                'updated_at' => now()
+            ]);
+        } elseif ($type == 'ad') {
+            if ($id == 'blue_tick') {
+                DB::table('agents')->where('id', $agentId)->update([
+                    'service_guaranteed' => 1,
+                    'service_guaranteed_expires_at' => now()->addYear(),
+                    'updated_at' => now()
+                ]);
+            } else {
+                $packageId = $request->input('package_id');
+                if ($packageId) {
+                    DB::table('packages')->where('id', $packageId)->update([
+                        'ad_placement' => $itemName,
+                        'updated_at' => now()
+                    ]);
+                }
+            }
         }
 
         DB::table('payments')->insert([

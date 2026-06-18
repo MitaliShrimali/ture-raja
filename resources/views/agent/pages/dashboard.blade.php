@@ -90,7 +90,12 @@
                     <img src="{{ $profileLogo }}" class="w-24 h-24 rounded-full border-4 border-gray-50 object-cover" alt="Profile">
                     <div class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
                 </div>
-                <h4 class="text-xl font-bold text-primary">{{ $profileName }}</h4>
+                <h4 class="text-xl font-bold text-primary flex items-center justify-center gap-1">
+                    {{ $profileName }}
+                    @if($agent && $agent->service_guaranteed)
+                        <i data-lucide="check-circle" class="text-blue-500 w-5 h-5 shrink-0" title="Trusted Agent"></i>
+                    @endif
+                </h4>
                 <p class="text-xs text-gray-400 font-medium mb-6"><i class="fas fa-map-marker-alt mr-1"></i> {{ $profileRegion }}</p>
                 
                 <div class="grid grid-cols-3 gap-8 w-full border-t border-gray-50 pt-6">

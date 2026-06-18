@@ -67,8 +67,11 @@
                             
                             <!-- Travel Agent Name -->
                             <td class="py-6 px-8">
-                                <a href="{{ url('/admin/agents/edit/' . $agent->id) }}" class="text-sm font-black text-primary hover:text-primary-hover transition-colors leading-tight block">
-                                    {{ $agent->name }}
+                                <a href="{{ url('/admin/agents/profile/' . $agent->id) }}" class="text-sm font-black text-primary hover:text-primary-hover transition-colors leading-tight inline-flex items-center gap-1.5">
+                                    <span>{{ $agent->name }}</span>
+                                    @if($agent->service_guaranteed)
+                                        <i data-lucide="check-circle" class="text-blue-500 shrink-0" size="16" title="Trusted Agent"></i>
+                                    @endif
                                 </a>
                             </td>
                             
@@ -149,6 +152,13 @@
                             <!-- Actions -->
                             <td class="py-6 px-8">
                                 <div class="flex items-center justify-center gap-2">
+                                    <a 
+                                        href="{{ url('/admin/agents/profile/' . $agent->id) }}"
+                                        class="p-2.5 text-muted-text hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all"
+                                        title="View Profile"
+                                    >
+                                        <i data-lucide="eye" size="18"></i>
+                                    </a>
                                     <a 
                                         href="{{ url('/admin/agents/edit/' . $agent->id) }}"
                                         class="p-2.5 text-muted-text hover:text-primary hover:bg-primary/5 rounded-xl transition-all"

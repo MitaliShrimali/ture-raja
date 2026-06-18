@@ -41,12 +41,17 @@
             </div>
 
             <!-- User Profile Avatar -->
-            <a href="{{ route('agent.profile') }}" class="block shrink-0 pr-1">
+            <a href="{{ route('agent.profile') }}" class="block shrink-0 pr-1 relative">
                 @php
                     $navAgent = \DB::table('agents')->where('id', session('agent_id'))->first();
                     $navLogo = ($navAgent && $navAgent->logo) ? $navAgent->logo : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode(session('agent_name', 'Agent'));
                 @endphp
                 <img src="{{ $navLogo }}" alt="Profile" class="w-8 h-8 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
+                @if($navAgent && $navAgent->service_guaranteed)
+                    <div class="absolute -bottom-1 -right-1 bg-white rounded-full flex items-center justify-center" style="padding: 1px;">
+                        <i data-lucide="check-circle" class="text-blue-500 w-3.5 h-3.5 shrink-0" title="Trusted Agent"></i>
+                    </div>
+                @endif
             </a>
         </div>
     </div>
