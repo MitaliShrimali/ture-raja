@@ -52,7 +52,7 @@
                                 'id' => $l->id,
                                 'srl' => $srl,
                                 'name' => $l->name,
-                                'loc' => $l->subject ?? 'Website Inquiry',
+                                'loc' => $l->package ?? 'Website Inquiry',
                                 'status' => $status,
                                 'color' => $color,
                                 'email' => $l->email,
@@ -69,7 +69,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="py-4 text-[10px] font-bold text-primary lead-loc">{{ $l->subject ?? 'Website Inquiry' }}</td>
+                            <td class="py-4 text-[10px] font-bold text-primary lead-loc">{{ $l->package ?? 'Website Inquiry' }}</td>
                             <td class="py-4">
                                 <span class="{{ $color }} text-white px-3 py-1 rounded-lg text-[8px] font-bold lead-status">
                                     {{ $status }}

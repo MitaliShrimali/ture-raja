@@ -353,6 +353,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/leads', [AgentController::class, 'leads'])->name('leads');
     Route::post('/leads/update', [AgentController::class, 'updateLead'])->name('leads.update');
     Route::post('/leads/delete/{id}', [AgentController::class, 'deleteLead'])->name('leads.delete');
+    Route::get('/contact', [AgentController::class, 'agentContact'])->name('contact');
     Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
     Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
     Route::get('/payment', [AgentController::class, 'payment'])->name('payment');

@@ -222,34 +222,37 @@ class UserController extends Controller
                 'updated_at' => now(),
             ];
 
-            // Store in user_inquiries
-            DB::table('user_inquiries')->insert($data);
+            // Determine if it's a Package Inquiry or a General Contact
+            $isPackageInquiry = $request->has('package_name') || $request->has('agent_id');
 
-            // Mirror into contacts table so agent panel sees it
-            DB::table('contacts')->insert([
-                'agent_id'   => $request->agent_id,
-                'name'       => $request->name,
-                'email'      => $request->email,
-                'phone'      => $request->phone,
-                'subject'    => $request->subject,
-                'message'    => $request->message,
-                'status'     => 'Pending',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            // Mirror into leads table so admin lead panel sees it
-            DB::table('leads')->insert([
-                'name'       => $request->name,
-                'email'      => $request->email,
-                'phone'      => $request->phone,
-                'agent'      => $request->agent_name ?? 'Website Inquiry',
-                'package'    => $request->package_name ?? ($request->subject ?? 'Website Inquiry'),
-                'status'     => 'New',
-                'message'    => $request->message,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            if ($isPackageInquiry) {
+                // It's a package inquiry -> It goes to Leads
+                DB::table('leads')->insert([
+                    'agent_id'   => $request->agent_id,
+                    'name'       => $request->name,
+                    'email'      => $request->email,
+                    'phone'      => $request->phone,
+                    'agent'      => $request->agent_name ?? 'Website Inquiry',
+                    'package'    => $request->package_name ?? ($request->subject ?? 'Website Inquiry'),
+                    'status'     => 'New',
+                    'message'    => $request->message,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                // It's a General Contact from /contact -> It goes to Contacts
+                DB::table('contacts')->insert([
+                    'agent_id'   => null,
+                    'name'       => $request->name,
+                    'email'      => $request->email,
+                    'phone'      => $request->phone,
+                    'subject'    => $request->subject ?? 'General Contact',
+                    'message'    => $request->message,
+                    'status'     => 'Pending',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
 
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Could not send your message. Please try again.');

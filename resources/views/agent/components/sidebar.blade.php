@@ -40,6 +40,13 @@
                 <span class="text-xs">Lead</span>
             </a>
 
+            <a href="{{ route('agent.contact') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.contact') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
+                <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.contact') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
+                    <i class="fas fa-envelope text-xs"></i>
+                </div>
+                <span class="text-xs">Contact</span>
+            </a>
+
             <a href="{{ route('agent.invoice') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.invoice') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
                 <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.invoice') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
                     <i class="fas fa-file-invoice-dollar text-xs"></i>

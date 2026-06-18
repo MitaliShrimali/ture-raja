@@ -753,52 +753,7 @@ class AgentController extends Controller
 
     public function leads()
     {
-        if (DB::table('contacts')->count() == 0) {
-            DB::table('contacts')->insert([
-                [
-                    'name' => 'John Doe',
-                    'email' => 'john@gmail.com',
-                    'phone' => '+91 98765 43210',
-                    'subject' => 'Rajkot, Gujarat',
-                    'message' => 'I would like to inquire about holiday packages.',
-                    'status' => 'Convert',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ],
-                [
-                    'name' => 'Sarah Smith',
-                    'email' => 'sarah@gmail.com',
-                    'phone' => '+91 88888 88888',
-                    'subject' => 'Morbi, Rajkot',
-                    'message' => 'Looking for family trips.',
-                    'status' => 'No use',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ],
-                [
-                    'name' => 'Michael Brown',
-                    'email' => 'michael@gmail.com',
-                    'phone' => '+91 77777 77777',
-                    'subject' => 'Ahmedabad, Gujarat',
-                    'message' => 'Need pricing for Honeymoon package.',
-                    'status' => 'Pending',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ],
-                [
-                    'name' => 'Emma Wilson',
-                    'email' => 'emma@gmail.com',
-                    'phone' => '+91 66666 66666',
-                    'subject' => 'Surat, Gujarat',
-                    'message' => 'Are there any discounts available?',
-                    'status' => 'Working',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]
-            ]);
-        }
-
-        $leads = DB::table('contacts')
+        $leads = DB::table('leads')
                     ->where('agent_id', session('agent_id'))
                     ->orderBy('created_at', 'desc')
                     ->get();
@@ -818,7 +773,7 @@ class AgentController extends Controller
         $phone = $request->input('phone');
         $status = $request->input('status');
 
-        DB::table('contacts')->where('id', $id)->update([
+        DB::table('leads')->where('id', $id)->update([
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
@@ -831,8 +786,32 @@ class AgentController extends Controller
 
     public function deleteLead($id)
     {
-        DB::table('contacts')->where('id', $id)->delete();
+        DB::table('leads')->where('id', $id)->delete();
         return response()->json(['success' => true]);
+    }
+
+    public function agentContact()
+    {
+        $agentId = session('agent_id');
+        $agent   = DB::table('agents')->where('id', $agentId)->first();
+
+        // Fetch all contacts that belong to this agent OR match agent email
+        $contacts = DB::table('contacts')
+            ->where(function ($q) use ($agentId, $agent) {
+                $q->where('agent_id', $agentId)
+                  ->orWhereNull('agent_id');
+                if ($agent) {
+                    $q->orWhere('email', $agent->email);
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('agent.pages.contact', [
+            'page_title'      => 'Contact Inquiries',
+            'page_breadcrumb' => 'Pages / Contact',
+            'contacts'        => $contacts,
+        ]);
     }
 
     public function myPackages()

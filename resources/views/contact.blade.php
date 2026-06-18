@@ -22,13 +22,22 @@
                     <p class="text-gray-500 text-[11px] sm:text-sm md:text-[15px] font-medium leading-tight">We are here for you! How can we help?</p><br>
                 </div>
                 
-                <form action="{{ url('/contact/submit') }}" method="POST">
+                <form action="{{ route('contact.submit') }}" method="POST">
                     @csrf
+                    @if(session('success'))
+                        <div class="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm font-medium">{{ session('success') }}</div>
+                    @endif
+                    @if(session('error'))
+                        <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm font-medium">{{ session('error') }}</div>
+                    @endif
                     <div class="mb-3 sm:mb-5">
                         <input type="text" name="name" required placeholder="Enter your name" class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
                     </div>
                     <div class="mb-3 sm:mb-5">
                         <input type="email" name="email" required placeholder="Enter your email" class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
+                    </div>
+                    <div class="mb-3 sm:mb-5">
+                        <input type="tel" name="phone" required placeholder="Enter your phone number" class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
                     </div>
                     <div class="mb-4 sm:mb-6">
                         <textarea name="message" rows="4" required placeholder="Go ahead, we are listening.." class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400 resize-none" style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;" onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'" onblur="this.style.boxShadow='inset 0 0 0 1px transparent'"></textarea>
