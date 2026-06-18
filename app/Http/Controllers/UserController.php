@@ -227,6 +227,7 @@ class UserController extends Controller
 
             // Mirror into contacts table so agent panel sees it
             DB::table('contacts')->insert([
+                'agent_id'   => $request->agent_id,
                 'name'       => $request->name,
                 'email'      => $request->email,
                 'phone'      => $request->phone,
@@ -813,16 +814,33 @@ class UserController extends Controller
                 // 1. Suggest Places (Package Locations/Cities)
                 $places = [];
                 try {
-                    $locations = \DB::table('packages')
+                    $packagesData = \DB::table('packages')
                         ->where('status', 'Active')
-                        ->pluck('location')
-                        ->toArray();
-                    foreach ($locations as $loc) {
-                        $parts = explode(',', $loc);
-                        foreach ($parts as $part) {
-                            $part = trim($part);
-                            if ($part && stripos($part, $q) !== false) {
-                                $places[] = $part;
+                        ->select('location', 'keywords')
+                        ->get();
+                    
+                    foreach ($packagesData as $pkg) {
+                        // Match Location
+                        if (!empty($pkg->location)) {
+                            $parts = explode(',', $pkg->location);
+                            foreach ($parts as $part) {
+                                $part = trim($part);
+                                if ($part && stripos($part, $q) !== false) {
+                                    $places[] = $part;
+                                }
+                            }
+                        }
+                        
+                        // Match JSON Keywords
+                        if (!empty($pkg->keywords)) {
+                            $keywords = json_decode($pkg->keywords, true);
+                            if (is_array($keywords)) {
+                                foreach ($keywords as $kw) {
+                                    $kw = trim($kw);
+                                    if ($kw && stripos($kw, $q) !== false) {
+                                        $places[] = $kw;
+                                    }
+                                }
                             }
                         }
                     }

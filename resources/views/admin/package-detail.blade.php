@@ -1,0 +1,326 @@
+@extends('layouts.admin')
+
+@section('admin_title', 'Package Details')
+@section('content')
+@php
+    $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
+    $agentName = $agentData['name'] ?? 'Unknown Agent';
+    $dbAgent = \DB::table('agents')->where('name', $agentName)->first();
+    if ($dbAgent && !empty($dbAgent->agency_name)) {
+        $agentName = $dbAgent->agency_name;
+    }
+    $agentLogo = $agentData['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
+    $agentPhone = $agentData['phone'] ?? '';
+
+    $gallery = $pkg->gallery ? (json_decode($pkg->gallery, true) ?: []) : [];
+    $included = $pkg->included ? (json_decode($pkg->included, true) ?: []) : [];
+    $excluded = $pkg->excluded ? (json_decode($pkg->excluded, true) ?: []) : [];
+    $itinerary = $pkg->itinerary ? (json_decode($pkg->itinerary, true) ?: []) : [];
+
+    $statusColor = match($pkg->status) {
+        'Active'   => 'bg-green-50 text-green-600 border-green-200',
+        'Inactive' => 'bg-gray-50 text-gray-500 border-gray-200',
+        'Pending'  => 'bg-orange-50 text-orange-600 border-orange-200',
+        default    => 'bg-gray-50 text-gray-500 border-gray-200',
+    };
+@endphp
+
+<div class="space-y-8 pb-12">
+    {{-- Header + Actions --}}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2">
+            <div class="flex items-center gap-3">
+                <a href="{{ url()->previous() }}" class="p-2 rounded-xl bg-white border border-border-soft text-muted-text hover:text-primary transition-all">
+                    <i data-lucide="arrow-left" size="18"></i>
+                </a>
+                <div>
+                    <p class="text-xs font-bold text-primary uppercase tracking-widest">Package Review</p>
+                    <h2 class="font-black text-foreground tracking-tight">{{ $pkg->title }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="px-4 py-2 rounded-full border text-xs font-black uppercase tracking-wider {{ $statusColor }}">
+                {{ $pkg->status }}
+            </span>
+            @if($pkg->status === 'Pending')
+            <a href="{{ url('/admin/packages/approve/' . $pkg->id) }}"
+               onclick="return confirm('Approve this package? It will go live on the customer site.')"
+               class="flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-green-500/20">
+                <i data-lucide="check-circle-2" size="18"></i> Approve Package
+            </a>
+            <a href="{{ url('/admin/packages/decline/' . $pkg->id) }}"
+               onclick="return confirm('Decline this package?')"
+               class="flex items-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-red-500/20">
+                <i data-lucide="x-circle" size="18"></i> Decline
+            </a>
+            @else
+            <a href="{{ url('/admin/packages/edit/' . $pkg->id) }}" class="flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20">
+                <i data-lucide="edit-3" size="18"></i> Edit Package
+            </a>
+            <a href="{{ url('/admin/packages/toggle/' . $pkg->id) }}" class="flex items-center gap-2 px-6 py-3 bg-white border border-border-soft text-muted-text hover:text-foreground rounded-2xl font-black text-sm transition-all">
+                <i data-lucide="toggle-left" size="18"></i> Toggle Status
+            </a>
+            @endif
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        {{-- Left: Main Info --}}
+        <div class="xl:col-span-2 space-y-6">
+            {{-- Hero Image --}}
+            <div class="bg-white rounded-[32px] overflow-hidden border border-border-soft shadow-soft">
+                <div class="relative h-72 overflow-hidden">
+                    <img src="{{ $pkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200' }}" 
+                         alt="{{ $pkg->title }}" 
+                         class="w-full h-full object-cover">
+                    @if($pkg->badge)
+                    <span class="absolute top-4 left-4 bg-primary text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider shadow-lg">
+                        {{ $pkg->badge }}
+                    </span>
+                    @endif
+                </div>
+
+                {{-- Gallery --}}
+                @if(count($gallery) > 0)
+                <div class="p-6 border-t border-border-soft">
+                    <p class="text-xs font-black text-muted-text uppercase tracking-widest mb-4">Gallery</p>
+                    <div class="flex gap-3 overflow-x-auto pb-2">
+                        @foreach($gallery as $img)
+                        <div class="w-24 h-20 rounded-2xl overflow-hidden shrink-0 border border-gray-100">
+                            <img src="{{ $img }}" alt="Gallery" class="w-full h-full object-cover">
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+            </div>
+
+            {{-- Package Details --}}
+            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft space-y-6">
+                <h3 class="text-lg font-black text-foreground">Package Details</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Duration</p>
+                        <p class="text-sm font-bold text-foreground flex items-center gap-1">
+                            <i data-lucide="clock" size="14" class="text-primary"></i>
+                            {{ $pkg->duration ?? '—' }}
+                        </p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Location</p>
+                        <p class="text-sm font-bold text-foreground flex items-center gap-1">
+                            <i data-lucide="map-pin" size="14" class="text-primary"></i>
+                            {{ $pkg->location ?? '—' }}
+                        </p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Category</p>
+                        <p class="text-sm font-bold text-foreground">{{ ucfirst($pkg->category ?? '—') }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Group Size</p>
+                        <p class="text-sm font-bold text-foreground flex items-center gap-1">
+                            <i data-lucide="users" size="14" class="text-primary"></i>
+                            {{ $pkg->group_size ?? '—' }}
+                        </p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Availability</p>
+                        <p class="text-sm font-bold text-foreground">{{ $pkg->stock ?? '—' }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Rating</p>
+                        <p class="text-sm font-bold text-foreground flex items-center gap-1">
+                            <i data-lucide="star" size="14" class="text-yellow-400"></i>
+                            {{ $pkg->rating ?? '4.8' }} ({{ $pkg->reviews ?? 0 }} reviews)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Inclusions & Exclusions --}}
+            @if(count($included) > 0 || count($excluded) > 0)
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @if(count($included) > 0)
+                <div class="bg-white rounded-[32px] p-8 border border-green-100 shadow-soft">
+                    <div class="flex items-center gap-2 mb-5">
+                        <div class="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center">
+                            <i data-lucide="check-circle-2" size="16" class="text-green-500"></i>
+                        </div>
+                        <h4 class="text-sm font-black text-foreground">What's Included</h4>
+                    </div>
+                    <ul class="space-y-3">
+                        @foreach($included as $item)
+                        <li class="flex items-start gap-2 text-sm text-foreground font-medium">
+                            <i data-lucide="check" size="14" class="text-green-500 mt-0.5 shrink-0"></i>
+                            {{ $item }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+                @if(count($excluded) > 0)
+                <div class="bg-white rounded-[32px] p-8 border border-red-50 shadow-soft">
+                    <div class="flex items-center gap-2 mb-5">
+                        <div class="w-8 h-8 rounded-xl bg-red-50 flex items-center justify-center">
+                            <i data-lucide="x-circle" size="16" class="text-red-500"></i>
+                        </div>
+                        <h4 class="text-sm font-black text-foreground">What's Excluded</h4>
+                    </div>
+                    <ul class="space-y-3">
+                        @foreach($excluded as $item)
+                        <li class="flex items-start gap-2 text-sm text-foreground font-medium">
+                            <i data-lucide="x" size="14" class="text-red-400 mt-0.5 shrink-0"></i>
+                            {{ $item }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+            </div>
+            @endif
+
+            {{-- Itinerary --}}
+            @if(count($itinerary) > 0)
+            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft">
+                <h3 class="text-lg font-black text-foreground mb-6">Itinerary</h3>
+                <div class="space-y-4">
+                    @foreach($itinerary as $idx => $day)
+                    <div class="flex gap-4">
+                        <div class="flex flex-col items-center">
+                            <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-black shrink-0">
+                                {{ $idx + 1 }}
+                            </div>
+                            @if(!$loop->last)
+                            <div class="w-0.5 flex-1 bg-primary/10 mt-2"></div>
+                            @endif
+                        </div>
+                        <div class="pb-6 flex-1">
+                            <p class="text-sm font-black text-foreground">{{ $day['title'] ?? "Day " . ($idx + 1) }}</p>
+                            <p class="text-sm text-muted-text font-medium mt-1">{{ $day['desc'] ?? '' }}</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+        </div>
+
+        {{-- Right: Pricing + Agent --}}
+        <div class="space-y-6">
+            {{-- Pricing Card --}}
+            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft space-y-4">
+                <h3 class="text-lg font-black text-foreground">Pricing</h3>
+                <div class="space-y-2">
+                    <p class="text-3xl font-black text-primary">₹{{ number_format($pkg->price, 2) }}</p>
+                    @if($pkg->old_price)
+                    <p class="text-sm text-muted-text line-through font-medium">₹{{ number_format($pkg->old_price, 2) }}</p>
+                    <p class="text-xs font-black text-green-600 bg-green-50 px-3 py-1 rounded-full inline-block">
+                        Save ₹{{ number_format($pkg->old_price - $pkg->price, 2) }}
+                    </p>
+                    @endif
+                </div>
+
+                {{-- Action Buttons for Pending packages --}}
+                @if($pkg->status === 'Pending')
+                <div class="pt-4 border-t border-border-soft space-y-3">
+                    <a href="{{ url('/admin/packages/approve/' . $pkg->id) }}"
+                       onclick="return confirm('Approve this package? It will go live on the customer site.')"
+                       class="w-full flex items-center justify-center gap-2 py-3.5 bg-green-500 hover:bg-green-600 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-green-500/20">
+                        <i data-lucide="check-circle-2" size="18"></i> Approve & Publish
+                    </a>
+                    <a href="{{ url('/admin/packages/decline/' . $pkg->id) }}"
+                       onclick="return confirm('Decline this package?')"
+                       class="w-full flex items-center justify-center gap-2 py-3.5 border-2 border-red-200 text-red-500 hover:bg-red-50 rounded-2xl font-black text-sm transition-all">
+                        <i data-lucide="x-circle" size="18"></i> Decline Package
+                    </a>
+                </div>
+                @endif
+            </div>
+
+            {{-- Agent Info --}}
+            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft space-y-4">
+                <h3 class="text-sm font-black text-muted-text uppercase tracking-widest">Submitted By</h3>
+                <div class="flex items-center gap-4">
+                    <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-14 h-14 rounded-full object-cover border-2 border-gray-100 bg-gray-50">
+                    <div>
+                        <p class="text-sm font-black text-foreground">{{ $agentName }}</p>
+                        @if($agentPhone)
+                        <p class="text-xs text-muted-text font-medium">{{ $agentPhone }}</p>
+                        @endif
+                    </div>
+                </div>
+                @if($agentPhone)
+                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" target="_blank"
+                   class="flex items-center gap-2 text-xs font-bold text-green-600 hover:text-green-700 transition-colors">
+                    <i data-lucide="message-circle" size="14"></i> Contact via WhatsApp
+                </a>
+                @endif
+            </div>
+
+            {{-- Brochure --}}
+            @if($pkg->brochure)
+            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft">
+                <h3 class="text-sm font-black text-muted-text uppercase tracking-widest mb-4">Brochure</h3>
+                <a href="{{ $pkg->brochure }}" target="_blank" class="flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+                    <i data-lucide="file-text" size="16"></i> Download Brochure (PDF)
+                </a>
+            </div>
+            @endif
+
+            {{-- Meta --}}
+            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft space-y-4">
+                <h3 class="text-sm font-black text-muted-text uppercase tracking-widest">Package Info</h3>
+                @if(!empty($pkg->stock))
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
+                        <span class="text-muted-text">Availability</span>
+                        <span class="font-bold text-foreground">{{ $pkg->stock }}</span>
+                    </div>
+                    @endif
+                    @if(!empty($pkg->validity))
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
+                        <span class="text-muted-text">Validity</span>
+                        <span class="font-bold text-foreground">{{ $pkg->validity }}</span>
+                    </div>
+                    @endif
+                    @if(!empty($pkg->sightseeing))
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
+                        <span class="text-muted-text">Sightseeing</span>
+                        <span class="font-bold text-foreground">{{ $pkg->sightseeing }}</span>
+                    </div>
+                    @endif
+                    @php
+                        $meals = json_decode($pkg->meals, true) ?: [];
+                        $hotels = json_decode($pkg->hotels, true) ?: [];
+                    @endphp
+                    @if(!empty($meals))
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
+                        <span class="text-muted-text">Meals</span>
+                        <span class="font-bold text-foreground">{{ implode(', ', $meals) }}</span>
+                    </div>
+                    @endif
+                    @if(!empty($hotels))
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
+                        <span class="text-muted-text">Hotels</span>
+                        <span class="font-bold text-foreground">{{ count($hotels) }} Listed</span>
+                    </div>
+                    @endif
+                <div class="flex justify-between text-xs font-bold pt-2">
+                        <span class="text-muted-text">Package ID</span>
+                        <span class="text-foreground">#{{ str_pad($pkg->id, 4, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-bold">
+                        <span class="text-muted-text">Created</span>
+                        <span class="text-foreground">{{ $pkg->created_at ? \Carbon\Carbon::parse($pkg->created_at)->format('d M Y') : '—' }}</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-bold">
+                        <span class="text-muted-text">Status</span>
+                        <span class="font-black {{ $pkg->status === 'Active' ? 'text-green-600' : ($pkg->status === 'Pending' ? 'text-orange-600' : 'text-gray-500') }}">{{ $pkg->status }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

@@ -72,6 +72,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard']);
     Route::get('/packages/approve/{id}', [AdminController::class, 'approvePackage'])->name('admin.package.approve');
     Route::get('/packages/decline/{id}', [AdminController::class, 'declinePackage'])->name('admin.package.decline');
+    Route::get('/packages/pending', [AdminController::class, 'pendingPackages'])->name('admin.packages.pending');
+    Route::get('/packages/view/{id}', [AdminController::class, 'viewPackage'])->name('admin.packages.view');
     
     // Inventory & Stays
     Route::get('/packages', [AdminController::class, 'packages']);
@@ -331,7 +333,11 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
     Route::get('/about', [AgentController::class, 'about'])->name('about');
     Route::get('/add-branch', [AgentController::class, 'addBranch'])->name('add-branch');
+    Route::get('/edit-branch/{id}', [AgentController::class, 'editBranch'])->name('edit-branch');
     Route::get('/add-hotel', [AgentController::class, 'addHotel'])->name('add-hotel');
+    Route::post('/branch/store', [AgentController::class, 'storeBranch'])->name('branch.store');
+    Route::post('/branch/update/{id}', [AgentController::class, 'updateBranch'])->name('branch.update');
+    Route::get('/branch/delete/{id}', [AgentController::class, 'deleteBranch'])->name('branch.delete');
     Route::get('/branch', [AgentController::class, 'branch'])->name('branch');
     Route::get('/edit-images', [AgentController::class, 'editImages'])->name('edit-images');
     Route::get('/edit-itinerary', [AgentController::class, 'editItinerary'])->name('edit-itinerary');
@@ -343,12 +349,17 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
     Route::get('/hotels', [AgentController::class, 'hotels'])->name('hotels');
     Route::get('/invoice', [AgentController::class, 'invoice'])->name('invoice');
+    Route::get('/invoice/{id}/download', [AgentController::class, 'downloadInvoice'])->name('invoice.download');
     Route::get('/leads', [AgentController::class, 'leads'])->name('leads');
     Route::post('/leads/update', [AgentController::class, 'updateLead'])->name('leads.update');
     Route::post('/leads/delete/{id}', [AgentController::class, 'deleteLead'])->name('leads.delete');
     Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
     Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
     Route::get('/payment', [AgentController::class, 'payment'])->name('payment');
+    Route::get('/checkout', [AgentController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout/process', [AgentController::class, 'processCheckout'])->name('checkout.process');
+    Route::post('/payment', [AgentController::class, 'upgradePlan']);
+    Route::post('/payment/upgrade', [AgentController::class, 'upgradePlan'])->name('payment.upgrade');
     Route::get('/profile', function() { return redirect()->route('agent.settings'); })->name('profile');
     Route::get('/services', [AgentController::class, 'services'])->name('services');
     Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
@@ -608,7 +619,8 @@ Route::get('/packages/{slug}', function ($slug) {
             'category'   => $dbPkg->category,
             'tour_type'  => 'Flight Package',
             'city'       => $dbPkg->location,
-            'theme'      => 'Adventure',
+            'theme'      => property_exists($dbPkg, 'theme') && $dbPkg->theme ? $dbPkg->theme : 'Adventure',
+            'holiday_type'=> property_exists($dbPkg, 'holiday_type') ? $dbPkg->holiday_type : null,
             'activities' => [],
             'overview'   => "Experience the incredible beauty and culture of {$dbPkg->title}. This package offers an unforgettable journey filled with stunning landscapes, historic sites, and amazing local cuisine.",
             'highlights' => [
@@ -623,7 +635,14 @@ Route::get('/packages/{slug}', function ($slug) {
             'included'   => $included,
             'excluded'   => $excluded,
             'itinerary'  => $itinerary,
-            'agent'      => $dbPkg->agent ?? 'Miths Holidays',
+            'agent'      => is_string($dbPkg->agent) ? json_decode($dbPkg->agent, true) : ($dbPkg->agent ?? 'Miths Holidays'),
+            'validity'   => property_exists($dbPkg, 'validity') ? $dbPkg->validity : null,
+            'sightseeing'=> property_exists($dbPkg, 'sightseeing') ? $dbPkg->sightseeing : null,
+            'hotels'     => property_exists($dbPkg, 'hotels') && json_decode($dbPkg->hotels, true) ? json_decode($dbPkg->hotels, true) : [],
+            'amenities'  => json_decode($dbPkg->amenities, true) ?: [],
+            'meals'      => json_decode($dbPkg->meals, true) ?: [],
+            'transfers'  => json_decode($dbPkg->transfers, true) ?: [],
+            'keywords'   => json_decode($dbPkg->keywords, true) ?: [],
         ];
 
         // Fill defaults if empty
@@ -684,6 +703,13 @@ Route::get('/packages/{slug}', function ($slug) {
             ],
             'included'   => ['Hotel Stay', 'Daily Breakfast', 'Tour Guide', 'Transfers'],
             'excluded'   => ['Flights', 'Personal Expenses', 'Visa Fees'],
+            'validity'   => null,
+            'sightseeing'=> null,
+            'hotels'     => [],
+            'amenities'  => [],
+            'meals'      => [],
+            'transfers'  => [],
+            'keywords'   => [],
             'itinerary'  => [
                 ['title' => 'Arrival & Check-in', 'desc' => "Arrive at $title, transfer to your hotel and relax."],
                 ['title' => 'City Exploration', 'desc' => 'Full day guided tour exploring major landmarks.'],

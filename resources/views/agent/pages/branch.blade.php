@@ -20,7 +20,7 @@
         <div class="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest">Branch</h3>
-                <a href="add-branch.php" class="bg-primary text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-orange-100 hover:scale-105 transition-all w-fit">
+                <a href="{{ route('agent.add-branch') }}" class="bg-primary text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-orange-100 hover:scale-105 transition-all w-fit">
                     + Add Branch
                 </a>
             </div>
@@ -38,42 +38,61 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        <?php 
-                        $branches = [
-                            ['srl' => '103', 'name' => 'Miths Holidays', 'loc' => 'Amreli', 'status' => 'Online', 'state' => 'GUJARAT'],
-                            ['srl' => '103', 'name' => 'Rahi Coral Beach Resort', 'loc' => 'Rajkot', 'status' => 'Offline', 'state' => 'GUJARAT'],
-                        ];
-                        foreach($branches as $b): ?>
-                        <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap">
-                            <td class="py-4 pl-4 text-xs font-bold text-gray-800"><?php echo $b['srl']; ?></td>
+                        @foreach($branches as $index => $b)
+                        @php
+                            $parts = explode(',', $b->location);
+                            $city = trim($parts[0] ?? '');
+                            $state = trim($parts[1] ?? '');
+                            $srl = 100 + $index + 1;
+                        @endphp
+                        <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap" id="branch-row-{{ $b->id }}">
+                            <td class="py-4 pl-4 text-xs font-bold text-gray-800">{{ $srl }}</td>
                             <td class="py-4">
                                 <div class="flex items-center">
                                     <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=100&auto=format&fit=crop" class="w-10 h-10 rounded-xl object-cover mr-3 border border-gray-100">
                                     <div>
-                                        <p class="text-[10px] font-bold text-gray-800"><?php echo $b['name']; ?></p>
-                                        <p class="text-[8px] text-gray-400 font-medium">Rajkot, Gujarat</p>
+                                        <p class="text-[10px] font-bold text-gray-800">{{ $b->agency_name }}</p>
+                                        <p class="text-[8px] text-gray-400 font-medium">{{ $b->location }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="py-4">
-                                <span class="px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-tighter <?php echo $b['status'] == 'Online' ? 'bg-green-500 text-white' : 'bg-gray-300 text-white'; ?>">
-                                    <?php echo $b['status']; ?>
+                                <span class="px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-tighter {{ $b->status == 'Online' ? 'bg-green-500 text-white' : 'bg-gray-300 text-white' }}">
+                                    {{ $b->status }}
                                 </span>
                             </td>
-                            <td class="py-4 text-[10px] font-bold text-gray-800"><?php echo $b['loc']; ?></td>
-                            <td class="py-4 text-[10px] font-bold text-gray-800"><?php echo $b['state']; ?></td>
+                            <td class="py-4 text-[10px] font-bold text-gray-800">{{ $city }}</td>
+                            <td class="py-4 text-[10px] font-bold text-gray-800">{{ strtoupper($state) }}</td>
                             <td class="py-4 text-center">
                                 <div class="flex items-center justify-center space-x-3">
-                                    <button class="text-[9px] font-bold text-gray-400 hover:text-gray-800 transition-colors">Edit</button>
-                                    <button class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors">Delete</button>
+                                    <a href="{{ route('agent.edit-branch', $b->id) }}" class="text-[9px] font-bold text-gray-400 hover:text-gray-800 transition-colors">Edit</a>
+                                    <a href="javascript:void(0)" onclick="deleteBranch({{ $b->id }})" class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors">Delete</a>
                                 </div>
                             </td>
                         </tr>
-                        <?php endforeach; ?>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
 
         <!-- Footer -->
+        <script>
+            function deleteBranch(id) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#F0642F',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    borderRadius: '2rem'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/agent/branch/delete/' + id;
+                    }
+                });
+            }
+        </script>
 @endsection

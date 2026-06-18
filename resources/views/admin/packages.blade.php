@@ -20,7 +20,7 @@
                 <h2 class="font-black text-foreground tracking-tight">Tour Packages</h2>
                 <span class="text-xs font-bold text-muted-text bg-gray-100 rounded-full px-3 py-1">{{ $packages->total() }} Total</span>
             </div>
-            <p class="text-muted-text font-medium">Curate and manage high-end travel experiences. Monitor package lifespan, agent assignments, and booking statuses in real-time.</p>
+    <p class="text-muted-text font-medium">Manage all approved tour packages. Toggle visibility to control which appear on the customer site. Packages pending agent review are under <a href="{{ url('/admin/packages/pending') }}" class="text-primary font-black hover:underline">Pending Approvals</a>.</p>
         </div>
         <a href="{{ url('/admin/packages/create') }}" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3 group shrink-0">
             <i data-lucide="plus" size="20" class="group-hover:rotate-90 transition-transform"></i> Add New Package
@@ -89,6 +89,7 @@
                     <tr class="bg-gray-50/50">
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">SR. NO.</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">PACKAGE NAME</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">AGENT</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">DURATION</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">PRICE</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">STOCK</th>
@@ -119,6 +120,17 @@
                                 </div>
                             </td>
                             <td class="py-6 px-8">
+                                @php
+                                    $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
+                                    $agentName = $agentData['name'] ?? 'Unknown Agent';
+                                    $agentLogo = $agentData['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
+                                @endphp
+                                <div class="flex items-center gap-2">
+                                    <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-8 h-8 rounded-full border border-gray-100 object-cover bg-gray-50">
+                                    <span class="text-sm font-bold text-foreground">{{ $agentName }}</span>
+                                </div>
+                            </td>
+                            <td class="py-6 px-8">
                                 <div class="flex items-center gap-2 text-sm font-bold text-foreground">
                                     <i data-lucide="clock" size="14" class="text-muted-text"></i>
                                     {{ $pkg->duration }}
@@ -135,6 +147,9 @@
                             </td>
                             <td class="py-6 px-8 text-right">
                                 <div class="flex items-center justify-end gap-1">
+                                    <a href="{{ url('/admin/packages/view/' . $pkg->id) }}" class="p-2.5 text-muted-text hover:text-primary hover:bg-primary/5 rounded-xl transition-all" title="View Details">
+                                        <i data-lucide="eye" size="18"></i>
+                                    </a>
                                     <a href="{{ url('/admin/packages/edit/' . $pkg->id) }}" class="p-2.5 text-muted-text hover:text-primary hover:bg-primary/5 rounded-xl transition-all">
                                         <i data-lucide="edit-3" size="18"></i>
                                     </a>

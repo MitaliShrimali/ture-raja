@@ -235,21 +235,51 @@ class AdminController extends Controller
     public function packages(Request $request)
     {
         $search = $request->input('search');
-        $query = DB::table('packages');
+        $query = DB::table('packages')->where('status', '!=', 'Pending');
 
         if ($search) {
-            $query->where('title', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
                   ->orWhere('location', 'like', "%{$search}%");
+            });
         }
 
-        $packages = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
+        $packages = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
         return view('admin.packages', compact('packages', 'search'));
+    }
+
+    public function pendingPackages(Request $request)
+    {
+        $search = $request->input('search');
+        $query = DB::table('packages')->where('status', 'Pending');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('location', 'like', "%{$search}%");
+            });
+        }
+
+        $pendingPackages = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+        $pendingCount = DB::table('packages')->where('status', 'Pending')->count();
+        return view('admin.packages-pending', compact('pendingPackages', 'search', 'pendingCount'));
+    }
+
+    public function viewPackage($id)
+    {
+        $pkg = DB::table('packages')->where('id', $id)->first();
+        if (!$pkg) {
+            return redirect('/admin/packages')->with('error', 'Package not found!');
+        }
+        return view('admin.package-detail', compact('pkg'));
     }
 
     public function createPackage()
     {
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
-        return view('admin.packages-create', compact('agents'));
+        $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        return view('admin.packages-create', compact('agents', 'themes', 'holidayTypes'));
     }
 
     public function editPackage($id)
@@ -259,7 +289,9 @@ class AdminController extends Controller
             return redirect('/admin/packages')->with('error', 'Package not found!');
         }
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
-        return view('admin.packages-edit', compact('pkg', 'agents'));
+        $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        return view('admin.packages-edit', compact('pkg', 'agents', 'themes', 'holidayTypes'));
     }
 
     public function storePackage(Request $request)
@@ -334,13 +366,31 @@ class AdminController extends Controller
                 }
             }
         }
+
+        // New fields parsing
+        $hotels = [];
+        if ($request->has('hotels')) {
+            foreach ($request->hotels as $hotelJson) {
+                $hotelData = json_decode($hotelJson, true);
+                if ($hotelData) $hotels[] = $hotelData;
+            }
+        }
+        
+        $keywords = [];
+        if ($request->has('keywords') && !empty($request->keywords)) {
+            $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+        }
+
+        $amenities = $request->input('amenities', []);
+        $transfers = $request->input('transfers', []);
+        $meals = $request->input('meals', []);
         
         $agentName = $request->agent ?? 'Miths Holidays';
         $agentDb = DB::table('agents')->where('name', $agentName)->first();
         if ($agentDb) {
             $agentJson = json_encode([
-                'logo' => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->name),
-                'name' => $agentDb->name,
+                'logo' => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->agency_name ?? $agentDb->name),
+                'name' => $agentDb->agency_name ?? $agentDb->name,
                 'phone' => $agentDb->phone ?? '',
                 'whatsapp' => $agentDb->phone ?? ''
             ]);
@@ -364,14 +414,23 @@ class AdminController extends Controller
             'group_size' => $request->group_size ?? '4-6 guest',
             'image' => $imageUrl ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
             'category' => $request->category ?? 'Tropical',
+            'theme' => $request->theme,
+            'holiday_type' => $request->holiday_type,
             'badge' => $request->badge,
             'status' => $request->status ?? 'Active',
-            'stock' => ($request->stock ?? '10') . ' Left',
+            'stock' => $request->stock ?? '10 Left',
+            'validity' => $request->validity ?? null,
+            'sightseeing' => $request->sightseeing ?? null,
             'agent' => $agentJson,
             'gallery' => json_encode($galleryUrls),
             'brochure' => $brochureUrl,
             'included' => json_encode($included),
             'excluded' => json_encode($excluded),
+            'hotels' => json_encode($hotels),
+            'keywords' => json_encode($keywords),
+            'amenities' => json_encode($amenities),
+            'transfers' => json_encode($transfers),
+            'meals' => json_encode($meals),
             'itinerary'            => json_encode($itinerary),
             'editorial_itinerary'  => $request->editorial_itinerary ?? null,
             'created_at'           => now(),
@@ -447,6 +506,28 @@ class AdminController extends Controller
             }
         }
 
+        // New fields parsing
+        $hotels = [];
+        if ($request->has('hotels')) {
+            foreach ($request->hotels as $hotelJson) {
+                $hotelData = json_decode($hotelJson, true);
+                if ($hotelData) $hotels[] = $hotelData;
+            }
+        } else {
+            $hotels = $oldPkg && isset($oldPkg->hotels) ? json_decode($oldPkg->hotels, true) ?: [] : [];
+        }
+        
+        $keywords = [];
+        if ($request->has('keywords') && !empty($request->keywords)) {
+            $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+        } else {
+            $keywords = $oldPkg && isset($oldPkg->keywords) ? json_decode($oldPkg->keywords, true) ?: [] : [];
+        }
+
+        $amenities = $request->has('amenities') ? $request->input('amenities', []) : ($oldPkg && isset($oldPkg->amenities) ? json_decode($oldPkg->amenities, true) ?: [] : []);
+        $transfers = $request->has('transfers') ? $request->input('transfers', []) : ($oldPkg && isset($oldPkg->transfers) ? json_decode($oldPkg->transfers, true) ?: [] : []);
+        $meals = $request->has('meals') ? $request->input('meals', []) : ($oldPkg && isset($oldPkg->meals) ? json_decode($oldPkg->meals, true) ?: [] : []);
+
         // Itinerary Days parsing
         $itinerary = [];
         if ($request->has('itinerary_titles')) {
@@ -461,21 +542,36 @@ class AdminController extends Controller
             }
         }
         
-        $agentName = $request->agent ?? 'Miths Holidays';
-        $agentDb = DB::table('agents')->where('name', $agentName)->first();
-        if ($agentDb) {
-            $agentJson = json_encode([
-                'logo' => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->name),
-                'name' => $agentDb->name,
-                'phone' => $agentDb->phone ?? '',
-                'whatsapp' => $agentDb->phone ?? ''
-            ]);
+        if ($request->has('agent')) {
+            $agentName = $request->agent;
+            $agentDb = DB::table('agents')->where('name', $agentName)->first();
+            if ($agentDb) {
+                $agentJson = json_encode([
+                    'id' => $agentDb->id,
+                    'logo' => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->agency_name ?? $agentDb->name),
+                    'name' => $agentDb->agency_name ?? $agentDb->name,
+                    'phone' => $agentDb->phone ?? '',
+                    'whatsapp' => $agentDb->phone ?? '',
+                    'email' => $agentDb->email ?? ''
+                ]);
+            } else {
+                $agentJson = json_encode([
+                    'id' => null,
+                    'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName),
+                    'name' => $agentName,
+                    'phone' => '',
+                    'whatsapp' => '',
+                    'email' => ''
+                ]);
+            }
         } else {
-            $agentJson = json_encode([
-                'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName),
-                'name' => $agentName,
+            $agentJson = $oldPkg->agent ?? json_encode([
+                'id' => null,
+                'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=Miths+Holidays',
+                'name' => 'Miths Holidays',
                 'phone' => '',
-                'whatsapp' => ''
+                'whatsapp' => '',
+                'email' => ''
             ]);
         }
 
@@ -490,14 +586,23 @@ class AdminController extends Controller
             'group_size' => $request->group_size ?? '4-6 guest',
             'image' => $imageUrl,
             'category' => $request->category ?? 'Tropical',
+            'theme' => $request->theme,
+            'holiday_type' => $request->holiday_type,
             'badge' => $request->badge,
             'status' => $request->status ?? 'Active',
             'stock' => $request->stock,
+            'validity' => $request->validity ?? null,
+            'sightseeing' => $request->sightseeing ?? null,
             'agent' => $agentJson,
             'gallery' => json_encode($galleryUrls),
             'brochure' => $brochureUrl,
             'included' => json_encode($included),
             'excluded' => json_encode($excluded),
+            'hotels' => json_encode($hotels),
+            'keywords' => json_encode($keywords),
+            'amenities' => json_encode($amenities),
+            'transfers' => json_encode($transfers),
+            'meals' => json_encode($meals),
             'itinerary'            => json_encode($itinerary),
             'editorial_itinerary'  => $request->editorial_itinerary ?? null,
             'updated_at'           => now(),
@@ -516,7 +621,8 @@ class AdminController extends Controller
     {
         $pkg = DB::table('packages')->where('id', $id)->first();
         if ($pkg) {
-            $newStatus = $pkg->status === 'Active' ? 'Draft' : 'Active';
+            // Only toggle between Active and Inactive (not Pending)
+            $newStatus = $pkg->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('packages')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
         return redirect()->back()->with('success', 'Package status updated!');
@@ -525,13 +631,13 @@ class AdminController extends Controller
     public function approvePackage($id)
     {
         DB::table('packages')->where('id', $id)->update(['status' => 'Active', 'updated_at' => now()]);
-        return redirect('/admin/dashboard')->with('success', 'Package approved and published!');
+        return redirect('/admin/packages/pending')->with('success', 'Package approved and is now live on the customer site!');
     }
 
     public function declinePackage($id)
     {
         DB::table('packages')->where('id', $id)->update(['status' => 'Inactive', 'updated_at' => now()]);
-        return redirect('/admin/dashboard')->with('success', 'Package declined.');
+        return redirect('/admin/packages/pending')->with('success', 'Package declined and hidden from customer site.');
     }
 
     // HOTELS
@@ -896,7 +1002,11 @@ class AdminController extends Controller
 
     public function registeredAgents(Request $request)
     {
-        $agents = DB::table('agents')->orderBy('id', 'desc')->paginate(10);
+        $agents = DB::table('agents')
+            ->leftJoin('plans', 'agents.plan_id', '=', 'plans.id')
+            ->select('agents.*', 'plans.name as plan_name')
+            ->orderBy('agents.id', 'desc')
+            ->paginate(10);
         return view('admin.registered-agents', compact('agents'));
     }
 

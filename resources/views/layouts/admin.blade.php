@@ -79,6 +79,7 @@
                                     'href'     => '/admin/packages',
                                     'children' => [
                                         ['name' => 'All Packages',           'href' => '/admin/packages'],
+                                        ['name' => 'Pending Approvals',      'href' => '/admin/packages/pending', 'badge_count' => true],
                                         ['name' => 'Add New Package',        'href' => '/admin/packages/create'],
                                         ['name' => 'International Packages', 'href' => '/admin/packages/international'],
                                         ['name' => 'Domestic Packages',      'href' => '/admin/packages/domestic'],
@@ -154,12 +155,21 @@
                                             @foreach($item['children'] as $child)
                                                 @php
                                                     $isChildActive = request()->is(ltrim($child['href'], '/'));
+                                                    $childBadgeCount = null;
+                                                    if (!empty($child['badge_count'])) {
+                                                        try {
+                                                            $childBadgeCount = DB::table('packages')->where('status', 'Pending')->count();
+                                                        } catch (\Exception $e) { $childBadgeCount = 0; }
+                                                    }
                                                 @endphp
                                                 <a 
                                                     href="{{ url($child['href']) }}" 
-                                                    class="block py-1.5 px-3 rounded-lg text-xs font-bold transition-all {{ $isChildActive ? 'text-primary bg-primary/5 font-black border-l-2 border-primary pl-2' : 'text-text-muted hover:text-foreground hover:bg-gray-50/50' }}"
+                                                    class="flex items-center justify-between py-1.5 px-3 rounded-lg text-xs font-bold transition-all {{ $isChildActive ? 'text-primary bg-primary/5 font-black border-l-2 border-primary pl-2' : 'text-text-muted hover:text-foreground hover:bg-gray-50/50' }}"
                                                 >
-                                                    {{ $child['name'] }}
+                                                    <span>{{ $child['name'] }}</span>
+                                                    @if($childBadgeCount !== null && $childBadgeCount > 0)
+                                                        <span class="ml-1 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none">{{ $childBadgeCount }}</span>
+                                                    @endif
                                                 </a>
                                             @endforeach
                                         </div>

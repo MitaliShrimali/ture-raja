@@ -8,6 +8,11 @@
     $included = json_decode($pkg->included, true) ?: [];
     $excluded = json_decode($pkg->excluded, true) ?: [];
     $itinerary = json_decode($pkg->itinerary, true) ?: [];
+    $itinerary = json_decode($pkg->itinerary, true) ?: [];
+    $keywords = json_decode($pkg->keywords, true) ?: [];
+    $transfers = json_decode($pkg->transfers, true) ?: [];
+    $hotels = json_decode($pkg->hotels, true) ?: [];
+    $meals = json_decode($pkg->meals, true) ?: [];
     $agentData = json_decode($pkg->agent, true) ?: [];
     $agentName = $agentData['name'] ?? 'Miths Holidays';
 @endphp
@@ -21,6 +26,8 @@
     title: {{ json_encode($pkg->title) }},
     location: {{ json_encode($pkg->location) }},
     duration: {{ json_encode($pkg->duration) }},
+    validity: {{ json_encode($pkg->validity ?? '') }},
+    sightseeing: {{ json_encode($pkg->sightseeing ?? '') }},
     price: {{ json_encode($pkg->price) }},
     old_price: {{ json_encode($pkg->old_price ?? '') }},
     stock: {{ json_encode($pkg->stock) }},
@@ -44,7 +51,7 @@
     newExclusion: '',
     cities: {{ json_encode(array_values(array_filter(array_map('trim', explode(',', $pkg->location ?? ''))))) }},
     newCity: '',
-    keywords: ['Bali Beaches', 'Scuba Diving', 'Temple Tour', 'Nightlife'],
+    keywords: {{ json_encode($keywords) }},
     newKeyword: '',
     addCity() {
         if (this.newCity.trim()) {
@@ -75,10 +82,8 @@
     },
     removeExclusion(i) { this.exclusions.splice(i, 1); },
     hidePrice: false,
-    transfers: [],
-    hotels: [
-        { name: 'Taj Palace, New Delhi', room: 'Luxury Suite &bull; King Bed', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100' }
-    ],
+    transfers: {{ json_encode($transfers) }},
+    hotels: {{ json_encode($hotels) }},
     newTransfer: '',
     newHotelName: '',
     newHotelRoom: '',
@@ -332,12 +337,12 @@
                         </select>
                     </div>
 
-                    <!-- Package Validity (stock) -->
+                    <!-- Package Validity -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Package Validity</label>
                         <div class="relative">
                             <i data-lucide="calendar" size="16" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" name="stock" x-model="stock" placeholder="20 Dec 2024 - 30 Mar 2025" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                            <input type="text" name="validity" x-model="validity" placeholder="20 Dec 2024 - 30 Mar 2025" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                         </div>
                     </div>
 
@@ -358,6 +363,12 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure City</label>
                         <input type="text" name="badge" x-model="badge" placeholder="New Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                    </div>
+
+                    <!-- Sightseeing summary -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Sightseeing summary</label>
+                        <input type="text" name="sightseeing" x-model="sightseeing" placeholder="e.g. 4 Sightseeing" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
                     <!-- Departure State -->
@@ -416,18 +427,37 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Theme Selection</label>
-                            <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                                <option value="Solo Travelers">Solo Travelers</option>
-                                <option value="Family Friendly">Family Friendly</option>
-                                <option value="Honeymoon Special">Honeymoon Special</option>
+                            <select name="theme" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
+                                <option value="" disabled>Select Theme</option>
+                                @php
+                                    $themes = [
+                                        'Spring', 'Summer', 'Autumn', 'Winter', 'Monsoon',
+                                        'Honeymoon Special', 'Family Friendly', 'Solo Travelers',
+                                        'Group Tour', 'Adventure', 'Wildlife', 'Pilgrimage',
+                                        'Heritage', 'Luxury', 'Budget', 'Weekend Getaway',
+                                        'Eco Tourism', 'Cultural', 'Backpacking', 'Festival'
+                                    ];
+                                @endphp
+                                @foreach($themes as $theme)
+                                    <option value="{{ $theme }}" {{ (isset($pkg->theme) && $pkg->theme == $theme) ? 'selected' : '' }}>{{ $theme }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Holiday Type</label>
-                            <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                                <option value="Multi City">Multi City</option>
-                                <option value="Beach Resort">Beach Resort</option>
-                                <option value="Hill Station">Hill Station</option>
+                            <select name="holiday_type" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
+                                <option value="" disabled>Select Holiday Type</option>
+                                @php
+                                    $holidayTypes = [
+                                        'Multi City', 'Beach Resort', 'Hill Station', 'Desert Safari',
+                                        'Island Tour', 'Cruise', 'Trekking', 'Skiing',
+                                        'City Break', 'Road Trip', 'Train Journey', 'Camping',
+                                        'Farm Stay', 'Yoga & Wellness', 'Culinary Tour', 'Photography Tour'
+                                    ];
+                                @endphp
+                                @foreach($holidayTypes as $type)
+                                    <option value="{{ $type }}" {{ (isset($pkg->holiday_type) && $pkg->holiday_type == $type) ? 'selected' : '' }}>{{ $type }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -453,6 +483,7 @@
                             </span>
                         </template>
                         <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" @keydown.comma.prevent="addKeyword()" @keydown.space.prevent="addKeyword()" placeholder="Type keyword & enter/space..." class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0" style="border: none !important; outline: none !important; box-shadow: none !important;" />
+                        <input type="hidden" name="keywords" :value="keywords.join(',')" />
                     </div>
                 </div>
             </div>
@@ -592,15 +623,18 @@
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Meals Included</label>
                             <div class="flex items-center gap-3">
                                 <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Breakfast" {{ in_array('Breakfast', $included) ? 'checked' : '' }} class="hidden">
+                                    <input type="checkbox" name="meals[]" value="Breakfast" {{ in_array('Breakfast', $meals) ? 'checked' : '' }} class="hidden">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" x-show="$el.previousElementSibling.checked" style="display: {{ in_array('Breakfast', $meals) ? 'block' : 'none' }};"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                     <span class="text-xs font-semibold">Breakfast</span>
                                 </label>
                                 <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Lunch" {{ in_array('Lunch', $included) ? 'checked' : '' }} class="hidden">
+                                    <input type="checkbox" name="meals[]" value="Lunch" {{ in_array('Lunch', $meals) ? 'checked' : '' }} class="hidden">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" x-show="$el.previousElementSibling.checked" style="display: {{ in_array('Lunch', $meals) ? 'block' : 'none' }};"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                     <span class="text-xs font-semibold">Lunch</span>
                                 </label>
                                 <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Dinner" {{ in_array('Dinner', $included) ? 'checked' : '' }} class="hidden">
+                                    <input type="checkbox" name="meals[]" value="Dinner" {{ in_array('Dinner', $meals) ? 'checked' : '' }} class="hidden">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" x-show="$el.previousElementSibling.checked" style="display: {{ in_array('Dinner', $meals) ? 'block' : 'none' }};"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                     <span class="text-xs font-semibold">Dinner</span>
                                 </label>
                             </div>
@@ -744,12 +778,15 @@
                         <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Essential Amenities</h4>
                         
                         <div class="space-y-4">
+                            @php
+                                $amenities = json_decode($pkg->amenities, true) ?: [];
+                            @endphp
                             <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
                                 <div class="flex items-center gap-3">
                                     <i data-lucide="wifi" class="text-gray-400" size="18"></i>
                                     <span class="text-xs font-bold text-gray-700">Free Wifi</span>
                                 </div>
-                                <input type="checkbox" checked class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                <input type="checkbox" name="amenities[]" value="Free Wifi" {{ in_array('Free Wifi', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
                             </label>
 
                             <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
@@ -757,7 +794,7 @@
                                     <i data-lucide="coffee" class="text-gray-400" size="18"></i>
                                     <span class="text-xs font-bold text-gray-700">Breakfast Included</span>
                                 </div>
-                                <input type="checkbox" checked class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                <input type="checkbox" name="amenities[]" value="Breakfast Included" {{ in_array('Breakfast Included', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
                             </label>
 
                             <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
@@ -765,8 +802,26 @@
                                     <i data-lucide="shield" class="text-gray-400" size="18"></i>
                                     <span class="text-xs font-bold text-gray-700">Travel Insurance</span>
                                 </div>
-                                <input type="checkbox" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                <input type="checkbox" name="amenities[]" value="Travel Insurance" {{ in_array('Travel Insurance', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
                             </label>
+                        </div>
+                    </div>
+
+                    <!-- Primary featured photo upload hidden input -->
+                    <div class="bg-gray-50 p-6 rounded-[32px] border border-gray-100 flex items-center justify-between gap-4 shadow-sm">
+                        <div class="space-y-1">
+                            <p class="text-sm font-black text-gray-800">Main Featured Image</p>
+                            <p class="text-[10px] text-muted-text font-medium">Select a single thumbnail banner for card listing.</p>
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" class="h-16 w-16 object-cover rounded-xl mt-2 border border-gray-200">
+                            </template>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button type="button" class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs" @click="$refs.mainImageInput.click()">
+                                Choose File
+                            </button>
+                            <input type="file" name="image_file" x-ref="mainImageInput" class="hidden" accept="image/*" @change="previewUrl = URL.createObjectURL($event.target.files[0])" />
+                            <span class="text-xs text-muted-text font-bold" x-text="previewUrl ? 'Image Selected' : 'No file chosen'"></span>
                         </div>
                     </div>
 
@@ -790,23 +845,8 @@
                                 <i data-lucide="plus" class="text-gray-400 mb-1" size="20"></i>
                                 <span class="text-xs font-bold text-gray-800">Add More</span>
                                 <span class="text-[9px] text-gray-400 font-semibold mt-1">Upload multiple photos</span>
-                                <input type="file" name="gallery_files[]" x-ref="galleryFilesInput" multiple class="hidden" @change="handleGalleryChange($event)" />
+                                <input type="file" name="gallery_files[]" x-ref="galleryFilesInput" multiple class="hidden" accept="image/*" @change="handleGalleryChange($event)" />
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Primary featured photo upload hidden input -->
-                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex items-center justify-between gap-4">
-                        <div class="space-y-1">
-                            <p class="text-sm font-black text-gray-800">Main Featured Image</p>
-                            <p class="text-xs text-muted-text font-medium">Select a single thumbnail banner for card listing.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button type="button" class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs" @click="$refs.mainImageInput.click()">
-                                Choose File
-                            </button>
-                            <input type="file" name="image_file" x-ref="mainImageInput" class="hidden" accept="image/*" @change="previewUrl = URL.createObjectURL($event.target.files[0])" />
-                            <span class="text-xs text-muted-text font-bold" x-text="previewUrl ? 'Image Selected' : 'No file chosen'"></span>
                         </div>
                     </div>
                 </div>

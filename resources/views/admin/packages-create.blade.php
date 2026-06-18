@@ -9,27 +9,29 @@
 
 <div class="space-y-8 pb-12" x-data="{ 
     step: 1,
-    title: 'The Ultimate Bali Escape',
-    location: 'Ubud, Seminyak, Uluwatu',
-    duration: '4 Nights / 5 Days',
-    price: '45999',
-    old_price: '55000',
-    stock: '10 Left',
-    category: 'domestic',
-    badge: 'New Delhi',
-    group_size: 'Direct Flight',
-    rating: '4.8',
-    reviews: '10',
+    title: '',
+    location: '',
+    duration: '',
+    price: '',
+    old_price: '',
+    stock: '',
+    validity: '',
+    sightseeing: '',
+    category: '',
+    badge: '',
+    group_size: '',
+    rating: '',
+    reviews: '',
     previewUrl: '', 
     galleryPreviews: [],
     brochureName: '',
-    inclusions: ['Hotel Stay', 'Daily Breakfast', 'Airport Transfers'],
-    exclusions: ['International Airfare', 'Travel Insurance'],
+    inclusions: [],
+    exclusions: [],
     newInclusion: '',
     newExclusion: '',
-    cities: ['Ubud', 'Seminyak', 'Uluwatu'],
+    cities: [],
     newCity: '',
-    keywords: ['Bali Beaches', 'Scuba Diving', 'Temple Tour', 'Nightlife'],
+    keywords: [],
     newKeyword: '',
     addCity() {
         if (this.newCity.trim()) {
@@ -61,9 +63,7 @@
     removeExclusion(i) { this.exclusions.splice(i, 1); },
     hidePrice: false,
     transfers: [],
-    hotels: [
-        { name: 'Taj Palace, New Delhi', room: 'Luxury Suite &bull; King Bed', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100' }
-    ],
+    hotels: [],
     newTransfer: '',
     newHotelName: '',
     newHotelRoom: '',
@@ -71,8 +71,7 @@
     showAddTransfer: false,
     showAddHotel: false,
     days: [
-        { title: 'Red Fort', desc: 'Historical Guided Tour', duration: '3 Hours' },
-        { title: 'Chandni Chowk', desc: 'Street Food & Rickshaw Ride', duration: '2 Hours' }
+        { title: '', desc: '', duration: '' }
     ],
     addDay() {
         this.days.push({ title: '', desc: '', duration: '3 Hours' });
@@ -319,12 +318,12 @@
                         </select>
                     </div>
 
-                    <!-- Package Validity (stock) -->
+                    <!-- Package Validity -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Package Validity</label>
                         <div class="relative">
                             <i data-lucide="calendar" size="16" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" name="stock" x-model="stock" placeholder="20 Dec 2024 - 30 Mar 2025" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                            <input type="text" name="validity" x-model="validity" placeholder="20 Dec 2024 - 30 Mar 2025" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                         </div>
                     </div>
 
@@ -347,10 +346,10 @@
                         <input type="text" name="badge" x-model="badge" placeholder="New Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
-                    <!-- Departure State -->
+                    <!-- Sightseeing summary -->
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure State</label>
-                        <input type="text" placeholder="Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Sightseeing summary</label>
+                        <input type="text" name="sightseeing" x-model="sightseeing" placeholder="e.g. 4 Sightseeing" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
                     <!-- Departure Country -->
@@ -403,18 +402,20 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Theme Selection</label>
-                            <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                                <option value="Solo Travelers">Solo Travelers</option>
-                                <option value="Family Friendly">Family Friendly</option>
-                                <option value="Honeymoon Special">Honeymoon Special</option>
+                            <select name="theme" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
+                                <option value="">Select Theme</option>
+                                @foreach($themes as $t)
+                                    <option value="{{ $t->name }}">{{ $t->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Holiday Type</label>
-                            <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                                <option value="Multi City">Multi City</option>
-                                <option value="Beach Resort">Beach Resort</option>
-                                <option value="Hill Station">Hill Station</option>
+                            <select name="holiday_type" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
+                                <option value="">Select Holiday Type</option>
+                                @foreach($holidayTypes as $h)
+                                    <option value="{{ $h->name }}">{{ $h->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -579,16 +580,16 @@
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Meals Included</label>
                             <div class="flex items-center gap-3">
                                 <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Breakfast" checked class="hidden">
+                                    <input type="checkbox" name="meals[]" value="Breakfast" checked class="hidden">
                                     <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                     <span class="text-xs font-semibold">Breakfast</span>
                                 </label>
                                 <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Lunch" class="hidden">
+                                    <input type="checkbox" name="meals[]" value="Lunch" class="hidden">
                                     <span class="text-xs font-semibold text-gray-700">Lunch</span>
                                 </label>
                                 <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="included[]" value="Dinner" checked class="hidden">
+                                    <input type="checkbox" name="meals[]" value="Dinner" checked class="hidden">
                                     <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                                     <span class="text-xs font-semibold">Dinner</span>
                                 </label>
@@ -759,43 +760,61 @@
                         </div>
                     </div>
 
-                    <!-- Gallery Portfolio Card -->
-                    <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6 shadow-sm">
-                        <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Gallery Portfolio</h4>
+                    <!-- Media Uploads (Featured & Gallery) -->
+                    <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-8 shadow-sm">
                         
-                        <div class="grid grid-cols-2 gap-3">
-                            <template x-for="(img, idx) in galleryPreviews" :key="idx">
-                                <div class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100">
-                                    <img :src="img.url" class="w-full h-full object-cover" />
-                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        <button type="button" @click="removeGalleryPhoto(idx)" class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
-                                            <i data-lucide="trash-2" size="14"></i>
-                                        </button>
-                                    </div>
+                        <!-- Primary featured photo upload -->
+                        <div class="space-y-4">
+                            <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Main Featured Image</h4>
+                            <p class="text-[10px] text-gray-400 font-medium pl-1 -mt-3">Select a single thumbnail banner for card listing.</p>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="w-32 h-24 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:bg-orange-50/20 transition-all" @click="$refs.mainImageInput.click()">
+                                    <template x-if="previewUrl">
+                                        <img :src="previewUrl" class="w-full h-full object-cover" />
+                                    </template>
+                                    <template x-if="!previewUrl">
+                                        <div class="text-center">
+                                            <i data-lucide="image" class="text-gray-300 mx-auto" size="20"></i>
+                                            <span class="text-[9px] font-bold text-gray-400 mt-1 block">Upload</span>
+                                        </div>
+                                    </template>
                                 </div>
-                            </template>
-
-                            <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-gray-200 hover:border-primary/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-orange-50/20" @click="$refs.galleryFilesInput.click()">
-                                <i data-lucide="plus" class="text-gray-400 mb-1" size="20"></i>
-                                <span class="text-xs font-bold text-gray-800">Add More</span>
-                                <span class="text-[9px] text-gray-400 font-semibold mt-1">Upload multiple photos</span>
-                                <input type="file" name="gallery_files[]" x-ref="galleryFilesInput" multiple class="hidden" @change="handleGalleryChange($event)" />
+                                <div class="space-y-2">
+                                    <button type="button" class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs shadow-sm transition-all" @click="$refs.mainImageInput.click()">
+                                        Choose Featured Image
+                                    </button>
+                                    <input type="file" name="image_file" x-ref="mainImageInput" class="hidden" accept="image/*" @change="previewUrl = URL.createObjectURL($event.target.files[0])" />
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Primary featured photo upload hidden input -->
-                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100 flex items-center justify-between gap-4">
-                        <div class="space-y-1">
-                            <p class="text-sm font-black text-gray-800">Main Featured Image</p>
-                            <p class="text-xs text-muted-text font-medium">Select a single thumbnail banner for card listing.</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button type="button" class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs" @click="$refs.mainImageInput.click()">
-                                Choose File
-                            </button>
-                            <input type="file" name="image_file" x-ref="mainImageInput" class="hidden" accept="image/*" @change="previewUrl = URL.createObjectURL($event.target.files[0])" />
-                            <span class="text-xs text-muted-text font-bold" x-text="previewUrl ? 'Image Selected' : 'No file chosen'"></span>
+                        <!-- Divider -->
+                        <div class="h-px w-full bg-gray-100"></div>
+
+                        <!-- Gallery Portfolio Card -->
+                        <div class="space-y-4">
+                            <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Gallery Portfolio</h4>
+                            <p class="text-[10px] text-gray-400 font-medium pl-1 -mt-3">Upload multiple photos for the package gallery.</p>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <template x-for="(img, idx) in galleryPreviews" :key="idx">
+                                    <div class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100 shadow-sm">
+                                        <img :src="img.url" class="w-full h-full object-cover" />
+                                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                            <button type="button" @click="removeGalleryPhoto(idx)" class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
+                                                <i data-lucide="trash-2" size="14"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-gray-200 hover:border-primary/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-orange-50/20" @click="$refs.galleryFilesInput.click()">
+                                    <i data-lucide="plus" class="text-gray-400 mb-1" size="20"></i>
+                                    <span class="text-xs font-bold text-gray-800">Add More</span>
+                                    <input type="file" name="gallery_files[]" x-ref="galleryFilesInput" multiple class="hidden" @change="handleGalleryChange($event)" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

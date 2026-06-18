@@ -40,7 +40,12 @@ class AgentController extends Controller
         }
 
         // Store agent session (separate key from customer session 'user_id' and admin session 'admin_id')
-        session(['agent_id' => $agent->id, 'agent_name' => $agent->name, 'agent_email' => $agent->email]);
+        session([
+            'agent_id' => $agent->id,
+            'agent_name' => $agent->name,
+            'agent_agency_name' => $agent->agency_name ?? $agent->name,
+            'agent_email' => $agent->email
+        ]);
 
         return redirect()->route('agent.dashboard')->with('success', 'Welcome back, ' . $agent->name . '!');
     }
@@ -71,6 +76,8 @@ class AgentController extends Controller
             'status'      => 1,
             'pending'     => 1,
             'approved'    => 0,
+            'plan_id'     => 1, // Default Basic plan
+            'plan_status' => 'Active',
             'created_at'  => now(),
             'updated_at'  => now(),
         ];
@@ -87,7 +94,7 @@ class AgentController extends Controller
 
     public function logout()
     {
-        session()->forget(['agent_id', 'agent_name', 'agent_email']);
+        session()->forget(['agent_id', 'agent_name', 'agent_agency_name', 'agent_email']);
         return redirect()->route('agent.login')->with('success', 'You have been logged out.');
     }
 
@@ -145,8 +152,91 @@ class AgentController extends Controller
     {
         return view('agent.pages.add-branch', [
             'page_title' => 'Add Branch',
-            'page_breadcrumb' => 'Pages / Add Branch'
+            'page_breadcrumb' => 'Pages / Add Branch',
+            'branch' => null
         ]);
+    }
+
+    public function editBranch($id)
+    {
+        $agentId = session('agent_id');
+        $branch = DB::table('branches')->where('id', $id)->where('agent_id', $agentId)->first();
+        if (!$branch) {
+            return redirect()->route('agent.branch')->with('error', 'Branch not found or unauthorized.');
+        }
+
+        return view('agent.pages.add-branch', [
+            'page_title' => 'Edit Branch',
+            'page_breadcrumb' => 'Pages / Edit Branch',
+            'branch' => $branch
+        ]);
+    }
+
+    public function storeBranch(Request $request)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please log in.');
+        }
+
+        $request->validate([
+            'agency_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'location' => 'required|string',
+            'address' => 'required|string',
+            'status' => 'required|string|in:Online,Offline'
+        ]);
+
+        DB::table('branches')->insert([
+            'agent_id' => $agentId,
+            'agency_name' => $request->agency_name,
+            'phone' => $request->phone,
+            'location' => $request->location,
+            'address' => $request->address,
+            'status' => $request->status,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return redirect()->route('agent.branch')->with('success', 'Branch created successfully!');
+    }
+
+    public function updateBranch(Request $request, $id)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please log in.');
+        }
+
+        $request->validate([
+            'agency_name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'location' => 'required|string',
+            'address' => 'required|string',
+            'status' => 'required|string|in:Online,Offline'
+        ]);
+
+        DB::table('branches')->where('id', $id)->where('agent_id', $agentId)->update([
+            'agency_name' => $request->agency_name,
+            'phone' => $request->phone,
+            'location' => $request->location,
+            'address' => $request->address,
+            'status' => $request->status,
+            'updated_at' => now()
+        ]);
+
+        return redirect()->route('agent.branch')->with('success', 'Branch updated successfully!');
+    }
+
+    public function deleteBranch($id)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please log in.');
+        }
+
+        DB::table('branches')->where('id', $id)->where('agent_id', $agentId)->delete();
+        return redirect()->route('agent.branch')->with('success', 'Branch deleted successfully!');
     }
 
     public function addHotel()
@@ -159,9 +249,32 @@ class AgentController extends Controller
 
     public function branch()
     {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please log in.');
+        }
+
+        if (DB::table('branches')->where('agent_id', $agentId)->count() == 0) {
+            DB::table('branches')->insert([
+                [
+                    'agent_id' => $agentId,
+                    'agency_name' => 'Miths Holidays',
+                    'phone' => '+91 7383682183',
+                    'location' => 'Rajkot, Gujarat',
+                    'address' => '101 GF Nr Trikon Bagh Rajkot - Gujarat',
+                    'status' => 'Online',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]
+            ]);
+        }
+
+        $branches = DB::table('branches')->where('agent_id', $agentId)->orderBy('created_at', 'desc')->get();
+
         return view('agent.pages.branch', [
             'page_title' => 'Branches',
-            'page_breadcrumb' => 'Pages / Branches'
+            'page_breadcrumb' => 'Pages / Branches',
+            'branches' => $branches
         ]);
     }
 
@@ -183,13 +296,36 @@ class AgentController extends Controller
 
     public function createPackage()
     {
+        $agentId = session('agent_id');
+        if ($agentId) {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+            $plan = DB::table('plans')->where('id', $agent->plan_id ?? 1)->first();
+            $limit = $plan ? $plan->package_limit : 1;
+            
+            $allPackages = DB::table('packages')->get();
+            $packagesCount = $allPackages->filter(function ($pkg) use ($agentId) {
+                if (!$pkg->agent) return false;
+                $agentData = json_decode($pkg->agent, true);
+                if (!$agentData) return false;
+                return isset($agentData['id']) && $agentData['id'] == $agentId;
+            })->count();
+
+            if ($packagesCount >= $limit) {
+                return redirect()->route('agent.payment')->with('show_upgrade_modal', true)->with('error', 'You have reached your package limit. Please upgrade your plan to add more packages.');
+            }
+        }
+
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
         $hotels = DB::table('hotels')->orderBy('name', 'asc')->get();
+        $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
         return view('agent.pages.create-package', [
             'page_title' => 'Create Package',
             'page_breadcrumb' => 'Pages / Create Package',
             'agents' => $agents,
-            'hotels' => $hotels
+            'hotels' => $hotels,
+            'themes' => $themes,
+            'holidayTypes' => $holidayTypes
         ]);
     }
 
@@ -216,12 +352,16 @@ class AgentController extends Controller
 
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
         $hotels = DB::table('hotels')->orderBy('name', 'asc')->get();
+        $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
         return view('agent.pages.edit-package', [
             'page_title' => 'Edit Package',
             'page_breadcrumb' => 'Pages / Edit Package',
             'pkg' => $pkg,
             'agents' => $agents,
-            'hotels' => $hotels
+            'hotels' => $hotels,
+            'themes' => $themes,
+            'holidayTypes' => $holidayTypes
         ]);
     }
 
@@ -300,6 +440,28 @@ class AgentController extends Controller
             }
         }
 
+        // New fields parsing
+        $hotels = [];
+        if ($request->has('hotels')) {
+            foreach ($request->hotels as $hotelJson) {
+                $hotelData = json_decode($hotelJson, true);
+                if ($hotelData) $hotels[] = $hotelData;
+            }
+        } else {
+            $hotels = json_decode($pkg->hotels, true) ?: [];
+        }
+        
+        $keywords = [];
+        if ($request->has('keywords') && !empty($request->keywords)) {
+            $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+        } else {
+            $keywords = json_decode($pkg->keywords, true) ?: [];
+        }
+
+        $amenities = $request->has('amenities') ? $request->input('amenities', []) : (json_decode($pkg->amenities, true) ?: []);
+        $transfers = $request->has('transfers') ? $request->input('transfers', []) : (json_decode($pkg->transfers, true) ?: []);
+        $meals = $request->has('meals') ? $request->input('meals', []) : (json_decode($pkg->meals, true) ?: []);
+
         // Itinerary Days parsing
         $itinerary = [];
         if ($request->has('itinerary_titles')) {
@@ -319,15 +481,24 @@ class AgentController extends Controller
             'duration'   => $request->duration ?? '3 Days',
             'group_size' => $request->group_size ?? 'Direct Flight',
             'image'      => $imageUrl,
+            'theme'      => $request->theme,
+            'holiday_type' => $request->holiday_type,
             'category'   => $request->category ?? 'domestic',
             'badge'      => $request->badge,
-            'stock'      => $request->stock ? $request->stock . ' Left' : '10 Left',
+            'stock'      => $request->stock ?? '10 Left',
             'gallery'    => json_encode($galleryUrls),
             'brochure'   => $brochureUrl,
             'included'   => json_encode($included),
             'excluded'   => json_encode($excluded),
+            'hotels'     => json_encode($hotels),
+            'keywords'   => json_encode($keywords),
+            'amenities'  => json_encode($amenities),
+            'transfers'  => json_encode($transfers),
+            'meals'      => json_encode($meals),
             'itinerary'           => json_encode($itinerary),
             'editorial_itinerary' => $request->editorial_itinerary ?? null,
+            'validity'            => $request->validity ?? $pkg->validity,
+            'sightseeing'         => $request->sightseeing ?? $pkg->sightseeing,
             'updated_at'          => now(),
         ]);
 
@@ -336,6 +507,25 @@ class AgentController extends Controller
 
     public function storePackage(Request $request)
     {
+        $agentId = session('agent_id');
+        if ($agentId) {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+            $plan = DB::table('plans')->where('id', $agent->plan_id ?? 1)->first();
+            $limit = $plan ? $plan->package_limit : 1;
+            
+            $allPackages = DB::table('packages')->get();
+            $packagesCount = $allPackages->filter(function ($pkg) use ($agentId) {
+                if (!$pkg->agent) return false;
+                $agentData = json_decode($pkg->agent, true);
+                if (!$agentData) return false;
+                return isset($agentData['id']) && $agentData['id'] == $agentId;
+            })->count();
+
+            if ($packagesCount >= $limit) {
+                return redirect()->route('agent.payment')->with('error', 'You have reached your package limit. Please upgrade your plan to add more packages.');
+            }
+        }
+
         $request->validate(['title' => 'required', 'price' => 'required|numeric']);
 
         // Create uploads directories if not exist
@@ -395,6 +585,25 @@ class AgentController extends Controller
                 $excluded = array_values(array_filter(array_map('trim', explode("\n", $request->excluded))));
             }
         }
+        // New fields parsing
+        $hotels = [];
+        if ($request->has('hotels')) {
+            foreach ($request->hotels as $hotelJson) {
+                $hotelData = json_decode($hotelJson, true);
+                if ($hotelData) $hotels[] = $hotelData;
+            }
+        }
+        
+        $keywords = [];
+        if ($request->has('keywords') && !empty($request->keywords)) {
+            $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+        }
+
+        $amenities = $request->input('amenities', []);
+        $transfers = $request->input('transfers', []);
+        
+        // Meals might be mixed in included, but let's see if we have explicit meals. If not, fallback to included.
+        $meals = $request->input('meals', []);
 
         // Itinerary Days parsing
         $itinerary = [];
@@ -415,8 +624,8 @@ class AgentController extends Controller
         if ($agentDb) {
             $agentJson = json_encode([
                 'id'       => $agentDb->id,
-                'logo'     => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->name),
-                'name'     => $agentDb->name,
+                'logo'     => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->agency_name ?? $agentDb->name),
+                'name'     => $agentDb->agency_name ?? $agentDb->name,
                 'phone'    => $agentDb->phone ?? '',
                 'whatsapp' => $agentDb->phone ?? ''
             ]);
@@ -442,15 +651,24 @@ class AgentController extends Controller
             'image'      => $imageUrl ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
             'category'   => $request->category ?? 'domestic',
             'badge'      => $request->badge,
+            'theme'      => $request->theme,
+            'holiday_type'=> $request->holiday_type,
             'status'     => 'Pending',
-            'stock'      => $request->stock ? $request->stock . ' Left' : '10 Left',
+            'stock'      => $request->stock ?? '10 Left',
             'agent'      => $agentJson,
             'gallery'    => json_encode($galleryUrls),
             'brochure'   => $brochureUrl,
             'included'   => json_encode($included),
             'excluded'   => json_encode($excluded),
+            'hotels'     => json_encode($hotels),
+            'keywords'   => json_encode($keywords),
+            'amenities'  => json_encode($amenities),
+            'transfers'  => json_encode($transfers),
+            'meals'      => json_encode($meals),
             'itinerary'           => json_encode($itinerary),
             'editorial_itinerary' => $request->editorial_itinerary ?? null,
+            'validity'            => $request->validity ?? null,
+            'sightseeing'         => $request->sightseeing ?? null,
             'created_at'          => now(),
             'updated_at'          => now(),
         ]);
@@ -488,9 +706,28 @@ class AgentController extends Controller
 
     public function invoice()
     {
+        $agentId = session('agent_id');
+        $payments = DB::table('payments')->where('agent_id', $agentId)->orderBy('created_at', 'desc')->get();
         return view('agent.pages.invoice', [
             'page_title' => 'Invoice',
-            'page_breadcrumb' => 'Pages / Invoice'
+            'page_breadcrumb' => 'Pages / Invoice',
+            'payments' => $payments
+        ]);
+    }
+
+    public function downloadInvoice($id)
+    {
+        $agentId = session('agent_id');
+        $payment = DB::table('payments')->where('id', $id)->where('agent_id', $agentId)->first();
+        if (!$payment) {
+            return redirect()->back()->with('error', 'Invoice not found.');
+        }
+        
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+
+        return view('agent.pages.print-invoice', [
+            'payment' => $payment,
+            'agent' => $agent
         ]);
     }
 
@@ -541,7 +778,10 @@ class AgentController extends Controller
             ]);
         }
 
-        $leads = DB::table('contacts')->orderBy('created_at', 'desc')->get();
+        $leads = DB::table('contacts')
+                    ->where('agent_id', session('agent_id'))
+                    ->orderBy('created_at', 'desc')
+                    ->get();
 
         return view('agent.pages.leads', [
             'page_title' => 'Leads',
@@ -607,9 +847,36 @@ class AgentController extends Controller
 
     public function payment()
     {
+        $agentId = session('agent_id');
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        
+        $activePlan = null;
+        if ($agent && $agent->plan_id) {
+            $activePlan = DB::table('plans')->where('id', $agent->plan_id)->first();
+        } else {
+            $activePlan = DB::table('plans')->where('id', 1)->first(); // Fallback to Basic
+        }
+
+        $plans = DB::table('plans')->where('status', 'Active')->orderBy('price', 'asc')->get();
+        $payments = DB::table('payments')->where('agent_id', $agentId)->orderByDesc('id')->get();
+        
+        $agentName = session('agent_name');
+        $allPackages = DB::table('packages')->get();
+        $agentPackages = $allPackages->filter(function ($pkg) use ($agentId, $agentName) {
+            $agentData = json_decode($pkg->agent, true);
+            if (!$agentData) return false;
+            return (isset($agentData['id']) && $agentData['id'] == $agentId) 
+                || (isset($agentData['name']) && $agentData['name'] === $agentName);
+        })->take(2)->values();
+
         return view('agent.pages.payment', [
-            'page_title' => 'Payment',
-            'page_breadcrumb' => 'Pages / Payment'
+            'page_title' => 'Payment & Billing',
+            'page_breadcrumb' => 'Pages / Payment',
+            'agent' => $agent,
+            'activePlan' => $activePlan,
+            'plans' => $plans,
+            'payments' => $payments,
+            'agentPackages' => $agentPackages
         ]);
     }
 
@@ -671,8 +938,93 @@ class AgentController extends Controller
         DB::table('agents')->where('id', $agentId)->update($data);
 
         // Update session name if changed
-        session(['agent_name' => $request->input('name')]);
+        session([
+            'agent_name' => $request->input('name'),
+            'agent_agency_name' => $request->input('name')
+        ]);
 
         return redirect()->back()->with('success', 'Profile settings updated successfully!');
+    }
+
+    public function upgradePlan(Request $request)
+    {
+        return redirect()->route('checkout', ['type' => 'plan', 'id' => $request->plan_id]);
+    }
+
+    public function checkout(Request $request)
+    {
+        $type = $request->query('type');
+        $id = $request->query('id');
+        $amount = 0;
+        $itemName = '';
+
+        if ($type == 'plan') {
+            $plan = DB::table('plans')->where('id', $id)->first();
+            if ($plan) {
+                $amount = $plan->price;
+                $itemName = $plan->name . ' Plan';
+            }
+        } elseif ($type == 'ad') {
+            $amount = $request->query('amount', 499);
+            $itemName = $request->query('name', 'Ad Subscription');
+        } elseif ($type == 'boost') {
+            $amount = 12.50; // Daily boost rate mock
+            $itemName = 'Boost Tour Package';
+        }
+
+        return view('agent.pages.checkout', [
+            'page_title' => 'Checkout',
+            'page_breadcrumb' => 'Pages / Checkout',
+            'type' => $type,
+            'id' => $id,
+            'amount' => $amount,
+            'itemName' => $itemName
+        ]);
+    }
+
+    public function processCheckout(Request $request)
+    {
+        $agentId = session('agent_id');
+        $type = $request->input('type');
+        $id = $request->input('id');
+        $amount = $request->input('amount');
+        $itemName = $request->input('item_name');
+        $gateway = $request->input('gateway', 'UPI');
+        $sender = $request->input('sender_details', 'agent@upi');
+        $receiver = 'tourraja@upi';
+
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        $invoiceData = json_encode([
+            'gateway' => $gateway,
+            'sender' => $sender,
+            'receiver' => $receiver,
+            'item' => $itemName
+        ]);
+
+        if ($type == 'plan') {
+            DB::table('agents')->where('id', $agentId)->update([
+                'plan_id' => $id,
+                'plan_status' => 'active',
+                'updated_at' => now()
+            ]);
+        }
+
+        DB::table('payments')->insert([
+            'agent_id'       => $agentId,
+            'user_name'      => $agent->name ?? 'Agent',
+            'email'          => $agent->email ?? '',
+            'plan_type'      => $itemName,
+            'amount'         => $amount,
+            'status'         => 'Success',
+            'type'           => $type,
+            'invoice_number' => 'INV-' . strtoupper(uniqid()),
+            'payment_id'     => 'PAY-' . strtoupper(uniqid()),
+            'date'           => now()->toDateString(),
+            'created_at'     => now(),
+            'updated_at'     => now(),
+            'invoice_data'   => $invoiceData
+        ]);
+
+        return redirect()->route('agent.payment')->with('success', 'Payment successful for ' . $itemName . '!');
     }
 }

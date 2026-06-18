@@ -401,6 +401,7 @@
                     if (!empty($package['category'])) $tags[] = ucfirst($package['category']);
                     if (!empty($package['tour_type'])) $tags[] = $package['tour_type'];
                     if (!empty($package['theme'])) $tags[] = $package['theme'];
+                    if (!empty($package['holiday_type'])) $tags[] = $package['holiday_type'];
                     if (!empty($package['city'])) $tags[] = 'City: ' . $package['city'];
                     if (!empty($package['activities'])) {
                         foreach ((array)$package['activities'] as $act) {
@@ -420,10 +421,15 @@
                     @endforeach
                 </div>
 
-                {{-- Tour Overview --}}
+                {{-- Tour Overview & Editorial --}}
                 <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
                     <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
                     <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
+
+                    @if(!empty($package['editorial_itinerary']))
+                    <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading text-xl">Editorial Details</h3>
+                    <p class="standard-body-text detail-overview-text whitespace-pre-wrap">{{ $package['editorial_itinerary'] }}</p>
+                    @endif
 
                     <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Tour Highlights</h3>
                     <ul class="space-y-2">
@@ -434,6 +440,18 @@
                         </li>
                         @endforeach
                     </ul>
+                </div>
+
+                {{-- Pricing & Dates --}}
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
+                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">Pricing & Dates</h2>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="text-3xl font-black text-[#e85d26]">₹{{ number_format((float)$package['price'], 2) }}</div>
+                        @if(!empty($package['old_price']))
+                        <div class="text-lg font-bold text-gray-400 line-through">₹{{ number_format((float)$package['old_price'], 2) }}</div>
+                        @endif
+                        <div class="text-sm font-semibold text-gray-500 mt-2">Per Person</div>
+                    </div>
                 </div>
 
                 {{-- What's Included / Excluded --}}
@@ -454,6 +472,91 @@
                         @endforeach
                     </div>
                 </div>
+
+                {{-- Additional Package Details --}}
+                @if(!empty($package['validity']) || !empty($package['sightseeing']) || !empty($package['hotels']) || !empty($package['amenities']) || !empty($package['meals']) || !empty($package['transfers']))
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
+                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">Additional Details</h2>
+                    
+                    @if(!empty($package['validity']))
+                    <div class="mb-5">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="calendar" class="w-4 h-4 text-orange-500"></i> Package Validity</h3>
+                        <p class="standard-body-text">{{ $package['validity'] }}</p>
+                    </div>
+                    @endif
+
+                    @if(!empty($package['sightseeing']))
+                    <div class="mb-5">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="map" class="w-4 h-4 text-orange-500"></i> Sightseeing Details</h3>
+                        <p class="standard-body-text">{{ $package['sightseeing'] }}</p>
+                    </div>
+                    @endif
+
+                    @if(!empty($package['hotels']))
+                    <div class="mb-5">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="building" class="w-4 h-4 text-orange-500"></i> Hotels</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse border border-gray-200">
+                                <thead>
+                                    <tr class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
+                                        <th class="p-3 font-bold border-r border-gray-200">City</th>
+                                        <th class="p-3 font-bold border-r border-gray-200">Hotel</th>
+                                        <th class="p-3 font-bold">Nights</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($package['hotels'] as $hotel)
+                                    <tr class="border-b border-gray-200 last:border-0 hover:bg-gray-50">
+                                        <td class="p-3 text-sm text-gray-800 border-r border-gray-200">{{ $hotel['city'] ?? '-' }}</td>
+                                        <td class="p-3 text-sm text-gray-800 border-r border-gray-200">{{ $hotel['hotel'] ?? '-' }}</td>
+                                        <td class="p-3 text-sm text-gray-800">{{ $hotel['nights'] ?? '-' }}</td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!empty($package['amenities']))
+                    <div class="mb-5">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="check-circle" class="w-4 h-4 text-orange-500"></i> Essential Amenities</h3>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($package['amenities'] as $am)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-700 text-xs font-bold border border-gray-200">
+                                {{ $am }}
+                            </span>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!empty($package['meals']))
+                    <div class="mb-5">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="utensils" class="w-4 h-4 text-orange-500"></i> Meals Included</h3>
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($package['meals'] as $meal)
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 text-xs font-bold border border-orange-200">
+                                {{ $meal }}
+                            </span>
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
+                    @if(!empty($package['transfers']))
+                    <div class="mb-2">
+                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="car" class="w-4 h-4 text-orange-500"></i> Transfers</h3>
+                        <ul class="list-disc pl-5 space-y-1">
+                            @foreach($package['transfers'] as $trans)
+                            <li class="standard-body-text">{{ $trans }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
+                </div>
+                @endif
 
                 {{-- Itinerary --}}
                 <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8">
@@ -552,91 +655,35 @@
 
                 {{-- Agent Card --}}
                 @php
-                    $agentName = $package['agent'] ?? 'Miths Holidays';
-                    if (is_array($agentName)) {
-                        $agentName = $agentName['name'] ?? 'Miths Holidays';
+                    $agentDataRaw = $package['agent'] ?? null;
+                    if (is_string($agentDataRaw)) {
+                        $agentDataRaw = json_decode($agentDataRaw, true);
                     }
-
-                    // Dynamic rich profiles for each agent name
-                    $agentProfiles = [
-                        'nomad ventures' => (object)[
-                            'id' => 1,
-                            'name' => 'Nomad Ventures',
-                            'phone' => '+1 (555) 019-2831',
-                            'email' => 'contact@nomad.com',
-                            'region' => 'Asia Pacific Region',
-                            'tier' => 'Premium'
-                        ],
-                        'azure horizons' => (object)[
-                            'id' => 2,
-                            'name' => 'Azure Horizons',
-                            'phone' => '+44 (123) 456-7890',
-                            'email' => 'info@azure.com',
-                            'region' => 'London, United Kingdom',
-                            'tier' => 'Standard'
-                        ],
-                        'globe trotters' => (object)[
-                            'id' => 3,
-                            'name' => 'Globe Trotters',
-                            'phone' => '+1 (555) 012-3456',
-                            'email' => 'contact@globetrotters.com',
-                            'region' => 'New York, USA',
-                            'tier' => 'Enterprise'
-                        ],
-                        'atlas global travels' => (object)[
-                            'id' => 4,
-                            'name' => 'Atlas Global Travels',
-                            'phone' => '+91 99999 88888',
-                            'email' => 'info@atlasglobal.com',
-                            'region' => 'New Delhi, India',
-                            'tier' => 'Premium'
-                        ],
-                        'miths holidays' => (object)[
-                            'id' => 64,
-                            'name' => 'Miths Holidays',
-                            'phone' => '+91 7383682183',
-                            'email' => 'mithstours@gmail.com',
-                            'region' => '101 GF Nr Trikon Bagh Rajkot - Gujarat',
-                            'tier' => 'Premium'
-                        ]
-                    ];
-
-                    $agentKey = strtolower($agentName);
-                    $agentData = $agentProfiles[$agentKey] ?? null;
-
-                    // Fallback to database check
-                    if (!$agentData) {
-                        $dbAgent = \DB::table('agents')->where('name', $agentName)->first();
+                    
+                    // Base agent details from package if available
+                    $agentId = $agentDataRaw['id'] ?? 64;
+                    $agentName = $agentDataRaw['name'] ?? 'Miths Holidays';
+                    $agentPhone = $agentDataRaw['phone'] ?? '+91 7383682183';
+                    $agentEmail = $agentDataRaw['email'] ?? 'mithstours@gmail.com';
+                    $agentRegion = $agentDataRaw['region'] ?? '101 GF Nr Trikon Bagh Rajkot - Gujarat';
+                    $agentLogo = $agentDataRaw['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
+                    
+                    // Fallback to DB if we only have a name (legacy entries)
+                    if (!isset($agentDataRaw['phone'])) {
+                        $dbAgent = \DB::table('agents')->where('name', $agentName)->orWhere('id', $agentId)->first();
                         if ($dbAgent) {
-                            $agentData = $dbAgent;
+                            $agentId = $dbAgent->id;
+                            $agentName = $dbAgent->agency_name ?? $dbAgent->name;
+                            $agentPhone = $dbAgent->phone ?? $agentPhone;
+                            $agentEmail = $dbAgent->email ?? $agentEmail;
+                            $agentRegion = $dbAgent->address ?? $agentRegion;
+                            if (!empty($dbAgent->logo)) {
+                                $agentLogo = $dbAgent->logo;
+                            }
                         }
                     }
 
-                    // Ultimate fallback
-                    if (!$agentData) {
-                        $agentData = (object)[
-                            'id' => 64,
-                            'name' => 'Miths Holidays',
-                            'phone' => '+91 7383682183',
-                            'email' => 'mithstours@gmail.com',
-                            'region' => '101 GF Nr Trikon Bagh Rajkot - Gujarat',
-                            'tier' => 'Premium'
-                        ];
-                    }
-
-                    // Ensure agent ID exists
-                    if (!isset($agentData->id)) {
-                        $agentData->id = 64;
-                    }
-                    
-                    $agentName = $agentData->name ?? 'Miths Holidays';
-                    $agentPhone = $agentData->phone ?? '+91 7383682183';
-                    $agentEmail = $agentData->email ?? 'mithstours@gmail.com';
-                    $agentRegion = $agentData->region ?? '101 GF Nr Trikon Bagh Rajkot - Gujarat';
-                    $agentInitial = strtoupper(substr($agentName, 0, 1));
-                    $agentLogo = 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
-                    
-                    $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentData->id);
+                    $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentId);
                 @endphp
                 <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-4">
                     <h3 class="text-base font-black text-gray-900 flex items-center gap-2" style="font-family: 'Outfit', sans-serif;">
@@ -749,11 +796,10 @@
                     <form action="{{ route('contact.submit') }}" method="POST" class="space-y-3">
                         @csrf
                         @php
-                            $agentNameForForm = $package['agent'] ?? '';
-                            if (is_array($agentNameForForm)) {
-                                $agentNameForForm = $agentNameForForm['name'] ?? 'Tour Raja';
-                            }
+                            $agentIdForForm = $agentData->id ?? null;
+                            $agentNameForForm = $agentData->name ?? 'Tour Raja';
                         @endphp
+                        <input type="hidden" name="agent_id" value="{{ $agentIdForForm }}">
                         <input type="hidden" name="subject" value="Inquiry for {{ $package['title'] }}">
                         <input type="hidden" name="agent_name" value="{{ $agentNameForForm }}">
                         <input type="hidden" name="package_name" value="{{ $package['title'] }}">

@@ -370,6 +370,48 @@
                             <svg class="agent-info-icon text-red-500" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                             <span>{{ $agent->region }}</span>
                         </div>
+
+                        <!-- Inline Branches Locations -->
+                        @if(isset($branches) && count($branches) > 0)
+                            <div class="agent-info-item lg:col-span-2 mt-1 flex flex-wrap gap-2 items-center">
+                                <svg class="agent-info-icon text-orange-500" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                <span class="font-bold text-gray-700 text-[13px] mr-1">Branches:</span>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($branches as $b)
+                                        <span class="px-2.5 py-1 bg-orange-100 text-orange-800 rounded-lg text-[10px] font-bold" title="{{ $b->address }} ({{ $b->phone }})">
+                                            {{ $b->location }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Branches -->
+                        @if(isset($branches) && count($branches) > 0)
+                            <div class="agent-info-item lg:col-span-2 mt-4 pt-4 border-t border-gray-100 flex flex-col items-start gap-2">
+                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Our Branches</span>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-2">
+                                    @foreach($branches as $b)
+                                        <div class="p-4 rounded-2xl bg-gray-50/70 border border-gray-100/50 flex flex-col gap-1 w-full">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-[11px] font-bold text-gray-800">{{ $b->agency_name }}</span>
+                                                <span class="px-2 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider {{ $b->status == 'Online' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                                                    {{ $b->status }}
+                                                </span>
+                                            </div>
+                                            <div class="text-[10px] text-gray-500 font-medium flex items-start gap-1.5 mt-1">
+                                                <i class="fas fa-map-marker-alt text-primary/70 mt-0.5"></i>
+                                                <span>{{ $b->location }} - {{ $b->address }}</span>
+                                            </div>
+                                            <div class="text-[10px] text-gray-500 font-medium flex items-center gap-1.5">
+                                                <i class="fas fa-phone-alt text-primary/70"></i>
+                                                <span>{{ $b->phone }}</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
 

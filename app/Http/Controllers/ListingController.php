@@ -537,11 +537,30 @@ class ListingController extends Controller
         }
 
         if ($agent) {
+            $firstWord = '';
+            if (!empty($agent->name)) {
+                $parts = explode(' ', preg_replace('/[^a-zA-Z0-9\s]/', '', $agent->name));
+                $firstWord = strtolower(trim($parts[0] ?? ''));
+            }
+
+            $branches = \DB::table('branches')
+                ->where('status', 'Online')
+                ->where(function($query) use ($agent, $firstWord) {
+                    $query->where('agent_id', $agent->id)
+                          ->orWhere('agency_name', 'LIKE', '%' . $agent->name . '%')
+                          ->orWhere(\DB::raw('LOWER(agency_name)'), 'LIKE', '%' . strtolower($agent->name) . '%');
+                    if (!empty($firstWord) && strlen($firstWord) > 2) {
+                        $query->orWhere(\DB::raw('LOWER(agency_name)'), 'LIKE', '%' . $firstWord . '%');
+                    }
+                })
+                ->get();
+
             return view('agent-showcase', [
                 'packages' => $packages->values(),
                 'agent' => $agent,
                 'sidebarAds' => $sidebarAds,
-                'locationCatalog' => $locationCatalog
+                'locationCatalog' => $locationCatalog,
+                'branches' => $branches
             ]);
         }
 

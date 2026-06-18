@@ -8,47 +8,81 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <!-- Left Side: Form -->
             <div class="lg:col-span-8 bg-white p-10 rounded-[48px] shadow-sm border border-gray-100">
-                <h3 class="text-2xl font-bold text-gray-800 mb-2">Add Branch</h3>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">{{ $branch ? 'Edit Branch' : 'Add Branch' }}</h3>
                 <p class="text-[11px] text-gray-400 font-medium mb-10">Register a new physical office location to your agency network. Ensure all asterisk (*) fields are filled.</p>
 
-                <form action="branch.php" class="space-y-8">
+                <form action="{{ $branch ? route('agent.branch.update', $branch->id) : route('agent.branch.store') }}" method="POST" class="space-y-8">
+                    @csrf
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
-                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest text-right">TRAVEL COMPANY / AGENCY NAME *</label>
+                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">TRAVEL COMPANY / AGENCY NAME *</label>
                             <div class="relative">
                                 <i class="far fa-building absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
-                                <input type="text" placeholder="e.g. Horizon Ascent Bali" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                @php
+                                    $agentName = session('agent_name');
+                                    if(session('agent_id')) {
+                                        $dbAgent = \DB::table('agents')->where('id', session('agent_id'))->first();
+                                        if($dbAgent) $agentName = $dbAgent->name;
+                                    }
+                                @endphp
+                                <input type="text" name="agency_name" value="{{ old('agency_name', $branch ? $branch->agency_name : $agentName) }}" readonly required placeholder="e.g. Horizon Ascent Bali" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-100 text-gray-500 cursor-not-allowed border-none text-xs font-bold">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest text-right">PHONE *</label>
+                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">PHONE *</label>
                             <div class="relative">
                                 <i class="fas fa-phone-alt absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
-                                <input type="text" placeholder="+62 812 3456 789" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                <input type="text" name="phone" value="{{ old('phone', $branch ? $branch->phone : '') }}" required placeholder="+62 812 3456 789" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">LOCATION *</label>
+                            <div class="relative">
+                                <i class="fas fa-map-marker-alt absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                <select name="location" required class="w-full pl-12 pr-10 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
+                                    <option value="">Select Location</option>
+                                    <option value="Ahmedabad, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Ahmedabad, Gujarat' ? 'selected' : '' }}>Ahmedabad, Gujarat</option>
+                                    <option value="Rajkot, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Rajkot, Gujarat' ? 'selected' : '' }}>Rajkot, Gujarat</option>
+                                    <option value="Surat, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Surat, Gujarat' ? 'selected' : '' }}>Surat, Gujarat</option>
+                                    <option value="Baroda, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Baroda, Gujarat' ? 'selected' : '' }}>Baroda, Gujarat</option>
+                                    <option value="Morbi, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Morbi, Gujarat' ? 'selected' : '' }}>Morbi, Gujarat</option>
+                                    <option value="Amreli, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Amreli, Gujarat' ? 'selected' : '' }}>Amreli, Gujarat</option>
+                                    <option value="Mumbai, Maharashtra" {{ old('location', $branch ? $branch->location : '') == 'Mumbai, Maharashtra' ? 'selected' : '' }}>Mumbai, Maharashtra</option>
+                                    <option value="Uluwatu, Bali" {{ old('location', $branch ? $branch->location : '') == 'Uluwatu, Bali' ? 'selected' : '' }}>Uluwatu, Bali</option>
+                                    <option value="Seminyak, Bali" {{ old('location', $branch ? $branch->location : '') == 'Seminyak, Bali' ? 'selected' : '' }}>Seminyak, Bali</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">STATUS *</label>
+                            <div class="relative">
+                                <i class="fas fa-toggle-on absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                <select name="status" required class="w-full pl-12 pr-10 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
+                                    <option value="Online" {{ old('status', $branch ? $branch->status : '') == 'Online' ? 'selected' : '' }}>Online</option>
+                                    <option value="Offline" {{ old('status', $branch ? $branch->status : '') == 'Offline' ? 'selected' : '' }}>Offline</option>
+                                </select>
+                                <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
                             </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest text-right">LOCATION *</label>
-                        <div class="relative">
-                            <i class="fas fa-map-marker-alt absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
-                            <input type="text" placeholder="Select City or Region" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest text-right">ADDRESS *</label>
+                        <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">ADDRESS *</label>
                         <div class="relative">
                             <i class="far fa-map absolute left-5 top-6 text-gray-300"></i>
-                            <textarea rows="5" placeholder="Full street address, building name, and floor number" class="w-full pl-12 pr-6 py-5 rounded-[32px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20"></textarea>
+                            <textarea name="address" rows="5" required placeholder="Full street address, building name, and floor number" class="w-full pl-12 pr-6 py-5 rounded-[32px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ old('address', $branch ? $branch->address : '') }}</textarea>
                         </div>
                     </div>
 
                     <div class="flex items-center justify-end space-x-8 pt-6">
-                        <a href="branch.php" class="text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors">Cancel</a>
+                        <a href="{{ route('agent.branch') }}" class="text-sm font-bold text-gray-500 hover:text-gray-800 transition-colors">Cancel</a>
                         <button type="submit" class="bg-orange-800 text-white px-10 py-4 rounded-[24px] text-sm font-bold flex items-center shadow-xl shadow-orange-100 hover:scale-[1.02] transition-all">
-                            Save Branch <i class="far fa-check-circle ml-3"></i>
+                            {{ $branch ? 'Update Branch' : 'Save Branch' }} <i class="far fa-check-circle ml-3"></i>
                         </button>
                     </div>
                 </form>
