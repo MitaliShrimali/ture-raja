@@ -138,6 +138,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/leads/update', [AdminController::class, 'updateLead']);
     Route::get('/leads/delete/{id}', [AdminController::class, 'deleteLead']);
 
+    Route::post('/contact/update', [AdminController::class, 'updateContact']);
+
     Route::post('/hotels/store', [AdminController::class, 'storeHotel']);
     Route::post('/hotels/update', [AdminController::class, 'updateHotel']);
     Route::get('/hotels/delete/{id}', [AdminController::class, 'deleteHotel']);
@@ -354,6 +356,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::post('/leads/update', [AgentController::class, 'updateLead'])->name('leads.update');
     Route::post('/leads/delete/{id}', [AgentController::class, 'deleteLead'])->name('leads.delete');
     Route::get('/contact', [AgentController::class, 'agentContact'])->name('contact');
+    Route::post('/contact/update', [AgentController::class, 'updateContact'])->name('contact.update');
     Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
     Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
     Route::get('/payment', [AgentController::class, 'payment'])->name('payment');

@@ -2136,6 +2136,21 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'Contact message status toggled!');
     }
 
+    public function updateContact(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:contacts,id',
+            'status' => 'required|in:New,Contacted,Pending,Booked,Lost',
+        ]);
+
+        DB::table('contacts')->where('id', $request->id)->update([
+            'status' => $request->status,
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Contact status updated successfully!');
+    }
+
     // SUBSCRIBERS
     public function subscribers(Request $request)
     {

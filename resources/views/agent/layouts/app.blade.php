@@ -164,6 +164,13 @@
     <!-- Custom JS -->
     <script src="{{ asset('agent/assets/js/main.js') }}"></script>
     <script src="{{ asset('agent/assets/js/validation.js') }}"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

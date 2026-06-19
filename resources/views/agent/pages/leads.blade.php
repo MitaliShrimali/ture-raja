@@ -39,12 +39,13 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($leads as $index => $l)
                         @php
-                            $status = $l->status ?? 'Pending';
+                            $status = $l->status ?? 'New';
                             $color = 'bg-gray-500';
-                            if (strtolower($status) === 'convert') $color = 'bg-green-500';
-                            elseif (strtolower($status) === 'no use' || strtolower($status) === 'no_use' || strtolower($status) === 'no-use') $color = 'bg-red-500';
+                            if (strtolower($status) === 'new') $color = 'bg-blue-500';
+                            elseif (strtolower($status) === 'contacted') $color = 'bg-purple-500';
                             elseif (strtolower($status) === 'pending') $color = 'bg-yellow-400';
-                            elseif (strtolower($status) === 'working') $color = 'bg-blue-400';
+                            elseif (strtolower($status) === 'booked') $color = 'bg-green-500';
+                            elseif (strtolower($status) === 'lost') $color = 'bg-red-500';
                             
                             $srl = 100 + $index + 1;
                             
@@ -56,7 +57,8 @@
                                 'status' => $status,
                                 'color' => $color,
                                 'email' => $l->email,
-                                'phone' => $l->phone ?? 'N/A'
+                                'phone' => $l->phone ?? 'N/A',
+                                'message' => $l->message ?? ''
                             ]);
                         @endphp
                         <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap" id="lead-row-{{ $l->id }}">
@@ -86,8 +88,8 @@
                             </td>
                             <td class="py-4 text-center">
                                 <div class="flex items-center justify-center space-x-3">
-                                    <button onclick="editLead({!! htmlspecialchars($leadJson, ENT_QUOTES, 'UTF-8') !!})" class="text-[9px] font-bold text-gray-400 hover:text-gray-800 transition-colors">Edit</button>
-                                    <button onclick="deleteLead({{ $l->id }})" class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors">Delete</button>
+                                    <button onclick="editLead({!! htmlspecialchars($leadJson, ENT_QUOTES, 'UTF-8') !!})" class="text-gray-400 hover:text-primary transition-colors" title="Edit Status"><i class="fas fa-pencil-alt"></i></button>
+                                    <button onclick="deleteLead({{ $l->id }})" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete"><i class="fas fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -122,24 +124,29 @@
             <input type="hidden" id="editLeadId">
             <div>
                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Name</label>
-                <input type="text" id="editLeadName" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium">
+                <input type="text" id="editLeadName" class="w-full px-5 py-3 rounded-2xl bg-gray-100 border-none text-xs font-medium text-gray-500 cursor-not-allowed" readonly>
             </div>
             <div>
                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Email</label>
-                <input type="email" id="editLeadEmail" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium">
+                <input type="email" id="editLeadEmail" class="w-full px-5 py-3 rounded-2xl bg-gray-100 border-none text-xs font-medium text-gray-500 cursor-not-allowed" readonly>
             </div>
             <div>
                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Phone</label>
-                <input type="text" id="editLeadPhone" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium">
+                <input type="text" id="editLeadPhone" class="w-full px-5 py-3 rounded-2xl bg-gray-100 border-none text-xs font-medium text-gray-500 cursor-not-allowed" readonly>
+            </div>
+            <div>
+                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Message</label>
+                <textarea id="editLeadMessage" class="w-full px-5 py-3 rounded-2xl bg-gray-100 border-none text-xs font-medium text-gray-500 cursor-not-allowed resize-none" rows="2" readonly></textarea>
             </div>
             <div>
                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Status</label>
                 <div class="relative">
-                    <select id="editLeadStatus" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
-                        <option value="Convert">Convert</option>
-                        <option value="No use">No use</option>
+                    <select id="editLeadStatus" class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none cursor-pointer">
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
                         <option value="Pending">Pending</option>
-                        <option value="Working">Working</option>
+                        <option value="Booked">Booked</option>
+                        <option value="Lost">Lost</option>
                     </select>
                     <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
                 </div>
@@ -256,6 +263,7 @@ function editLead(lead) {
     document.getElementById('editLeadName').value = lead.name;
     document.getElementById('editLeadEmail').value = lead.email;
     document.getElementById('editLeadPhone').value = lead.phone;
+    document.getElementById('editLeadMessage').value = lead.message || '';
     document.getElementById('editLeadStatus').value = lead.status;
     toggleLeadModal();
 }
@@ -288,10 +296,11 @@ function handleLeadSubmit(e) {
             statusBadge.innerText = status;
             
             let color = 'bg-gray-500';
-            if (status.toLowerCase() === 'convert') color = 'bg-green-500';
-            else if (status.toLowerCase() === 'no use' || status.toLowerCase() === 'no_use' || status.toLowerCase() === 'no-use') color = 'bg-red-500';
+            if (status.toLowerCase() === 'new') color = 'bg-blue-500';
+            else if (status.toLowerCase() === 'contacted') color = 'bg-purple-500';
             else if (status.toLowerCase() === 'pending') color = 'bg-yellow-400';
-            else if (status.toLowerCase() === 'working') color = 'bg-blue-400';
+            else if (status.toLowerCase() === 'booked') color = 'bg-green-500';
+            else if (status.toLowerCase() === 'lost') color = 'bg-red-500';
             
             statusBadge.className = `${color} text-white px-3 py-1 rounded-lg text-[8px] font-bold lead-status`;
             

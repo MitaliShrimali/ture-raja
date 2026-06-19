@@ -64,10 +64,12 @@
                         @php
                             $status = $c->status ?? 'Pending';
                             $statusColor = match(strtolower($status)) {
-                                'resolved'  => 'bg-green-100 text-green-700',
+                                'new'       => 'bg-blue-100 text-blue-700',
+                                'contacted' => 'bg-purple-100 text-purple-700',
                                 'pending'   => 'bg-yellow-100 text-yellow-700',
-                                'closed'    => 'bg-gray-100 text-gray-500',
-                                default     => 'bg-blue-100 text-blue-700',
+                                'booked'    => 'bg-green-100 text-green-700',
+                                'lost'      => 'bg-red-100 text-red-700',
+                                default     => 'bg-gray-100 text-gray-700',
                             };
                             $contactData = json_encode([
                                 'id'       => $c->id,
@@ -113,17 +115,16 @@
                             <td class="py-4 px-6 text-center">
                                 <div class="flex items-center justify-center gap-3">
                                     <button
-                                        onclick="openViewModal({{ $contactData }})"
+                                        onclick="openEditModal({{ $contactData }})"
                                         class="text-[10px] font-bold text-gray-400 hover:text-primary transition-colors flex items-center gap-1"
-                                        title="View">
-                                        <i class="fas fa-eye"></i>
+                                        title="Edit">
+                                        <i class="fas fa-pencil-alt"></i>
                                     </button>
-                                    <button
-                                        onclick="markResolved({{ $c->id }}, this)"
-                                        class="text-[10px] font-bold text-gray-400 hover:text-green-500 transition-colors flex items-center gap-1 {{ strtolower($status) === 'resolved' ? 'text-green-500' : '' }}"
-                                        title="{{ strtolower($status) === 'resolved' ? 'Already Resolved' : 'Mark Resolved' }}">
-                                        <i class="fas fa-check-circle"></i>
-                                    </button>
+                                    <form action="{{ url('/admin/contact/delete/' . $c->id) }}" method="GET" class="inline" onsubmit="return confirm('Are you sure you want to delete this message?');">
+                                        <button type="submit" class="text-[10px] font-bold text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1" title="Delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -153,68 +154,81 @@
         </div>
     </footer>
 
-{{-- View Modal --}}
-<div id="viewContactModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm" onclick="closeViewModal()"></div>
-    <div class="bg-white w-full max-w-lg rounded-[32px] p-8 shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300" id="viewContactModalContainer">
-        <button onclick="closeViewModal()" class="absolute top-6 right-8 text-gray-400 hover:text-gray-800 transition-colors">
+{{-- Edit Modal --}}
+<div id="editContactModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-gray-900/20 backdrop-blur-sm" onclick="closeEditModal()"></div>
+    <div class="bg-white w-full max-w-lg rounded-[32px] p-8 shadow-2xl relative z-10 scale-95 opacity-0 transition-all duration-300" id="editContactModalContainer">
+        <button onclick="closeEditModal()" class="absolute top-6 right-8 text-gray-400 hover:text-gray-800 transition-colors">
             <i class="fas fa-times"></i>
         </button>
-        <h3 class="text-xl font-black text-gray-900 mb-1">Contact Details</h3>
-        <p class="text-[10px] text-gray-400 font-medium mb-6">Full details of the submitted inquiry</p>
+        <h3 class="text-xl font-black text-gray-900 mb-1">Edit Contact Status</h3>
+        <p class="text-[10px] text-gray-400 font-medium mb-6">Update the status of the submitted inquiry</p>
 
-        <div class="space-y-4">
+        <form action="{{ route('agent.contact.update') }}" method="POST" class="space-y-6">
+            @csrf
+            <input type="hidden" name="id" id="ecId">
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-gray-50 rounded-2xl p-4">
                     <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Name</p>
-                    <p id="vcName" class="text-sm font-black text-gray-900"></p>
+                    <p id="ecName" class="text-sm font-black text-gray-900"></p>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4">
-                    <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</p>
-                    <p id="vcStatus" class="text-sm font-black text-gray-900"></p>
+                    <label class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1 block">Status</label>
+                    <select name="status" id="ecStatus" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2 text-sm font-bold text-gray-700 outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Booked">Booked</option>
+                        <option value="Lost">Lost</option>
+                    </select>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div class="bg-gray-50 rounded-2xl p-4">
                     <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Email</p>
-                    <p id="vcEmail" class="text-xs font-bold text-gray-700 break-all"></p>
+                    <p id="ecEmail" class="text-xs font-bold text-gray-700 break-all"></p>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4">
                     <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Phone</p>
-                    <p id="vcPhone" class="text-xs font-bold text-gray-700"></p>
+                    <p id="ecPhone" class="text-xs font-bold text-gray-700"></p>
                 </div>
             </div>
             <div class="bg-gray-50 rounded-2xl p-4">
                 <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-1">Subject</p>
-                <p id="vcSubject" class="text-sm font-black text-primary"></p>
+                <p id="ecSubject" class="text-sm font-black text-primary"></p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-4">
                 <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-2">Message</p>
-                <p id="vcMessage" class="text-xs text-gray-600 font-medium leading-relaxed whitespace-pre-line"></p>
+                <p id="ecMessage" class="text-xs text-gray-600 font-medium leading-relaxed whitespace-pre-line"></p>
             </div>
-            <div class="text-right">
-                <p id="vcReceived" class="text-[10px] text-gray-400 font-medium"></p>
+            
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-100 mt-6">
+                <button type="button" onclick="closeEditModal()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-gray-600 uppercase tracking-widest transition-all">Cancel</button>
+                <button type="submit" class="px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/30">Save Changes</button>
             </div>
-        </div>
-
-        <div class="flex justify-end pt-4">
-            <button onclick="closeViewModal()" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-gray-600 uppercase tracking-widest transition-all">Close</button>
-        </div>
+        </form>
     </div>
 </div>
 
 <script>
-function openViewModal(data) {
-    document.getElementById('vcName').innerText    = data.name || '—';
-    document.getElementById('vcEmail').innerText   = data.email || '—';
-    document.getElementById('vcPhone').innerText   = data.phone || 'Not provided';
-    document.getElementById('vcSubject').innerText = data.subject || 'General Inquiry';
-    document.getElementById('vcMessage').innerText = data.message || '—';
-    document.getElementById('vcStatus').innerText  = data.status || '—';
-    document.getElementById('vcReceived').innerText = 'Received: ' + (data.received || '');
+function openEditModal(data) {
+    document.getElementById('ecId').value      = data.id;
+    document.getElementById('ecName').innerText    = data.name || '—';
+    document.getElementById('ecEmail').innerText   = data.email || '—';
+    document.getElementById('ecPhone').innerText   = data.phone || 'Not provided';
+    document.getElementById('ecSubject').innerText = data.subject || 'General Inquiry';
+    document.getElementById('ecMessage').innerText = data.message || '—';
+    
+    // Set select value
+    const statusSelect = document.getElementById('ecStatus');
+    if(statusSelect.querySelector(`option[value="${data.status}"]`)) {
+        statusSelect.value = data.status;
+    } else {
+        statusSelect.value = 'New';
+    }
 
-    const modal = document.getElementById('viewContactModal');
-    const container = document.getElementById('viewContactModalContainer');
+    const modal = document.getElementById('editContactModal');
+    const container = document.getElementById('editContactModalContainer');
     modal.classList.remove('hidden');
     setTimeout(() => {
         container.classList.remove('scale-95', 'opacity-0');
@@ -222,37 +236,12 @@ function openViewModal(data) {
     }, 10);
 }
 
-function closeViewModal() {
-    const modal = document.getElementById('viewContactModal');
-    const container = document.getElementById('viewContactModalContainer');
+function closeEditModal() {
+    const modal = document.getElementById('editContactModal');
+    const container = document.getElementById('editContactModalContainer');
     container.classList.remove('scale-100', 'opacity-100');
     container.classList.add('scale-95', 'opacity-0');
     setTimeout(() => modal.classList.add('hidden'), 300);
-}
-
-function markResolved(id, btn) {
-    fetch('/agent/leads/update', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ id: id, status: 'Resolved' })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            const row = document.getElementById('contact-row-' + id);
-            const badge = row.querySelector('span.rounded-full');
-            if (badge) {
-                badge.innerText = 'Resolved';
-                badge.className = 'bg-green-100 text-green-700 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider';
-            }
-            btn.classList.add('text-green-500');
-            if (typeof toastr !== 'undefined') toastr.success('Marked as resolved!');
-        }
-    })
-    .catch(err => console.error(err));
 }
 </script>
 

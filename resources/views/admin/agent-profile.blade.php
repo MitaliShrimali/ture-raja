@@ -7,10 +7,17 @@
     <!-- Top Header Profile Section -->
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div class="space-y-3">
+            @if($agent->service_guaranteed)
             <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#FFF2EB] text-[#D35400] text-[10px] font-black uppercase tracking-wider rounded-full border border-[#FDEBD0]">
-                Verified Agency
+                <i data-lucide="check-circle" size="14"></i> Trusted Agent
             </span>
-            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight uppercase">{{ $agent->name }}</h1>
+            @endif
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight uppercase flex items-center gap-2">
+                {{ $agent->name }}
+                @if($agent->service_guaranteed)
+                    <i data-lucide="check-circle" class="text-blue-500" size="28" title="Trusted Agent"></i>
+                @endif
+            </h1>
             <p class="text-sm text-slate-500 font-medium max-w-2xl leading-relaxed">
                 Providing premium travel experiences across {{ $agent->state ?? 'Gujarat' }} and beyond since 2010. Your gateway to seamless journeys.
             </p>

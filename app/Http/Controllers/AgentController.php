@@ -814,6 +814,21 @@ class AgentController extends Controller
         ]);
     }
 
+    public function updateContact(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|exists:contacts,id',
+            'status' => 'required|in:New,Contacted,Pending,Booked,Lost',
+        ]);
+
+        DB::table('contacts')->where('id', $request->id)->update([
+            'status' => $request->status,
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Contact status updated successfully!');
+    }
+
     public function myPackages()
     {
         $agentId   = session('agent_id');

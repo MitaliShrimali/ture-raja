@@ -248,7 +248,7 @@ class UserController extends Controller
                     'phone'      => $request->phone,
                     'subject'    => $request->subject ?? 'General Contact',
                     'message'    => $request->message,
-                    'status'     => 'Pending',
+                    'status'     => 'New',
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);

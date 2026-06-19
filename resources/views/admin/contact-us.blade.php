@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ showViewModal: false, activeContact: { name: '', email: '', phone: '', subject: '', message: '' } }">
+<div class="space-y-10 pb-12" x-data="{ showEditModal: false, editContact: { id: '', name: '', email: '', phone: '', subject: '', message: '', status: '' } }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
             <h2 class="font-black text-foreground tracking-tight">Contact Inquiries</h2>
@@ -49,21 +49,19 @@
                             <td class="py-6 px-10 text-sm font-bold text-foreground">{{ $inq->subject ?? 'General Feedback' }}</td>
                             <td class="py-6 px-10 text-sm font-medium text-muted-text">{{ \Carbon\Carbon::parse($inq->created_at)->diffForHumans() }}</td>
                             <td class="py-6 px-10">
-                                <a href="{{ url('/admin/contact/toggle/' . $inq->id) }}" class="inline-block">
-                                    <span class="px-3 py-1 rounded-full 
-                                        {{ $inq->status === 'Pending' ? 'bg-yellow-50 text-yellow-500 hover:bg-yellow-100' : 'bg-green-50 text-green-500 hover:bg-green-100' }} 
-                                        text-[10px] font-black uppercase tracking-wider transition-all">
-                                        {{ $inq->status }}
-                                    </span>
-                                </a>
+                                <span class="px-3 py-1 rounded-full 
+                                    {{ $inq->status === 'New' ? 'bg-blue-50 text-blue-500' : ($inq->status === 'Contacted' ? 'bg-purple-50 text-purple-500' : ($inq->status === 'Pending' ? 'bg-yellow-50 text-yellow-500' : ($inq->status === 'Booked' ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'))) }} 
+                                    text-[10px] font-black uppercase tracking-wider transition-all">
+                                    {{ $inq->status }}
+                                </span>
                             </td>
                             <td class="py-6 px-10 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button 
-                                        @click="showViewModal = true; activeContact = { name: '{{ addslashes($inq->name) }}', email: '{{ addslashes($inq->email) }}', phone: '{{ addslashes($inq->phone) }}', subject: '{{ addslashes($inq->subject ?? 'General Feedback') }}', message: '{{ addslashes($inq->message) }}' }"
+                                        @click="showEditModal = true; editContact = { id: '{{ $inq->id }}', name: '{{ addslashes($inq->name) }}', email: '{{ addslashes($inq->email) }}', phone: '{{ addslashes($inq->phone) }}', subject: '{{ addslashes($inq->subject ?? 'General Feedback') }}', message: '{{ addslashes($inq->message) }}', status: '{{ addslashes($inq->status) }}' }"
                                         class="p-2 text-muted-text hover:text-primary transition-all"
                                     >
-                                        <i data-lucide="eye" size="18"></i>
+                                        <i data-lucide="pencil" size="18"></i>
                                     </button>
                                     <a 
                                         href="{{ url('/admin/contact/delete/' . $inq->id) }}" 
@@ -121,9 +119,9 @@
 
     <!-- ================= MODALS ================= -->
 
-    <!-- View Message Modal -->
+    <!-- Edit Contact Modal -->
     <div 
-        x-show="showViewModal" 
+        x-show="showEditModal" 
         class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 scale-95"
@@ -133,41 +131,54 @@
         x-transition:leave-end="opacity-0 scale-95"
         style="display: none;"
     >
-        <div @click.away="showViewModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
+        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
             <div class="flex items-center justify-between border-b border-border-soft pb-4">
                 <div class="space-y-1">
-                    <h3 class="text-xl font-black text-foreground">View Contact Message</h3>
-                    <p class="text-xs text-muted-text font-medium" x-text="'Submitted by: ' + activeContact.name"></p>
+                    <h3 class="text-xl font-black text-foreground">Edit Contact Status</h3>
+                    <p class="text-xs text-muted-text font-medium" x-text="'Submitted by: ' + editContact.name"></p>
                 </div>
-                <button @click="showViewModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                <button @click="showEditModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
                     <i data-lucide="x" size="20"></i>
                 </button>
             </div>
             
-            <div class="space-y-6">
+            <form action="{{ url('/admin/contact/update') }}" method="POST" class="space-y-6">
+                @csrf
+                <input type="hidden" name="id" x-model="editContact.id">
                 <div class="grid grid-cols-2 gap-4 text-xs font-bold text-muted-text">
                     <div class="space-y-1">
                         <p class="uppercase text-[9px] pl-1 tracking-widest text-muted-text/50">Email</p>
-                        <p class="bg-gray-50 p-3 rounded-xl text-foreground" x-text="activeContact.email"></p>
+                        <p class="bg-gray-50 p-3 rounded-xl text-foreground" x-text="editContact.email"></p>
                     </div>
                     <div class="space-y-1">
                         <p class="uppercase text-[9px] pl-1 tracking-widest text-muted-text/50">Phone</p>
-                        <p class="bg-gray-50 p-3 rounded-xl text-foreground" x-text="activeContact.phone || 'N/A'"></p>
+                        <p class="bg-gray-50 p-3 rounded-xl text-foreground" x-text="editContact.phone || 'N/A'"></p>
                     </div>
                 </div>
-                <div class="space-y-1">
+                <div class="space-y-1 text-xs font-bold text-muted-text">
                     <p class="uppercase text-[9px] pl-1 tracking-widest text-muted-text/50">Subject</p>
-                    <p class="bg-gray-50 p-3 rounded-xl text-sm font-black text-primary" x-text="activeContact.subject"></p>
+                    <p class="bg-gray-50 p-3 rounded-xl text-sm font-black text-primary" x-text="editContact.subject"></p>
                 </div>
-                <div class="space-y-1">
+                <div class="space-y-1 text-xs font-bold text-muted-text">
                     <p class="uppercase text-[9px] pl-1 tracking-widest text-muted-text/50">Message Body</p>
-                    <p class="bg-gray-50 p-4 rounded-2xl text-xs font-medium text-foreground leading-relaxed whitespace-pre-line" x-text="activeContact.message"></p>
+                    <p class="bg-gray-50 p-4 rounded-2xl text-xs font-medium text-foreground leading-relaxed whitespace-pre-line" x-text="editContact.message"></p>
                 </div>
-            </div>
-            
-            <div class="flex items-center justify-end pt-4">
-                <button type="button" @click="showViewModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Close</button>
-            </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                    <select name="status" x-model="editContact.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        <option value="New">New</option>
+                        <option value="Contacted">Contacted</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Booked">Booked</option>
+                        <option value="Lost">Lost</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center justify-end gap-4 pt-4">
+                    <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

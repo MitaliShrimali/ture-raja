@@ -109,8 +109,9 @@
                             <td class="py-6 px-10 text-center">
                                 <span class="px-3 py-1 rounded-full 
                                     {{ $lead->status === 'Booked' ? 'bg-green-50 text-green-500' : 
-                                       ($lead->status === 'New' ? 'bg-orange-50 text-orange-500' : 
-                                       ($lead->status === 'Contacted' ? 'bg-blue-50 text-blue-500' : 'bg-red-50 text-red-500')) }} 
+                                       ($lead->status === 'New' ? 'bg-blue-50 text-blue-500' : 
+                                       ($lead->status === 'Contacted' ? 'bg-purple-50 text-purple-500' : 
+                                       ($lead->status === 'Pending' ? 'bg-yellow-50 text-yellow-600' : 'bg-red-50 text-red-500'))) }} 
                                     text-[10px] font-black uppercase tracking-wider">
                                     {{ $lead->status }}
                                 </span>
@@ -119,7 +120,7 @@
                                 <div class="flex items-center justify-end gap-2">
                                     <button 
                                         @click="showEditModal = true; editLead = { id: '{{ $lead->id }}', name: '{{ addslashes($lead->name) }}', email: '{{ addslashes($lead->email) }}', phone: '{{ addslashes($lead->phone) }}', agent: '{{ addslashes($lead->agent) }}', package: '{{ addslashes($lead->package) }}', status: '{{ $lead->status }}', message: '{{ $leadMsgEscaped }}' }"
-                                        class="p-2 text-muted-text hover:text-primary transition-all"
+                                        class="p-2 text-muted-text hover:text-primary transition-all" title="Edit Status"
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
                                     </button>
@@ -264,6 +265,7 @@
                     <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                         <option value="New">New</option>
                         <option value="Contacted">Contacted</option>
+                        <option value="Pending">Pending</option>
                         <option value="Booked">Booked</option>
                         <option value="Lost">Lost</option>
                     </select>
@@ -304,34 +306,39 @@
                 @csrf
                 <input type="hidden" name="id" x-model="editLead.id" />
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Traveler Name<span class="text-primary">*</span></label>
-                    <input required type="text" name="name" x-model="editLead.name" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Traveler Name</label>
+                    <input type="text" name="name" x-model="editLead.name" class="w-full bg-gray-100 border-none rounded-2xl py-4 px-6 text-muted-text cursor-not-allowed shadow-sm text-sm" readonly />
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
-                        <input required type="email" name="email" x-model="editLead.email" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address</label>
+                        <input type="email" name="email" x-model="editLead.email" class="w-full bg-gray-100 border-none rounded-2xl py-4 px-6 text-muted-text cursor-not-allowed shadow-sm text-sm" readonly />
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Phone Number</label>
-                        <input type="text" name="phone" x-model="editLead.phone" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                        <input type="text" name="phone" x-model="editLead.phone" class="w-full bg-gray-100 border-none rounded-2xl py-4 px-6 text-muted-text cursor-not-allowed shadow-sm text-sm" readonly />
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Assigned Agent</label>
-                        <input type="text" name="agent" x-model="editLead.agent" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                        <input type="text" name="agent" x-model="editLead.agent" class="w-full bg-gray-100 border-none rounded-2xl py-4 px-6 text-muted-text cursor-not-allowed shadow-sm text-sm" readonly />
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Package</label>
-                        <input type="text" name="package" x-model="editLead.package" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                        <input type="text" name="package" x-model="editLead.package" class="w-full bg-gray-100 border-none rounded-2xl py-4 px-6 text-muted-text cursor-not-allowed shadow-sm text-sm" readonly />
                     </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Message</label>
+                    <textarea x-model="editLead.message" class="w-full bg-gray-100 border-none rounded-2xl py-4 px-6 text-muted-text cursor-not-allowed shadow-sm text-sm resize-none" rows="2" readonly></textarea>
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
                     <select name="status" x-model="editLead.status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                         <option value="New">New</option>
                         <option value="Contacted">Contacted</option>
+                        <option value="Pending">Pending</option>
                         <option value="Booked">Booked</option>
                         <option value="Lost">Lost</option>
                     </select>
