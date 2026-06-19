@@ -422,173 +422,79 @@
                 </div>
 
                 {{-- Tour Overview & Editorial --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
-                    <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
-
-                    @if(!empty($package['editorial_itinerary']))
-                    <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading text-xl">Overview</h3>
-                    <p class="standard-body-text detail-overview-text whitespace-pre-wrap">{{ $package['editorial_itinerary'] }}</p>
-                    @endif
-
-                    <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Tour Highlights</h3>
-                    <ul class="space-y-2">
-                        @foreach($package['highlights'] as $hl)
-                        <li class="flex items-start gap-2 standard-body-text">
-                            <svg class="shrink-0 mt-1" width="14" height="14" fill="none" stroke="#f97316" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span>{{ $hl }}</span>
-                        </li>
-                        @endforeach
-                    </ul>
-                </div>
-
-                {{-- Pricing & Dates --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">Pricing & Dates</h2>
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="text-3xl font-black text-[#e85d26]">₹{{ number_format((float)$package['price'], 2) }}</div>
-                        @if(!empty($package['old_price']))
-                        <div class="text-lg font-bold text-gray-400 line-through">₹{{ number_format((float)$package['old_price'], 2) }}</div>
-                        @endif
-                        <div class="text-sm font-semibold text-gray-500 mt-2">Per Person</div>
-                    </div>
-                </div>
-
-                {{-- What's Included / Excluded --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">What's Included</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
-                        @foreach($package['included'] as $item)
-                        <div class="flex items-start gap-2 standard-body-text">
-                            <svg class="shrink-0 mt-1" width="14" height="14" fill="none" stroke="#22c55e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span>{{ $item }}</span>
-                        </div>
-                        @endforeach
-                        @foreach($package['excluded'] as $item)
-                        <div class="flex items-start gap-2 standard-body-text">
-                            <svg class="shrink-0 mt-1" width="14" height="14" fill="none" stroke="#ef4444" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            <span>{{ $item }}</span>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                {{-- Additional Package Details --}}
-                @if(!empty($package['validity']) || !empty($package['sightseeing']) || !empty($package['hotels']) || !empty($package['amenities']) || !empty($package['meals']) || !empty($package['transfers']))
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">Additional Details</h2>
-                    
-                    @if(!empty($package['validity']))
-                    <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="calendar" class="w-4 h-4 text-orange-500"></i> Package Validity</h3>
-                        <p class="standard-body-text">{{ $package['validity'] }}</p>
-                    </div>
-                    @endif
-
-                    @if(!empty($package['sightseeing']))
-                    <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="map" class="w-4 h-4 text-orange-500"></i> Sightseeing Details</h3>
-                        <p class="standard-body-text">{{ $package['sightseeing'] }}</p>
-                    </div>
-                    @endif
-
-                    @if(!empty($package['hotels']))
-                    <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="building" class="w-4 h-4 text-orange-500"></i> Hotels</h3>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse border border-gray-200">
-                                <thead>
-                                    <tr class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
-                                        <th class="p-3 font-bold border-r border-gray-200">City</th>
-                                        <th class="p-3 font-bold border-r border-gray-200">Hotel</th>
-                                        <th class="p-3 font-bold">Nights</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($package['hotels'] as $hotel)
-                                    <tr class="border-b border-gray-200 last:border-0 hover:bg-gray-50">
-                                        <td class="p-3 text-sm text-gray-800 border-r border-gray-200">{{ $hotel['city'] ?? '-' }}</td>
-                                        <td class="p-3 text-sm text-gray-800 border-r border-gray-200">{{ $hotel['hotel'] ?? '-' }}</td>
-                                        <td class="p-3 text-sm text-gray-800">{{ $hotel['nights'] ?? '-' }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    @endif
-
-                    @if(!empty($package['amenities']))
-                    <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="check-circle" class="w-4 h-4 text-orange-500"></i> Essential Amenities</h3>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($package['amenities'] as $am)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-700 text-xs font-bold border border-gray-200">
-                                {{ $am }}
-                            </span>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
-
-                    @if(!empty($package['meals']))
-                    <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="utensils" class="w-4 h-4 text-orange-500"></i> Meals Included</h3>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($package['meals'] as $meal)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 text-xs font-bold border border-orange-200">
-                                {{ $meal }}
-                            </span>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
-
-                    @if(!empty($package['transfers']))
-                    <div class="mb-2">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="car" class="w-4 h-4 text-orange-500"></i> Transfers</h3>
-                        <ul class="list-disc pl-5 space-y-1">
-                            @foreach($package['transfers'] as $trans)
-                            <li class="standard-body-text">{{ $trans }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
-
-                </div>
-                @endif
-
-                {{-- Sightseeing Details --}}
                 @php
-                    $hasSightseeing = !empty($package['sightseeing']);
-                    $sightseeingItems = $hasSightseeing ? array_filter(array_map('trim', explode(',', $package['sightseeing']))) : [];
+                    $overviewText = isset($package['overview']) ? $package['overview'] : '';
                 @endphp
-                @if($hasSightseeing && count($sightseeingItems) > 0)
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
-                    <h2 class="font-black text-gray-900 mb-6 section-heading text-xl">Sightseeing Details</h2>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach($sightseeingItems as $place)
-                            <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#F6F8FA] border border-gray-200 text-gray-700 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-50 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#e85d26]" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                                </svg>
-                                {{ $place }}
-                            </span>
-                        @endforeach
-                    </div>
+                @if(!empty($overviewText))
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 mb-8">
+                    <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
+                    <p class="standard-body-text detail-overview-text">{{ $overviewText }}</p>
                 </div>
                 @endif
 
-                {{-- Itinerary --}}
-                @if(!empty($package['itinerary']) && count($package['itinerary']) > 0)
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8">
-                    <h2 class="font-black text-gray-900 mb-8 section-heading">Itinerary</h2>
+                @php
+    if (!function_exists('parseTextItinerary')) {
+        function parseTextItinerary($text) {
+            if (empty($text)) return [];
+            $text = str_replace("\r", "", $text);
+            $parts = preg_split('/•\s*/u', $text);
+            $days = [];
+            foreach ($parts as $part) {
+                $part = trim($part);
+                if (empty($part)) continue;
+                $lines = explode("\n", $part);
+                $titleLine = trim($lines[0]);
+                $descLines = array_slice($lines, 1);
+                $desc = implode("\n", $descLines);
+                $desc = trim($desc);
+                
+                if (preg_match('/Day\s+\d+/i', $titleLine) || preg_match('/Day\s+/i', $titleLine)) {
+                    $days[] = [
+                        'title' => $titleLine,
+                        'desc' => $desc
+                    ];
+                } else {
+                    if (count($days) > 0) {
+                        $days[count($days) - 1]['desc'] .= "\n\n• " . $part;
+                    }
+                }
+            }
+            
+            foreach ($days as &$day) {
+                $desc = e($day['desc']);
+                $desc = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $desc);
+                $desc = preg_replace('/_(.*?)_/', '<em>$1</em>', $desc);
+                $desc = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2" target="_blank" class="text-orange-600 hover:underline font-bold">$1</a>', $desc);
+                $desc = nl2br($desc);
+                $day['desc_html'] = $desc;
+            }
+            return $days;
+        }
+    }
+    
+    $parsedItinerary = [];
+    $rawItineraryText = "";
+    if (isset($package) && !empty($package['editorial_itinerary'])) {
+        $rawItineraryText = $package['editorial_itinerary'];
+    } elseif (isset($pkg) && !empty($pkg->editorial_itinerary)) {
+        $rawItineraryText = $pkg->editorial_itinerary;
+    }
+    $parsedItinerary = parseTextItinerary($rawItineraryText);
+@endphp
+                
+                {{-- Itinerary Timeline --}}
+                @if(count($parsedItinerary) > 0)
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                    <h2 class="font-black text-gray-900 mb-8 section-heading text-xl">Itinerary</h2>
                     <div class="relative pl-2">
-                        @foreach($package['itinerary'] as $idx => $day)
+                        @foreach($parsedItinerary as $idx => $day)
                         <div class="relative flex gap-6 pb-8 last:pb-2">
+                            {{-- Timeline Line --}}
                             @if(!$loop->last)
                                 <div class="absolute left-[11px] top-6 bottom-0" style="border-left: 2px dashed #e85d26 !important;"></div>
                             @endif
+                            
+                            {{-- Timeline Circle --}}
                             <div class="relative z-10 shrink-0">
                                 @if($loop->first || $loop->last)
                                     <div class="w-6 h-6 rounded-full shadow-sm flex items-center justify-center text-[10px] font-bold text-white" style="background-color: #e85d26 !important; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.2);">{{ $idx + 1 }}</div>
@@ -596,10 +502,12 @@
                                     <div class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-[10px] font-bold" style="border: 4px solid #e85d26 !important; color: #e85d26; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.12);">{{ $idx + 1 }}</div>
                                 @endif
                             </div>
+                            
+                            {{-- Content --}}
                             <div class="-mt-1 flex-1">
-                                <h4 class="font-black text-gray-800" style="font-family: 'Outfit', sans-serif; font-size: 16px;">Day {{ $idx + 1 }}: {{ $day['title'] }}</h4>
+                                <h4 class="font-black text-gray-800" style="font-family: 'Outfit', sans-serif; font-size: 16px;">{{ $day['title'] }}</h4>
                                 @if(!empty($day['desc']))
-                                    <p class="standard-body-text mt-2 max-w-3xl">{{ $day['desc'] }}</p>
+                                    <p class="standard-body-text mt-2 max-w-3xl">{!! $day['desc_html'] !!}</p>
                                 @endif
                             </div>
                         </div>
@@ -607,7 +515,7 @@
                     </div>
                 </div>
                 @endif
-
+                
                 {{-- FAQ Section --}}
                 <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8" x-data="{ activeFaq: 0 }">
                     <h2 class="font-black text-gray-900 mb-6 section-heading">FAQ</h2>

@@ -181,30 +181,62 @@
             </div>
             @endif
 
-            {{-- Sightseeing Details --}}
             @php
-                $hasSightseeing = !empty($pkg->sightseeing);
-                $sightseeingItems = $hasSightseeing ? array_filter(array_map('trim', explode(',', $pkg->sightseeing))) : [];
-            @endphp
-            @if($hasSightseeing && count($sightseeingItems) > 0)
-            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft mb-6">
-                <h3 class="text-lg font-black text-foreground mb-6">Sightseeing Details</h3>
-                <div class="flex flex-wrap gap-3">
-                    @foreach($sightseeingItems as $place)
-                        <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-semibold rounded-full shadow-sm hover:bg-orange-100 transition-colors">
-                            <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> {{ $place }}
-                        </span>
-                    @endforeach
-                </div>
-            </div>
-            @endif
-
-            {{-- Itinerary --}}
-            @if(count($itinerary) > 0)
+    if (!function_exists('parseTextItinerary')) {
+        function parseTextItinerary($text) {
+            if (empty($text)) return [];
+            $text = str_replace("\r", "", $text);
+            $parts = preg_split('/•\s*/u', $text);
+            $days = [];
+            foreach ($parts as $part) {
+                $part = trim($part);
+                if (empty($part)) continue;
+                $lines = explode("\n", $part);
+                $titleLine = trim($lines[0]);
+                $descLines = array_slice($lines, 1);
+                $desc = implode("\n", $descLines);
+                $desc = trim($desc);
+                
+                if (preg_match('/Day\s+\d+/i', $titleLine) || preg_match('/Day\s+/i', $titleLine)) {
+                    $days[] = [
+                        'title' => $titleLine,
+                        'desc' => $desc
+                    ];
+                } else {
+                    if (count($days) > 0) {
+                        $days[count($days) - 1]['desc'] .= "\n\n• " . $part;
+                    }
+                }
+            }
+            
+            foreach ($days as &$day) {
+                $desc = e($day['desc']);
+                $desc = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $desc);
+                $desc = preg_replace('/_(.*?)_/', '<em>$1</em>', $desc);
+                $desc = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2" target="_blank" class="text-orange-600 hover:underline font-bold">$1</a>', $desc);
+                $desc = nl2br($desc);
+                $day['desc_html'] = $desc;
+            }
+            return $days;
+        }
+    }
+    
+    $parsedItinerary = [];
+    $rawItineraryText = "";
+    if (isset($package) && !empty($package['editorial_itinerary'])) {
+        $rawItineraryText = $package['editorial_itinerary'];
+    } elseif (isset($pkg) && !empty($pkg->editorial_itinerary)) {
+        $rawItineraryText = $pkg->editorial_itinerary;
+    }
+    $parsedItinerary = parseTextItinerary($rawItineraryText);
+@endphp
+            
+            {{-- Itinerary Timeline --}}
+            @if(count($parsedItinerary) > 0)
             <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft mb-6">
                 <h3 class="text-lg font-black text-foreground mb-6">Itinerary</h3>
                 <div class="relative pl-2">
-                    @foreach($itinerary as $idx => $day)
+                    @foreach($parsedItinerary as $idx => $day)
                         <div class="relative flex gap-6 pb-8 last:pb-2">
                             @if(!$loop->last)
                                 <div class="absolute left-[11px] top-6 bottom-0" style="border-left: 2px dashed #e85d26 !important;"></div>
@@ -217,9 +249,9 @@
                                 @endif
                             </div>
                             <div class="-mt-1 flex-1">
-                                <h4 class="font-bold text-gray-800 text-base">Day {{ $idx + 1 }}: {{ $day['title'] }}</h4>
+                                <h4 class="font-bold text-gray-800 text-base">{{ $day['title'] }}</h4>
                                 @if(!empty($day['desc']))
-                                    <p class="text-sm text-gray-600 mt-2">{{ $day['desc'] }}</p>
+                                    <p class="text-sm text-gray-600 mt-2">{!! $day['desc_html'] !!}</p>
                                 @endif
                             </div>
                         </div>
