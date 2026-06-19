@@ -76,7 +76,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/packages/view/{id}', [AdminController::class, 'viewPackage'])->name('admin.packages.view');
     
     // Inventory & Stays
-    Route::get('/packages', [AdminController::class, 'packages']);
+    Route::get('/packages', [AdminController::class, 'packages'])->name('admin.packages');
     Route::get('/packages/international', [AdminController::class, 'internationalPackages']);
     Route::get('/packages/domestic', [AdminController::class, 'domesticPackages']);
     Route::get('/packages/create', [AdminController::class, 'createPackage']);

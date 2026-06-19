@@ -390,6 +390,116 @@
             }, 100);
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/confirm-interceptor.js') }}"></script>
+    <style>
+        .custom-swal-popup {
+            border-radius: 24px !important;
+            padding: 32px 24px !important;
+            border: none !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+        }
+        .custom-swal-confirm {
+            background-color: #e85d26 !important;
+            color: white !important;
+            padding: 12px 32px !important;
+            border-radius: 12px !important;
+            font-weight: 800 !important;
+            margin: 0 8px !important;
+            border: none !important;
+            cursor: pointer !important;
+            font-size: 16px !important;
+            transition: all 0.2s ease !important;
+        }
+        .custom-swal-confirm:hover {
+            background-color: #d45020 !important;
+            transform: translateY(-1px);
+        }
+        .custom-swal-cancel {
+            background-color: white !important;
+            color: #e85d26 !important;
+            padding: 10px 32px !important;
+            border-radius: 12px !important;
+            font-weight: 800 !important;
+            margin: 0 8px !important;
+            border: 2px solid #e85d26 !important;
+            cursor: pointer !important;
+            font-size: 16px !important;
+            transition: all 0.2s ease !important;
+        }
+        .custom-swal-cancel:hover {
+            background-color: #fff7f5 !important;
+        }
+        .custom-swal-actions {
+            margin-top: 32px !important;
+            gap: 16px !important;
+        }
+    </style>
+    <script>
+    (function() {
+        const originalConfirm = window.confirm;
+        
+        window.confirm = function(message) {
+            // Find the event that triggered this
+            const e = window.event;
+            let target = null;
+            
+            if (e && e.target) {
+                target = e.target.closest('a, button, form');
+                if (e.type === 'submit') {
+                    target = e.target;
+                }
+                // Try to stop default action if possible
+                if (e.preventDefault) e.preventDefault();
+                if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+            }
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: '<h2 style="font-size: 1.75rem; font-weight: 800; color: #1f2937; margin-bottom: 12px;">Are you sure?</h2>',
+                    html: `<p style="font-size: 1rem; color: #6b7280; font-weight: 500;">${message || 'This action cannot be undone.'}</p>`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, proceed',
+                    cancelButtonText: 'Cancel',
+                    buttonsStyling: false,
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        confirmButton: 'custom-swal-confirm',
+                        cancelButton: 'custom-swal-cancel',
+                        actions: 'custom-swal-actions'
+                    },
+                    width: '450px',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (target) {
+                            // Handle links
+                            if (target.tagName === 'A' && target.href && target.href !== 'javascript:void(0);') {
+                                window.location.href = target.href;
+                            } 
+                            // Handle forms and submit buttons
+                            else if (target.tagName === 'FORM' || (target.tagName === 'BUTTON' && target.type === 'submit')) {
+                                let form = target.tagName === 'FORM' ? target : target.closest('form');
+                                if (form) {
+                                    // Remove onsubmit to prevent loop if it uses confirm
+                                    form.removeAttribute('onsubmit');
+                                    form.submit();
+                                }
+                            } else {
+                                console.warn('Unhandled target for confirm:', target);
+                            }
+                        }
+                    }
+                });
+            } else {
+                // Fallback if Swal not loaded
+                return originalConfirm(message);
+            }
+            
+            // Return false to prevent the default synchronous execution
+            return false;
+        };
+    })();
+    </script>
 </body>
 </html>
 

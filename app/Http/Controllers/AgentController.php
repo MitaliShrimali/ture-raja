@@ -105,7 +105,7 @@ class AgentController extends Controller
         
         $packagesCount = 0;
         if ($agent) {
-            $allPackages = DB::table('packages')->get();
+            $allPackages = DB::table('packages')->select('agent')->get();
             $packagesCount = $allPackages->filter(function ($pkg) use ($agentId, $agent) {
                 if (!$pkg->agent) return false;
                 $agentData = json_decode($pkg->agent, true);
@@ -302,7 +302,7 @@ class AgentController extends Controller
             $plan = DB::table('plans')->where('id', $agent->plan_id ?? 1)->first();
             $limit = $plan ? $plan->package_limit : 1;
             
-            $allPackages = DB::table('packages')->get();
+            $allPackages = DB::table('packages')->select('agent')->get();
             $packagesCount = $allPackages->filter(function ($pkg) use ($agentId) {
                 if (!$pkg->agent) return false;
                 $agentData = json_decode($pkg->agent, true);
@@ -462,6 +462,17 @@ class AgentController extends Controller
         $transfers = $request->has('transfers') ? $request->input('transfers', []) : (json_decode($pkg->transfers, true) ?: []);
         $meals = $request->has('meals') ? $request->input('meals', []) : (json_decode($pkg->meals, true) ?: []);
 
+        // Sightseeing List parsing
+        $sightseeing_list = [];
+        if ($request->has('sightseeing_list')) {
+            if (is_array($request->sightseeing_list)) {
+                $sightseeing_list = array_values(array_filter(array_map('trim', $request->sightseeing_list)));
+            } else {
+                $sightseeing_list = array_values(array_filter(array_map('trim', explode("\n", $request->sightseeing_list))));
+            }
+        }
+    
+
         // Itinerary Days parsing
         $itinerary = [];
         if ($request->has('itinerary_titles')) {
@@ -475,6 +486,11 @@ class AgentController extends Controller
 
         DB::table('packages')->where('id', $request->id)->update([
             'title'      => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'location'   => $request->location ?? 'Global',
             'price'      => $request->price,
             'old_price'  => $request->old_price ?: null,
@@ -513,7 +529,7 @@ class AgentController extends Controller
             $plan = DB::table('plans')->where('id', $agent->plan_id ?? 1)->first();
             $limit = $plan ? $plan->package_limit : 1;
             
-            $allPackages = DB::table('packages')->get();
+            $allPackages = DB::table('packages')->select('agent')->get();
             $packagesCount = $allPackages->filter(function ($pkg) use ($agentId) {
                 if (!$pkg->agent) return false;
                 $agentData = json_decode($pkg->agent, true);
@@ -605,6 +621,17 @@ class AgentController extends Controller
         // Meals might be mixed in included, but let's see if we have explicit meals. If not, fallback to included.
         $meals = $request->input('meals', []);
 
+        // Sightseeing List parsing
+        $sightseeing_list = [];
+        if ($request->has('sightseeing_list')) {
+            if (is_array($request->sightseeing_list)) {
+                $sightseeing_list = array_values(array_filter(array_map('trim', $request->sightseeing_list)));
+            } else {
+                $sightseeing_list = array_values(array_filter(array_map('trim', explode("\n", $request->sightseeing_list))));
+            }
+        }
+    
+
         // Itinerary Days parsing
         $itinerary = [];
         if ($request->has('itinerary_titles')) {
@@ -641,6 +668,11 @@ class AgentController extends Controller
 
         DB::table('packages')->insert([
             'title'      => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'location'   => $request->location ?? 'Global',
             'price'      => $request->price,
             'old_price'  => $request->old_price ?: null,
@@ -835,7 +867,7 @@ class AgentController extends Controller
         $agentName = session('agent_name', '');
 
         // Fetch packages belonging to this agent (by matching agent JSON name)
-        $allPackages = DB::table('packages')->orderBy('created_at', 'desc')->get();
+        $allPackages = DB::table('packages')->select('id', 'title', 'location', 'image', 'price', 'agent', 'status', 'created_at', 'category', 'group_size', 'duration', 'stock', 'currency', 'badge')->orderBy('created_at', 'desc')->get();
         $packages = $allPackages->filter(function ($pkg) use ($agentId, $agentName) {
             if (!$pkg->agent) return false;
             $agentData = json_decode($pkg->agent, true);
@@ -882,7 +914,7 @@ class AgentController extends Controller
             ->orderByDesc('id')->take(5)->get();
         
         $agentName = session('agent_name');
-        $allPackages = DB::table('packages')->get();
+        $allPackages = DB::table('packages')->select('agent')->get();
         $agentPackages = $allPackages->filter(function ($pkg) use ($agentId, $agentName) {
             $agentData = json_decode($pkg->agent, true);
             if (!$agentData) return false;

@@ -181,30 +181,53 @@
             </div>
             @endif
 
-            {{-- Itinerary --}}
-            @if(count($itinerary) > 0)
-            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft">
-                <h3 class="text-lg font-black text-foreground mb-6">Itinerary</h3>
-                <div class="space-y-4">
-                    @foreach($itinerary as $idx => $day)
-                    <div class="flex gap-4">
-                        <div class="flex flex-col items-center">
-                            <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-black shrink-0">
-                                {{ $idx + 1 }}
-                            </div>
-                            @if(!$loop->last)
-                            <div class="w-0.5 flex-1 bg-primary/10 mt-2"></div>
-                            @endif
-                        </div>
-                        <div class="pb-6 flex-1">
-                            <p class="text-sm font-black text-foreground">{{ $day['title'] ?? "Day " . ($idx + 1) }}</p>
-                            <p class="text-sm text-muted-text font-medium mt-1">{{ $day['desc'] ?? '' }}</p>
-                        </div>
-                    </div>
+            {{-- Sightseeing Details --}}
+            @php
+                $hasSightseeing = !empty($pkg->sightseeing);
+                $sightseeingItems = $hasSightseeing ? array_filter(array_map('trim', explode(',', $pkg->sightseeing))) : [];
+            @endphp
+            @if($hasSightseeing && count($sightseeingItems) > 0)
+            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft mb-6">
+                <h3 class="text-lg font-black text-foreground mb-6">Sightseeing Details</h3>
+                <div class="flex flex-wrap gap-3">
+                    @foreach($sightseeingItems as $place)
+                        <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-semibold rounded-full shadow-sm hover:bg-orange-100 transition-colors">
+                            <i data-lucide="map-pin" class="w-4 h-4 mr-1"></i> {{ $place }}
+                        </span>
                     @endforeach
                 </div>
             </div>
             @endif
+
+            {{-- Itinerary --}}
+            @if(count($itinerary) > 0)
+            <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft mb-6">
+                <h3 class="text-lg font-black text-foreground mb-6">Itinerary</h3>
+                <div class="relative pl-2">
+                    @foreach($itinerary as $idx => $day)
+                        <div class="relative flex gap-6 pb-8 last:pb-2">
+                            @if(!$loop->last)
+                                <div class="absolute left-[11px] top-6 bottom-0" style="border-left: 2px dashed #e85d26 !important;"></div>
+                            @endif
+                            <div class="relative z-10 shrink-0">
+                                @if($loop->first || $loop->last)
+                                    <div class="w-6 h-6 rounded-full shadow-sm flex items-center justify-center text-[10px] font-bold text-white" style="background-color: #e85d26 !important; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.2);">{{ $idx + 1 }}</div>
+                                @else
+                                    <div class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-[10px] font-bold" style="border: 4px solid #e85d26 !important; color: #e85d26; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.12);">{{ $idx + 1 }}</div>
+                                @endif
+                            </div>
+                            <div class="-mt-1 flex-1">
+                                <h4 class="font-bold text-gray-800 text-base">Day {{ $idx + 1 }}: {{ $day['title'] }}</h4>
+                                @if(!empty($day['desc']))
+                                    <p class="text-sm text-gray-600 mt-2">{{ $day['desc'] }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
         </div>
 
         {{-- Right: Pricing + Agent --}}

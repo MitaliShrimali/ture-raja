@@ -104,6 +104,11 @@ class AdminController extends Controller
         DB::table('home_packages')->insert([
             'type' => $request->type,
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'subtitle' => $request->subtitle,
             'image' => $imagePath,
             'price' => $request->price,
@@ -124,6 +129,11 @@ class AdminController extends Controller
 
         $data = [
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'subtitle' => $request->subtitle,
             'price' => $request->price,
             'status' => $request->status ?? 'Live',
@@ -180,6 +190,11 @@ class AdminController extends Controller
 
         DB::table('offer_stickers')->insert([
             'title'    => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'subtitle' => $request->subtitle,
             'image'    => $imagePath,
             'link'     => $request->link ?? '/discover',
@@ -198,6 +213,11 @@ class AdminController extends Controller
 
         $data = [
             'title'    => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'subtitle' => $request->subtitle,
             'link'     => $request->link ?? '/discover',
             'status'   => $request->status ?? 'Live',
@@ -353,6 +373,17 @@ class AdminController extends Controller
             }
         }
 
+        // Sightseeing List parsing
+        $sightseeing_list = [];
+        if ($request->has('sightseeing_list')) {
+            if (is_array($request->sightseeing_list)) {
+                $sightseeing_list = array_values(array_filter(array_map('trim', $request->sightseeing_list)));
+            } else {
+                $sightseeing_list = array_values(array_filter(array_map('trim', explode("\n", $request->sightseeing_list))));
+            }
+        }
+    
+
         // Itinerary Days parsing
         $itinerary = [];
         if ($request->has('itinerary_titles')) {
@@ -405,6 +436,11 @@ class AdminController extends Controller
 
         DB::table('packages')->insert([
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'location' => $request->location ?? 'Global',
             'price' => $request->price,
             'old_price' => $request->old_price,
@@ -528,6 +564,17 @@ class AdminController extends Controller
         $transfers = $request->has('transfers') ? $request->input('transfers', []) : ($oldPkg && isset($oldPkg->transfers) ? json_decode($oldPkg->transfers, true) ?: [] : []);
         $meals = $request->has('meals') ? $request->input('meals', []) : ($oldPkg && isset($oldPkg->meals) ? json_decode($oldPkg->meals, true) ?: [] : []);
 
+        // Sightseeing List parsing
+        $sightseeing_list = [];
+        if ($request->has('sightseeing_list')) {
+            if (is_array($request->sightseeing_list)) {
+                $sightseeing_list = array_values(array_filter(array_map('trim', $request->sightseeing_list)));
+            } else {
+                $sightseeing_list = array_values(array_filter(array_map('trim', explode("\n", $request->sightseeing_list))));
+            }
+        }
+    
+
         // Itinerary Days parsing
         $itinerary = [];
         if ($request->has('itinerary_titles')) {
@@ -577,6 +624,11 @@ class AdminController extends Controller
 
         DB::table('packages')->where('id', $request->id)->update([
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'location' => $request->location,
             'price' => $request->price,
             'old_price' => $request->old_price,
@@ -1914,6 +1966,11 @@ class AdminController extends Controller
         
         DB::table('banners')->insert([
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'subtitle' => $request->subtitle,
             'image' => !empty($imageUrl) ? $imageUrl : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
             'link' => !empty($request->link) ? $request->link : '/discover',
@@ -1939,6 +1996,11 @@ class AdminController extends Controller
         
         DB::table('banners')->where('id', $request->id)->update([
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'subtitle' => $request->subtitle,
             'image' => !empty($imageUrl) ? $imageUrl : 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
             'link' => !empty($request->link) ? $request->link : '/discover',
@@ -1997,6 +2059,11 @@ class AdminController extends Controller
 
         DB::table('notifications')->insert([
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'message' => $request->message,
             'type' => $request->type ?? 'Info',
             'target_audience' => $targetAudience,
@@ -2014,6 +2081,11 @@ class AdminController extends Controller
                     DB::table('user_notifications')->insert([
                         'user_id' => $user->id,
                         'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
                         'message' => $request->message,
                         'type' => $request->type ?? 'Info',
                         'is_read' => false,
@@ -2055,6 +2127,11 @@ class AdminController extends Controller
         
         DB::table('cms_pages')->insert([
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'slug' => $request->slug,
             'content' => $request->content,
             'status' => $request->status ?? 'Published',
@@ -2071,6 +2148,11 @@ class AdminController extends Controller
         
         DB::table('cms_pages')->where('id', $request->id)->update([
             'title' => $request->title,
+            'departure_city'      => $request->departure_city ?? null,
+            'terms'               => $request->terms ?? null,
+            'sightseeing_list'    => json_encode($sightseeing_list),
+            'currency'            => $request->currency ?? '₹',
+    
             'content' => $request->content,
             'status' => $request->status ?? 'Published',
             'updated_at' => now(),

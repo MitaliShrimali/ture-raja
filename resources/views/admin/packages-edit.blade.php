@@ -362,12 +362,12 @@
                     <!-- Departure City -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure City</label>
-                        <input type="text" name="badge" x-model="badge" placeholder="New Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                        <input type="text" name="departure_city" value="{{ $pkg->departure_city ?? '' }}" placeholder="New Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
                     <!-- Sightseeing summary -->
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Sightseeing summary</label>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Sightseeing Details (comma-separated)</label>
                         <input type="text" name="sightseeing" x-model="sightseeing" placeholder="e.g. 4 Sightseeing" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
@@ -492,7 +492,7 @@
         <!-- ==================== STEP 2: ITINERARY, MEALS & PHOTOS ==================== -->
         <div x-show="step === 2" class="space-y-8" x-transition>
 
-            <!-- ── Full-width row: Upload Brochure  OR  Add Your Itinerary ── -->
+            <!-- ── Full-width row: Upload Brochure  OR  Itinerary (Day-by-Day Plan) ── -->
             <div class="flex flex-col md:flex-row gap-4 items-stretch">
 
                 <!-- Brochure card  ~40% -->
@@ -526,7 +526,7 @@
                         <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
                             <i data-lucide="pencil" size="16" class="text-[#e85d26]"></i>
                         </div>
-                        <h4 class="text-sm font-bold text-gray-800">Add Your Itinerary</h4>
+                        <h4 class="text-sm font-bold text-gray-800">Tour Overview</h4>
                     </div>
                     <div class="flex-1 bg-[#F8F8F8] rounded-2xl overflow-hidden border border-gray-100 flex flex-col">
                         <div class="flex items-center gap-1 px-4 py-2.5 border-b border-gray-200 bg-white">
@@ -642,8 +642,27 @@
 
                         <!-- Terms & Conditions -->
                         <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Terms & Conditions</label>
-                            <textarea name="excluded[]" rows="3" placeholder="Specific booking policies for this package..." class="w-full bg-[#F8F8F8] border-none rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-primary/15 transition-all text-sm text-gray-600 resize-none">@if(count($excluded) > 0){{ implode(', ', $excluded) }}@endif</textarea>
+                            
+                            
+                            <!-- Sightseeing Details List -->
+                            <div class="space-y-2 mb-6">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sightseeing Details List</label>
+                                <template x-for="(spot, idx) in sightseeingList" :key="idx">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <input type="text" name="sightseeing_list[]" x-model="sightseeingList[idx]" class="flex-1 bg-white border border-gray-100 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary" placeholder="e.g. Visit to Taj Mahal" />
+                                        <button type="button" @click="sightseeingList.splice(idx, 1)" class="text-gray-300 hover:text-red-500">
+                                            &times;
+                                        </button>
+                                    </div>
+                                </template>
+                                <div class="flex items-center gap-2">
+                                    <input type="text" x-model="newSightseeing" @keydown.enter.prevent="if(newSightseeing.trim()){sightseeingList.push(newSightseeing.trim()); newSightseeing='';}" placeholder="Add sightseeing spot..." class="flex-1 bg-white border border-gray-100 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary" />
+                                    <button type="button" @click="if(newSightseeing.trim()){sightseeingList.push(newSightseeing.trim()); newSightseeing='';}" class="px-3 py-2 bg-primary text-white rounded-xl text-xs font-bold">+</button>
+                                </div>
+                            </div>
+    
+<label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Terms & Conditions</label>
+                            <textarea name="terms" rows="3" placeholder="Specific booking policies for this package..." class="w-full bg-[#F8F8F8] border-none rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-primary/15 transition-all text-sm text-gray-600 resize-none">{{ $pkg->terms ?? '' }}</textarea>
                         </div>
                     </div>
 
@@ -652,7 +671,7 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c7ed6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                <h3 class="text-lg font-bold text-gray-900">Sightseeing Details</h3>
+                                <h3 class="text-lg font-bold text-gray-900">Itinerary (Day-by-Day Plan)</h3>
                             </div>
                             <button type="button" @click="addDay()" class="px-5 py-2.5 text-white rounded-full text-sm font-semibold transition-all flex items-center gap-1.5" style="background-color: #e85d26 !important; color: #ffffff !important;">
                                 + Add Point
@@ -880,7 +899,7 @@
     });
 
     // Inserts formatting at cursor / wraps selection in the itinerary textarea
-    function itineraryFormat(type) {
+    async async function itineraryFormat(type) {
         const ta = document.getElementById('itinerary-textarea');
         if (!ta) return;
 
@@ -905,7 +924,7 @@
             insert = `${prefix}• ${sel || 'List item'}`;
             cursorOffset = insert.length;
         } else if (type === 'link') {
-            const url = prompt('Enter URL (e.g. https://example.com):');
+            const url = await window.customPrompt('Enter URL (e.g. https://example.com):');
             if (!url) return;
             const label = sel || 'Link text';
             insert = `[${label}](${url})`;
