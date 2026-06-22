@@ -62,7 +62,11 @@
         $agentName = $agentObj['name'] ?? 'Travel Agent Name';
     }
 
-    $agentLogo = (is_array($agentObj) ? ($agentObj['logo'] ?? null) : null) ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode(str_replace(' ', '', $agentName));
+    $rawLogo = (is_array($agentObj) ? ($agentObj['logo'] ?? null) : null);
+    if ($rawLogo && !str_starts_with($rawLogo, 'http') && !str_starts_with($rawLogo, '//')) {
+        $rawLogo = asset(ltrim($rawLogo, '/'));
+    }
+    $agentLogo = $rawLogo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode(str_replace(' ', '', $agentName));
 
     $detailUrl = $slug ? url('packages/' . $slug) : '#';
 @endphp

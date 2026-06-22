@@ -134,11 +134,11 @@
              class="w-full"
              style="min-height: 72px;">
             
-            <div :class="isSticky ? 'fixed top-20 left-0 right-0 z-50 py-2 pointer-events-none' : 'relative z-40'">
-                <div class="container-custom text-center pointer-events-auto">
+            <div :class="isSticky ? 'fixed top-20 left-0 right-0 z-50 py-2' : 'relative z-40'">
+                <div class="container-custom text-center">
                     <div class="w-full max-w-5xl mx-auto">
-                      <form action="{{ url('/discover') }}" method="GET">
-                        <div class="p-3 md:p-3 flex flex-col md:flex-row items-center gap-3 w-full shadow-sm transition-all duration-300" style="background: #e85d26;" :class="isSticky ? 'rounded-xl' : 'rounded-lg'">
+                      <form id="top-search-form" action="{{ url('/discover') }}" method="GET">
+                        <div class="p-3 md:p-3 flex flex-col md:flex-row items-center gap-3 w-full transition-all duration-300" style="background: #e85d26;" :class="isSticky ? 'rounded-xl shadow-2xl' : 'rounded-lg shadow-sm'">
                           
                           {{-- Destination Field --}}
                           <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3" style="background: rgba(255,255,255,0.2);">

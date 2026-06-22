@@ -111,7 +111,7 @@
                     <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
                         <i data-lucide="user" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Tour Manager Included
                     </span>
-                </label><br>
+                </label>
             </div>
             <hr class="mt-5 border-gray-100">
         <div x-data="rangeSlider({{ request('min_nights', 2) }}, {{ request('max_nights', 11) }}, 1, 20)" class="pt-6">
@@ -122,11 +122,11 @@
                 <div class="absolute h-full bg-primary rounded-full" :style="'left: ' + minPercent + '%; right: ' + (100 - maxPercent) + '%'"></div>
                 
                 <!-- Min Thumb -->
-                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" style="z-index: 3;">
+                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + minPercent + '%'" style="z-index: 2;"></div>
                 
                 <!-- Max Thumb -->
-                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" style="z-index: 4;">
+                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + maxPercent + '%'" style="z-index: 2;"></div>
             </div>
             
@@ -151,9 +151,9 @@
             <!-- Price Slider -->
             <div class="px-2 mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <div class="absolute h-full bg-primary rounded-full" :style="'left: ' + minPercent + '%; right: ' + (100 - maxPercent) + '%'"></div>
-                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1000" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" style="z-index: 3;">
+                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1000" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + minPercent + '%'" style="z-index: 2;"></div>
-                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1000" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" style="z-index: 4;">
+                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1000" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + maxPercent + '%'" style="z-index: 2;"></div>
             </div>
             
@@ -230,7 +230,7 @@
         </div>
 
         <!-- 5. Rating -->
-        <div>
+        <div class="pt-6">
             <h3 class="font-bold text-gray-900 mb-4 uppercase tracking-wide" style="font-size: 20px;">Rating</h3>
             <div class="flex items-center justify-between mb-3">
                 <div class="w-6 h-6 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0">
@@ -252,7 +252,7 @@
         </div>
 
         <!-- 6. Theme -->
-        <div x-data="{ expanded: false }">
+        <div x-data="{ expanded: false }" class="pt-6">
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Theme</h3>
             @php
                 $allThemes = DB::table('themes')->where('status', 'Active')->pluck('name')->toArray();
@@ -288,7 +288,7 @@
         </div>
 
         <!-- 7. Activity Type (Tags) -->
-        <div>
+        <div class="pt-6">
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Activity Type</h3>
             @php
                 $allActivities = ['Cable Car / Rope way', 'Adventure', 'Nature', 'Rides and Thrill', 'Water Activities', 'Jeep Safari', 'Hill Station', 'Religious'];

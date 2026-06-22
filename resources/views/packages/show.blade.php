@@ -692,7 +692,11 @@
                     $agentPhone = $agentDataRaw['phone'] ?? '+91 7383682183';
                     $agentEmail = $agentDataRaw['email'] ?? 'mithstours@gmail.com';
                     $agentRegion = $agentDataRaw['region'] ?? '101 GF Nr Trikon Bagh Rajkot - Gujarat';
-                    $agentLogo = $agentDataRaw['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
+                    $agentLogoRaw = $agentDataRaw['logo'] ?? null;
+                    if ($agentLogoRaw && !str_starts_with($agentLogoRaw, 'http') && !str_starts_with($agentLogoRaw, '//')) {
+                        $agentLogoRaw = asset(ltrim($agentLogoRaw, '/'));
+                    }
+                    $agentLogo = $agentLogoRaw ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
                     
                     // Fallback to DB if we only have a name (legacy entries)
                     if (!isset($agentDataRaw['phone'])) {
@@ -704,7 +708,11 @@
                             $agentEmail = $dbAgent->email ?? $agentEmail;
                             $agentRegion = $dbAgent->address ?? $agentRegion;
                             if (!empty($dbAgent->logo)) {
-                                $agentLogo = $dbAgent->logo;
+                                $rawLogo = $dbAgent->logo;
+                                if (!str_starts_with($rawLogo, 'http') && !str_starts_with($rawLogo, '//')) {
+                                    $rawLogo = asset(ltrim($rawLogo, '/'));
+                                }
+                                $agentLogo = $rawLogo;
                             }
                         }
                     }

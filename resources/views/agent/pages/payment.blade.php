@@ -100,7 +100,7 @@
                 
                 <!-- Dynamic Promo Items -->
                 @forelse($agentPackages as $pkg)
-                <div class="p-4 flex flex-wrap sm:flex-nowrap items-center justify-between hover:bg-gray-50 rounded-2xl transition-colors boost-card" data-status="{{ $pkg->is_boosted ? 'active' : 'inactive' }}">
+                <div class="p-4 flex flex-wrap sm:flex-nowrap items-center justify-between hover:bg-gray-50 rounded-2xl transition-colors boost-card" data-status="{{ ($pkg->is_boosted ?? false) ? 'active' : 'inactive' }}">
                     <div class="flex items-center mb-4 sm:mb-0 cursor-pointer" onclick="window.location.href='{{ url('/packages/edit/' . $pkg->id) }}'">
                         <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-4 shrink-0">
                             @php
@@ -118,7 +118,7 @@
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Price</p>
                             <p class="text-sm font-black text-[#ea580c]">₹12.50<span class="text-[10px] text-gray-400 font-medium">/day</span></p>
                         </div>
-                        @if($pkg->is_boosted)
+                        @if($pkg->is_boosted ?? false)
                             <button class="bg-orange-100 text-[#ea580c] font-bold text-xs px-6 py-2.5 rounded-full cursor-default inline-block border border-orange-200" disabled>Active</button>
                         @else
                             <a href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id]) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-6 py-2.5 rounded-full transition-colors inline-block">Boost</a>

@@ -53,15 +53,78 @@ class UserController extends Controller
             $packages = collect($this->getStaticPackages());
         }
 
-        // Sort packages to show popular tagged ones first, then by most reviewed/clicked
-        $popularBadges = ['popular'];
-        $packages = $packages
-            ->sortByDesc(fn($p) => (int)(is_array($p) ? ($p['reviews'] ?? 0) : ($p->reviews ?? 0)))
-            ->sortByDesc(fn($p) => (int)(is_array($p) ? ($p['clicks'] ?? 0) : ($p->clicks ?? 0)))
-            ->sortByDesc(function ($p) use ($popularBadges) {
-                $badge = strtolower(is_array($p) ? ($p['badge'] ?? '') : ($p->badge ?? ''));
-                return in_array($badge, $popularBadges) ? 2 : (!empty($badge) ? 1 : 0);
-            })->values();
+        // Fetch all agents to check their tiers
+        try {
+            $agentsList = \Illuminate\Support\Facades\DB::table('agents')
+                ->select('id', 'name', 'service_guaranteed', 'plan_id')
+                ->get();
+                
+            $agentsById = $agentsList->keyBy('id')->toArray();
+            $agentsByName = $agentsList->keyBy(function($item) {
+                return strtolower(trim($item->name));
+            })->toArray();
+        } catch (\Exception $e) {
+            $agentsById = [];
+            $agentsByName = [];
+        }
+
+        // Shuffle all packages first for randomization, then sort by tier
+        $packages = $packages->shuffle()->sortByDesc(function ($p) use ($agentsById, $agentsByName) {
+            $pkg = (array) $p;
+            $tier = 1; // Default: unpaid / basic account
+            
+            // 3: Ad Placement
+            if (!empty($pkg['ad_placement'])) {
+                $tier = max($tier, 2);
+            }
+            
+            // 2: Boosted Package
+            if (!empty($pkg['is_boosted'])) {
+                $tier = max($tier, 3);
+            }
+            
+            $agentId = null;
+            $agentName = null;
+            $agentData = $pkg['agent'] ?? null;
+            if (is_string($agentData)) {
+                $decoded = json_decode($agentData, true);
+                if (is_array($decoded)) {
+                    $agentId = $decoded['id'] ?? null;
+                    $agentName = $decoded['name'] ?? null;
+                } else {
+                    $agentName = $agentData;
+                }
+            } elseif (is_array($agentData)) {
+                $agentId = $agentData['id'] ?? null;
+                $agentName = $agentData['name'] ?? null;
+            } elseif (is_object($agentData)) {
+                $agentId = $agentData->id ?? null;
+                $agentName = $agentData->name ?? null;
+            }
+            
+            $agentInfo = null;
+            if ($agentId && isset($agentsById[$agentId])) {
+                $agentInfo = $agentsById[$agentId];
+            } else {
+                $agentKey = $agentName ? strtolower(trim($agentName)) : null;
+                if ($agentKey && isset($agentsByName[$agentKey])) {
+                    $agentInfo = $agentsByName[$agentKey];
+                }
+            }
+
+            if ($agentInfo) {
+                // 2: Paid plan
+                if (!empty($agentInfo->plan_id) && $agentInfo->plan_id > 1) {
+                    $tier = max($tier, 3);
+                }
+                // 1: Verified / Service Guaranteed (Top priority)
+                if (!empty($agentInfo->service_guaranteed)) {
+                    $tier = max($tier, 4);
+                }
+            }
+            
+            return $tier;
+        })->values();
 
         // Pull active home banners for the hero slider from DB
         try {

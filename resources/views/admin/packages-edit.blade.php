@@ -17,8 +17,7 @@
     $agentName = $agentData['name'] ?? 'Miths Holidays';
 @endphp
 
-<!-- Load AlpineJS and Lucide for this view -->
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<!-- Load Lucide for this view -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
 <div class="space-y-8 pb-12" x-data="{ 

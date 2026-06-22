@@ -914,7 +914,7 @@ class AgentController extends Controller
             ->orderByDesc('id')->take(5)->get();
         
         $agentName = session('agent_name');
-        $allPackages = DB::table('packages')->select('agent')->get();
+        $allPackages = DB::table('packages')->get();
         $agentPackages = $allPackages->filter(function ($pkg) use ($agentId, $agentName) {
             $agentData = json_decode($pkg->agent, true);
             if (!$agentData) return false;

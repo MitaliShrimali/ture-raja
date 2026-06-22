@@ -829,7 +829,7 @@
                     </div>
                 </div>
             </div>
-
+            </div>
         </div>
         
         <!-- Footer Actions Panel -->

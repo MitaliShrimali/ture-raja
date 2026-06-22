@@ -528,6 +528,7 @@
                             'oldPrice' => $oldPrice,
                             'badge' => $badge,
                             'category' => strtolower($category),
+                            'agent' => is_object($pkg) ? ($pkg->agent ?? null) : ($pkg['agent'] ?? null),
                         ];
                     })->toArray();
 
@@ -1084,7 +1085,6 @@
                 document.getElementById('load-more-container').style.display = 'none';
             }
         }
-    </script>
     @endpush
 @endsection
 
