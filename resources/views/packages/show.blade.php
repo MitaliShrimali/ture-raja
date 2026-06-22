@@ -1,3 +1,93 @@
+@php
+    if (!function_exists('parseTextItinerary')) {
+        function parseTextItinerary($text) {
+            if (empty($text)) return [];
+            $text = str_replace("\r", "", $text);
+            $parts = preg_split('/•\s*/u', $text);
+            $days = [];
+            foreach ($parts as $part) {
+                $part = trim($part);
+                if (empty($part)) continue;
+                $lines = explode("\n", $part);
+                $titleLine = trim($lines[0]);
+                $descLines = array_slice($lines, 1);
+                $desc = implode("\n", $descLines);
+                $desc = trim($desc);
+                
+                if (preg_match('/Day\s+\d+/i', $titleLine) || preg_match('/Day\s+/i', $titleLine)) {
+                    $days[] = [
+                        'title' => $titleLine,
+                        'desc' => $desc
+                    ];
+                } else {
+                    if (count($days) > 0) {
+                        $days[count($days) - 1]['desc'] .= "\n\n• " . $part;
+                    }
+                }
+            }
+            
+            foreach ($days as &$day) {
+                $desc = e($day['desc']);
+                $desc = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $desc);
+                $desc = preg_replace('/_(.*?)_/', '<em>$1</em>', $desc);
+                $desc = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2" target="_blank" class="text-orange-600 hover:underline font-bold">$1</a>', $desc);
+                $desc = nl2br($desc);
+                $day['desc_html'] = $desc;
+            }
+            return $days;
+        }
+    }
+    
+    $parsedItinerary = [];
+    if (!empty($package['editorial_itinerary'])) {
+        $parsedItinerary = parseTextItinerary($package['editorial_itinerary']);
+    }
+    
+    // Combine both sources of sightseeing details
+    $sightseeingPills = [];
+    if (!empty($package['sightseeing'])) {
+        $sightseeingPills = array_filter(array_map('trim', explode(',', $package['sightseeing'])));
+    }
+    if (!empty($package['itinerary']) && is_array($package['itinerary'])) {
+        foreach ($package['itinerary'] as $day) {
+            if (!empty($day['title'])) {
+                $sightseeingPills[] = $day['title'];
+            }
+        }
+    }
+    $sightseeingPills = array_unique($sightseeingPills);
+
+    $defaultGallery = [
+        $package["image"] ?? "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200",
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200",
+        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200",
+        "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200"
+    ];
+    $gallerySlides = [];
+    if (!empty($package["gallery"])) {
+        if (is_string($package["gallery"])) {
+            $decoded = json_decode($package["gallery"], true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                $gallerySlides = $decoded;
+            } else {
+                // Fallback: try splitting by comma
+                $gallerySlides = array_map('trim', explode(',', $package["gallery"]));
+            }
+        } elseif (is_array($package["gallery"])) {
+            $gallerySlides = $package["gallery"];
+        }
+    }
+    
+    // Filter out invalid or short URLs
+    $gallerySlides = array_filter($gallerySlides, function($item) {
+        return is_string($item) && strlen($item) > 5;
+    });
+
+    if (empty($gallerySlides)) {
+        $gallerySlides = $defaultGallery;
+    }
+    $gallerySlides = array_values($gallerySlides); // reindex for valid JSON array
+@endphp
 @extends('layouts.app')
 
 @section('title', $package['title'] . ' — TourRaja')
@@ -97,7 +187,7 @@
     }
 </style>
 
-<div class="bg-[#F8F9FA] min-h-screen pt-24 lg:pt-32" x-data="{ showBookingModal: false }">
+<div class="bg-[#F8F9FA] min-h-screen pt-24 lg:pt-32" x-data='{ showBookingModal: false, slides: @json($gallerySlides) }'>
     {{-- Breadcrumb --}}
     <div>
         <div class="container-custom py-2">
@@ -160,62 +250,30 @@
                         "https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200",
                         "https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200"
                     ];
-                    $gallerySlides = !empty($package["gallery"]) ? $package["gallery"] : $defaultGallery;
-                @endphp
-                <div x-data='{ 
-                    showGallery: false, 
-                    activeImage: 0,
-                    slides: @json($gallerySlides),
-                    openGallery(index) {
-                        this.activeImage = index;
-                        this.showGallery = true;
-                        document.body.classList.add("overflow-hidden");
-                        this.$nextTick(() => {
-                            this.scrollToImage(index, "auto");
-                        });
-                    },
-                    closeGallery() {
-                        this.showGallery = false;
-                        document.body.classList.remove("overflow-hidden");
-                    },
-                    nextImage() {
-                        const nextIndex = (this.activeImage + 1) % this.slides.length;
-                        this.scrollToImage(nextIndex, "smooth");
-                    },
-                    prevImage() {
-                        const prevIndex = (this.activeImage - 1 + this.slides.length) % this.slides.length;
-                        this.scrollToImage(prevIndex, "smooth");
-                    },
-                    scrollToImage(index, behavior = "smooth") {
-                        this.activeImage = index;
-                        const container = this.$refs.sliderContainer;
-                        if (!container) return;
-                        const slide = container.children[index];
-                        if (slide) {
-                            container.scrollTo({
-                                left: slide.offsetLeft - (container.clientWidth - slide.clientWidth) / 2,
-                                behavior: behavior
-                            });
-                        }
-                    },
-                    updateActiveFromScroll() {
-                        const container = this.$refs.sliderContainer;
-                        if (!container) return;
-                        const scrollCenter = container.scrollLeft + container.clientWidth / 2;
-                        let closestIndex = 0;
-                        let minDistance = Infinity;
-                        
-                        Array.from(container.children).forEach((slide, index) => {
-                            const slideCenter = slide.offsetLeft + slide.clientWidth / 2;
-                            const distance = Math.abs(scrollCenter - slideCenter);
-                            if (distance < minDistance) {
-                                minDistance = distance;
-                                closestIndex = index;
+                    $gallerySlides = [];
+                    if (!empty($package["gallery"])) {
+                        if (is_string($package["gallery"])) {
+                            $decoded = json_decode($package["gallery"], true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                $gallerySlides = $decoded;
+                            } else {
+                                $gallerySlides = array_map('trim', explode(',', $package["gallery"]));
                             }
-                        });
-                        this.activeImage = closestIndex;
+                        } elseif (is_array($package["gallery"])) {
+                            $gallerySlides = $package["gallery"];
+                        }
                     }
-                }' class="mb-6">
+                    
+                    $gallerySlides = array_filter($gallerySlides, function($item) {
+                        return is_string($item) && strlen($item) > 5;
+                    });
+
+                    if (empty($gallerySlides)) {
+                        $gallerySlides = $defaultGallery;
+                    }
+                    $gallerySlides = array_values($gallerySlides);
+                @endphp
+                <div class="mb-6">
                     
                     @php
                         $durationStr = $package['duration'];
@@ -240,17 +298,17 @@
                         {{-- Left Column: Images Grid (Takes 3/4 space on desktop) --}}
                         <div class="package-gallery-images-col relative w-full overflow-hidden">
                             {{-- Large Left Image --}}
-                            <div class="col-span-2 h-full w-full relative cursor-pointer hover:opacity-95 transition overflow-hidden" style="grid-column: span 2 / span 2;" @click="openGallery(0)">
+                            <div class="col-span-2 h-full w-full relative cursor-pointer hover:opacity-95 transition overflow-hidden" style="grid-column: span 2 / span 2;" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
                                 <img :src="slides[0]" class="w-full h-full object-cover" alt="Package Main Image">
                             </div>
                             
                             {{-- Small Right Images (Top and Bottom) --}}
                             <div class="col-span-1 grid grid-rows-2 gap-2 h-full w-full relative" style="grid-column: span 1 / span 1; display: grid; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.5rem;">
-                                <img :src="slides[1] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(1)">
-                                <img :src="slides[2] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="openGallery(2)">
+                                <img :src="slides[1] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
+                                <img :src="slides[2] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
                                 
                                 {{-- View Gallery Button --}}
-                                <button @click.stop="openGallery(0)" class="absolute top-6 right-6 view-gallery-btn text-[12px] font-bold px-4 py-2.5 flex items-center gap-2 z-30 shadow-lg rounded-lg">
+                                <button @click.stop="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })" class="absolute top-6 right-6 view-gallery-btn text-[12px] font-bold px-4 py-2.5 flex items-center gap-2 z-30 shadow-lg rounded-lg">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                                         <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -315,47 +373,6 @@
                                     Inquiry Now
                                 </a>
                             </div>
-                        </div>
-                    </div>
-
-                    {{-- Lightbox / Gallery Modal --}}
-                    <div x-show="showGallery" x-cloak class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/95 backdrop-blur-sm py-6" @keydown.escape.window="closeGallery()" @keydown.arrow-left.window="prevImage()" @keydown.arrow-right.window="nextImage()" @click="closeGallery()">
-                        {{-- Close Button --}}
-                        <button @click.stop="closeGallery()" class="absolute top-6 right-6 text-white bg-black/60 hover:bg-black w-10 h-10 rounded-full flex items-center justify-center transition-all z-50 border border-white/10 shadow-lg">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                        </button>
-                        
-                        {{-- Prev Button --}}
-                        <button @click.stop="prevImage()" class="absolute left-6 text-white bg-black/60 hover:bg-black w-12 h-12 rounded-full flex items-center justify-center transition-all z-50 border border-white/10 shadow-lg">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-                        </button>
-                        
-                        {{-- Slider Container --}}
-                        <div class="w-full max-w-6xl relative flex-grow flex items-center justify-center" @click.stop>
-                            <div x-ref="sliderContainer" 
-                                 @scroll.debounce.10ms="updateActiveFromScroll()"
-                                 class="w-full flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth hide-scrollbar px-[12%] py-4">
-                                <template x-for="(slide, idx) in slides" :key="idx">
-                                    <div class="w-[75vw] max-w-3xl flex-shrink-0 snap-center flex items-center justify-center h-[50vh] md:h-[55vh] transition-all duration-300"
-                                         :class="activeImage === idx ? 'scale-100 opacity-100' : 'scale-90 opacity-40'">
-                                        <img :src="slide" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl select-none pointer-events-none">
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                        
-                        {{-- Next Button --}}
-                        <button @click.stop="nextImage()" class="absolute right-6 text-white bg-black/60 hover:bg-black w-12 h-12 rounded-full flex items-center justify-center transition-all z-50 border border-white/10 shadow-lg">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-                        </button>
-                        
-                        {{-- Thumbnail Navigation Strip --}}
-                        <div class="mt-4 flex items-center gap-2 bg-black/40 backdrop-blur-md p-2 rounded-2xl border border-white/10" @click.stop>
-                            <template x-for="(slide, idx) in slides" :key="idx">
-                                <button @click="scrollToImage(idx)" class="w-14 h-10 md:w-16 md:h-12 rounded-lg overflow-hidden border-2 transition-all duration-250 shrink-0" :class="activeImage === idx ? 'border-[#e85d26] scale-105 shadow-md opacity-100' : 'border-transparent opacity-40 hover:opacity-80'">
-                                    <img :src="slide" class="w-full h-full object-cover select-none">
-                                </button>
-                            </template>
                         </div>
                     </div>
                 </div>
@@ -426,10 +443,7 @@
                     <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
                     <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
 
-                    @if(!empty($package['editorial_itinerary']))
-                    <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading text-xl">Overview</h3>
-                    <p class="standard-body-text detail-overview-text whitespace-pre-wrap">{{ $package['editorial_itinerary'] }}</p>
-                    @endif
+                    
 
                     <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Tour Highlights</h3>
                     <ul class="space-y-2">
@@ -558,33 +572,12 @@
                 </div>
                 @endif
 
-                {{-- Sightseeing Details --}}
-                @php
-                    $hasSightseeing = !empty($package['sightseeing']);
-                    $sightseeingItems = $hasSightseeing ? array_filter(array_map('trim', explode(',', $package['sightseeing']))) : [];
-                @endphp
-                @if($hasSightseeing && count($sightseeingItems) > 0)
+                {{-- Itinerary Timeline --}}
+                @if(count($parsedItinerary) > 0)
                 <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
-                    <h2 class="font-black text-gray-900 mb-6 section-heading text-xl">Sightseeing Details</h2>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach($sightseeingItems as $place)
-                            <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#F6F8FA] border border-gray-200 text-gray-700 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-50 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#e85d26]" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                                </svg>
-                                {{ $place }}
-                            </span>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-
-                {{-- Itinerary --}}
-                @if(!empty($package['itinerary']) && count($package['itinerary']) > 0)
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8">
-                    <h2 class="font-black text-gray-900 mb-8 section-heading">Itinerary</h2>
+                    <h2 class="font-black text-gray-900 mb-8 section-heading text-xl">Itinerary</h2>
                     <div class="relative pl-2">
-                        @foreach($package['itinerary'] as $idx => $day)
+                        @foreach($parsedItinerary as $idx => $day)
                         <div class="relative flex gap-6 pb-8 last:pb-2">
                             @if(!$loop->last)
                                 <div class="absolute left-[11px] top-6 bottom-0" style="border-left: 2px dashed #e85d26 !important;"></div>
@@ -597,12 +590,29 @@
                                 @endif
                             </div>
                             <div class="-mt-1 flex-1">
-                                <h4 class="font-black text-gray-800" style="font-family: 'Outfit', sans-serif; font-size: 16px;">Day {{ $idx + 1 }}: {{ $day['title'] }}</h4>
+                                <h4 class="font-black text-gray-800" style="font-family: 'Outfit', sans-serif; font-size: 16px;">{{ $day['title'] }}</h4>
                                 @if(!empty($day['desc']))
-                                    <p class="standard-body-text mt-2 max-w-3xl">{{ $day['desc'] }}</p>
+                                    <p class="standard-body-text mt-2 max-w-3xl">{!! $day['desc_html'] !!}</p>
                                 @endif
                             </div>
                         </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
+                {{-- Sightseeing Details --}}
+                @if(count($sightseeingPills) > 0)
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                    <h2 class="font-black text-gray-900 mb-6 section-heading text-xl">Sightseeing Details</h2>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($sightseeingPills as $place)
+                            <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#F6F8FA] border border-gray-200 text-gray-700 text-sm font-semibold rounded-full shadow-sm hover:bg-gray-50 transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#e85d26]" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                {{ $place }}
+                            </span>
                         @endforeach
                     </div>
                 </div>
@@ -995,4 +1005,5 @@
         </div>
     </div>
 </div>
+
 @endsection

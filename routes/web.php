@@ -647,6 +647,7 @@ Route::get('/packages/{slug}', function ($slug) {
             'meals'      => json_decode($dbPkg->meals, true) ?: [],
             'transfers'  => json_decode($dbPkg->transfers, true) ?: [],
             'keywords'   => json_decode($dbPkg->keywords, true) ?: [],
+            'editorial_itinerary' => property_exists($dbPkg, 'editorial_itinerary') ? $dbPkg->editorial_itinerary : null,
         ];
 
         // Fill defaults if empty

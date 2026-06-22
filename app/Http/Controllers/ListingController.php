@@ -92,7 +92,7 @@ class ListingController extends Controller
                 return in_array($badge, $popularBadges) ? 2 : (!empty($badge) ? 1 : 0);
             })->values();
 
-        // ── Search by destination / title / agent name ──────────────
+        // ── Search by destination / title / agent name / keywords ──
         if ($request->filled('search')) {
             $searchVal = $request->search;
             $search = strtolower(is_array($searchVal) ? implode(' ', $searchVal) : (string)$searchVal);
@@ -118,9 +118,25 @@ class ListingController extends Controller
                 }
                 $agent = strtolower((string)$agentName);
                 
+                $keywordsStr = '';
+                if (isset($pkg['keywords'])) {
+                    if (is_array($pkg['keywords'])) {
+                        $keywordsStr = implode(' ', $pkg['keywords']);
+                    } elseif (is_string($pkg['keywords'])) {
+                        $decoded = json_decode($pkg['keywords'], true);
+                        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                            $keywordsStr = implode(' ', $decoded);
+                        } else {
+                            $keywordsStr = $pkg['keywords'];
+                        }
+                    }
+                }
+                $keywords = strtolower($keywordsStr);
+                
                 return str_contains($title, $search)
                     || str_contains($location, $search)
-                    || ($agent && str_contains($agent, $search));
+                    || ($agent && str_contains($agent, $search))
+                    || ($keywords && str_contains($keywords, $search));
             });
         }
 

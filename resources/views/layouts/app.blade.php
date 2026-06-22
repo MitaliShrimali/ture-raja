@@ -22,18 +22,44 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body 
-    x-data="{ isScrolled: false, isMobileMenuOpen: false, isHome: {{ request()->is('/') ? 'true' : 'false' }}, showLoginModal: false, showChefModal: false }" 
+    x-data="{ 
+        isScrolled: false, 
+        isMobileMenuOpen: false, 
+        isHome: {{ request()->is('/') ? 'true' : 'false' }}, 
+        showLoginModal: false, 
+        showChefModal: false, 
+        globalShowGallery: false, 
+        globalSlides: [], 
+        globalGalleryTitle: '',
+        globalLightboxOpen: false,
+        globalLightboxIndex: 0,
+        openLightbox(index) {
+            this.globalLightboxIndex = index;
+            this.globalLightboxOpen = true;
+        },
+        nextImage() {
+            this.globalLightboxIndex = (this.globalLightboxIndex + 1) % this.globalSlides.length;
+        },
+        prevImage() {
+            this.globalLightboxIndex = (this.globalLightboxIndex - 1 + this.globalSlides.length) % this.globalSlides.length;
+        }
+    }" 
     @scroll.window="isScrolled = window.pageYOffset > 50"
     @open-login-modal.window="showLoginModal = true"
     @open-chef-modal.window="showChefModal = true; setTimeout(() => { showChefModal = false }, 5000)"
+    @open-gallery.window="globalShowGallery = true; globalLightboxOpen = false; globalSlides = $event.detail.slides; globalGalleryTitle = $event.detail.title"
     class="min-h-full flex flex-col font-body bg-background text-text-main"
-    :class="{ 'overflow-hidden': isMobileMenuOpen }"
+    :class="{ 'overflow-hidden': isMobileMenuOpen || globalShowGallery }"
 >
     <!-- Navbar Component -->
-    <x-navbar />
+    <div x-show="!globalShowGallery">
+        <x-navbar />
+    </div>
 
     <!-- Mobile Menu Component -->
-    <x-mobile-menu />
+    <div x-show="!globalShowGallery">
+        <x-mobile-menu />
+    </div>
 
     <main class="relative flex-grow" :class="(isHome) ? '' : 'pt-[120px] lg:pt-[140px]'">
         @yield('content')
@@ -514,6 +540,104 @@
         };
     })();
     </script>
+    
+    {{-- Global Lightbox / Gallery Modal (White Paged Masonry Gallery) --}}
+    <div x-show="globalShowGallery" 
+         x-cloak 
+         class="fixed inset-0 overflow-y-auto" 
+         style="z-index: 2147483647 !important; background-color: #ffffff !important;"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-250"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-4"
+         @keydown.escape.window="if(globalLightboxOpen) { globalLightboxOpen = false; } else { globalShowGallery = false; }">
+        
+        {{-- Close Button & Top Bar --}}
+        <div class="sticky top-0 bg-white/95 backdrop-blur-md border-b border-gray-150 px-6 py-4 flex items-center justify-between z-50 shadow-sm">
+            <div>
+                <span class="text-[10px] font-black text-orange-500 uppercase tracking-widest" style="letter-spacing: 0.1em;">Photo Gallery</span>
+                <h3 class="font-black text-gray-900 text-lg md:text-xl leading-tight mt-0.5" style="font-family: 'Outfit', sans-serif;" x-text="globalGalleryTitle"></h3>
+            </div>
+            <button @click="globalShowGallery = false" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center transition-all shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        {{-- Gallery Grid Content --}}
+        <div class="container mx-auto px-6 py-8 max-w-7xl">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                <template x-for="(slide, idx) in globalSlides" :key="idx">
+                    <div @click="openLightbox(idx)" class="relative aspect-[4/3] rounded-2xl overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-150 bg-gray-50 cursor-pointer">
+                        <img :src="slide" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" :alt="'Gallery Photo ' + (idx + 1)">
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                            <svg class="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 drop-shadow-md" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                            </svg>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+        
+        {{-- Fullscreen Lightbox Slider --}}
+        <div x-show="globalLightboxOpen" 
+             x-cloak
+             class="fixed inset-0 flex items-center justify-center"
+             style="z-index: 2147483647 !important; background-color: #ffffff !important;"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @keydown.right.window="if(globalLightboxOpen) nextImage()"
+             @keydown.left.window="if(globalLightboxOpen) prevImage()">
+            
+            {{-- Lightbox Close Button --}}
+            <button @click.stop="globalLightboxOpen = false" class="absolute top-6 right-6 text-gray-500 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 rounded-full p-2 border border-gray-200 shadow-sm" style="z-index: 2147483647 !important;">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            
+            {{-- Prev Button --}}
+            <button @click.stop="prevImage()" class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 rounded-full p-3 md:p-4 border border-gray-200 shadow-sm" style="z-index: 2147483647 !important;">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+            </button>
+            
+            {{-- Next Button --}}
+            <button @click.stop="nextImage()" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-900 transition-colors bg-gray-100 hover:bg-gray-200 rounded-full p-3 md:p-4 border border-gray-200 shadow-sm" style="z-index: 2147483647 !important;">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </button>
+            
+            {{-- Main Image Display --}}
+            <div class="relative max-w-5xl max-h-[85vh] w-full px-4 md:px-16 flex items-center justify-center">
+                <template x-for="(slide, idx) in globalSlides" :key="'lightbox-'+idx">
+                    <img x-show="globalLightboxIndex === idx" 
+                         :src="slide" 
+                         x-transition:enter="transition ease-out duration-300"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" 
+                         :alt="'Fullscreen Image ' + (idx + 1)">
+                </template>
+            </div>
+            
+            {{-- Image Counter --}}
+            <div class="absolute bottom-6 left-1/2 -translate-x-1/2 text-gray-700 font-bold tracking-wide text-sm bg-gray-100 border border-gray-200 shadow-sm px-4 py-1.5 rounded-full" style="z-index: 2147483647 !important;">
+                <span x-text="globalLightboxIndex + 1"></span> / <span x-text="globalSlides.length"></span>
+            </div>
+        </div>
+    </div>
+
     @stack('scripts')
 </body>
 </html>

@@ -849,7 +849,14 @@
     });
 
     // Inserts formatting at cursor / wraps selection in the itinerary textarea
-    async async function itineraryFormat(type) {
+    // Fallback for customPrompt if not defined globally
+    if (!window.customPrompt) {
+        window.customPrompt = function(msg) {
+            return Promise.resolve(prompt(msg));
+        };
+    }
+
+    async function itineraryFormat(type) {
         const ta = document.getElementById('itinerary-textarea');
         if (!ta) return;
 
