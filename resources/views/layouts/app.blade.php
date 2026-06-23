@@ -208,7 +208,7 @@
                             <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
                             <div class="flex-1 min-w-0">
                                 <h5 class="text-xs font-black text-foreground truncate">${item.title}</h5>
-                                <p class="text-[10px] text-primary font-bold">₹${Number(item.price).toLocaleString()}</p>
+                                <p class="text-[10px] text-primary font-bold">${item.currency || '₹'}${Number(item.price).toLocaleString()}</p>
                             </div>
                             <button onclick="event.preventDefault();event.stopPropagation();toggleWishlist(event,{slug:'${item.slug}'})" class="text-gray-300 hover:text-primary transition-colors flex-shrink-0">
                                 <i data-lucide="trash-2" size="14"></i>
@@ -228,7 +228,7 @@
                             <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                             <div class="flex-1 min-w-0">
                                 <h5 class="text-[10px] font-black text-foreground truncate">${item.title}</h5>
-                                <p class="text-[10px] text-primary font-bold">₹${Number(item.price).toLocaleString()}</p>
+                                <p class="text-[10px] text-primary font-bold">${item.currency || '₹'}${Number(item.price).toLocaleString()}</p>
                             </div>
                             <button onclick="event.preventDefault();event.stopPropagation();toggleWishlist(event,{slug:'${item.slug}'})" class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all flex-shrink-0">
                                 <i data-lucide="trash-2" size="14"></i>

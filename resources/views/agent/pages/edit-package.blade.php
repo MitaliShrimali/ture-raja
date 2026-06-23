@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Load AlpineJS and Lucide for this view -->
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 
 @php
@@ -26,6 +26,28 @@
     location: {{ json_encode($pkg->location) }},
     duration: {{ json_encode($pkg->duration) }},
     price: {{ json_encode($pkg->price) }},
+    currency: {{ json_encode($pkg->currency ?? '₹') }},
+    inrPrice: '',
+    rates: { '₹': 1, '$': 86.5, '€': 89.2, '£': 105.4, 'AED': 23.5 },
+    initPrice() {
+        if (this.price) {
+            this.inrPrice = (this.price * this.rates[this.currency]).toFixed(2);
+            if(this.inrPrice.endsWith('.00')) this.inrPrice = Math.round(this.inrPrice);
+        }
+    },
+    updatePrice(fromBase) {
+        if (fromBase) {
+            this.inrPrice = (this.price * this.rates[this.currency]).toFixed(2);
+            if(this.inrPrice.endsWith('.00')) this.inrPrice = Math.round(this.inrPrice);
+        } else {
+            if(this.inrPrice) {
+                this.price = (this.inrPrice / this.rates[this.currency]).toFixed(2);
+                if(this.price.endsWith('.00')) this.price = Math.round(this.price);
+            } else {
+                this.price = '';
+            }
+        }
+    },
     old_price: {{ json_encode($pkg->old_price ?? '') }},
     validity: {{ json_encode($pkg->validity ?? '') }},
     sightseeing: {{ json_encode($pkg->sightseeing ?? '') }},
@@ -213,6 +235,13 @@
             background-color: #e85d26;
             border-color: #e85d26;
         }
+        #packageMainForm input[type="text"]:focus,
+        #packageMainForm input[type="number"]:focus,
+        #packageMainForm select:focus,
+        #packageMainForm textarea:focus {
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 2px rgba(232, 93, 38, 0.25) !important;
+        }
     </style>
 
     <!-- Header Actions Panel -->
@@ -372,14 +401,30 @@
                         <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center">
                             <i data-lucide="wallet" size="20"></i>
                         </div>
-                        <h3 class="text-lg font-black text-gray-800">Pricing</h3>
+                        <h3 class="text-lg font-black text-gray-800">Pricing & Currency</h3>
+                    </div>
+
+                    <!-- Currency Dropdown -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Currency</label>
+                        <div class="relative">
+                            <i data-lucide="coins" size="16" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <select name="currency" x-model="currency" @change="updatePrice(false)" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm appearance-none">
+                                <option value="₹">INR (₹)</option>
+                                <option value="$">USD ($)</option>
+                                <option value="€">EUR (€)</option>
+                                <option value="£">GBP (£)</option>
+                                <option value="AED">AED</option>
+                            </select>
+                            <i data-lucide="chevron-down" size="16" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                        </div>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Price Per Person (INR)</label>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Price Per Person (<span x-text="currency"></span>)</label>
                         <div class="relative">
-                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">₹</span>
-                            <input required type="number" name="price" x-model="price" placeholder="45999" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
+                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400" x-text="currency"></span>
+                            <input required type="number" step="0.01" name="price" x-model="price" @input="updatePrice(true)" placeholder="45999" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
                         </div>
                     </div>
 
@@ -439,26 +484,35 @@
                 </div>
             </div>
 
-            <!-- Trip Keywords Card -->
+            <!-- Tags & Keywords Card -->
             <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center">
                         <i data-lucide="tag" size="20"></i>
                     </div>
-                    <h3 class="text-lg font-black text-gray-800">Trip Keywords</h3>
+                    <h3 class="text-lg font-black text-gray-800">Tags & Keywords</h3>
                 </div>
 
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Search Keywords (Helps travelers find you)</label>
-                    <div class="w-full bg-[#F5F5F5] rounded-2xl p-4 flex flex-wrap items-center gap-2 border border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/25 transition-all">
-                        <template x-for="(kw, idx) in keywords" :key="idx">
-                            <span class="px-3.5 py-1.5 bg-gray-200 text-gray-700 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
-                                <span x-text="kw"></span>
-                                <i class="cursor-pointer font-black text-xs leading-none text-gray-400 hover:text-gray-600" @click="removeKeyword(idx)">&times;</i>
-                            </span>
-                        </template>
-                        <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" @keydown.comma.prevent="addKeyword()" @keydown.space.prevent="addKeyword()" placeholder="Type keyword & enter/space..." class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0" style="border: none !important; outline: none !important; box-shadow: none !important;" />
-                        <input type="hidden" name="keywords" :value="keywords.join(',')" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                    <!-- Tag Name -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Tag Name (e.g. 25% Off, Popular)</label>
+                        <input type="text" name="badge" value="{{ old('badge', $pkg->badge ?? '') }}" placeholder="e.g. 25% Off" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
+                    </div>
+
+                    <!-- Search Keywords -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Search Keywords (Helps travelers find you)</label>
+                        <div class="w-full bg-[#F5F5F5] rounded-2xl p-4 flex flex-wrap items-center gap-2 border border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/25 transition-all">
+                            <template x-for="(kw, idx) in keywords" :key="idx">
+                                <span class="px-3.5 py-1.5 bg-gray-200 text-gray-700 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                                    <span x-text="kw"></span>
+                                    <i class="cursor-pointer font-black text-xs leading-none text-gray-400 hover:text-gray-600" @click="removeKeyword(idx)">&times;</i>
+                                </span>
+                            </template>
+                            <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" @keydown.comma.prevent="addKeyword()" @keydown.space.prevent="addKeyword()" placeholder="Type keyword & enter/space..." class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0" style="border: none !important; outline: none !important; box-shadow: none !important;" />
+                            <input type="hidden" name="keywords" :value="keywords.join(',')" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -731,12 +785,21 @@
                         <h4 class="text-lg font-black text-gray-400 uppercase tracking-widest pl-1">Pricing & Dates</h4>
                         
                         <div class="space-y-4">
-                            <!-- Base Price -->
+                            <!-- Calculated INR Price -->
                             <div class="space-y-1">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Base Price</label>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Calculated Price in INR (₹)</label>
                                 <div class="relative">
                                     <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">₹</span>
-                                    <input type="number" name="old_price" x-model="old_price" placeholder="55000" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none transition-all font-bold text-foreground text-sm" />
+                                    <input type="number" step="0.01" x-model="inrPrice" @input="updatePrice(false)" placeholder="55000" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none transition-all font-bold text-foreground text-sm" />
+                                </div>
+                            </div>
+                            
+                            <!-- Old Price -->
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Old Price (Strike-through)</label>
+                                <div class="relative">
+                                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400" x-text="currency"></span>
+                                    <input type="number" step="0.01" name="old_price" x-model="old_price" placeholder="65000" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none transition-all font-bold text-foreground text-sm" />
                                 </div>
                             </div>
 
@@ -828,7 +891,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
         

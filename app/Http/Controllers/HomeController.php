@@ -11,7 +11,7 @@ class HomeController extends Controller
     public function index()
     {
         try {
-            $packages = Package::all();
+            $packages = Package::where('status', 'Active')->get();
             if ($packages->isEmpty()) {
                 $packages = collect($this->getStaticPackages());
             }
@@ -25,7 +25,7 @@ class HomeController extends Controller
     public function profile()
     {
         try {
-            $packages = Package::all();
+            $packages = Package::where('status', 'Active')->get();
             if ($packages->isEmpty()) {
                 $packages = collect($this->getStaticPackages());
             }

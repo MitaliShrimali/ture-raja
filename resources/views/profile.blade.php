@@ -422,7 +422,7 @@
           </div>
           <div class="pf-bk-info">
             <h4>{{ $bk->package_title }}</h4>
-            <p>{{ $bk->guests }} Guest(s) · ₹{{ number_format($bk->package_price) }}</p>
+            <p>{{ $bk->guests }} Guest(s) &middot; {{ $bk->package_currency ?? '₹' }}{{ number_format($bk->package_price) }}</p>
             <span class="pf-badge pf-badge--{{ strtolower($bk->status) }}">{{ $bk->status }}</span>
           </div>
           <a href="{{ route('discover', ['search' => $bk->package_title]) }}" class="pf-bk-link">View →</a>
@@ -533,7 +533,7 @@ function pfRenderWishlist() {
         <div class="pf-wl-info">
           <h4>${item.title}</h4>
           <p class="pf-wl-price-line">
-            <span class="pf-wl-price">₹${Number(item.price).toLocaleString('en-IN')}</span>
+            <span class="pf-wl-price">${item.currency || '₹'}${Number(item.price).toLocaleString('en-IN')}</span>
             <span class="pf-wl-per">/ person</span>
           </p>
         </div>

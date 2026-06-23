@@ -89,7 +89,7 @@
                                 </span>
                             </a>
                         </td>
-                        <td class="py-6 px-8 font-bold text-foreground">₹{{ number_format($pkg->price) }}</td>
+                        <td class="py-6 px-8 font-bold text-foreground">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price) }}</td>
                         <td class="py-6 px-8 text-right">
                             <div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button @click="showEditModal = true; editPkg = { id: '{{ $pkg->id }}', title: '{{ addslashes($pkg->title) }}', subtitle: '{{ addslashes($pkg->subtitle) }}', price: '{{ $pkg->price }}', status: '{{ $pkg->status }}' }" class="w-8 h-8 rounded-xl bg-gray-50 text-text-muted hover:text-primary hover:bg-primary/5 flex items-center justify-center transition-all" title="Edit">

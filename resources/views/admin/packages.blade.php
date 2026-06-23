@@ -136,7 +136,7 @@
                                     {{ $pkg->duration }}
                                 </div>
                             </td>
-                            <td class="py-6 px-8 text-sm font-black text-foreground">₹{{ number_format($pkg->price, 2) }}</td>
+                            <td class="py-6 px-8 text-sm font-black text-foreground">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price, 2) }}</td>
                             <td class="py-6 px-8 text-sm font-bold text-orange-500">{{ $pkg->stock }}</td>
                             <td class="py-6 px-8">
                                 <a href="{{ url('/admin/packages/toggle/' . $pkg->id) }}" class="inline-block">

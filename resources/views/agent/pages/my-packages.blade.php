@@ -40,10 +40,12 @@
     <div class="bg-white rounded-[32px] p-4 shadow-sm border border-gray-100 group hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500 package-card" data-name="{{ strtolower($pkg->title) }}" id="pkg-card-{{ $pkg->id }}">
         <div class="relative mb-4 overflow-hidden rounded-[24px]">
             <img src="{{ $pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=500' }}" class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-700" alt="{{ $pkg->title }}">
+            @if(!$isPending)
             <!-- Toggle Button -->
             <button onclick="togglePkgStatus({{ $pkg->id }}, this)" id="toggle-btn-{{ $pkg->id }}" class="absolute top-3 right-3 w-8 h-4 rounded-full border-2 border-white flex items-center transition-all duration-300 {{ $isActive ? 'bg-[#e85d26] justify-end' : 'bg-gray-300 justify-start' }}">
                 <div class="w-2.5 h-2.5 bg-white rounded-full mx-0.5"></div>
             </button>
+            @endif
             @if($isPending)
             <div class="absolute top-3 left-3 bg-yellow-500 text-white text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-wider">Pending Review</div>
             @endif
@@ -70,7 +72,7 @@
             </div>
             <div>
                 <p class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">Price</p>
-                <p class="text-[10px] font-bold text-gray-800">₹ {{ number_format($pkg->price) }}</p>
+                <p class="text-[10px] font-bold text-gray-800">{{ $pkg->currency ?? '₹' }} {{ number_format($pkg->price) }}</p>
             </div>
             <div>
                 <p class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">Category</p>
@@ -117,17 +119,32 @@
         });
     }
 
-    function togglePkgStatus(id, btn) {
-        if (btn.classList.contains('bg-\\[\\#e85d26\\]') || btn.classList.contains('justify-end')) {
-            btn.classList.remove('justify-end');
-            btn.classList.add('justify-start');
-            btn.style.backgroundColor = '#d1d5db';
-            toastr.info('Package disabled');
-        } else {
-            btn.classList.remove('justify-start');
-            btn.classList.add('justify-end');
-            btn.style.backgroundColor = '#e85d26';
-            toastr.success('Package enabled and live!');
+    async function togglePkgStatus(id, btn) {
+        try {
+            const response = await fetch(`/agent/packages/toggle/${id}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            const data = await response.json();
+            if (data.success) {
+                if (data.new_status === 'Inactive') {
+                    btn.classList.remove('justify-end', 'bg-[#e85d26]');
+                    btn.classList.add('justify-start', 'bg-gray-300');
+                    btn.style.backgroundColor = '#d1d5db';
+                    toastr.info('Package disabled globally!');
+                } else {
+                    btn.classList.remove('justify-start', 'bg-gray-300');
+                    btn.classList.add('justify-end', 'bg-[#e85d26]');
+                    btn.style.backgroundColor = '#e85d26';
+                    toastr.success('Package enabled and live globally!');
+                }
+            } else {
+                toastr.error(data.message || 'Error updating status');
+            }
+        } catch(error) {
+            toastr.error('Failed to communicate with server');
         }
     }
 
@@ -163,7 +180,7 @@
 
     // Initialize toggle buttons correctly
     document.querySelectorAll('[id^="toggle-btn-"]').forEach(btn => {
-        if (btn.classList.contains('bg-\\[\\#e85d26\\]')) {
+        if (btn.classList.contains('bg-[#e85d26]')) {
             btn.style.backgroundColor = '#e85d26';
         } else {
             btn.style.backgroundColor = '#d1d5db';

@@ -201,43 +201,59 @@
 
             {{-- Inclusions & Exclusions --}}
             @if(count($included) > 0 || count($excluded) > 0)
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 @if(count($included) > 0)
-                <div class="bg-white rounded-[32px] p-8 border border-green-100 shadow-soft">
+                <div class="bg-green-50 rounded-[32px] p-8 border border-green-100 shadow-soft">
                     <div class="flex items-center gap-2 mb-5">
-                        <div class="w-8 h-8 rounded-xl bg-green-50 flex items-center justify-center">
-                            <i data-lucide="check-circle-2" size="16" class="text-green-500"></i>
+                        <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                            <i data-lucide="check-circle-2" size="16" class="text-green-600"></i>
                         </div>
-                        <h4 class="text-sm font-black text-foreground">What's Included</h4>
+                        <h4 class="text-sm font-black text-green-900">What's Included</h4>
                     </div>
                     <ul class="space-y-3">
                         @foreach($included as $item)
-                        <li class="flex items-start gap-2 text-sm text-foreground font-medium">
-                            <i data-lucide="check" size="14" class="text-green-500 mt-0.5 shrink-0"></i>
+                        <li class="flex items-start gap-2 text-sm text-green-800 font-medium">
+                            <i data-lucide="check" size="14" class="text-green-600 mt-0.5 shrink-0"></i>
                             {{ $item }}
                         </li>
                         @endforeach
                     </ul>
                 </div>
                 @endif
+
                 @if(count($excluded) > 0)
-                <div class="bg-white rounded-[32px] p-8 border border-red-50 shadow-soft">
+                <div class="bg-red-50 rounded-[32px] p-8 border border-red-100 shadow-soft">
                     <div class="flex items-center gap-2 mb-5">
-                        <div class="w-8 h-8 rounded-xl bg-red-50 flex items-center justify-center">
-                            <i data-lucide="x-circle" size="16" class="text-red-500"></i>
+                        <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                            <i data-lucide="x-circle" size="16" class="text-red-600"></i>
                         </div>
-                        <h4 class="text-sm font-black text-foreground">What's Excluded</h4>
+                        <h4 class="text-sm font-black text-red-900">What's Excluded</h4>
                     </div>
                     <ul class="space-y-3">
                         @foreach($excluded as $item)
-                        <li class="flex items-start gap-2 text-sm text-foreground font-medium">
-                            <i data-lucide="x" size="14" class="text-red-400 mt-0.5 shrink-0"></i>
+                        <li class="flex items-start gap-2 text-sm text-red-800 font-medium">
+                            <i data-lucide="x" size="14" class="text-red-600 mt-0.5 shrink-0"></i>
                             {{ $item }}
                         </li>
                         @endforeach
                     </ul>
                 </div>
                 @endif
+            </div>
+            @endif
+
+            {{-- Terms & Conditions --}}
+            @if(!empty($pkg->terms))
+            <div class="bg-[#F8F9FA] rounded-[32px] p-8 border border-gray-200 shadow-soft mb-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <!-- <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                        <i data-lucide="file-text" size="16" class="text-gray-600"></i>
+                    </div> -->
+                    <h3 class="text-lg font-black text-foreground">Terms & Conditions</h3>
+                </div>
+                <div class="text-sm text-gray-600 leading-relaxed mt-2">
+                    {!! nl2br(e($pkg->terms)) !!}
+                </div>
             </div>
             @endif
 
@@ -292,12 +308,13 @@
             <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft space-y-4">
                 <h3 class="text-lg font-black text-foreground">Pricing</h3>
                 <div class="space-y-2">
-                    <p class="text-3xl font-black text-primary">₹{{ number_format($pkg->price, 2) }}</p>
+                    <p class="text-3xl font-black text-primary">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price, 2) }}</p>
                     @if($pkg->old_price)
-                    <p class="text-sm text-muted-text line-through font-medium">₹{{ number_format($pkg->old_price, 2) }}</p>
-                    <p class="text-xs font-black text-green-600 bg-green-50 px-3 py-1 rounded-full inline-block">
-                        Save ₹{{ number_format($pkg->old_price - $pkg->price, 2) }}
-                    </p>
+                    <p class="text-sm text-muted-text line-through font-medium">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->old_price, 2) }}</p>
+                    <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-50 text-xs font-black text-primary border border-orange-100">
+                        <i data-lucide="tag" size="12"></i>
+                        Save {{ $pkg->currency ?? '₹' }}{{ number_format($pkg->old_price - $pkg->price, 2) }}
+                    </div>
                     @endif
                 </div>
 
@@ -351,6 +368,18 @@
             {{-- Meta --}}
             <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft space-y-4">
                 <h3 class="text-sm font-black text-muted-text uppercase tracking-widest">Package Info</h3>
+                @if(!empty($pkg->theme))
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
+                        <span class="text-muted-text">Theme</span>
+                        <span class="font-bold text-foreground">{{ $pkg->theme }}</span>
+                    </div>
+                @endif
+                @if(!empty($pkg->holiday_type))
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
+                        <span class="text-muted-text">Holiday Type</span>
+                        <span class="font-bold text-foreground">{{ $pkg->holiday_type }}</span>
+                    </div>
+                @endif
                 @if(!empty($pkg->stock))
                     <div class="flex items-center justify-between pb-4 border-b border-gray-50">
                         <span class="text-muted-text">Availability</span>
@@ -372,6 +401,7 @@
                     @php
                         $meals = json_decode($pkg->meals, true) ?: [];
                         $hotels = json_decode($pkg->hotels, true) ?: [];
+                        $transfers = json_decode($pkg->transfers, true) ?: [];
                     @endphp
                     @if(!empty($meals))
                     <div class="flex items-center justify-between pb-4 border-b border-gray-50">
@@ -383,6 +413,12 @@
                     <div class="flex items-center justify-between pb-4 border-b border-gray-50">
                         <span class="text-muted-text">Hotels</span>
                         <span class="font-bold text-foreground">{{ count($hotels) }} Listed</span>
+                    </div>
+                    @endif
+                    @if(!empty($transfers))
+                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
+                        <span class="text-muted-text">Transfers</span>
+                        <span class="font-bold text-foreground">{{ count($transfers) }} Types</span>
                     </div>
                     @endif
                 <div class="flex justify-between text-xs font-bold pt-2">

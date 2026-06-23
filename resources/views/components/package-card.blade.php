@@ -9,6 +9,7 @@
     'reviews' => '0',
     'price' => 0,
     'oldPrice' => null,
+    'currency' => null,
     'badge' => null,
     'slug' => null,
     'hideAgent' => false,
@@ -21,6 +22,7 @@
         $title    = $pkgArr['title']    ?? $title;
         $image    = $pkgArr['image']    ?? $image;
         $duration = $pkgArr['duration'] ?? $duration;
+        $currency = $pkgArr['currency'] ?? $currency;
         
         // Format duration to show Nights first if present
         if ($duration) {
@@ -92,7 +94,7 @@
 
         <!-- Wishlist Button top-right -->
         <button 
-            onclick="toggleWishlist(event, { slug: '{{ $slug }}', title: '{{ addslashes($title) }}', image: '{{ $image }}', price: '{{ $price }}' })"
+            onclick="toggleWishlist(event, { slug: '{{ $slug }}', title: '{{ addslashes($title) }}', image: '{{ $image }}', price: '{{ $price }}', currency: '{{ $currency ?? '₹' }}' })"
             data-wishlist-slug="{{ $slug }}"
             class="wishlist-btn absolute top-4 right-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all duration-300 border border-white/30"
         >
@@ -169,11 +171,11 @@
         <div class="pt-4 border-t border-border-soft/50 flex items-end justify-between mt-auto package-action">
             <div class="flex flex-col">
                 <div class="flex items-center gap-1.5">
-                    <span class="text-2xl font-black text-foreground tracking-tight font-heading">₹{{ number_format($price) }}</span>
+                    <span class="text-2xl font-black text-foreground tracking-tight font-heading">{{ $currency ?? '₹' }}{{ number_format($price) }}</span>
                     <span class="text-[10px] text-text-muted font-bold mt-1">/ person</span>
                 </div>
                 @if($oldPrice)
-                    <span class="text-[11px] text-primary font-black line-through">₹{{ number_format($oldPrice) }}</span>
+                    <span class="text-[11px] text-primary font-black line-through">{{ $currency ?? '₹' }}{{ number_format($oldPrice) }}</span>
                 @endif
             </div>
 

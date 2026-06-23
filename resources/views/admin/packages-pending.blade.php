@@ -119,7 +119,7 @@
                                     {{ $pkg->duration ?? '—' }}
                                 </div>
                             </td>
-                            <td class="py-6 px-8 text-sm font-black text-foreground">₹{{ number_format($pkg->price, 2) }}</td>
+                            <td class="py-6 px-8 text-sm font-black text-foreground">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price, 2) }}</td>
                             <td class="py-6 px-8 text-xs font-bold text-muted-text">
                                 {{ $pkg->created_at ? \Carbon\Carbon::parse($pkg->created_at)->diffForHumans() : '—' }}
                             </td>

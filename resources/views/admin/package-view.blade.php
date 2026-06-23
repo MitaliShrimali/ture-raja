@@ -41,7 +41,7 @@
                     </div>
                     <div class="p-4 bg-gray-50 rounded-2xl">
                         <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Price</p>
-                        <p class="text-sm font-black text-primary">₹{{ number_format($pkg->price, 2) }}</p>
+                        <p class="text-sm font-black text-primary">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price, 2) }}</p>
                     </div>
                     <div class="p-4 bg-gray-50 rounded-2xl">
                         <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Group Size</p>

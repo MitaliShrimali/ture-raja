@@ -568,6 +568,7 @@
                             :reviews="$pkg['reviews']"
                             :price="$pkg['price']"
                             :oldPrice="$pkg['oldPrice']"
+                            :currency="$pkg['currency'] ?? null"
                             :badge="$pkg['badge']"
                             :slug="$pkg['slug']"
                         />

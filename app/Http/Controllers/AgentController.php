@@ -708,6 +708,38 @@ class AgentController extends Controller
         return redirect()->route('agent.my-packages')->with('success', 'Package submitted successfully! It will be reviewed by admin before going live.');
     }
 
+    public function togglePackage($id)
+    {
+        $pkg = DB::table('packages')->where('id', $id)->first();
+        if (!$pkg) {
+            return response()->json(['success' => false, 'message' => 'Package not found']);
+        }
+
+        if ($pkg->status === 'Pending') {
+            return response()->json(['success' => false, 'message' => 'Cannot toggle a pending package. Please wait for admin approval.']);
+        }
+
+        // Verify ownership
+        $agentId   = session('agent_id');
+        $agentName = session('agent_name', '');
+        $agentData = json_decode($pkg->agent, true);
+        $isOwner = false;
+        if ($agentData) {
+            if ((isset($agentData['id']) && $agentData['id'] == $agentId) || (isset($agentData['name']) && $agentData['name'] === $agentName)) {
+                $isOwner = true;
+            }
+        }
+
+        if (!$isOwner) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized']);
+        }
+
+        $newStatus = $pkg->status === 'Active' ? 'Inactive' : 'Active';
+        DB::table('packages')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+
+        return response()->json(['success' => true, 'new_status' => $newStatus]);
+    }
+
     public function feedback()
     {
         return view('agent.pages.feedback', [

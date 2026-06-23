@@ -347,6 +347,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/packages/edit/{id}', [AgentController::class, 'editPackage'])->name('packages.edit');
     Route::post('/packages/store', [AgentController::class, 'storePackage'])->name('packages.store');
     Route::post('/packages/update', [AgentController::class, 'updatePackage'])->name('packages.update');
+    Route::get('/packages/toggle/{id}', [AgentController::class, 'togglePackage'])->name('packages.toggle');
     Route::get('/feedback', [AgentController::class, 'feedback'])->name('feedback');
     Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
     Route::get('/hotels', [AgentController::class, 'hotels'])->name('hotels');
@@ -619,6 +620,7 @@ Route::get('/packages/{slug}', function ($slug) {
             'reviews'    => $dbPkg->reviews ?? '10',
             'price'      => $dbPkg->price,
             'oldPrice'   => $dbPkg->old_price,
+            'currency'   => property_exists($dbPkg, 'currency') && $dbPkg->currency ? $dbPkg->currency : 'INR',
             'badge'      => $dbPkg->badge,
             'category'   => $dbPkg->category,
             'tour_type'  => 'Flight Package',
@@ -648,6 +650,7 @@ Route::get('/packages/{slug}', function ($slug) {
             'transfers'  => json_decode($dbPkg->transfers, true) ?: [],
             'keywords'   => json_decode($dbPkg->keywords, true) ?: [],
             'editorial_itinerary' => property_exists($dbPkg, 'editorial_itinerary') ? $dbPkg->editorial_itinerary : null,
+            'terms' => property_exists($dbPkg, 'terms') ? $dbPkg->terms : null,
         ];
 
         // Fill defaults if empty
@@ -708,6 +711,7 @@ Route::get('/packages/{slug}', function ($slug) {
             ],
             'included'   => ['Hotel Stay', 'Daily Breakfast', 'Tour Guide', 'Transfers'],
             'excluded'   => ['Flights', 'Personal Expenses', 'Visa Fees'],
+            'terms'      => null,
             'validity'   => null,
             'sightseeing'=> null,
             'hotels'     => [],

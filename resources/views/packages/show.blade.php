@@ -458,34 +458,70 @@
 
                 {{-- Pricing & Dates --}}
                 <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">Pricing & Dates</h2>
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="text-3xl font-black text-[#e85d26]">₹{{ number_format((float)$package['price'], 2) }}</div>
-                        @if(!empty($package['old_price']))
-                        <div class="text-lg font-bold text-gray-400 line-through">₹{{ number_format((float)$package['old_price'], 2) }}</div>
-                        @endif
-                        <div class="text-sm font-semibold text-gray-500 mt-2">Per Person</div>
-                    </div>
-                </div>
+                      <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">Pricing</h2>
+                      <div class="flex flex-col gap-2 mb-4">
+                          <div class="flex items-end gap-2">
+                              <div class="text-3xl font-black text-[#e85d26]">{{ $package['currency'] ?? '₹' }}{{ number_format((float)$package['price'], 2) }}</div>
+                              <div class="text-sm font-semibold text-gray-500 mb-1">/ Per Person</div>
+                          </div>
+                          @if(!empty($package['oldPrice']))
+                          <div class="text-lg font-bold text-gray-600 line-through">{{ $package['currency'] ?? '₹' }}{{ number_format((float)$package['oldPrice'], 2) }}</div>
+                          
+                          @php
+                              $saveAmount = (float)$package['oldPrice'] - (float)$package['price'];
+                          @endphp
+                          @if($saveAmount > 0)
+                          <div class="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e85d26] bg-[#e85d26]/10 text-[#e85d26] font-bold text-sm w-max">
+                              <i data-lucide="tag" class="w-4 h-4"></i>
+                              Save {{ $package['currency'] ?? '₹' }}{{ number_format($saveAmount, 2) }}
+                          </div>
+                          @endif
+                          @endif
+                      </div>
+                  </div>
 
-                {{-- What's Included / Excluded --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">What's Included</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6">
-                        @foreach($package['included'] as $item)
-                        <div class="flex items-start gap-2 standard-body-text">
-                            <svg class="shrink-0 mt-1" width="14" height="14" fill="none" stroke="#22c55e" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                            <span>{{ $item }}</span>
+                {{-- Inclusions & Exclusions --}}
+                @if(count($package['included'] ?? []) > 0 || count($package['excluded'] ?? []) > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    @if(count($package['included'] ?? []) > 0)
+                    <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
+                        <div class="flex items-center gap-2 mb-5">
+                            <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                                <i data-lucide="check-circle-2" size="16" class="text-green-600"></i>
+                            </div>
+                            <h4 class="text-base font-black text-green-900">What's Included</h4>
                         </div>
-                        @endforeach
-                        @foreach($package['excluded'] as $item)
-                        <div class="flex items-start gap-2 standard-body-text">
-                            <svg class="shrink-0 mt-1" width="14" height="14" fill="none" stroke="#ef4444" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            <span>{{ $item }}</span>
-                        </div>
-                        @endforeach
+                        <ul class="space-y-3">
+                            @foreach($package['included'] as $item)
+                            <li class="flex items-start gap-2 text-sm text-green-800 font-medium leading-relaxed">
+                                <i data-lucide="check" size="14" class="text-green-600 mt-0.5 shrink-0"></i>
+                                <span>{{ $item }}</span>
+                            </li>
+                            @endforeach
+                        </ul>
                     </div>
+                    @endif
+
+                    @if(count($package['excluded'] ?? []) > 0)
+                    <div class="bg-red-50 rounded-2xl p-6 border border-red-100 shadow-sm">
+                        <div class="flex items-center gap-2 mb-5">
+                            <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                                <i data-lucide="x-circle" size="16" class="text-red-600"></i>
+                            </div>
+                            <h4 class="text-base font-black text-red-900">What's Excluded</h4>
+                        </div>
+                        <ul class="space-y-3">
+                            @foreach($package['excluded'] as $item)
+                            <li class="flex items-start gap-2 text-sm text-red-800 font-medium leading-relaxed">
+                                <i data-lucide="x" size="14" class="text-red-600 mt-0.5 shrink-0"></i>
+                                <span>{{ $item }}</span>
+                            </li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                 </div>
+                @endif
 
                 {{-- Additional Package Details --}}
                 @if(!empty($package['validity']) || !empty($package['sightseeing']) || !empty($package['hotels']) || !empty($package['amenities']) || !empty($package['meals']) || !empty($package['transfers']))
@@ -494,21 +530,21 @@
                     
                     @if(!empty($package['validity']))
                     <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="calendar" class="w-4 h-4 text-orange-500"></i> Package Validity</h3>
+                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="calendar" class="w-4 h-4 text-orange-500"></i> Package Validity</h4>
                         <p class="standard-body-text">{{ $package['validity'] }}</p>
                     </div>
                     @endif
 
                     @if(!empty($package['sightseeing']))
                     <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="map" class="w-4 h-4 text-orange-500"></i> Sightseeing Details</h3>
+                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="map" class="w-4 h-4 text-orange-500"></i> Sightseeing Details</h4>
                         <p class="standard-body-text">{{ $package['sightseeing'] }}</p>
                     </div>
                     @endif
 
                     @if(!empty($package['hotels']))
                     <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="building" class="w-4 h-4 text-orange-500"></i> Hotels</h3>
+                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="building" class="w-4 h-4 text-orange-500"></i> Hotels</h4>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse border border-gray-200">
                                 <thead>
@@ -534,7 +570,7 @@
 
                     @if(!empty($package['amenities']))
                     <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="check-circle" class="w-4 h-4 text-orange-500"></i> Essential Amenities</h3>
+                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="check-circle" class="w-4 h-4 text-orange-500"></i> Essential Amenities</h4>
                         <div class="flex flex-wrap gap-2">
                             @foreach($package['amenities'] as $am)
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-700 text-xs font-bold border border-gray-200">
@@ -547,7 +583,7 @@
 
                     @if(!empty($package['meals']))
                     <div class="mb-5">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="utensils" class="w-4 h-4 text-orange-500"></i> Meals Included</h3>
+                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="utensils" class="w-4 h-4 text-orange-500"></i> Meals Included</h4>
                         <div class="flex flex-wrap gap-2">
                             @foreach($package['meals'] as $meal)
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 text-xs font-bold border border-orange-200">
@@ -560,7 +596,7 @@
 
                     @if(!empty($package['transfers']))
                     <div class="mb-2">
-                        <h3 class="font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="car" class="w-4 h-4 text-orange-500"></i> Transfers</h3>
+                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="car" class="w-4 h-4 text-orange-500"></i> Transfers</h4>
                         <ul class="list-disc pl-5 space-y-1">
                             @foreach($package['transfers'] as $trans)
                             <li class="standard-body-text">{{ $trans }}</li>
@@ -614,6 +650,21 @@
                                 {{ $place }}
                             </span>
                         @endforeach
+                    </div>
+                </div>
+                @endif
+
+                {{-- Terms & Conditions --}}
+                @if(!empty($package['terms']))
+                <div class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                    <div class="flex items-center gap-3 mb-6">
+                        <!-- <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0"> -->
+                            <!-- <i data-lucide="file-text" size="20" class="text-gray-600"></i> -->
+                        <!-- </div> -->
+                        <h2 class="font-black text-gray-900 section-heading !mb-0 text-xl pb-2">Terms & Conditions</h2>
+                    </div>
+                    <div class="text-sm text-gray-600 leading-relaxed mt-4">
+                        {!! nl2br(e($package['terms'])) !!}
                     </div>
                 </div>
                 @endif
@@ -687,43 +738,30 @@
                     }
                     
                     // Base agent details from package if available
-                    $agentId = $agentDataRaw['id'] ?? 64;
-                    $agentName = $agentDataRaw['name'] ?? 'Miths Holidays';
-                    $agentPhone = $agentDataRaw['phone'] ?? '+91 7383682183';
-                    $agentEmail = $agentDataRaw['email'] ?? 'mithstours@gmail.com';
-                    $agentRegion = $agentDataRaw['region'] ?? '101 GF Nr Trikon Bagh Rajkot - Gujarat';
-                    $agentLogoRaw = $agentDataRaw['logo'] ?? null;
-                    if ($agentLogoRaw && !str_starts_with($agentLogoRaw, 'http') && !str_starts_with($agentLogoRaw, '//')) {
-                        $agentLogoRaw = asset(ltrim($agentLogoRaw, '/'));
-                    }
-                    $agentLogo = $agentLogoRaw ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
+                    $agentId = $agentDataRaw['id'] ?? null;
+                    $agentName = $agentDataRaw['name'] ?? null;
                     
-                    // Fallback to DB if we only have a name (legacy entries)
-                    if (!isset($agentDataRaw['phone'])) {
-                        $dbAgent = \DB::table('agents')->where('name', $agentName)->orWhere('id', $agentId)->first();
-                        if ($dbAgent) {
-                            $agentId = $dbAgent->id;
-                            $agentName = $dbAgent->agency_name ?? $dbAgent->name;
-                            $agentPhone = $dbAgent->phone ?? $agentPhone;
-                            $agentEmail = $dbAgent->email ?? $agentEmail;
-                            $agentRegion = $dbAgent->address ?? $agentRegion;
-                            if (!empty($dbAgent->logo)) {
-                                $rawLogo = $dbAgent->logo;
-                                if (!str_starts_with($rawLogo, 'http') && !str_starts_with($rawLogo, '//')) {
-                                    $rawLogo = asset(ltrim($rawLogo, '/'));
-                                }
-                                $agentLogo = $rawLogo;
-                            }
-                        }
+                    $dbAgent = null;
+                    if ($agentId) {
+                        $dbAgent = \DB::table('agents')->where('id', $agentId)->first();
+                    } elseif ($agentName) {
+                        $dbAgent = \DB::table('agents')->where('name', $agentName)->orWhere('agency_name', $agentName)->first();
                     }
 
-                    $serviceGuaranteed = false;
-                    if (!isset($dbAgent)) {
-                        $dbAgent = \DB::table('agents')->where('id', $agentId)->first();
+                    // Fill from DB, then from package JSON, then fallback
+                    $agentName = $dbAgent->agency_name ?? $dbAgent->name ?? $agentDataRaw['name'] ?? 'Miths Holidays';
+                    $agentId = $dbAgent->id ?? $agentDataRaw['id'] ?? 64;
+                    $agentPhone = $dbAgent->phone ?? $agentDataRaw['phone'] ?? '+91 7383682183';
+                    $agentEmail = $dbAgent->email ?? $agentDataRaw['email'] ?? 'mithstours@gmail.com';
+                    $agentRegion = $dbAgent->address ?? $agentDataRaw['region'] ?? '101 GF Nr Trikon Bagh Rajkot - Gujarat';
+                    
+                    $rawLogo = $dbAgent->logo ?? $agentDataRaw['logo'] ?? null;
+                    if ($rawLogo && !str_starts_with($rawLogo, 'http') && !str_starts_with($rawLogo, '//')) {
+                        $rawLogo = asset(ltrim($rawLogo, '/'));
                     }
-                    if ($dbAgent) {
-                        $serviceGuaranteed = $dbAgent->service_guaranteed ?? false;
-                    }
+                    $agentLogo = $rawLogo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
+
+                    $serviceGuaranteed = $dbAgent->service_guaranteed ?? false;
 
                     $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentId);
                 @endphp

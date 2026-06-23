@@ -672,7 +672,7 @@ class AdminController extends Controller
     public function togglePackage($id)
     {
         $pkg = DB::table('packages')->where('id', $id)->first();
-        if ($pkg) {
+        if ($pkg && $pkg->status !== 'Pending') {
             // Only toggle between Active and Inactive (not Pending)
             $newStatus = $pkg->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('packages')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);

@@ -10,7 +10,7 @@ class PackageController extends Controller
     public function show($id)
     {
         try {
-            $pkg = Package::find($id);
+            $pkg = Package::where('id', $id)->where('status', 'Active')->first();
             if (!$pkg) {
                 $pkg = $this->getStaticPackage($id);
             }

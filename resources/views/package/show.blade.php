@@ -66,7 +66,7 @@
                         <div class="absolute top-6 right-6 flex gap-3 z-20">
                             <button 
                                 class="w-12 h-12 bg-white/20 backdrop-blur-md border border-white/30 rounded-full flex items-center justify-center text-white hover:bg-white hover:text-red-500 transition-all duration-300 shadow-lg"
-                                onclick="toggleWishlist(event, {slug: '{{ $pkg['id'] }}', title: '{{ $pkg['title'] }}', image: '{{ asset($pkg['image']) }}', price: '{{ $pkg['price'] }}'})"
+                                onclick="toggleWishlist(event, {slug: '{{ $pkg['id'] }}', title: '{{ $pkg['title'] }}', image: '{{ asset($pkg['image']) }}', price: '{{ $pkg["price"] }}', currency: '{{ $pkg["currency"] ?? "₹" }}'})"
                             >
                                 <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                             </button>
@@ -172,10 +172,24 @@
                                 </div>
                             </div>
                             <div class="md:text-right">
-                                <p class="text-gray-400 text-sm font-bold uppercase tracking-widest mb-1">Total Price</p>
-                                <div class="flex items-baseline md:justify-end gap-1">
-                                    <span class="text-5xl font-black text-primary">₹{{ $pkg['price'] }}</span>
-                                    <span class="text-gray-400 font-medium">/person</span>
+                                <p class="text-gray-400 text-sm font-bold uppercase tracking-widest mb-1">Pricing</p>
+                                <div class="flex flex-col md:items-end gap-1">
+                                    <div class="flex items-baseline md:justify-end gap-1">
+                                        <span class="text-5xl font-black text-[#e85d26]">{{ $pkg['currency'] ?? '₹' }}{{ number_format((float)$pkg['price'], 2) }}</span>
+                                        <span class="text-gray-400 font-medium">/person</span>
+                                    </div>
+                                    @if(!empty($pkg['old_price']))
+                                    <span class="text-xl font-bold text-gray-600 line-through">{{ $pkg['currency'] ?? '₹' }}{{ number_format((float)$pkg['old_price'], 2) }}</span>
+                                    @php
+                                        $saveAmount = (float)$pkg['old_price'] - (float)$pkg['price'];
+                                    @endphp
+                                    @if($saveAmount > 0)
+                                    <div class="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#e85d26] bg-[#e85d26]/10 text-[#e85d26] font-bold text-sm w-max">
+                                        <i data-lucide="tag" class="w-4 h-4"></i>
+                                        Save {{ $pkg['currency'] ?? '₹' }}{{ number_format($saveAmount, 2) }}
+                                    </div>
+                                    @endif
+                                    @endif
                                 </div>
                             </div>
                         </div>

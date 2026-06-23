@@ -427,12 +427,28 @@ class ListingController extends Controller
                     $pkg = (array) $pkg;
                     if (isset($pkg['agent'])) {
                         $pAgentName = '';
+                        $pAgentId = null;
                         if (is_array($pkg['agent'])) {
                             $pAgentName = $pkg['agent']['name'] ?? '';
+                            $pAgentId = $pkg['agent']['id'] ?? null;
                         } elseif (is_string($pkg['agent'])) {
-                            $pAgentName = $pkg['agent'];
+                            $decoded = json_decode($pkg['agent'], true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                $pAgentName = $decoded['name'] ?? '';
+                                $pAgentId = $decoded['id'] ?? null;
+                            } else {
+                                $pAgentName = $pkg['agent'];
+                            }
                         }
-                        return strtolower(trim($pAgentName)) === strtolower(trim($agent->name));
+
+                        if ($pAgentId && isset($agent->id) && (int)$pAgentId === (int)$agent->id) {
+                            return true;
+                        }
+
+                        $pNameMatch = strtolower(trim($pAgentName));
+                        $agentNameMatch = strtolower(trim($agent->name ?? ''));
+                        $agentAgencyMatch = strtolower(trim($agent->agency_name ?? ''));
+                        return $pNameMatch === $agentNameMatch || ($agentAgencyMatch !== '' && $pNameMatch === $agentAgencyMatch);
                     }
                     return false;
                 });
@@ -661,13 +677,9 @@ class ListingController extends Controller
 
             $branches = \DB::table('branches')
                 ->where('status', 'Online')
-                ->where(function($query) use ($agent, $firstWord) {
+                ->where(function($query) use ($agent) {
                     $query->where('agent_id', $agent->id)
-                          ->orWhere('agency_name', 'LIKE', '%' . $agent->name . '%')
-                          ->orWhere(\DB::raw('LOWER(agency_name)'), 'LIKE', '%' . strtolower($agent->name) . '%');
-                    if (!empty($firstWord) && strlen($firstWord) > 2) {
-                        $query->orWhere(\DB::raw('LOWER(agency_name)'), 'LIKE', '%' . $firstWord . '%');
-                    }
+                          ->orWhere('agency_name', $agent->name);
                 })
                 ->get();
 

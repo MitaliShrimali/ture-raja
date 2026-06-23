@@ -394,7 +394,7 @@
                         <!-- Branches -->
                         @if(isset($branches) && count($branches) > 0)
                             <div class="agent-info-item lg:col-span-2 mt-4 pt-4 border-t border-gray-100 flex flex-col items-start gap-2">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Our Branches</span>
+                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Location & Presence</span>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-2">
                                     @foreach($branches as $b)
                                         <div class="p-4 rounded-2xl bg-gray-50/70 border border-gray-100/50 flex flex-col gap-1 w-full">
