@@ -83,8 +83,62 @@
     newHotelName: '',
     newHotelRoom: '',
     newHotelImage: '',
-    showAddTransfer: false,
-    showAddHotel: false,
+    validity_from: '',
+    validity_to: '',
+    toPicker: null,
+    nights: '',
+    updateDurationFromNights() {
+        if (this.nights && !isNaN(parseInt(this.nights))) {
+            let n = parseInt(this.nights);
+            this.duration = `${n} Nights / ${n + 1} Days`;
+        } else {
+            this.duration = '';
+        }
+    },
+    init() {
+        if (this.duration && this.duration.includes(' Nights')) {
+            this.nights = parseInt(this.duration.split(' ')[0]);
+        }
+
+        if (this.validity && this.validity.includes(' to ')) {
+            let parts = this.validity.split(' to ');
+            this.validity_from = parts[0];
+            this.validity_to = parts[1];
+        }
+
+        let updateCalculations = () => {
+            if (this.validity_from && this.validity_to) {
+                this.validity = `${this.validity_from} to ${this.validity_to}`;
+                let start = new Date(this.validity_from);
+                let end = new Date(this.validity_to);
+                if (!isNaN(start) && !isNaN(end)) {
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                    this.nights = diffDays - 1;
+                    this.updateDurationFromNights();
+                }
+            }
+        };
+
+        flatpickr(this.$refs.validityFromPicker, {
+            dateFormat: 'd M Y',
+            defaultDate: this.validity_from,
+            onChange: (selectedDates, dateStr) => {
+                this.validity_from = dateStr;
+                if (this.toPicker) this.toPicker.set('minDate', dateStr);
+                updateCalculations();
+            }
+        });
+
+        this.toPicker = flatpickr(this.$refs.validityToPicker, {
+            dateFormat: 'd M Y',
+            defaultDate: this.validity_to,
+            onChange: (selectedDates, dateStr) => {
+                this.validity_to = dateStr;
+                updateCalculations();
+            }
+        });
+    },
     days: [
         { title: '', desc: '', duration: '' }
     ],
@@ -324,21 +378,27 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Duration -->
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Duration</label>
-                        <select name="duration" x-model="duration" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                            <option value="2 Nights / 3 Days">2 Nights / 3 Days</option>
-                            <option value="4 Nights / 5 Days">4 Nights / 5 Days</option>
-                            <option value="6 Nights / 7 Days">6 Nights / 7 Days</option>
-                            <option value="9 Nights / 10 Days">9 Nights / 10 Days</option>
-                        </select>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Duration (Nights)</label>
+                        <input type="hidden" name="duration" x-model="duration">
+                        <div class="flex items-center gap-4">
+                            <input type="number" min="1" x-model="nights" @input="updateDurationFromNights" class="w-1/3 bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" placeholder="Enter nights" />
+                            <span class="text-sm font-bold text-gray-500" x-text="nights ? (parseInt(nights) + 1) + ' Days' : 'Days will calculate automatically'"></span>
+                        </div>
                     </div>
 
                     <!-- Package Validity -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Package Validity</label>
-                        <div class="relative">
-                            <i data-lucide="calendar" size="16" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" name="validity" x-model="validity" placeholder="20 Dec 2024 - 30 Mar 2025" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                        <input type="hidden" name="validity" x-model="validity">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="relative">
+                                <i data-lucide="calendar" size="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" x-model="validity_from" x-ref="validityFromPicker" placeholder="From Date" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-10 pr-4 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                            </div>
+                            <div class="relative">
+                                <i data-lucide="calendar" size="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <input type="text" x-model="validity_to" x-ref="validityToPicker" placeholder="To Date" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-10 pr-4 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                            </div>
                         </div>
                     </div>
 
