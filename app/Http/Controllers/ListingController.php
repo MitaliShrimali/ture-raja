@@ -203,12 +203,31 @@ class ListingController extends Controller
             });
         }
 
-        // ── Category filter ────────────────────────────────────────
+        // ✈️ 🏠 Category filter ✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠
         if ($request->filled('categories')) {
             $cats = array_map('strtolower', (array) $request->categories);
             $packages = $packages->filter(function($pkg) use ($cats) {
                 $pkg = (array) $pkg;
-                return in_array(strtolower($pkg['category'] ?? ''), $cats);
+                $pkgCategory = $pkg['category'] ?? '';
+                
+                if (is_string($pkgCategory) && (str_starts_with(trim($pkgCategory), '[') || str_starts_with(trim($pkgCategory), '{'))) {
+                    $decoded = json_decode($pkgCategory, true);
+                    if (is_array($decoded)) {
+                        foreach ($decoded as $c) {
+                            if (in_array(strtolower(trim($c)), $cats)) return true;
+                        }
+                        return false;
+                    }
+                }
+                
+                if (is_array($pkgCategory)) {
+                    foreach ($pkgCategory as $c) {
+                        if (in_array(strtolower(trim($c)), $cats)) return true;
+                    }
+                    return false;
+                }
+                
+                return in_array(strtolower(trim((string)$pkgCategory)), $cats);
             });
         }
 

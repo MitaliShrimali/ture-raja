@@ -449,7 +449,7 @@ class AdminController extends Controller
             'duration' => $request->duration ?? '3 Days',
             'group_size' => $request->group_size ?? '4-6 guest',
             'image' => $imageUrl ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
-            'category' => $request->category ?? 'Tropical',
+            'category' => is_array($request->category) ? json_encode($request->category) : ($request->category ?? 'Tropical'),
             'theme' => $request->theme,
             'holiday_type' => $request->holiday_type,
             'badge' => $request->badge,
@@ -480,8 +480,15 @@ class AdminController extends Controller
     {
         $request->validate(['id' => 'required', 'title' => 'required', 'price' => 'required|numeric']);
 
+        // Get original package to keep old gallery/brochure/etc if no new ones uploaded
+        $oldPkg = DB::table('packages')->where('id', $request->id)->first();
+
         // Main Image Upload
         $imageUrl = $request->image;
+        if (empty($imageUrl) && $oldPkg) {
+            $imageUrl = $oldPkg->image;
+        }
+        
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
             if (!$file->isValid()) {
@@ -491,9 +498,6 @@ class AdminController extends Controller
             $file->move(public_path('uploads/packages'), $fileName);
             $imageUrl = '/uploads/packages/' . $fileName;
         }
-
-        // Get original package to keep old gallery/brochure/etc if no new ones uploaded
-        $oldPkg = DB::table('packages')->where('id', $request->id)->first();
 
         // Gallery Images Upload
         $galleryUrls = [];
@@ -637,14 +641,14 @@ class AdminController extends Controller
             'duration' => $request->duration,
             'group_size' => $request->group_size ?? '4-6 guest',
             'image' => $imageUrl,
-            'category' => $request->category ?? 'Tropical',
-            'theme' => $request->theme,
-            'holiday_type' => $request->holiday_type,
-            'badge' => $request->badge,
+            'category' => is_array($request->category) ? json_encode($request->category) : ($request->category ?? 'Tropical'),
+            'theme' => $request->theme ?? '',
+            'holiday_type' => $request->holiday_type ?? '',
+            'badge' => $request->badge ?? '',
             'status' => $request->status ?? 'Active',
-            'stock' => $request->stock,
-            'validity' => $request->validity ?? null,
-            'sightseeing' => $request->sightseeing ?? null,
+            'stock' => $request->stock ?? '10 Left',
+            'validity' => $request->validity ?? '',
+            'sightseeing' => $request->sightseeing ?? '',
             'agent' => $agentJson,
             'gallery' => json_encode($galleryUrls),
             'brochure' => $brochureUrl,

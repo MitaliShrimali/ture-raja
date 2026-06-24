@@ -32,7 +32,7 @@
     stock: '',
     validity: '',
     sightseeing: '',
-    category: '',
+    categories: [],
     badge: '',
     group_size: '',
     rating: '',
@@ -339,14 +339,18 @@
                         <input required type="text" name="title" x-model="title" placeholder="The Ultimate Bali Escape" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
-                    <!-- Destination Type (Segmented control) -->
+                    <!-- Categories (Multi-select) -->
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Destination Type</label>
-                        <div class="segmented-control">
-                            <div class="segmented-btn" :class="category === 'domestic' ? 'active' : ''" @click="category = 'domestic'">Domestic</div>
-                            <div class="segmented-btn" :class="category === 'international' ? 'active' : ''" @click="category = 'international'">International</div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Categories</label>
+                        <div class="flex flex-wrap gap-2">
+                            <template x-for="cat in ['Mountain', 'Safari', 'Desert', 'Flower', 'Beach', 'Temples', 'Yacht', 'Domestic', 'International']">
+                                <label class="flex items-center gap-2 px-3 py-2 border rounded-xl cursor-pointer transition-all"
+                                    :class="categories.includes(cat) ? 'border-[#e85d26] bg-orange-50 text-[#e85d26]' : 'border-gray-200 bg-white text-gray-600'">
+                                    <input type="checkbox" name="category[]" :value="cat" x-model="categories" class="hidden">
+                                    <span class="text-xs font-bold" x-text="cat"></span>
+                                </label>
+                            </template>
                         </div>
-                        <input type="hidden" name="category" :value="category" />
                     </div>
                 </div>
 

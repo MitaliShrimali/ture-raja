@@ -604,7 +604,7 @@
             <!-- Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 <!-- Card 1: Mountain -->
-                <a href="#" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
+                <a href="{{ url('/discover?categories[]=Mountain') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
                     <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
                         <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80" alt="Mountain" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -620,7 +620,7 @@
                 </a>
 
                 <!-- Card 2: Safari -->
-                <a href="#" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
+                <a href="{{ url('/discover?categories[]=Safari') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
                     <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
                         <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=400&q=80" alt="Safari" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -636,7 +636,7 @@
                 </a>
 
                 <!-- Card 3: Desert -->
-                <a href="#" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
+                <a href="{{ url('/discover?categories[]=Desert') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
                     <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
                         <img src="https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?auto=format&fit=crop&w=400&q=80" alt="Desert" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -652,7 +652,7 @@
                 </a>
 
                 <!-- Card 4: Flower -->
-                <a href="#" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
+                <a href="{{ url('/discover?categories[]=Flower') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
                     <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
                         <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80" alt="Flower" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -668,7 +668,7 @@
                 </a>
 
                 <!-- Card 5: Beach -->
-                <a href="#" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
+                <a href="{{ url('/discover?categories[]=Beach') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
                     <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
                         <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80" alt="Beach" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -684,7 +684,7 @@
                 </a>
 
                 <!-- Card 6: Temples -->
-                <a href="#" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
+                <a href="{{ url('/discover?categories[]=Temples') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
                     <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
                         <img src="https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=400&q=80" alt="Temples" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -700,7 +700,7 @@
                 </a>
 
                 <!-- Card 7: Yacht -->
-                <a href="#" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
+                <a href="{{ url('/discover?categories[]=Yacht') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
                     <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
                         <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80" alt="Yacht" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     </div>
@@ -716,7 +716,7 @@
                 </a>
 
                 <!-- Card 8: Crafting CTA -->
-                <a href="#" class="rounded-[24px] p-6 flex flex-col justify-between group block hover:shadow-md transition-shadow" style="background-color: #E85D26;">
+                <a href="{{ url('/discover') }}" class="rounded-[24px] p-6 flex flex-col justify-between group block hover:shadow-md transition-shadow" style="background-color: #E85D26;">
                     <h3 class="text-white text-[22px] font-bold leading-tight pt-2">Crafting Your<br>Perfect Travel<br>Experience</h3>
                     
                     <div class="bg-[#111111] rounded-xl p-3 mt-6 flex items-center justify-between group-hover:bg-black transition-colors shadow-sm">

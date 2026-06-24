@@ -72,6 +72,63 @@
             <hr class="mt-5 border-gray-100">
         </div>
 
+        <!-- 1.5. Categories -->
+        <div x-data="{ expanded: false }">
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Category</h3>
+            @php
+                $rawCategories = DB::table('packages')->whereNotNull('category')->where('category', '!=', '')->pluck('category')->toArray();
+                $parsedCategories = [];
+                foreach ($rawCategories as $cat) {
+                    if (str_starts_with(trim($cat), '[') || str_starts_with(trim($cat), '{')) {
+                        $decoded = json_decode($cat, true);
+                        if (is_array($decoded)) {
+                            foreach ($decoded as $c) {
+                                if (is_string($c)) $parsedCategories[] = trim($c);
+                            }
+                        }
+                    } elseif (is_string($cat)) {
+                        $parsedCategories[] = trim($cat);
+                    }
+                }
+                $parsedCategories = array_unique(array_filter($parsedCategories));
+                $dbCategories = array_map('ucwords', array_map('strtolower', $parsedCategories));
+                
+                $hardcodedCategories = ['Mountain', 'Safari', 'Desert', 'Flower', 'Beach', 'Temples', 'Yacht'];
+                
+                $allCategories = array_unique(array_merge($hardcodedCategories, $dbCategories));
+                
+                $visibleCategories = array_slice($allCategories, 0, 7);
+                $hiddenCategories = array_slice($allCategories, 7);
+                $selectedCategories = (array) request('categories', []);
+            @endphp
+            <div class="space-y-2">
+                @foreach($visibleCategories as $category)
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" name="categories[]" value="{{ $category }}" {{ in_array($category, $selectedCategories) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }}</span>
+                    </label>
+                @endforeach
+                
+                @if(!empty($hiddenCategories))
+                <div x-show="expanded" x-transition.opacity class="space-y-2 pt-2">
+                    @foreach($hiddenCategories as $category)
+                        <label class="flex items-center gap-2 cursor-pointer group">
+                            <input type="checkbox" name="categories[]" value="{{ $category }}" {{ in_array($category, $selectedCategories) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                @endif
+            </div>
+            @if(!empty($hiddenCategories))
+            <button type="button" @click="expanded = !expanded" class="text-primary text-[10px] font-bold mt-3 hover:opacity-80 uppercase tracking-wider flex items-center gap-1">
+                <span x-text="expanded ? 'See Less' : 'See More'"></span>
+                <i :data-lucide="expanded ? 'chevron-up' : 'chevron-down'" size="12"></i>
+            </button>
+            @endif
+            <hr class="mt-5 border-gray-100">
+        </div>
+
         <!-- Holiday Types -->
         <div>
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Holiday Types</h3>
