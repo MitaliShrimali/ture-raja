@@ -335,7 +335,7 @@
         </div>
 
         <!-- Step 2 Node -->
-        <div class="step-node" :class="step === 2 ? 'active' : ''" @click="step = 2">
+        <div class="step-node" :class="step === 2 ? 'active' : ''" @click="if(document.getElementById('packageMainForm').reportValidity()) step = 2;">
             <div class="step-circle">2</div>
             <span class="step-label">Itinerary, Meals & Photos</span>
         </div>
@@ -1012,7 +1012,7 @@
                 <a href="{{ route('agent.my-packages') }}" class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all">
                     Discard
                 </a>
-                <button type="button" @click="step = 2" x-show="step === 1" class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">
+                <button type="button" @click="if(document.getElementById('packageMainForm').reportValidity()) step = 2;" x-show="step === 1" class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">
                     Save & Next
                 </button>
                 <button type="submit" x-show="step === 2" class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20" style="background-color: #e85d26 !important; color: #ffffff !important;">

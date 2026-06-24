@@ -674,7 +674,7 @@ class AdminController extends Controller
             'updated_at'           => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Package updated successfully!');
+        return redirect('/admin/packages')->with('success', 'Package updated successfully!');
     }
 
     public function deletePackage($id)
