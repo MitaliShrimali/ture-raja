@@ -329,6 +329,7 @@
                             <div class="segmented-btn" :class="category === 'domestic' ? 'active' : ''" @click="category = 'domestic'">Domestic</div>
                             <div class="segmented-btn" :class="category === 'international' ? 'active' : ''" @click="category = 'international'">International</div>
                         </div>
+                        <input type="hidden" name="category" :value="category">
                     </div>
 
                     <!-- Categories (Multi-select) -->
@@ -417,16 +418,22 @@
                         <input type="text" name="departure_city" placeholder="New Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
-                    <!-- Departure State -->
+                    <!-- Sightseeing Details -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Sightseeing Details (comma-separated)</label>
                         <input type="text" name="sightseeing" placeholder="e.g. 4 Sightseeing" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
+                    <!-- Departure State -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure State</label>
+                        <input type="text" name="departure_state" placeholder="Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
+                    </div>
+
                     <!-- Departure Country -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure Country</label>
-                        <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm">
+                        <select name="departure_country" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm">
                             <option value="India">India</option>
                             <option value="Singapore">Singapore</option>
                             <option value="Thailand">Thailand</option>
@@ -638,6 +645,7 @@
                                 <div class="space-y-2">
                                     <template x-for="(tr, idx) in transfers" :key="idx">
                                         <div class="bg-white rounded-xl py-2.5 px-4 flex items-center justify-between text-xs font-semibold text-gray-700 shadow-sm">
+                                            <input type="hidden" name="transfers[]" :value="tr">
                                             <span x-text="tr"></span>
                                             <button type="button" @click="transfers.splice(idx, 1)" class="text-gray-300 hover:text-gray-500 ml-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -665,11 +673,13 @@
                                 <div class="space-y-2">
                                     <template x-for="(ht, idx) in hotels" :key="idx">
                                         <div class="bg-white rounded-xl p-3 flex items-center justify-between shadow-sm">
+                                            <input type="hidden" name="hotels[]" :value="JSON.stringify(ht)">
                                             <div class="flex items-center gap-3">
                                                 <img :src="ht.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'" class="w-11 h-11 rounded-xl object-cover" />
                                                 <div>
                                                     <p class="text-xs font-bold text-gray-800" x-text="ht.name"></p>
                                                     <p class="text-[10px] text-gray-400 font-medium" x-html="ht.room || 'Standard Room'"></p>
+                                                    <input type="hidden" name="hotels[]" :value="JSON.stringify(ht)">
                                                 </div>
                                             </div>
                                             <button type="button" @click="hotels.splice(idx, 1)" class="text-gray-300 hover:text-red-500 ml-2 text-lg leading-none">&times;</button>
@@ -882,6 +892,21 @@
                                     <span class="text-xs font-bold text-gray-700">Travel Insurance</span>
                                 </div>
                                 <input type="checkbox" name="amenities[]" value="Travel Insurance" class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                            </label>
+<label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="chef-hat" class="text-gray-400" size="18"></i>
+                                    <span class="text-xs font-bold text-gray-700">Private Chef Included</span>
+                                </div>
+                                <input type="checkbox" name="amenities[]" value="Private Chef Included"  class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                            </label>
+
+                            <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="user-check" class="text-gray-400" size="18"></i>
+                                    <span class="text-xs font-bold text-gray-700">Tour Manager Included</span>
+                                </div>
+                                <input type="checkbox" name="amenities[]" value="Tour Manager Included"  class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
                             </label>
                         </div>
                     </div>

@@ -4,7 +4,5 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-$packages = \App\Models\Package::all(['id', 'title', 'category']);
-foreach ($packages as $pkg) {
-    echo "ID: {$pkg->id} | Title: {$pkg->title} | Category: {$pkg->category}\n";
-}
+\App\Models\Package::where('title', 'America tour')->update(['category' => 'international']);
+echo "Updated America tour to international.\n";

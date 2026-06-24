@@ -376,7 +376,8 @@
                         <!-- Sort Dropdown: Constrained on mobile -->
                         <div class="relative mobile-sort-select-wrapper md:w-64 flex-1 md:flex-none">
                             <select name="sort" class="w-full bg-background border border-gray-100 rounded-2xl py-2.5 pl-4 pr-10 text-[12px] font-black focus:outline-none appearance-none cursor-pointer hover:border-primary/30 transition-all">
-                                <option value="GUARANTEED SERVICE" {{ request('sort') == 'GUARANTEED SERVICE' || !request('sort') || request('sort') == 'Recommended' ? 'selected' : '' }}>GUARANTEED SERVICE</option>
+                                <option value="SHOW ALL" {{ !request('sort') || request('sort') == 'SHOW ALL' ? 'selected' : '' }}>SHOW ALL</option>
+                                <option value="GUARANTEED SERVICE" {{ request('sort') == 'GUARANTEED SERVICE' || request('sort') == 'Recommended' ? 'selected' : '' }}>GUARANTEED SERVICE</option>
                                 <option value="PRICE (LOW TO HIGH)" {{ request('sort') == 'PRICE (LOW TO HIGH)' || request('sort') == 'Price: Low to High' ? 'selected' : '' }}>PRICE (LOW TO HIGH)</option>
                                 <option value="PRICE (HIGH TO LOW)" {{ request('sort') == 'PRICE (HIGH TO LOW)' || request('sort') == 'Price: High to Low' ? 'selected' : '' }}>PRICE (HIGH TO LOW)</option>
                                 <option value="DURATION (LOW TO HIGH)" {{ request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>DURATION (LOW TO HIGH)</option>

@@ -72,6 +72,25 @@
             <hr class="mt-5 border-gray-100">
         </div>
 
+                <!-- 1.4. Destination Type -->
+        <div>
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Destination Type</h3>
+            @php
+                $selectedDestTypes = (array) request('category', []);
+            @endphp
+            <div class="space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="checkbox" name="category[]" value="domestic" {{ in_array('domestic', $selectedDestTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Domestic</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="checkbox" name="category[]" value="international" {{ in_array('international', $selectedDestTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">International</span>
+                </label>
+            </div>
+            <hr class="mt-5 border-gray-100">
+        </div>
+
         <!-- 1.5. Categories -->
         <div x-data="{ expanded: false }">
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Category</h3>
@@ -190,13 +209,26 @@
             <div class="flex items-center justify-between gap-3">
                 <div class="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all overflow-hidden">
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide mr-2 shrink-0">Night</span>
-                    <input type="number" name="min_nights" x-model="min" @change="updateMin(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
+                    <input type="number" name="min_nights" x-model="min" @change="document.getElementById('duration_custom').checked = true; updateMin(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
                 </div>
                 <span class="text-gray-400 text-[10px] font-bold uppercase shrink-0">To</span>
                 <div class="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all overflow-hidden">
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide mr-2 shrink-0">Night</span>
-                    <input type="number" name="max_nights" x-model="max" @change="updateMax(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
+                    <input type="number" name="max_nights" x-model="max" @change="document.getElementById('duration_custom').checked = true; updateMax(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
                 </div>
+            </div>
+
+            <!-- Duration Radios -->
+            <div class="space-y-2.5 mt-6">
+                @php $dr = request('duration_radio', 'all'); @endphp
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="radio" name="duration_radio" value="all" {{ $dr === 'all' ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">All Durations</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="radio" name="duration_radio" id="duration_custom" value="custom" {{ $dr === 'custom' ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Custom Range</span>
+                </label>
             </div>
             <hr class="mt-5 border-gray-100">
         </div>
@@ -217,12 +249,12 @@
             <div class="flex items-center justify-between gap-3 mb-5">
                 <div class="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all overflow-hidden">
                     <span class="text-xs font-bold text-gray-400 mr-1 shrink-0">₹</span>
-                    <input type="number" name="min_price" x-model="min" @change="updateMin(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
+                    <input type="number" name="min_price" x-model="min" @change="document.getElementById('price_custom').checked = true; updateMin(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
                 </div>
                 <span class="text-gray-400 text-[10px] font-bold uppercase shrink-0">To</span>
                 <div class="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all overflow-hidden">
                     <span class="text-xs font-bold text-gray-400 mr-1 shrink-0">₹</span>
-                    <input type="number" name="max_price" x-model="max" @change="updateMax(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
+                    <input type="number" name="max_price" x-model="max" @change="document.getElementById('price_custom').checked = true; updateMax(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
                 </div>
             </div>
 
@@ -231,13 +263,14 @@
                 @php $pr = request('price_radio', 'all'); @endphp
                 @foreach([
                     'all' => 'All Price',
+                    'custom' => 'Custom Range',
                     'under_20k' => 'Under ₹ 20,000',
                     '20k_40k' => '₹ 20,000 - ₹ 40,000',
                     '40k_60k' => '₹ 40,000 - ₹ 60,000',
                     'above_60k' => 'Above ₹ 60,000'
                 ] as $val => $label)
                     <label class="flex items-center gap-2 cursor-pointer group">
-                        <input type="radio" name="price_radio" value="{{ $val }}" {{ $pr === $val ? 'checked' : '' }} class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                        <input type="radio" name="price_radio" id="{{ $val === 'custom' ? 'price_custom' : '' }}" value="{{ $val }}" {{ $pr === $val ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
                         <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $label }}</span>
                     </label>
                 @endforeach
@@ -294,7 +327,7 @@
                     <span class="text-[10px] font-bold text-gray-500">0</span>
                 </div>
                 <div class="flex-1 px-3 relative">
-                    <input type="range" name="min_rating" min="0" max="5" step="0.5" value="{{ request('min_rating', 0) }}" oninput="document.getElementById('ratingLabel').innerText = this.value + ' Stars'" onchange="this.form.dispatchEvent(new Event('submit'))" class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-primary">
+                    <input type="range" name="min_rating" min="0" max="5" step="0.5" value="{{ request('min_rating', 0) }}" oninput="document.getElementById('ratingLabel').innerText = this.value + ' Stars'; document.getElementById('rating_custom').checked = true;" onchange="this.form.dispatchEvent(new Event('submit'))" class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-primary">
                 </div>
                 <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <span class="text-[10px] font-bold text-primary">5</span>
@@ -304,6 +337,19 @@
                 <i data-lucide="star" class="text-orange-400 fill-orange-400" size="14"></i>
                 <span class="text-xs font-bold text-gray-800" id="ratingLabel">{{ request('min_rating', 0) }} Stars</span>
                 <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide ml-1">Or Above</span>
+            </div>
+
+            <!-- Rating Radios -->
+            <div class="space-y-2.5 mt-6">
+                @php $rr = request('rating_radio', 'all'); @endphp
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="radio" name="rating_radio" value="all" {{ $rr === 'all' ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">All Ratings</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="radio" name="rating_radio" id="rating_custom" value="custom" {{ $rr === 'custom' ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Custom Rating</span>
+                </label>
             </div>
             <hr class="mt-5 border-gray-100">
         </div>

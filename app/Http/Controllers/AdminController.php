@@ -389,10 +389,12 @@ class AdminController extends Controller
         if ($request->has('itinerary_titles')) {
             foreach ($request->itinerary_titles as $i => $dayTitle) {
                 $dayDesc = $request->itinerary_descriptions[$i] ?? '';
+                $dayDur = $request->itinerary_durations[$i] ?? '';
                 if (!empty($dayTitle)) {
                     $itinerary[] = [
                         'title' => $dayTitle,
-                        'desc' => $dayDesc
+                        'desc' => $dayDesc,
+                        'duration' => $dayDur
                     ];
                 }
             }
@@ -437,6 +439,8 @@ class AdminController extends Controller
         DB::table('packages')->insert([
             'title' => $request->title,
             'departure_city'      => $request->departure_city ?? null,
+            'departure_state'     => $request->departure_state ?? null,
+            'departure_country'   => $request->departure_country ?? null,
             'terms'               => $request->terms ?? null,
             'sightseeing_list'    => json_encode($sightseeing_list),
             'currency'            => $request->currency ?? '₹',
@@ -585,10 +589,12 @@ class AdminController extends Controller
         if ($request->has('itinerary_titles')) {
             foreach ($request->itinerary_titles as $i => $dayTitle) {
                 $dayDesc = $request->itinerary_descriptions[$i] ?? '';
+                $dayDur = $request->itinerary_durations[$i] ?? '';
                 if (!empty($dayTitle)) {
                     $itinerary[] = [
                         'title' => $dayTitle,
-                        'desc' => $dayDesc
+                        'desc' => $dayDesc,
+                        'duration' => $dayDur
                     ];
                 }
             }
@@ -630,6 +636,8 @@ class AdminController extends Controller
         DB::table('packages')->where('id', $request->id)->update([
             'title' => $request->title,
             'departure_city'      => $request->departure_city ?? null,
+            'departure_state'     => $request->departure_state ?? null,
+            'departure_country'   => $request->departure_country ?? null,
             'terms'               => $request->terms ?? null,
             'sightseeing_list'    => json_encode($sightseeing_list),
             'currency'            => $request->currency ?? '₹',

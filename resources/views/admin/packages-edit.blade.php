@@ -16,7 +16,7 @@
     $agentData = json_decode($pkg->agent, true) ?: [];
     $agentName = $agentData['name'] ?? 'Miths Holidays';
 
-    $dbCategory = $pkg->category ?? '[]';
+    $dbCategory = $pkg->categories_list ?? '[]';
     $catArray = [];
     if (is_string($dbCategory) && (str_starts_with(trim($dbCategory), '[') || str_starts_with(trim($dbCategory), '{'))) {
         $catArray = json_decode($dbCategory, true) ?: [];
@@ -375,13 +375,58 @@
                         <input required type="text" name="title" x-model="title" placeholder="The Ultimate Bali Escape" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
-                                        <!-- Destination Type (Segmented control) -->
+                    <!-- Agent Dropdown -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Publish On Behalf Of (Agent)</label>
+                        <div class="relative">
+                            <select name="agent" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 pr-10 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm appearance-none">
+                                @php
+                                    $currentAgentName = '';
+                                    if(!empty($pkg->agent)) {
+                                        $decoded = json_decode($pkg->agent, true);
+                                        if(is_array($decoded) && isset($decoded['name'])) {
+                                            $currentAgentName = $decoded['name'];
+                                        } else {
+                                            $currentAgentName = $pkg->agent;
+                                        }
+                                    }
+                                    
+                                    $selectedAgentValue = '';
+                                    foreach($agents as $ag) {
+                                        if($ag->name === $currentAgentName || $ag->agency_name === $currentAgentName) {
+                                            $selectedAgentValue = $ag->name;
+                                            break;
+                                        }
+                                    }
+                                @endphp
+                                <option value="">Admin (Default / Miths Holidays)</option>
+                                @php
+                                    $paidAgents = $agents->filter(function($a) { return !empty($a->plan_id) && $a->plan_id > 1; });
+                                    $freeAgents = $agents->filter(function($a) { return empty($a->plan_id) || $a->plan_id <= 1; });
+                                @endphp
+                                <optgroup label="Paid Agents">
+                                    @foreach($paidAgents as $ag)
+                                        <option value="{{ $ag->name }}" {{ $selectedAgentValue === $ag->name ? 'selected' : '' }}>{{ $ag->name }}{{ $ag->agency_name ? ' (' . $ag->agency_name . ')' : '' }}</option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="Free Agents">
+                                    @foreach($freeAgents as $ag)
+                                        <option value="{{ $ag->name }}" {{ $selectedAgentValue === $ag->name ? 'selected' : '' }}>{{ $ag->name }}{{ $ag->agency_name ? ' (' . $ag->agency_name . ')' : '' }}</option>
+                                    @endforeach
+                                </optgroup>
+                            </select>
+                            <i data-lucide="chevron-down" size="16" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <!-- Destination Type (Segmented control) -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Destination Type</label>
                         <div class="segmented-control">
                             <div class="segmented-btn" :class="category === 'domestic' ? 'active' : ''" @click="category = 'domestic'">Domestic</div>
                             <div class="segmented-btn" :class="category === 'international' ? 'active' : ''" @click="category = 'international'">International</div>
                         </div>
+                        <input type="hidden" name="category" :value="category">
                     </div>
 
                     <!-- Categories (Multi-select) -->
@@ -479,16 +524,16 @@
                     <!-- Departure State -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure State</label>
-                        <input type="text" placeholder="Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                        <input type="text" name="departure_state" value="{{ $pkg->departure_state ?? '' }}" placeholder="Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
                     <!-- Departure Country -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure Country</label>
-                        <select class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                            <option value="India">India</option>
-                            <option value="Singapore">Singapore</option>
-                            <option value="Thailand">Thailand</option>
+                        <select name="departure_country" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
+                            <option value="India" {{ ($pkg->departure_country ?? '') === 'India' ? 'selected' : '' }}>India</option>
+                            <option value="Singapore" {{ ($pkg->departure_country ?? '') === 'Singapore' ? 'selected' : '' }}>Singapore</option>
+                            <option value="Thailand" {{ ($pkg->departure_country ?? '') === 'Thailand' ? 'selected' : '' }}>Thailand</option>
                         </select>
                     </div>
                 </div>
@@ -598,7 +643,7 @@
                     <!-- Tag Name -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Tag Name (e.g. 25% Off, Popular)</label>
-                        <input type="text" name="badge" value="{{ old('badge', $package->badge ?? '') }}" placeholder="e.g. 25% Off" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm" />
+                        <input type="text" name="badge" value="{{ old('badge', $pkg->badge ?? '') }}" placeholder="e.g. 25% Off" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm" />
                     </div>
 
                     <!-- Search Keywords -->
@@ -697,6 +742,7 @@
                                 <div class="space-y-2">
                                     <template x-for="(tr, idx) in transfers" :key="idx">
                                         <div class="bg-white rounded-xl py-2.5 px-4 flex items-center justify-between text-xs font-semibold text-gray-700 shadow-sm">
+                                            <input type="hidden" name="transfers[]" :value="tr">
                                             <span x-text="tr"></span>
                                             <button type="button" @click="transfers.splice(idx, 1)" class="text-gray-300 hover:text-gray-500 ml-2">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -724,6 +770,7 @@
                                 <div class="space-y-2">
                                     <template x-for="(ht, idx) in hotels" :key="idx">
                                         <div class="bg-white rounded-xl p-3 flex items-center justify-between shadow-sm">
+                                            <input type="hidden" name="hotels[]" :value="JSON.stringify(ht)">
                                             <div class="flex items-center gap-3">
                                                 <img :src="ht.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'" class="w-11 h-11 rounded-xl object-cover" />
                                                 <div>
@@ -945,6 +992,21 @@
                                     <span class="text-xs font-bold text-gray-700">Travel Insurance</span>
                                 </div>
                                 <input type="checkbox" name="amenities[]" value="Travel Insurance" {{ in_array('Travel Insurance', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                            </label>
+<label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="chef-hat" class="text-gray-400" size="18"></i>
+                                    <span class="text-xs font-bold text-gray-700">Private Chef Included</span>
+                                </div>
+                                <input type="checkbox" name="amenities[]" value="Private Chef Included" {{ in_array('Private Chef Included', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                            </label>
+
+                            <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="user-check" class="text-gray-400" size="18"></i>
+                                    <span class="text-xs font-bold text-gray-700">Tour Manager Included</span>
+                                </div>
+                                <input type="checkbox" name="amenities[]" value="Tour Manager Included" {{ in_array('Tour Manager Included', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
                             </label>
                         </div>
                     </div>

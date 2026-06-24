@@ -66,6 +66,8 @@
     $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
     $agentName = $agentData['name'] ?? 'Unknown Agent';
     $dbAgent = \DB::table('agents')->where('name', $agentName)->first();
+    $hotels = json_decode($pkg->hotels, true) ?: [];
+    $transfers = json_decode($pkg->transfers, true) ?: [];
     if ($dbAgent && !empty($dbAgent->agency_name)) {
         $agentName = $dbAgent->agency_name;
     }
@@ -242,6 +244,53 @@
             </div>
             @endif
 
+            
+            {{-- Hotels & Transfers Detailed Sections --}}
+            @if(!empty($hotels))
+            <div class="bg-[#F8F9FA] rounded-[32px] p-8 border border-gray-200 shadow-soft mb-6">
+                <h3 class="text-lg font-black text-foreground mb-4 flex items-center">
+                    <i class="fas fa-hotel text-primary mr-2" style="color: #e85d26;"></i> Hotels Included
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach($hotels as $hotel)
+                    <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                        <div class="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400">
+                            <i class="fas fa-bed text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-sm text-foreground">{{ $hotel['name'] ?? 'Hotel Name' }}</h4>
+                            <p class="text-xs text-muted-text mt-1">{{ isset($hotel['room']) ? $hotel['room'] : (isset($hotel['category']) ? $hotel['category'] : 'Standard Room') }}</p>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            @if(!empty($transfers))
+            <div class="bg-[#F8F9FA] rounded-[32px] p-8 border border-gray-200 shadow-soft mb-6">
+                <h3 class="text-lg font-black text-foreground mb-4 flex items-center">
+                    <i class="fas fa-car text-primary mr-2" style="color: #e85d26;"></i> Transfers Included
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach($transfers as $transfer)
+                      <div class="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex items-center space-x-4">
+                          <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background-color: rgba(232, 93, 38, 0.1); color: #e85d26;">
+                              <i class="fas fa-car text-lg"></i>
+                          </div>
+                          <div>
+                              @php
+                                  $transferText = is_array($transfer) ? ($transfer['name'] ?? $transfer['title'] ?? 'Transfer') : $transfer;
+                              @endphp
+                              <h4 class="font-bold text-sm text-foreground">{{ $transferText }}</h4>
+                              <p class="text-xs text-muted-text mt-1">Transport included</p>
+                          </div>
+                      </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             {{-- Terms & Conditions --}}
             @if(!empty($pkg->terms))
             <div class="bg-[#F8F9FA] rounded-[32px] p-8 border border-gray-200 shadow-soft mb-6">
@@ -400,8 +449,6 @@
                     @endif
                     @php
                         $meals = json_decode($pkg->meals, true) ?: [];
-                        $hotels = json_decode($pkg->hotels, true) ?: [];
-                        $transfers = json_decode($pkg->transfers, true) ?: [];
                     @endphp
                     @if(!empty($meals))
                     <div class="flex items-center justify-between pb-4 border-b border-gray-50">
@@ -409,18 +456,8 @@
                         <span class="font-bold text-foreground">{{ implode(', ', $meals) }}</span>
                     </div>
                     @endif
-                    @if(!empty($hotels))
-                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
-                        <span class="text-muted-text">Hotels</span>
-                        <span class="font-bold text-foreground">{{ count($hotels) }} Listed</span>
-                    </div>
-                    @endif
-                    @if(!empty($transfers))
-                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
-                        <span class="text-muted-text">Transfers</span>
-                        <span class="font-bold text-foreground">{{ count($transfers) }} Types</span>
-                    </div>
-                    @endif
+                    
+                    
                 <div class="flex justify-between text-xs font-bold pt-2">
                         <span class="text-muted-text">Package ID</span>
                         <span class="text-foreground">#{{ str_pad($pkg->id, 4, '0', STR_PAD_LEFT) }}</span>

@@ -203,6 +203,14 @@ class ListingController extends Controller
             });
         }
 
+        // ── Destination Type / Category filter ─────────────────────
+        if ($request->filled('category')) {
+            $catTypes = array_map('strtolower', (array) $request->category);
+            $packages = $packages->filter(function($pkg) use ($catTypes) {
+                $pkg = (array) $pkg;
+                return in_array(strtolower($pkg['category'] ?? ''), $catTypes);
+            });
+        }
         // ✈️ 🏠 Category filter ✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠✈️ 🏠
         if ($request->filled('categories')) {
             $cats = array_map('strtolower', (array) $request->categories);
@@ -232,42 +240,46 @@ class ListingController extends Controller
         }
 
         // ── Price filter (Complex: Radio + Min + Max) ──────────────
-        if ($request->filled('price_radio') || $request->filled('min_price') || $request->filled('max_price')) {
-            $packages = $packages->filter(function($pkg) use ($request) {
-                $pkg = (array) $pkg;
-                $price = $pkg['price'] ?? 0;
-                
-                $minPrice = $request->min_price ? (int)$request->min_price : 0;
-                $maxPrice = $request->max_price ? (int)$request->max_price : 9999999;
-                
-                // If a specific price radio is selected, override min/max logic
-                $radio = $request->price_radio;
-                if ($radio && $radio !== 'all') {
-                    if ($radio === 'under_20k') return $price < 20000;
-                    if ($radio === '20k_40k') return $price >= 20000 && $price <= 40000;
-                    if ($radio === '40k_60k') return $price >= 40000 && $price <= 60000;
-                    if ($radio === 'above_60k') return $price > 60000;
-                }
-                
-                return $price >= $minPrice && $price <= $maxPrice;
-            });
+        if ($request->input('price_radio') !== 'all') {
+            if ($request->filled('price_radio') || $request->filled('min_price') || $request->filled('max_price')) {
+                $packages = $packages->filter(function($pkg) use ($request) {
+                    $pkg = (array) $pkg;
+                    $price = $pkg['price'] ?? 0;
+                    
+                    $minPrice = $request->min_price ? (int)$request->min_price : 0;
+                    $maxPrice = $request->max_price ? (int)$request->max_price : 9999999;
+                    
+                    // If a specific price radio is selected, override min/max logic
+                    $radio = $request->price_radio;
+                    if ($radio && $radio !== 'custom') {
+                        if ($radio === 'under_20k') return $price < 20000;
+                        if ($radio === '20k_40k') return $price >= 20000 && $price <= 40000;
+                        if ($radio === '40k_60k') return $price >= 40000 && $price <= 60000;
+                        if ($radio === 'above_60k') return $price > 60000;
+                    }
+                    
+                    return $price >= $minPrice && $price <= $maxPrice;
+                });
+            }
         }
 
         // ── Duration (Nights) filter ───────────────────────────────
-        if ($request->filled('min_nights') || $request->filled('max_nights')) {
-            $packages = $packages->filter(function($pkg) use ($request) {
-                $pkg = (array) $pkg;
-                $nights = $pkg['nights'] ?? 0;
-                if (!$nights && isset($pkg['duration'])) {
-                    // Extract nights from string like "2 days 3 nights"
-                    if (preg_match('/(\d+)\s*nights?/', strtolower($pkg['duration']), $matches)) {
-                        $nights = (int)$matches[1];
+        if ($request->input('duration_radio', 'all') !== 'all') {
+            if ($request->filled('min_nights') || $request->filled('max_nights')) {
+                $packages = $packages->filter(function($pkg) use ($request) {
+                    $pkg = (array) $pkg;
+                    $nights = $pkg['nights'] ?? 0;
+                    if (!$nights && isset($pkg['duration'])) {
+                        // Extract nights from string like "2 days 3 nights"
+                        if (preg_match('/(\d+)\s*nights?/', strtolower($pkg['duration']), $matches)) {
+                            $nights = (int)$matches[1];
+                        }
                     }
-                }
-                $minN = $request->min_nights ? (int)$request->min_nights : 0;
-                $maxN = $request->max_nights ? (int)$request->max_nights : 99;
-                return $nights >= $minN && $nights <= $maxN;
-            });
+                    $minN = $request->min_nights ? (int)$request->min_nights : 0;
+                    $maxN = $request->max_nights ? (int)$request->max_nights : 99;
+                    return $nights >= $minN && $nights <= $maxN;
+                });
+            }
         }
 
         // ── Tour Type filter ───────────────────────────────────────
@@ -295,12 +307,14 @@ class ListingController extends Controller
         }
 
         // ── Rating filter ──────────────────────────────────────────
-        if ($request->filled('min_rating')) {
-            $packages = $packages->filter(function($pkg) use ($request) {
-                $pkg = (array) $pkg;
-                $minRating = (float)$request->min_rating;
-                return ((float)($pkg['rating'] ?? 0)) >= $minRating;
-            });
+        if ($request->input('rating_radio', 'all') !== 'all') {
+            if ($request->filled('min_rating')) {
+                $packages = $packages->filter(function($pkg) use ($request) {
+                    $pkg = (array) $pkg;
+                    $minRating = (float)$request->min_rating;
+                    return ((float)($pkg['rating'] ?? 0)) >= $minRating;
+                });
+            }
         }
 
         // ── Theme filter ───────────────────────────────────────────
@@ -606,7 +620,7 @@ class ListingController extends Controller
         }
 
         // ── Sort ───────────────────────────────────────────────────
-        $sort = $request->input('sort', 'GUARANTEED SERVICE');
+        $sort = $request->input('sort', 'SHOW ALL');
 
         // When GUARANTEED SERVICE is selected, filter to only show verified (blue-tick) agent packages
         if ($sort === 'GUARANTEED SERVICE' || $sort === 'Recommended') {

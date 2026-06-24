@@ -351,6 +351,9 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/feedback', [AgentController::class, 'feedback'])->name('feedback');
     Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
     Route::get('/hotels', [AgentController::class, 'hotels'])->name('hotels');
+    Route::post('/hotels/store', [AgentController::class, 'storeHotel'])->name('hotels.store');
+    Route::post('/hotels/update', [AgentController::class, 'updateHotel'])->name('hotels.update');
+    Route::post('/hotels/delete/{id}', [AgentController::class, 'deleteHotel'])->name('hotels.delete');
     Route::get('/invoice', [AgentController::class, 'invoice'])->name('invoice');
     Route::get('/invoice/{id}/download', [AgentController::class, 'downloadInvoice'])->name('invoice.download');
     Route::get('/leads', [AgentController::class, 'leads'])->name('leads');

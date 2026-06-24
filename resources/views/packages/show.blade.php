@@ -324,12 +324,18 @@
                             @php
                                 $hasChef = false;
                                 $hasManager = false;
+                                $searchLists = [];
                                 if (isset($package['included'])) {
-                                    $incList = is_string($package['included']) ? json_decode($package['included'], true) : $package['included'];
-                                    if (is_array($incList)) {
-                                        foreach ($incList as $inc) {
-                                            if (str_contains(strtolower($inc), 'chef')) $hasChef = true;
-                                            if (str_contains(strtolower($inc), 'manager')) $hasManager = true;
+                                    $searchLists[] = is_string($package['included']) ? json_decode($package['included'], true) : $package['included'];
+                                }
+                                if (isset($package['amenities'])) {
+                                    $searchLists[] = is_string($package['amenities']) ? json_decode($package['amenities'], true) : $package['amenities'];
+                                }
+                                foreach ($searchLists as $list) {
+                                    if (is_array($list)) {
+                                        foreach ($list as $item) {
+                                            if (str_contains(strtolower($item), 'chef')) $hasChef = true;
+                                            if (str_contains(strtolower($item), 'manager')) $hasManager = true;
                                         }
                                     }
                                 }
@@ -525,86 +531,102 @@
 
                 {{-- Additional Package Details --}}
                 @if(!empty($package['validity']) || !empty($package['sightseeing']) || !empty($package['hotels']) || !empty($package['amenities']) || !empty($package['meals']) || !empty($package['transfers']))
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
-                    <h2 class="font-black text-gray-900 section-heading" style="margin-bottom: 1.5rem;">Additional Details</h2>
+                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 mb-8">
+                    <h2 class="font-black text-gray-900 section-heading mb-6 text-xl">Additional Details</h2>
                     
-                    @if(!empty($package['validity']))
-                    <div class="mb-5">
-                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="calendar" class="w-4 h-4 text-orange-500"></i> Package Validity</h4>
-                        <p class="standard-body-text">{{ $package['validity'] }}</p>
-                    </div>
-                    @endif
-
-                    @if(!empty($package['sightseeing']))
-                    <div class="mb-5">
-                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="map" class="w-4 h-4 text-orange-500"></i> Sightseeing Details</h4>
-                        <p class="standard-body-text">{{ $package['sightseeing'] }}</p>
-                    </div>
-                    @endif
-
-                    @if(!empty($package['hotels']))
-                    <div class="mb-5">
-                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="building" class="w-4 h-4 text-orange-500"></i> Hotels</h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse border border-gray-200">
-                                <thead>
-                                    <tr class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
-                                        <th class="p-3 font-bold border-r border-gray-200">City</th>
-                                        <th class="p-3 font-bold border-r border-gray-200">Hotel</th>
-                                        <th class="p-3 font-bold">Nights</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($package['hotels'] as $hotel)
-                                    <tr class="border-b border-gray-200 last:border-0 hover:bg-gray-50">
-                                        <td class="p-3 text-sm text-gray-800 border-r border-gray-200">{{ $hotel['city'] ?? '-' }}</td>
-                                        <td class="p-3 text-sm text-gray-800 border-r border-gray-200">{{ $hotel['hotel'] ?? '-' }}</td>
-                                        <td class="p-3 text-sm text-gray-800">{{ $hotel['nights'] ?? '-' }}</td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        
+                        @if(!empty($package['validity']))
+                        <div>
+                            <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3"><i data-lucide="calendar" class="w-4 h-4 text-orange-500"></i> Package Validity</h4>
+                            <p class="standard-body-text">{{ $package['validity'] }}</p>
                         </div>
-                    </div>
-                    @endif
+                        @endif
 
-                    @if(!empty($package['amenities']))
-                    <div class="mb-5">
-                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="check-circle" class="w-4 h-4 text-orange-500"></i> Essential Amenities</h4>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($package['amenities'] as $am)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-700 text-xs font-bold border border-gray-200">
-                                {{ $am }}
-                            </span>
-                            @endforeach
+                        @if(!empty($package['sightseeing']))
+                        <div>
+                            <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3"><i data-lucide="map" class="w-4 h-4 text-orange-500"></i> Sightseeing Details</h4>
+                            <p class="standard-body-text">{{ $package['sightseeing'] }}</p>
                         </div>
-                    </div>
-                    @endif
+                        @endif
 
-                    @if(!empty($package['meals']))
-                    <div class="mb-5">
-                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="utensils" class="w-4 h-4 text-orange-500"></i> Meals Included</h4>
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($package['meals'] as $meal)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 text-xs font-bold border border-orange-200">
-                                {{ $meal }}
-                            </span>
-                            @endforeach
+                        @if(!empty($package['hotels']))
+                        <div class="col-span-1 md:col-span-2">
+                            <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3"><i data-lucide="building" class="w-4 h-4 text-orange-500"></i> Hotels</h4>
+                            <div class="overflow-hidden rounded-xl border border-gray-200">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="bg-gray-50 border-b border-gray-200 text-xs text-gray-500 uppercase tracking-wider">
+                                            <th class="p-3 font-bold border-r border-gray-200">Hotel Name</th>
+                                            <th class="p-3 font-bold">Room Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($package['hotels'] as $hotel)
+                                        <tr class="border-b border-gray-200 last:border-0 hover:bg-gray-50">
+                                            <td class="p-3 text-sm text-gray-800 border-r border-gray-200">{{ $hotel['name'] ?? ($hotel['hotel'] ?? '-') }}</td>
+                                            <td class="p-3 text-sm text-gray-800">{{ $hotel['room'] ?? ($hotel['category'] ?? '-') }}</td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    @endif
+                        @endif
 
-                    @if(!empty($package['transfers']))
-                    <div class="mb-2">
-                        <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-2"><i data-lucide="car" class="w-4 h-4 text-orange-500"></i> Transfers</h4>
-                        <ul class="list-disc pl-5 space-y-1">
-                            @foreach($package['transfers'] as $trans)
-                            <li class="standard-body-text">{{ $trans }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
+                        @php
+                            $filteredAmenities = [];
+                            if (!empty($package['amenities'])) {
+                                $filteredAmenities = array_filter($package['amenities'], function($am) {
+                                    $lower = strtolower($am);
+                                    return !str_contains($lower, 'chef') && !str_contains($lower, 'manager');
+                                });
+                            }
+                        @endphp
+                        @if(count($filteredAmenities) > 0)
+                        <div>
+                            <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3"><i data-lucide="check-circle" class="w-4 h-4 text-orange-500"></i> Essential Amenities</h4>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($filteredAmenities as $am)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-50 text-gray-700 text-xs font-bold border border-gray-200">
+                                    {{ $am }}
+                                </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
 
+                        @if(!empty($package['meals']))
+                        <div>
+                            <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3"><i data-lucide="utensils" class="w-4 h-4 text-orange-500"></i> Meals Included</h4>
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($package['meals'] as $meal)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-700 text-xs font-bold border border-orange-200">
+                                    {{ $meal }}
+                                </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+
+                        @if(!empty($package['transfers']))
+                        <div>
+                            <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3"><i data-lucide="car" class="w-4 h-4 text-orange-500"></i> Transfers</h4>
+                            <ul class="space-y-2">
+                                @foreach($package['transfers'] as $trans)
+                                @php
+                                    $transferText = is_array($trans) ? ($trans['name'] ?? $trans['title'] ?? 'Transfer') : $trans;
+                                @endphp
+                                <li class="standard-body-text flex items-start gap-2">
+                                    <i data-lucide="check" class="w-4 h-4 text-orange-500 mt-1 shrink-0"></i>
+                                    <span>{{ $transferText }}</span>
+                                </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+
+                    </div>
                 </div>
                 @endif
 

@@ -4,7 +4,5 @@ $app = require_once __DIR__.'/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
-$packages = \App\Models\Package::all(['id', 'title', 'category']);
-foreach ($packages as $pkg) {
-    echo "ID: {$pkg->id} | Title: {$pkg->title} | Category: {$pkg->category}\n";
-}
+$pkg = \App\Models\Package::find(5);
+print_r($pkg->toArray());

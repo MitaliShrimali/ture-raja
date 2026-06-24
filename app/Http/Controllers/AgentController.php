@@ -447,20 +447,16 @@ class AgentController extends Controller
                 $hotelData = json_decode($hotelJson, true);
                 if ($hotelData) $hotels[] = $hotelData;
             }
-        } else {
-            $hotels = json_decode($pkg->hotels, true) ?: [];
         }
         
         $keywords = [];
         if ($request->has('keywords') && !empty($request->keywords)) {
             $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
-        } else {
-            $keywords = json_decode($pkg->keywords, true) ?: [];
         }
 
-        $amenities = $request->has('amenities') ? $request->input('amenities', []) : (json_decode($pkg->amenities, true) ?: []);
-        $transfers = $request->has('transfers') ? $request->input('transfers', []) : (json_decode($pkg->transfers, true) ?: []);
-        $meals = $request->has('meals') ? $request->input('meals', []) : (json_decode($pkg->meals, true) ?: []);
+        $amenities = $request->input('amenities', []);
+        $transfers = $request->input('transfers', []);
+        $meals = $request->input('meals', []);
 
         // Sightseeing List parsing
         $sightseeing_list = [];
@@ -478,8 +474,9 @@ class AgentController extends Controller
         if ($request->has('itinerary_titles')) {
             foreach ($request->itinerary_titles as $i => $dayTitle) {
                 $dayDesc = $request->itinerary_descriptions[$i] ?? '';
+                $dayDur = $request->itinerary_durations[$i] ?? '';
                 if (!empty($dayTitle)) {
-                    $itinerary[] = ['title' => $dayTitle, 'desc' => $dayDesc];
+                    $itinerary[] = ['title' => $dayTitle, 'desc' => $dayDesc, 'duration' => $dayDur];
                 }
             }
         }
@@ -487,6 +484,8 @@ class AgentController extends Controller
         DB::table('packages')->where('id', $request->id)->update([
             'title'      => $request->title,
             'departure_city'      => $request->departure_city ?? null,
+            'departure_state'     => $request->departure_state ?? null,
+            'departure_country'   => $request->departure_country ?? null,
             'terms'               => $request->terms ?? null,
             'sightseeing_list'    => json_encode($sightseeing_list),
             'currency'            => $request->currency ?? '₹',
@@ -640,8 +639,9 @@ class AgentController extends Controller
         if ($request->has('itinerary_titles')) {
             foreach ($request->itinerary_titles as $i => $dayTitle) {
                 $dayDesc = $request->itinerary_descriptions[$i] ?? '';
+                $dayDur = $request->itinerary_durations[$i] ?? '';
                 if (!empty($dayTitle)) {
-                    $itinerary[] = ['title' => $dayTitle, 'desc' => $dayDesc];
+                    $itinerary[] = ['title' => $dayTitle, 'desc' => $dayDesc, 'duration' => $dayDur];
                 }
             }
         }
@@ -672,6 +672,8 @@ class AgentController extends Controller
         DB::table('packages')->insert([
             'title'      => $request->title,
             'departure_city'      => $request->departure_city ?? null,
+            'departure_state'     => $request->departure_state ?? null,
+            'departure_country'   => $request->departure_country ?? null,
             'terms'               => $request->terms ?? null,
             'sightseeing_list'    => json_encode($sightseeing_list),
             'currency'            => $request->currency ?? '₹',
@@ -762,14 +764,116 @@ class AgentController extends Controller
 
     public function hotels()
     {
-        $hotels = DB::table('hotels')->orderBy('name', 'asc')->get();
+        $agentId   = session('agent_id');
+        $agentName = session('agent_name', '');
+
+        $hotels = DB::table('hotels')->orderBy('id', 'desc')->get();
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
+        
+        $hotelCategories = DB::table('hotel_categories')->orderBy('id', 'asc')->get();
+
+        $allPackages = DB::table('packages')->select('id', 'title', 'agent')->orderBy('created_at', 'desc')->get();
+        $packages = $allPackages->filter(function ($pkg) use ($agentId, $agentName) {
+            if (!$pkg->agent) return false;
+            $agentData = json_decode($pkg->agent, true);
+            if (!$agentData) return false;
+            return (isset($agentData['id']) && $agentData['id'] == $agentId)
+                || (isset($agentData['name']) && $agentData['name'] === $agentName);
+        })->values();
+
         return view('agent.pages.hotels', [
             'page_title'      => 'Hotels',
             'page_breadcrumb' => 'Pages / Hotels',
             'hotels'          => $hotels,
             'agents'          => $agents,
+            'hotelCategories' => $hotelCategories,
+            'packages'        => $packages,
         ]);
+    }
+    
+    public function storeHotel(\Illuminate\Http\Request $request)
+    {
+        $request->validate(['name' => 'required', 'location' => 'required']);
+        
+        $hotelId = DB::table('hotels')->insertGetId([
+            'name' => $request->name,
+            'category' => $request->category ?? 'Luxury Resort',
+            'location' => $request->location,
+            'rating' => 5,
+            'status' => $request->status ?? 'Published',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        if ($request->filled('package_id')) {
+            $this->addHotelToPackage($request->package_id, $request->name, $request->category);
+        }
+
+        return redirect()->back()->with('success', 'Hotel added successfully!');
+    }
+
+    public function updateHotel(\Illuminate\Http\Request $request)
+    {
+        $request->validate(['id' => 'required', 'name' => 'required']);
+        
+        DB::table('hotels')->where('id', $request->id)->update([
+            'name' => $request->name,
+            'category' => $request->category,
+            'location' => $request->location,
+            'status' => $request->status ?? 'Published',
+            'updated_at' => now(),
+        ]);
+
+        if ($request->filled('package_id')) {
+            $this->addHotelToPackage($request->package_id, $request->name, $request->category);
+        }
+
+        return redirect()->back()->with('success', 'Hotel updated successfully!');
+    }
+
+    public function deleteHotel($id)
+    {
+        DB::table('hotels')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Hotel deleted successfully!');
+    }
+
+    private function addHotelToPackage($packageId, $hotelName, $hotelCategory)
+    {
+        $agentId   = session('agent_id');
+        $agentName = session('agent_name', '');
+        
+        $package = DB::table('packages')->where('id', $packageId)->first();
+        if ($package) {
+            $agentData = json_decode($package->agent, true);
+            $belongsToAgent = false;
+            if ($agentData) {
+                if ((isset($agentData['id']) && $agentData['id'] == $agentId) || 
+                    (isset($agentData['name']) && $agentData['name'] === $agentName)) {
+                    $belongsToAgent = true;
+                }
+            }
+            if ($belongsToAgent) {
+                $hotels = json_decode($package->hotels, true) ?? [];
+                // Check if already exists
+                $exists = false;
+                foreach($hotels as $h) {
+                    if ($h['name'] == $hotelName) {
+                        $exists = true;
+                        break;
+                    }
+                }
+                if (!$exists) {
+                    $hotels[] = [
+                        'name' => $hotelName,
+                        'room' => $hotelCategory,
+                        'image' => 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=200&auto=format&fit=crop'
+                    ];
+                    DB::table('packages')->where('id', $packageId)->update([
+                        'hotels' => json_encode($hotels)
+                    ]);
+                }
+            }
+        }
     }
 
     public function invoice()
