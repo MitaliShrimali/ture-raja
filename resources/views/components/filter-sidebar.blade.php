@@ -76,7 +76,7 @@
         <div x-data="{ expanded: false }">
             <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Category</h3>
             @php
-                $rawCategories = DB::table('packages')->whereNotNull('category')->where('category', '!=', '')->pluck('category')->toArray();
+                $rawCategories = DB::table('packages')->whereNotNull('categories_list')->where('categories_list', '!=', '')->pluck('categories_list')->toArray();
                 $parsedCategories = [];
                 foreach ($rawCategories as $cat) {
                     if (str_starts_with(trim($cat), '[') || str_starts_with(trim($cat), '{')) {

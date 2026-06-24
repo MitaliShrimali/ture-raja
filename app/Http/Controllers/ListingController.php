@@ -208,7 +208,7 @@ class ListingController extends Controller
             $cats = array_map('strtolower', (array) $request->categories);
             $packages = $packages->filter(function($pkg) use ($cats) {
                 $pkg = (array) $pkg;
-                $pkgCategory = $pkg['category'] ?? '';
+                $pkgCategory = $pkg['categories_list'] ?? '';
                 
                 if (is_string($pkgCategory) && (str_starts_with(trim($pkgCategory), '[') || str_starts_with(trim($pkgCategory), '{'))) {
                     $decoded = json_decode($pkgCategory, true);
