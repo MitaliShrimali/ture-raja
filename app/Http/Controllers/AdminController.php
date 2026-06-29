@@ -327,7 +327,7 @@ class AdminController extends Controller
             }
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/packages'), $fileName);
-            $imageUrl = '/uploads/packages/' . $fileName;
+            $imageUrl = 'uploads/packages/' . $fileName;
         }
 
         // Gallery Images Upload
@@ -339,7 +339,7 @@ class AdminController extends Controller
                 }
                 $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/packages/gallery'), $fileName);
-                $galleryUrls[] = '/uploads/packages/gallery/' . $fileName;
+                $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
             }
         }
 
@@ -352,7 +352,7 @@ class AdminController extends Controller
             }
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/packages/brochures'), $fileName);
-            $brochureUrl = '/uploads/packages/brochures/' . $fileName;
+            $brochureUrl = 'uploads/packages/brochures/' . $fileName;
         }
 
         // Inclusions & Exclusions parsing
@@ -501,7 +501,7 @@ class AdminController extends Controller
             }
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/packages'), $fileName);
-            $imageUrl = '/uploads/packages/' . $fileName;
+            $imageUrl = 'uploads/packages/' . $fileName;
         }
 
         // Gallery Images Upload
@@ -513,7 +513,7 @@ class AdminController extends Controller
                 }
                 $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/packages/gallery'), $fileName);
-                $galleryUrls[] = '/uploads/packages/gallery/' . $fileName;
+                $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
             }
         } else {
             if ($oldPkg && $oldPkg->gallery) {
@@ -530,7 +530,7 @@ class AdminController extends Controller
             }
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/packages/brochures'), $fileName);
-            $brochureUrl = '/uploads/packages/brochures/' . $fileName;
+            $brochureUrl = 'uploads/packages/brochures/' . $fileName;
         }
 
         // Inclusions & Exclusions parsing

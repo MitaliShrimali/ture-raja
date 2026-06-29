@@ -392,11 +392,12 @@ class AgentController extends Controller
         $imageUrl = $pkg->image;
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
-            if ($file->isValid()) {
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('uploads/packages'), $fileName);
-                $imageUrl = '/uploads/packages/' . $fileName;
+            if (!$file->isValid()) {
+                return redirect()->back()->withErrors(['image_file' => 'Upload failed: ' . $file->getErrorMessage()])->withInput();
             }
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/packages'), $fileName);
+            $imageUrl = 'uploads/packages/' . $fileName;
         }
 
         // Gallery Images Upload
@@ -406,7 +407,7 @@ class AgentController extends Controller
                 if ($file->isValid()) {
                     $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
                     $file->move(public_path('uploads/packages/gallery'), $fileName);
-                    $galleryUrls[] = '/uploads/packages/gallery/' . $fileName;
+                    $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
                 }
             }
         }
@@ -418,7 +419,7 @@ class AgentController extends Controller
             if ($file->isValid()) {
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/packages/brochures'), $fileName);
-                $brochureUrl = '/uploads/packages/brochures/' . $fileName;
+                $brochureUrl = 'uploads/packages/brochures/' . $fileName;
             }
         }
 
@@ -557,11 +558,12 @@ class AgentController extends Controller
         $imageUrl = null;
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
-            if ($file->isValid()) {
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('uploads/packages'), $fileName);
-                $imageUrl = '/uploads/packages/' . $fileName;
+            if (!$file->isValid()) {
+                return redirect()->back()->withErrors(['image_file' => 'Upload failed: ' . $file->getErrorMessage()])->withInput();
             }
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/packages'), $fileName);
+            $imageUrl = 'uploads/packages/' . $fileName;
         }
 
         // Gallery Images Upload
@@ -582,7 +584,7 @@ class AgentController extends Controller
             if ($file->isValid()) {
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/packages/brochures'), $fileName);
-                $brochureUrl = '/uploads/packages/brochures/' . $fileName;
+                $brochureUrl = 'uploads/packages/brochures/' . $fileName;
             }
         }
 
