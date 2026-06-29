@@ -112,9 +112,15 @@
                         <i class="fas fa-shield-alt text-[#ea580c] text-2xl opacity-50"></i>
                     </div>
 
-                    <button type="button" id="rzp-button1" class="w-full py-4 bg-[#ea580c] text-white font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center">
-                        <i class="fas fa-lock mr-2"></i> Complete Payment of ₹{{ number_format($amount, 2) }}
-                    </button>
+                    @if(!isset($razorpayOrderId) && $amount > 0)
+                        <div class="p-4 mb-8 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
+                            <span class="font-bold">Error:</span> Razorpay could not be initialized. Please check that Razorpay keys are configured correctly in the production environment.
+                        </div>
+                    @else
+                        <button type="button" id="rzp-button1" class="w-full py-4 bg-[#ea580c] text-white font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center">
+                            <i class="fas fa-lock mr-2"></i> Complete Payment of ₹{{ number_format($amount, 2) }}
+                        </button>
+                    @endif
                 </form>
             </div>
         </div>
