@@ -114,7 +114,8 @@
 
                     @if(!isset($razorpayOrderId) && $amount > 0)
                         <div class="p-4 mb-8 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
-                            <span class="font-bold">Error:</span> Razorpay could not be initialized. Please check that Razorpay keys are configured correctly in the production environment.
+                            <span class="font-bold">Error:</span> Razorpay could not be initialized.<br>
+                            <strong>Details:</strong> {{ isset($razorpayError) ? $razorpayError : 'Unknown Error' }}
                         </div>
                     @else
                         <button type="button" id="rzp-button1" class="w-full py-4 bg-[#ea580c] text-white font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center">

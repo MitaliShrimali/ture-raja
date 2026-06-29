@@ -1169,8 +1169,12 @@ class AgentController extends Controller
 
         // Razorpay Order Generation
         $razorpayOrderId = null;
+        $razorpayError = null;
         if ($amount > 0) {
             try {
+                if (!config('services.razorpay.key') || !config('services.razorpay.secret')) {
+                    throw new \Exception('Razorpay keys are missing from configuration. Did you clear the config cache?');
+                }
                 $api = new \Razorpay\Api\Api(config('services.razorpay.key'), config('services.razorpay.secret'));
                 $orderData = [
                     'receipt'         => 'rcptid_' . time(),
@@ -1179,8 +1183,9 @@ class AgentController extends Controller
                 ];
                 $razorpayOrder = $api->order->create($orderData);
                 $razorpayOrderId = $razorpayOrder['id'];
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 \Log::error('Razorpay Error: ' . $e->getMessage());
+                $razorpayError = $e->getMessage();
             }
         }
 
@@ -1191,7 +1196,8 @@ class AgentController extends Controller
             'id' => $id,
             'amount' => $amount,
             'itemName' => $itemName,
-            'razorpayOrderId' => $razorpayOrderId
+            'razorpayOrderId' => $razorpayOrderId,
+            'razorpayError' => $razorpayError
         ]);
     }
 
