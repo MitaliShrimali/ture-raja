@@ -39,7 +39,7 @@
     @endphp
     <div class="bg-white rounded-[32px] p-4 shadow-sm border border-gray-100 group hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500 package-card" data-name="{{ strtolower($pkg->title) }}" id="pkg-card-{{ $pkg->id }}">
         <div class="relative mb-4 overflow-hidden rounded-[24px]">
-            <img src="{{ $pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=500' }}" class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-700" alt="{{ $pkg->title }}">
+            <img src="{{ asset($pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=500') }}" class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-700" alt="{{ $pkg->title }}">
             @if(!$isPending)
             <!-- Toggle Button -->
             <button onclick="togglePkgStatus({{ $pkg->id }}, this)" id="toggle-btn-{{ $pkg->id }}" class="absolute top-3 right-3 w-8 h-4 rounded-full border-2 border-white flex items-center transition-all duration-300 {{ $isActive ? 'bg-[#e85d26] justify-end' : 'bg-gray-300 justify-start' }}">

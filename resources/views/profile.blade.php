@@ -46,7 +46,7 @@
               enctype="multipart/form-data" id="pf-av-form">
           @csrf
           <label for="pf-av-input" class="pf-avatar-wrap">
-            <img src="{{ $avatarUrl }}" alt="avatar" id="pf-av-img">
+            <img src="{{ asset($avatarUrl) }}" alt="avatar" id="pf-av-img">
             <span class="pf-avatar-cam">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                    stroke="#fff" stroke-width="2.5">
@@ -370,7 +370,7 @@
           @foreach($firstRow as $dc)
           <a href="{{ route('discover', ['search' => $dc['name']]) }}" class="pf-dest-card">
             <div class="pf-dest-img">
-              <img src="{{ $dc['image'] }}" alt="{{ $dc['name'] }}" loading="lazy">
+              <img src="{{ asset($dc['image']) }}" alt="{{ $dc['name'] }}" loading="lazy">
             </div>
             <div class="pf-dest-body">
               <p class="pf-dest-name">{{ $dc['name'] }}</p>
@@ -388,7 +388,7 @@
           @foreach($secondRow as $dc)
           <a href="{{ route('discover', ['search' => $dc['name']]) }}" class="pf-dest-card">
             <div class="pf-dest-img">
-              <img src="{{ $dc['image'] }}" alt="{{ $dc['name'] }}" loading="lazy">
+              <img src="{{ asset($dc['image']) }}" alt="{{ $dc['name'] }}" loading="lazy">
             </div>
             <div class="pf-dest-body">
               <p class="pf-dest-name">{{ $dc['name'] }}</p>
@@ -417,7 +417,7 @@
         @forelse($bookingItems as $bk)
         <div class="pf-bk-card">
           <div class="pf-bk-img">
-            <img src="{{ $bk->package_image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80' }}"
+            <img src="{{ asset($bk->package_image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80') }}"
                  alt="{{ $bk->package_title }}">
           </div>
           <div class="pf-bk-info">

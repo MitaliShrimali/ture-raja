@@ -332,7 +332,7 @@
                             $agentLogoUrl = 'https://api.dicebear.com/7.x/initials/svg?seed=MH';
                         }
                     @endphp
-                    <img src="{{ $agentLogoUrl }}" alt="{{ $agent->name }}" class="agent-logo-img">
+                    <img src="{{ asset($agentLogoUrl) }}" alt="{{ $agent->name }}" class="agent-logo-img">
                 </div>
 
                 <!-- Info Grid -->

@@ -73,7 +73,7 @@
                         <tr class="hover:bg-gray-50/50 transition-colors">
                             <td class="px-6 py-4">
                                 @if($sticker->image)
-                                    <img src="{{ $sticker->image }}" class="w-20 h-14 rounded-xl object-cover border border-border-soft" alt="{{ $sticker->title }}">
+                                    <img src="{{ asset($sticker->image) }}" class="w-20 h-14 rounded-xl object-cover border border-border-soft" alt="{{ $sticker->title }}">
                                 @else
                                     <div class="w-20 h-14 rounded-xl flex items-center justify-center text-muted-text" style="background-color: {{ $sticker->bg_color ?? '#FCE08F' }}">
                                         <i data-lucide="image" class="w-5 h-5"></i>

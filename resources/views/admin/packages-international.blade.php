@@ -79,7 +79,7 @@
                         </td>
                         <td class="py-6 px-8">
                             <div class="w-16 h-10 rounded-full overflow-hidden border border-border-soft shadow-sm">
-                                <img src="{{ $pkg->image }}" alt="{{ $pkg->title }}" class="w-full h-full object-cover">
+                                <img src="{{ asset($pkg->image) }}" alt="{{ $pkg->title }}" class="w-full h-full object-cover">
                             </div>
                         </td>
                         <td class="py-6 px-8">

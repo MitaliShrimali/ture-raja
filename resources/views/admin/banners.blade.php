@@ -69,11 +69,11 @@
                                 <div class="w-40 h-24 rounded-2xl overflow-hidden border border-border-soft bg-gray-100 group-hover:scale-105 transition-transform duration-500">
                                     @if (Str::endsWith(strtolower($banner->image ?? ''), '.mp4'))
     <video autoplay loop muted playsinline class="w-full h-full object-cover">
-        <source src="{{ $banner->image }}" type="video/mp4">
+        <source src="{{ asset($banner->image) }}" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 @else
-    <img src="{{ $banner->image ?? 'https://images.unsplash.com/photo-1548013146-72479768bbaa?auto=format&fit=crop&q=80&w=400' }}" alt="Banner" class="w-full h-full object-cover">
+    <img src="{{ asset($banner->image ?? 'https://images.unsplash.com/photo-1548013146-72479768bbaa?auto=format&fit=crop&q=80&w=400') }}" alt="Banner" class="w-full h-full object-cover">
 @endif
                                 </div>
                             </td>
@@ -179,11 +179,11 @@
                     <div :class="viewType === 'mobile' ? 'w-[360px] aspect-[9/16]' : 'w-full aspect-[16/7]'" class="relative rounded-[32px] overflow-hidden shadow-2xl transition-all duration-300">
                         @if (isset($banners[0]) && Str::endsWith(strtolower($banners[0]->image ?? ''), '.mp4'))
     <video autoplay loop muted playsinline class="w-full h-full object-cover">
-        <source src="{{ $banners[0]->image }}" type="video/mp4">
+        <source src="{{ asset($banners[0]->image) }}" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 @else
-    <img src="{{ $banners[0]->image }}" alt="Preview" class="w-full h-full object-cover">
+    <img src="{{ asset($banners[0]->image) }}" alt="Preview" class="w-full h-full object-cover">
 @endif
                         <div class="absolute inset-0 bg-black/40 flex items-center px-8 md:px-16">
                             <div class="max-w-md space-y-6">

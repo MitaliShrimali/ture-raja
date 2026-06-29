@@ -133,7 +133,7 @@
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 rounded-2xl overflow-hidden bg-gray-100 flex items-center justify-center shrink-0 border border-gray-100 shadow-sm">
                                         @if($item->image)
-                                            <img src="{{ $item->image }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
+                                            <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
                                         @else
                                             <i data-lucide="globe" class="text-gray-400 w-5 h-5"></i>
                                         @endif

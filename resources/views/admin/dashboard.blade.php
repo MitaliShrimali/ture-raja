@@ -176,7 +176,7 @@
                     <div class="flex items-center gap-5">
                         <!-- Package image -->
                         <div class="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-100 border border-gray-200/50">
-                            <img src="{{ $pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=200' }}"
+                            <img src="{{ asset($pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=200') }}"
                                  alt="{{ $pkg->title }}"
                                  class="w-full h-full object-cover">
                         </div>

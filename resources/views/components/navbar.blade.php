@@ -52,7 +52,7 @@
                   @endphp
                   <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group flex-1 min-w-0 max-w-[55px] sm:max-w-[65px] md:max-w-[75px] lg:max-w-[85px] xl:max-w-[95px] flex-shrink">
                      <div class="w-9 h-9 md:w-11 md:h-11 xl:w-13 xl:h-13 flex items-center justify-center">
-                        <img src="{{ $imgUrl }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
+                        <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
                      <span class="text-[8px] md:text-[9px] lg:text-[9.5px] xl:text-[10px] font-bold text-gray-800 tracking-tight group-hover:text-primary transition-colors mt-0.5 truncate w-full text-center">{{ $shortLabel }}</span>
                   </a>
@@ -147,7 +147,7 @@
             @if(Auth::check())
                 <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2">
                     @if(Auth::user()->avatar)
-                        <img src="{{ Auth::user()->avatar }}" class="w-full h-full rounded-full object-cover">
+                        <img src="{{ asset(Auth::user()->avatar) }}" class="w-full h-full rounded-full object-cover">
                     @else
                         <img src="{{ asset('images/default-avatar.svg') }}" class="w-full h-full rounded-full object-cover">
                     @endif

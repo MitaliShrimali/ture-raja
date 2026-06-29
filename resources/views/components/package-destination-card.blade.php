@@ -8,7 +8,7 @@
 <a href="{{ url('packages/' . \Illuminate\Support\Str::slug($title)) }}" {{ $attributes->merge(['class' => 'relative flex-shrink-0 w-[280px] md:w-[350px] aspect-[3/4] group overflow-hidden rounded-[40px] shadow-premium cursor-pointer block']) }}>
     <div class="relative w-full h-full overflow-hidden">
         <img 
-            src="{{ $image ?: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800' }}" 
+            src="{{ asset($image ?: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800') }}" 
             alt="{{ $title }}" 
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         >

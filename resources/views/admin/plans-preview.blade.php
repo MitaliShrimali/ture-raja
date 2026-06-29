@@ -138,7 +138,7 @@
                 <!-- Avatar Stack Indicator -->
                 <div class="flex items-center -space-x-2.5">
                     @foreach($subscribedAgents->take(3) as $agent)
-                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="{{ $agent->logo ?: 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agent->name) }}" alt="{{ $agent->name }}">
+                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="{{ asset($agent->logo ?: 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agent->name)) }}" alt="{{ $agent->name }}">
                     @endforeach
                     @if(count($subscribedAgents) > 3)
                         <div class="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-black text-muted-text shadow-sm">+{{ count($subscribedAgents) - 3 }}</div>
@@ -169,7 +169,7 @@
                         <tr class="group hover:bg-gray-50/30 transition-colors">
                             <td class="py-6 px-8">
                                 <div class="flex items-center gap-3">
-                                    <img class="w-10 h-10 rounded-full object-cover border border-gray-100 shrink-0 bg-gray-50" src="{{ $agent->logo ?: 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agent->name) }}" alt="{{ $agent->name }}" />
+                                    <img class="w-10 h-10 rounded-full object-cover border border-gray-100 shrink-0 bg-gray-50" src="{{ asset($agent->logo ?: 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agent->name)) }}" alt="{{ $agent->name }}" />
                                     <div class="space-y-0.5">
                                         <p class="text-sm font-black text-gray-800">{{ $agent->name }}</p>
                                         <p class="text-[10px] text-muted-text font-bold">Top Producer &bull; {{ $agent->region }}</p>

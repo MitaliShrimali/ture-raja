@@ -77,7 +77,7 @@
     <!-- Image Container -->
     <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-md package-image-container" style="aspect-ratio: 1.2/1;">
         <img 
-            src="{{ $image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800' }}" 
+            src="{{ asset($image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800') }}" 
             alt="{{ $title }}" 
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             style="width: 100%; height: 100%; object-fit: cover;"
@@ -163,7 +163,7 @@
                     <span class="text-xs font-bold text-gray-700">{{ $agentName }}</span>
                 </div>
                 <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
-                    <img src="{{ $agentLogo }}" alt="{{ $agentName }} Logo" class="w-full h-full object-cover">
+                    <img src="{{ asset($agentLogo) }}" alt="{{ $agentName }} Logo" class="w-full h-full object-cover">
                 </div>
             </div>
         @endif

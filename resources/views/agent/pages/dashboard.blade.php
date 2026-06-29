@@ -87,7 +87,7 @@
                         $profileName = ($agent && $agent->agency_name) ? $agent->agency_name : ($agent ? $agent->name : session('agent_name', 'Agent'));
                         $profileRegion = ($agent && $agent->region) ? $agent->region : 'Rajkot, Gujarat';
                     @endphp
-                    <img src="{{ $profileLogo }}" class="w-24 h-24 rounded-full border-4 border-gray-50 object-cover" alt="Profile">
+                    <img src="{{ asset($profileLogo) }}" class="w-24 h-24 rounded-full border-4 border-gray-50 object-cover" alt="Profile">
                     <div class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>
                 </div>
                 <h4 class="text-xl font-bold text-primary flex items-center justify-center gap-1">

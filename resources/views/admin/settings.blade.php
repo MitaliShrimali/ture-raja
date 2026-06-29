@@ -228,7 +228,7 @@
                             <input type="file" id="agency_logo_input" name="agency_logo" class="hidden" onchange="previewLogo(this)">
                             
                             @if(!empty($settings['agency_logo']))
-                                <img id="agency_logo_preview" src="{{ $settings['agency_logo'] }}" alt="Agency Logo" class="max-h-28 object-contain rounded-lg">
+                                <img id="agency_logo_preview" src="{{ asset($settings['agency_logo']) }}" alt="Agency Logo" class="max-h-28 object-contain rounded-lg">
                             @else
                                 <div id="agency_logo_preview_container" class="w-28 h-28 bg-[#0A5C66] rounded-xl flex items-center justify-center p-4">
                                     <span class="text-white text-xs font-black tracking-tight text-center">AGENCY<br><span class="text-[8px] opacity-70 font-semibold">SAFE FOR WORK</span></span>
@@ -243,7 +243,7 @@
                         <div class="flex items-center justify-between bg-[#F5F4F2] rounded-2xl p-3 border border-gray-50">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm overflow-hidden p-1.5">
-                                    <img id="favicon_preview" src="{{ $settings['favicon'] ?? 'https://api.dicebear.com/7.x/identicon/svg?seed=Favicon' }}" alt="Favicon" class="w-full h-full object-contain">
+                                    <img id="favicon_preview" src="{{ asset($settings['favicon'] ?? 'https://api.dicebear.com/7.x/identicon/svg?seed=Favicon') }}" alt="Favicon" class="w-full h-full object-contain">
                                 </div>
                             </div>
                             <input type="file" id="favicon_input" name="favicon" class="hidden" onchange="previewFavicon(this)">

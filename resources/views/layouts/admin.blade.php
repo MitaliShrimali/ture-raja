@@ -290,7 +290,7 @@
                             $adminAvatar = ($activeAdmin && !empty($activeAdmin->avatar)) ? $activeAdmin->avatar : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($activeAdmin->name ?? 'Admin');
                         @endphp
                         <a href="{{ url('/admin/settings') }}" class="block shrink-0">
-                            <img src="{{ $adminAvatar }}" alt="Profile" class="w-10 h-10 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
+                            <img src="{{ asset($adminAvatar) }}" alt="Profile" class="w-10 h-10 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
                         </a>
                     </div>
                 </div>

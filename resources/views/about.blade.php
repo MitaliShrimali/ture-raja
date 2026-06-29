@@ -208,7 +208,7 @@
                                 
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-gray-100 mt-auto gap-4">
                                     <div class="flex items-center gap-4">
-                                        <img src="{{ $testi['img'] }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-orange-100">
+                                        <img src="{{ asset($testi['img']) }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-orange-100">
                                         <div class="flex flex-col">
                                             <span class="font-black text-black text-sm md:text-base">{{ $testi['name'] }}</span>
                                             <span class="text-[10px] md:text-xs text-gray-400 font-bold">{{ $testi['loc'] }}</span>

@@ -53,7 +53,7 @@
                             </td>
                             <td class="py-6 px-8">
                                 <div class="w-24 h-12 rounded-xl overflow-hidden border border-border-soft bg-gray-100">
-                                    <img src="{{ $ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=200' }}" alt="Preview" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+                                    <img src="{{ asset($ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=200') }}" alt="Preview" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
                                 </div>
                             </td>
                             <td class="py-6 px-8 text-sm font-bold text-muted-text">{{ $ad->position }}</td>

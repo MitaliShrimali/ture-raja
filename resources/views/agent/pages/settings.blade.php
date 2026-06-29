@@ -120,7 +120,7 @@
                                         <div class="bg-orange-100 h-28 rounded-t-[30px] relative">
                                             <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-14 h-14 bg-orange-800 rounded-xl flex items-center justify-center text-white shadow-xl overflow-hidden cursor-pointer" onclick="document.getElementById('logo_file').click()">
                                                 @if($agent && $agent->logo)
-                                                    <img src="{{ $agent->logo }}" class="w-full h-full object-cover">
+                                                    <img src="{{ asset($agent->logo) }}" class="w-full h-full object-cover">
                                                 @else
                                                     <i class="fas fa-camera-retro text-lg"></i>
                                                 @endif

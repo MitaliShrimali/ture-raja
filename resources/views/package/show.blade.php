@@ -259,7 +259,7 @@
                     <div class="bg-white rounded-[32px] p-8 shadow-soft border border-gray-50 sticky top-28 space-y-8">
                         @if(isset($pkg['agent']))
                             <div class="flex items-center gap-5 pb-6 border-b border-gray-100">
-                                <img src="{{ $pkg['agent']['logo'] }}" alt="{{ $pkg['agent']['name'] }}" class="w-16 h-16 rounded-2xl shadow-lg" />
+                                <img src="{{ asset($pkg['agent']['logo']) }}" alt="{{ $pkg['agent']['name'] }}" class="w-16 h-16 rounded-2xl shadow-lg" />
                                 <div>
                                     <h4 class="text-xl font-bold">{{ $pkg['agent']['name'] }}</h4>
                                     <p class="text-gray-400 font-medium text-xs">Verified Agent</p>

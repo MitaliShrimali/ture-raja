@@ -300,6 +300,17 @@
         </div>
     </div>
 
+    @if ($errors->any())
+        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded shadow-sm">
+            <p class="font-bold mb-2">Please fix the following errors:</p>
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- Form Container -->
     <form id="packageMainForm" action="{{ route('agent.packages.store') }}" method="POST" enctype="multipart/form-data" class="space-y-10">
         @csrf

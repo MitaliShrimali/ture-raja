@@ -51,9 +51,9 @@
           @endphp
           <div style="flex:0 0 100%; width:100%; height:100%; position:relative; overflow:hidden;">
             @if($isVideo)
-              <video class="hero-video" src="{{ $url }}" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"></video>
+              <video class="hero-video" src="{{ asset($url) }}" autoplay loop muted playsinline style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"></video>
             @else
-              <div style="width:100%; height:100%; background-image:url('{{ $url }}'); background-size:cover; background-position:center;"></div>
+              <div style="width:100%; height:100%; background-image:url('{{ asset($url) }}'); background-size:cover; background-position:center;"></div>
             @endif
           </div>
         @endforeach
@@ -307,7 +307,7 @@
           <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
             class="group flex-1 min-w-0 max-w-[80px] md:max-w-[110px] lg:max-w-[130px] flex flex-col items-center gap-1.5 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
             <div class="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex items-center justify-center">
-              <img src="{{ $imgUrl }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
+              <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
             </div>
             <span class="text-center text-[10px] md:text-xs lg:text-sm font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
           </a>
@@ -321,7 +321,7 @@
     <div class="container-custom">
       @if(isset($homeAd) && $homeAd)
           <a href="{{ route('ad.click', ['id' => $homeAd->id]) }}" target="_blank" class="block w-full h-[80px] md:h-[100px] lg:h-[120px] bg-gray-100 rounded-[20px] shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex items-center justify-center">
-              <img src="{{ $homeAd->image }}" alt="{{ $homeAd->campaign_name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500">
+              <img src="{{ asset($homeAd->image) }}" alt="{{ $homeAd->campaign_name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500">
           </a>
       @else
           <div class="w-full h-[80px] md:h-[100px] lg:h-[120px] bg-[#d5d5d5] rounded-[20px] flex items-center justify-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">

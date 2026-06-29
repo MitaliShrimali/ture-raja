@@ -65,7 +65,7 @@
                              <td class="py-6 px-8">
                                 <div class="flex items-center gap-4">
                                     @if(!empty($user->avatar))
-                                        <img src="{{ $user->avatar }}" class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm" alt="{{ $user->name }}" />
+                                        <img src="{{ asset($user->avatar) }}" class="w-10 h-10 rounded-xl object-cover border border-gray-100 shadow-sm" alt="{{ $user->name }}" />
                                     @else
                                         <div class="w-10 h-10 rounded-xl {{ $color }} flex items-center justify-center font-black text-xs uppercase">
                                             {{ $initials }}

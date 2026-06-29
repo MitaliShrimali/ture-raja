@@ -28,7 +28,7 @@
             <div class="space-y-6 w-full flex flex-col items-center">
                 <div class="relative group">
                     <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20 bg-gray-50 flex items-center justify-center shadow-lg">
-                        <img src="{{ $adminAvatar }}" alt="Admin Avatar" class="w-full h-full object-cover">
+                        <img src="{{ asset($adminAvatar) }}" alt="Admin Avatar" class="w-full h-full object-cover">
                     </div>
                     <div class="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all cursor-pointer">
                         <i data-lucide="camera" class="text-white" size="24"></i>

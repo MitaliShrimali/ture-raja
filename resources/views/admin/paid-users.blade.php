@@ -66,7 +66,7 @@
                             <td class="py-6 px-8 text-sm font-bold text-muted-text opacity-60">{{ $srNo }}</td>
                             <td class="py-6 px-8">
                                 <div class="flex items-center gap-3">
-                                    <img src="{{ $user->avatar ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($user->name) }}" class="w-8 h-8 rounded-full bg-gray-100 object-cover" />
+                                    <img src="{{ asset($user->avatar ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($user->name)) }}" class="w-8 h-8 rounded-full bg-gray-100 object-cover" />
                                     <span class="text-sm font-black text-primary">{{ $user->name }}</span>
                                 </div>
                             </td>

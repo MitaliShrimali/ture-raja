@@ -228,7 +228,7 @@
                             @foreach($sidebarAds as $ad)
                                 <div class="bg-white rounded-3xl border border-gray-100 p-4 shadow-sm relative group hover:shadow-md transition-shadow">
                                     <div class="relative w-full h-32 rounded-2xl overflow-hidden mb-3">
-                                        <img src="{{ $ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300' }}" 
+                                        <img src="{{ asset($ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300') }}" 
                                              alt="{{ $ad->campaign_name }}" 
                                              class="w-full h-full object-cover">
                                         <span class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[8px] tracking-widest px-1.5 py-0.5 rounded-md backdrop-blur-xs">AD</span>
@@ -246,7 +246,7 @@
                                                 Check Now
                                             </a>
                                             @if($ad->agent_logo)
-                                                <img src="{{ $ad->agent_logo }}" 
+                                                <img src="{{ asset($ad->agent_logo) }}" 
                                                      alt="{{ $ad->agent_name ?? 'Agent' }}" 
                                                      class="h-6 max-w-[80px] object-contain opacity-80">
                                             @endif
@@ -288,7 +288,7 @@
                                     $agentInit = strtoupper(substr($agent->name ?? 'A', 0, 1));
                                     $agentLogoUrl = 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agent->name ?? 'Agent');
                                 @endphp
-                                <img src="{{ $agentLogoUrl }}" alt="{{ $agent->name }}" class="w-full h-full object-cover rounded-[24px]">
+                                <img src="{{ asset($agentLogoUrl) }}" alt="{{ $agent->name }}" class="w-full h-full object-cover rounded-[24px]">
                             </div>
                             <div class="space-y-3">
                                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-2.5">

@@ -31,7 +31,7 @@
         <div class="lg:col-span-2 space-y-8">
             <div class="bg-white rounded-[32px] p-8 shadow-soft border border-border-soft space-y-6">
                 <div class="aspect-video w-full rounded-2xl overflow-hidden bg-gray-100">
-                    <img src="{{ $pkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800' }}" alt="{{ $pkg->title }}" class="w-full h-full object-cover">
+                    <img src="{{ asset($pkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800') }}" alt="{{ $pkg->title }}" class="w-full h-full object-cover">
                 </div>
                 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -96,7 +96,7 @@
                     $agentLogo = $agentData['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
                 @endphp
                 <div class="flex items-center gap-4">
-                    <img src="{{ $agentLogo }}" class="w-16 h-16 rounded-2xl object-cover bg-gray-50 border border-gray-100">
+                    <img src="{{ asset($agentLogo) }}" class="w-16 h-16 rounded-2xl object-cover bg-gray-50 border border-gray-100">
                     <div>
                         <h4 class="font-black text-foreground">{{ $agentName }}</h4>
                         <p class="text-xs text-muted-text font-medium">{{ $agentData['phone'] ?? 'No contact info' }}</p>

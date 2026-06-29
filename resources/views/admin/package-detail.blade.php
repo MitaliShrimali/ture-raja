@@ -133,7 +133,7 @@
             {{-- Hero Image --}}
             <div class="bg-white rounded-[32px] overflow-hidden border border-border-soft shadow-soft">
                 <div class="relative h-72 overflow-hidden">
-                    <img src="{{ $pkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200' }}" 
+                    <img src="{{ asset($pkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200') }}" 
                          alt="{{ $pkg->title }}" 
                          class="w-full h-full object-cover">
                     @if($pkg->badge)
@@ -150,7 +150,7 @@
                     <div class="flex gap-3 overflow-x-auto pb-2">
                         @foreach($gallery as $img)
                         <div class="w-24 h-20 rounded-2xl overflow-hidden shrink-0 border border-gray-100">
-                            <img src="{{ $img }}" alt="Gallery" class="w-full h-full object-cover">
+                            <img src="{{ asset($img) }}" alt="Gallery" class="w-full h-full object-cover">
                         </div>
                         @endforeach
                     </div>
@@ -388,7 +388,7 @@
             <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft space-y-4">
                 <h3 class="text-sm font-black text-muted-text uppercase tracking-widest">Submitted By</h3>
                 <div class="flex items-center gap-4">
-                    <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-14 h-14 rounded-full object-cover border-2 border-gray-100 bg-gray-50">
+                    <img src="{{ asset($agentLogo) }}" alt="{{ $agentName }}" class="w-14 h-14 rounded-full object-cover border-2 border-gray-100 bg-gray-50">
                     <div>
                         <p class="text-sm font-black text-foreground">{{ $agentName }}</p>
                         @if($agentPhone)

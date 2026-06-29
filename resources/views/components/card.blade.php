@@ -7,7 +7,7 @@
     @if($image)
         <div class="relative aspect-[4/3] overflow-hidden">
             <img 
-                src="{{ $image }}" 
+                src="{{ asset($image) }}" 
                 {{ $attributes->get('img-alt') ? 'alt=' . $attributes->get('img-alt') : '' }}
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             >

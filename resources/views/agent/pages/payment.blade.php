@@ -106,7 +106,7 @@
                             @php
                                 $firstImg = $pkg->image ?? 'https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=100&auto=format&fit=crop';
                             @endphp
-                            <img src="{{ $firstImg }}" class="w-full h-full object-cover">
+                            <img src="{{ asset($firstImg) }}" class="w-full h-full object-cover">
                         </div>
                         <div>
                             <h5 class="text-sm font-bold text-gray-900 hover:text-[#ea580c] transition-colors">{{ $pkg->title }}</h5>

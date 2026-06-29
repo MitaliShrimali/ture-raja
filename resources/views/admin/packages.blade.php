@@ -108,7 +108,7 @@
                             <td class="py-6 px-8">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-full overflow-hidden shrink-0 border border-gray-100 bg-gray-50">
-                                        <img src="{{ $pkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800' }}" alt="{{ $pkg->title }}" class="w-full h-full object-cover">
+                                        <img src="{{ asset($pkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800') }}" alt="{{ $pkg->title }}" class="w-full h-full object-cover">
                                     </div>
                                     <div class="space-y-1">
                                         <p class="text-sm font-black text-foreground">{{ $pkg->title }}</p>
@@ -126,7 +126,7 @@
                                     $agentLogo = $agentData['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
                                 @endphp
                                 <div class="flex items-center gap-2">
-                                    <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-8 h-8 rounded-full border border-gray-100 object-cover bg-gray-50">
+                                    <img src="{{ asset($agentLogo) }}" alt="{{ $agentName }}" class="w-8 h-8 rounded-full border border-gray-100 object-cover bg-gray-50">
                                     <span class="text-sm font-bold text-foreground">{{ $agentName }}</span>
                                 </div>
                             </td>

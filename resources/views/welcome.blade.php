@@ -43,7 +43,7 @@
                 @foreach($intl as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
                    class="relative rounded-lg overflow-hidden block group flex-1" style="height:115px; min-width: 130px; flex-shrink: 0;">
-                    <img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}"
+                    <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                     <span style="position:absolute; bottom:8px; left:10px; color:#fff; font-size:18px; font-weight:700; text-shadow:0 1px 5px rgba(0,0,0,0.7); line-height:1.2;">{{ $pkg['title'] }}</span>
@@ -91,7 +91,7 @@
                 @foreach($dom as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
                    class="relative rounded-lg overflow-hidden block group flex-1" style="height:115px; min-width: 130px; flex-shrink: 0;">
-                    <img src="{{ $pkg['image'] }}" alt="{{ $pkg['title'] }}"
+                    <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
                     <span style="position:absolute; bottom:8px; left:10px; color:#fff; font-size:18px; font-weight:700; text-shadow:0 1px 5px rgba(0,0,0,0.7); line-height:1.2;">{{ $pkg['title'] }}</span>
@@ -111,7 +111,7 @@
                 <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 32px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.04); padding: 20px; display: flex; gap: 16px; width: 420px; flex-shrink: 0; position: relative; box-sizing: border-box; transition: shadow 0.3s;" class="group hover:shadow-md">
                     <!-- Left: Ad Image -->
                     <div style="width: 120px; height: 120px; border-radius: 24px; overflow: hidden; flex-shrink: 0; position: relative;">
-                        <img src="{{ $ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300' }}" 
+                        <img src="{{ asset($ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300') }}" 
                              alt="{{ $ad->campaign_name }}" 
                              style="width: 100%; height: 100%; object-fit: cover;">
                         <!-- AD Label -->
@@ -140,7 +140,7 @@
                                 Check Now
                             </a>
                             @if($ad->agent_logo)
-                                <img src="{{ $ad->agent_logo }}" 
+                                <img src="{{ asset($ad->agent_logo) }}" 
                                      alt="{{ $ad->agent_name ?? 'Agent' }}" 
                                      style="height: 40px; max-width: 100px; object-fit: contain; opacity: 0.9; transition: opacity 0.2s;"
                                      onmouseover="this.style.opacity='1'"
@@ -191,7 +191,7 @@
 
                                     {{-- Image fills the fixed container, cover-cropped --}}
                                     @if($sticker->image)
-                                        <img src="{{ $sticker->image }}"
+                                        <img src="{{ asset($sticker->image) }}"
                                              class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105"
                                              style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);"
                                              alt="{{ $sticker->title }}">
@@ -359,7 +359,7 @@
                     @foreach($themes as $theme)
                         <a href="{{ url('/discover?theme=' . urlencode($theme->name)) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer w-full max-w-20 md:max-w-24 lg:max-w-28 mx-auto animate-hover">
                             <div class="w-full aspect-square rounded-lg overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
-                                <img src="{{ $theme->image }}" alt="{{ $theme->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <img src="{{ asset($theme->image) }}" alt="{{ $theme->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             </div>
                             <h4 class="font-semibold text-foreground group-hover:text-primary transition-colors text-xs md:text-sm tracking-tight whitespace-nowrap">
                                 {{ $theme->name }}
@@ -382,7 +382,7 @@
                     @foreach($fallbackThemes as $theme)
                         <a href="{{ url('/discover?theme=' . urlencode($theme['label'])) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer w-full max-w-20 md:max-w-24 lg:max-w-28 mx-auto">
                             <div class="w-full aspect-square rounded-lg overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
-                                <img src="{{ $theme['image'] }}" alt="{{ $theme['label'] }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                <img src="{{ asset($theme['image']) }}" alt="{{ $theme['label'] }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                             </div>
                             <h4 class="font-semibold text-foreground group-hover:text-primary transition-colors text-xs md:text-sm tracking-tight whitespace-nowrap">
                                 {{ $theme['label'] }}
@@ -773,7 +773,7 @@
                                 
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-border-soft/50 mt-auto gap-4">
                                     <div class="flex items-center gap-4">
-                                        <img src="{{ $testi['img'] }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-primary/10">
+                                        <img src="{{ asset($testi['img']) }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-primary/10">
                                         <div class="flex flex-col">
                                             <span class="font-black text-foreground text-sm md:text-base">{{ $testi['name'] }}</span>
                                             <span class="text-[10px] md:text-xs text-text-muted font-bold">{{ $testi['loc'] }}</span>
@@ -869,7 +869,7 @@
             @foreach($footerAds as $ad)
                 <div class="w-full flex justify-center">
                     <a href="{{ route('ad.click', $ad->id) }}" target="_blank" class="block w-full h-[80px] md:h-[100px] lg:h-[120px] bg-gray-100 rounded-[20px] shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex items-center justify-center relative">
-                        <img src="{{ $ad->image }}" alt="{{ $ad->campaign_name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset($ad->image) }}" alt="{{ $ad->campaign_name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500">
                         <span class="absolute top-3 left-3 bg-black/60 text-white font-extrabold uppercase text-[9px] tracking-widest px-2 py-0.5 rounded-md backdrop-blur-xs">AD</span>
                     </a>
                 </div>
