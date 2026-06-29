@@ -1167,13 +1167,31 @@ class AgentController extends Controller
             $itemName = 'Boost Tour Package';
         }
 
+        // Razorpay Order Generation
+        $razorpayOrderId = null;
+        if ($amount > 0) {
+            try {
+                $api = new \Razorpay\Api\Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+                $orderData = [
+                    'receipt'         => 'rcptid_' . time(),
+                    'amount'          => round($amount * 100), // Amount in paise
+                    'currency'        => 'INR'
+                ];
+                $razorpayOrder = $api->order->create($orderData);
+                $razorpayOrderId = $razorpayOrder['id'];
+            } catch (\Exception $e) {
+                \Log::error('Razorpay Error: ' . $e->getMessage());
+            }
+        }
+
         return view('agent.pages.checkout', [
             'page_title' => 'Checkout',
             'page_breadcrumb' => 'Pages / Checkout',
             'type' => $type,
             'id' => $id,
             'amount' => $amount,
-            'itemName' => $itemName
+            'itemName' => $itemName,
+            'razorpayOrderId' => $razorpayOrderId
         ]);
     }
 
@@ -1184,8 +1202,29 @@ class AgentController extends Controller
         $id = $request->input('id');
         $amount = $request->input('amount');
         $itemName = $request->input('item_name');
-        $gateway = $request->input('gateway', 'UPI');
-        $sender = $request->input('sender_details', 'agent@upi');
+
+        // Razorpay Verification
+        $razorpayPaymentId = $request->input('razorpay_payment_id');
+        $razorpayOrderId = $request->input('razorpay_order_id');
+        $razorpaySignature = $request->input('razorpay_signature');
+
+        if ($razorpayPaymentId && $razorpayOrderId && $razorpaySignature) {
+            try {
+                $api = new \Razorpay\Api\Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+                $api->utility->verifyPaymentSignature(array(
+                    'razorpay_order_id' => $razorpayOrderId,
+                    'razorpay_payment_id' => $razorpayPaymentId,
+                    'razorpay_signature' => $razorpaySignature
+                ));
+            } catch(\Exception $e) {
+                return redirect()->route('agent.payment')->with('error', 'Payment verification failed: ' . $e->getMessage());
+            }
+        } else {
+            return redirect()->route('agent.payment')->with('error', 'Invalid payment details. Please try again.');
+        }
+
+        $gateway = 'Razorpay';
+        $sender = $request->input('sender_details', 'Razorpay Checkout');
         $receiver = 'tourraja@upi';
 
         $agent = DB::table('agents')->where('id', $agentId)->first();

@@ -59,6 +59,10 @@
                     <input type="hidden" name="id" value="{{ $id }}">
                     <input type="hidden" name="amount" value="{{ $amount }}">
                     <input type="hidden" name="item_name" value="{{ $itemName }}">
+                    <!-- Razorpay Hidden Fields -->
+                    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+                    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+                    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
                     @if(request()->has('package_id'))
                         <input type="hidden" name="package_id" value="{{ request('package_id') }}">
                     @endif
@@ -108,12 +112,42 @@
                         <i class="fas fa-shield-alt text-[#ea580c] text-2xl opacity-50"></i>
                     </div>
 
-                    <button type="submit" class="w-full py-4 bg-[#ea580c] text-white font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center">
+                    <button type="button" id="rzp-button1" class="w-full py-4 bg-[#ea580c] text-white font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center">
                         <i class="fas fa-lock mr-2"></i> Complete Payment of ₹{{ number_format($amount, 2) }}
                     </button>
                 </form>
             </div>
         </div>
     </div>
+
+    <!-- Razorpay Integration -->
+    @if(isset($razorpayOrderId))
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        var options = {
+            "key": "{{ env('RAZORPAY_KEY_ID') }}",
+            "amount": "{{ round($amount * 100) }}", 
+            "currency": "INR",
+            "name": "Tour Raja",
+            "description": "{{ $itemName }}",
+            "image": "{{ asset('assets/images/logo.png') }}",
+            "order_id": "{{ $razorpayOrderId }}",
+            "handler": function (response){
+                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                document.getElementById('razorpay_signature').value = response.razorpay_signature;
+                document.getElementById('checkoutForm').submit();
+            },
+            "theme": {
+                "color": "#ea580c"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        document.getElementById('rzp-button1').onclick = function(e){
+            rzp1.open();
+            e.preventDefault();
+        }
+    </script>
+    @endif
 
 @endsection
