@@ -164,8 +164,8 @@
     <!-- Toastr JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <!-- Custom JS -->
-    <script src="{{ asset('agent/assets/js/main.js') }}"></script>
-    <script src="{{ asset('agent/assets/js/validation.js') }}"></script>
+    <script src="/agent/assets/js/main.js"></script>
+    <script src="/agent/assets/js/validation.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
