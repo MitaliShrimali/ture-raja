@@ -86,7 +86,7 @@
     if (empty($gallerySlides)) {
         $gallerySlides = $defaultGallery;
     }
-    $gallerySlides = array_values($gallerySlides); // reindex for valid JSON array
+    $gallerySlides = array_map('asset', array_values($gallerySlides)); // apply asset() and reindex for valid JSON array
 @endphp
 @extends('layouts.app')
 
