@@ -125,7 +125,7 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
         var options = {
-            "key": "{{ env('RAZORPAY_KEY_ID') }}",
+            "key": "{{ config('services.razorpay.key') }}",
             "amount": "{{ round($amount * 100) }}", 
             "currency": "INR",
             "name": "Tour Raja",

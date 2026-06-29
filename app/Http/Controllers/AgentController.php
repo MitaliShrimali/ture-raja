@@ -1171,7 +1171,7 @@ class AgentController extends Controller
         $razorpayOrderId = null;
         if ($amount > 0) {
             try {
-                $api = new \Razorpay\Api\Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+                $api = new \Razorpay\Api\Api(config('services.razorpay.key'), config('services.razorpay.secret'));
                 $orderData = [
                     'receipt'         => 'rcptid_' . time(),
                     'amount'          => round($amount * 100), // Amount in paise
@@ -1210,7 +1210,7 @@ class AgentController extends Controller
 
         if ($razorpayPaymentId && $razorpayOrderId && $razorpaySignature) {
             try {
-                $api = new \Razorpay\Api\Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+                $api = new \Razorpay\Api\Api(config('services.razorpay.key'), config('services.razorpay.secret'));
                 $api->utility->verifyPaymentSignature(array(
                     'razorpay_order_id' => $razorpayOrderId,
                     'razorpay_payment_id' => $razorpayPaymentId,
