@@ -467,6 +467,10 @@
                         <span class="text-foreground">{{ $pkg->created_at ? \Carbon\Carbon::parse($pkg->created_at)->format('d M Y') : '—' }}</span>
                     </div>
                     <div class="flex justify-between text-xs font-bold">
+                        <span class="text-muted-text">Expiry Date</span>
+                        <span class="text-foreground">{{ $pkg->expiry_date ? \Carbon\Carbon::parse($pkg->expiry_date)->format('d M Y') : '—' }}</span>
+                    </div>
+                    <div class="flex justify-between text-xs font-bold">
                         <span class="text-muted-text">Status</span>
                         <span class="font-black {{ $pkg->status === 'Active' ? 'text-green-600' : ($pkg->status === 'Pending' ? 'text-orange-600' : 'text-gray-500') }}">{{ $pkg->status }}</span>
                     </div>

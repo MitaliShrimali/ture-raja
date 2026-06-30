@@ -418,6 +418,16 @@ class AdminController extends Controller
         $transfers = $request->input('transfers', []);
         $meals = $request->input('meals', []);
         
+        $expiry_date = null;
+        if (!empty($request->validity) && strpos($request->validity, ' to ') !== false) {
+            $parts = explode(' to ', $request->validity);
+            if (isset($parts[1])) {
+                $expiry_date = date('Y-m-d', strtotime($parts[1]));
+            }
+        } elseif (!empty($request->validity)) {
+            $expiry_date = date('Y-m-d', strtotime($request->validity));
+        }
+
         $agentName = $request->agent ?? 'Miths Holidays';
         $agentDb = DB::table('agents')->where('name', $agentName)->first();
         if ($agentDb) {
@@ -461,6 +471,7 @@ class AdminController extends Controller
             'status' => $request->status ?? 'Active',
             'stock' => $request->stock ?? '10 Left',
             'validity' => $request->validity ?? null,
+            'expiry_date' => $expiry_date,
             'sightseeing' => $request->sightseeing ?? null,
             'agent' => $agentJson,
             'gallery' => json_encode($galleryUrls),
@@ -573,6 +584,16 @@ class AdminController extends Controller
         $transfers = $request->has('transfers') ? $request->input('transfers', []) : ($oldPkg && isset($oldPkg->transfers) ? json_decode($oldPkg->transfers, true) ?: [] : []);
         $meals = $request->has('meals') ? $request->input('meals', []) : ($oldPkg && isset($oldPkg->meals) ? json_decode($oldPkg->meals, true) ?: [] : []);
 
+        $expiry_date = $oldPkg ? $oldPkg->expiry_date : null;
+        if (!empty($request->validity) && strpos($request->validity, ' to ') !== false) {
+            $parts = explode(' to ', $request->validity);
+            if (isset($parts[1])) {
+                $expiry_date = date('Y-m-d', strtotime($parts[1]));
+            }
+        } elseif (!empty($request->validity)) {
+            $expiry_date = date('Y-m-d', strtotime($request->validity));
+        }
+
         // Sightseeing List parsing
         $sightseeing_list = [];
         if ($request->has('sightseeing_list')) {
@@ -658,6 +679,7 @@ class AdminController extends Controller
             'status' => $request->status ?? 'Active',
             'stock' => $request->stock ?? '10 Left',
             'validity' => $request->validity ?? '',
+            'expiry_date' => $expiry_date,
             'sightseeing' => $request->sightseeing ?? '',
             'agent' => $agentJson,
             'gallery' => json_encode($galleryUrls),
@@ -1068,12 +1090,36 @@ class AdminController extends Controller
 
     public function registeredAgents(Request $request)
     {
-        $agents = DB::table('agents')
+        $query = DB::table('agents')
             ->leftJoin('plans', 'agents.plan_id', '=', 'plans.id')
-            ->select('agents.*', 'plans.name as plan_name')
-            ->orderBy('agents.id', 'desc')
-            ->paginate(10);
-        return view('admin.registered-agents', compact('agents'));
+            ->select('agents.*', 'plans.name as plan_name');
+
+        if ($request->filled('guaranteed')) {
+            $query->where('agents.service_guaranteed', $request->guaranteed);
+        }
+
+        if ($request->filled('plan_id')) {
+            $query->where('agents.plan_id', $request->plan_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('agents.status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('agents.name', 'like', "%{$search}%")
+                  ->orWhere('agents.email', 'like', "%{$search}%")
+                  ->orWhere('agents.phone', 'like', "%{$search}%");
+            });
+        }
+
+        $agents = $query->orderBy('agents.id', 'desc')->paginate(10)->withQueryString();
+        
+        $plans = DB::table('plans')->get();
+
+        return view('admin.registered-agents', compact('agents', 'plans'));
     }
 
      public function storeAgent(Request $request)

@@ -185,6 +185,7 @@
     fetchGallery(folderId = null) {
         let url = '/agent/api/gallery';
         if (folderId) url += '?folder=' + folderId;
+        url += (url.includes('?') ? '&' : '?') + '_t=' + new Date().getTime();
         
         fetch(url)
             .then(res => res.json())

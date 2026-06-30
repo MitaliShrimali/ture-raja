@@ -92,7 +92,8 @@
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">AGENT</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">DURATION</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">PRICE</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">STOCK</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">VALID FROM</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">VALID TO</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">STATUS</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">ACTIONS</th>
                     </tr>
@@ -137,7 +138,22 @@
                                 </div>
                             </td>
                             <td class="py-6 px-8 text-sm font-black text-foreground">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price, 2) }}</td>
-                            <td class="py-6 px-8 text-sm font-bold text-orange-500">{{ $pkg->stock }}</td>
+                            @php
+                                $validFrom = 'N/A';
+                                $validTo = 'N/A';
+                                if (!empty($pkg->validity)) {
+                                    if (strpos($pkg->validity, ' to ') !== false) {
+                                        $parts = explode(' to ', $pkg->validity);
+                                        $validFrom = \Carbon\Carbon::parse(trim($parts[0]))->format('M d, Y');
+                                        $validTo = \Carbon\Carbon::parse(trim($parts[1]))->format('M d, Y');
+                                    } else {
+                                        $validFrom = \Carbon\Carbon::parse(trim($pkg->validity))->format('M d, Y');
+                                        $validTo = $validFrom;
+                                    }
+                                }
+                            @endphp
+                            <td class="py-6 px-8 text-sm font-medium text-muted-text">{{ $validFrom }}</td>
+                            <td class="py-6 px-8 text-sm font-medium text-muted-text">{{ $validTo }}</td>
                             <td class="py-6 px-8">
                                 <a href="{{ url('/admin/packages/toggle/' . $pkg->id) }}" class="inline-block">
                                     <span class="px-3 py-1 rounded-full {{ $pkg->status === 'Active' ? 'bg-green-50 text-green-500 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100' }} text-[10px] font-black uppercase tracking-wider transition-all">

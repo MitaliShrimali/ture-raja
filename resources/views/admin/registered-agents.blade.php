@@ -17,26 +17,45 @@
 
     <!-- Existing Agents List -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
-        <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="flex items-center gap-4 text-sm font-bold text-muted-text">
-                <span>Show</span>
-                <select class="bg-gray-50 border-none rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-primary/20">
-                    <option>10</option>
-                    <option>25</option>
-                    <option>50</option>
-                </select>
-                <span>entries</span>
+        <form method="GET" action="{{ url('/admin/registered-agents') }}" class="p-6 border-b border-border-soft flex flex-col gap-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-4 text-sm font-bold text-muted-text">
+                    <select name="guaranteed" class="bg-gray-50 border-none rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 text-sm w-full md:w-auto">
+                        <option value="">Guaranteed</option>
+                        <option value="1" {{ request('guaranteed') == '1' ? 'selected' : '' }}>Yes</option>
+                        <option value="0" {{ request('guaranteed') == '0' ? 'selected' : '' }}>No</option>
+                    </select>
+                    
+                    <select name="plan_id" class="bg-gray-50 border-none rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 text-sm w-full md:w-auto">
+                        <option value="">Plan Type</option>
+                        @foreach($plans ?? [] as $plan)
+                            <option value="{{ $plan->id }}" {{ request('plan_id') == $plan->id ? 'selected' : '' }}>{{ $plan->name }}</option>
+                        @endforeach
+                    </select>
+
+                    <select name="status" class="bg-gray-50 border-none rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-primary/20 text-sm w-full md:w-auto">
+                        <option value="">Status</option>
+                        <option value="Active" {{ request('status') == 'Active' ? 'selected' : '' }}>Active</option>
+                        <option value="Inactive" {{ request('status') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                    </select>
+
+                    <button type="submit" class="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-primary/20 w-full md:w-auto transition-all">Filter</button>
+                    <a href="{{ url('/admin/registered-agents') }}" class="text-muted-text hover:text-primary transition-colors text-sm font-bold px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl w-full md:w-auto text-center">Clear</a>
+                </div>
+                
+                <div class="relative group w-full md:w-80">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
+                    <input 
+                        type="text" 
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Search agents..." 
+                        class="w-full bg-gray-50 border-none rounded-2xl py-3 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
+                    >
+                    <button type="submit" class="hidden"></button>
+                </div>
             </div>
-            
-            <div class="relative group w-full md:w-96">
-                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
-                <input 
-                    type="text" 
-                    placeholder="Search agents..." 
-                    class="w-full bg-gray-50 border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
-                >
-            </div>
-        </div>
+        </form>
 
         <div class="admin-table-container">
             <table class="w-full text-left">

@@ -1,0 +1,1 @@
+<?php require __DIR__ . " /vendor/autoload.php\; \ = require_once __DIR__ . \/bootstrap/app.php\; \ = \->make(Illuminate\Contracts\Console\Kernel::class); \->bootstrap(); \ = \App\Models\AgentMedia::orderBy(\type\)->orderBy(\name\)->get(); \ = \->where(\type\, \folder\)->values(); \ = \->where(\type\, \image\)->values(); echo json_encode([\folders\ => \, \images\ => \]); 
