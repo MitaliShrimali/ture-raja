@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Theme;
+use App\Models\AgentFeedback;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -764,10 +766,56 @@ class AgentController extends Controller
 
     public function feedback()
     {
+        $feedbacks = AgentFeedback::where('agent_id', session('agent_id'))->orderBy('created_at', 'desc')->get();
         return view('agent.pages.feedback', [
             'page_title' => 'Feedback',
-            'page_breadcrumb' => 'Pages / Feedback'
+            'page_breadcrumb' => 'Pages / Feedback',
+            'feedbacks' => $feedbacks
         ]);
+    }
+
+    public function storeFeedback(Request $request)
+    {
+        $request->validate([
+            'customer_name' => 'required',
+            'message' => 'required',
+            'rating' => 'required|integer|min:1|max:5'
+        ]);
+
+        AgentFeedback::create([
+            'agent_id' => session('agent_id'),
+            'customer_name' => $request->customer_name,
+            'rating' => $request->rating,
+            'message' => $request->message
+        ]);
+
+        return redirect()->back()->with('success', 'Feedback added successfully.');
+    }
+
+    public function updateFeedback(Request $request, $id)
+    {
+        $request->validate([
+            'customer_name' => 'required',
+            'message' => 'required',
+            'rating' => 'required|integer|min:1|max:5'
+        ]);
+
+        $feedback = AgentFeedback::where('agent_id', session('agent_id'))->findOrFail($id);
+        $feedback->update([
+            'customer_name' => $request->customer_name,
+            'rating' => $request->rating,
+            'message' => $request->message
+        ]);
+
+        return redirect()->back()->with('success', 'Feedback updated successfully.');
+    }
+
+    public function deleteFeedback($id)
+    {
+        $feedback = AgentFeedback::where('agent_id', session('agent_id'))->findOrFail($id);
+        $feedback->delete();
+
+        return redirect()->back()->with('success', 'Feedback deleted successfully.');
     }
 
     public function gallery(Request $request)

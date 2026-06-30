@@ -349,6 +349,9 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::post('/packages/update', [AgentController::class, 'updatePackage'])->name('packages.update');
     Route::get('/packages/toggle/{id}', [AgentController::class, 'togglePackage'])->name('packages.toggle');
     Route::get('/feedback', [AgentController::class, 'feedback'])->name('feedback');
+    Route::post('/feedback/store', [AgentController::class, 'storeFeedback'])->name('feedback.store');
+    Route::post('/feedback/update/{id}', [AgentController::class, 'updateFeedback'])->name('feedback.update');
+    Route::get('/feedback/delete/{id}', [AgentController::class, 'deleteFeedback'])->name('feedback.delete');
     Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
     Route::get('/api/gallery', [AgentController::class, 'apiGallery'])->name('api.gallery');
     Route::post('/gallery/upload', [AgentController::class, 'uploadMedia'])->name('gallery.upload');
