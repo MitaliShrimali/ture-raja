@@ -350,6 +350,11 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/packages/toggle/{id}', [AgentController::class, 'togglePackage'])->name('packages.toggle');
     Route::get('/feedback', [AgentController::class, 'feedback'])->name('feedback');
     Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
+    Route::get('/api/gallery', [AgentController::class, 'apiGallery'])->name('api.gallery');
+    Route::post('/gallery/upload', [AgentController::class, 'uploadMedia'])->name('gallery.upload');
+    Route::post('/gallery/create-folder', [AgentController::class, 'createFolder'])->name('gallery.create-folder');
+    Route::post('/gallery/move', [AgentController::class, 'moveMedia'])->name('gallery.move');
+    Route::post('/gallery/delete', [AgentController::class, 'deleteMedia'])->name('gallery.delete');
     Route::get('/hotels', [AgentController::class, 'hotels'])->name('hotels');
     Route::post('/hotels/store', [AgentController::class, 'storeHotel'])->name('hotels.store');
     Route::post('/hotels/update', [AgentController::class, 'updateHotel'])->name('hotels.update');

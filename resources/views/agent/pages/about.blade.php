@@ -9,7 +9,7 @@
             <!-- Our Mission -->
             <div class="bg-white p-12 rounded-[48px] shadow-sm border border-gray-100 flex flex-col lg:flex-row items-center gap-12">
                 <div class="w-full lg:w-1/2">
-                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/female-tourist-walking-with-travel-bag-5621458-4682021.png" class="w-full rounded-[32px] bg-blue-50/50 p-8">
+                    <img src="https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&q=80&w=800" class="w-full rounded-[32px] bg-blue-50/50 p-8 object-cover aspect-square">
                 </div>
                 <div class="w-full lg:w-1/2 space-y-6">
                     <h3 class="text-4xl font-bold text-gray-800 tracking-tight">Our Mission</h3>

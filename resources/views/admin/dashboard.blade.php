@@ -43,9 +43,9 @@
                     <h3 class="text-2xl font-black text-foreground">Recent Subscriptions</h3>
                     <p class="text-sm text-muted-text font-medium">Tracking the latest 5 premium activations</p>
                 </div>
-                <button class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
+                <a href="{{ url('/admin/payments') }}" class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
                     View All <i data-lucide="arrow-up-right" size="14"></i>
-                </button>
+                </a>
             </div>
 
             <div class="admin-table-container">
@@ -79,8 +79,20 @@
                                     </span>
                                 </td>
                                 <td class="py-5">
-                                    <div class="flex items-center gap-2 {{ $payment->status === 'Completed' ? 'text-green-500' : ($payment->status === 'Pending' ? 'text-orange-500' : 'text-red-500') }}">
-                                        <i data-lucide="{{ $payment->status === 'Completed' ? 'check-circle-2' : ($payment->status === 'Pending' ? 'clock' : 'x-circle') }}" size="14"></i>
+                                    @php
+                                        $statusClass = 'text-red-500';
+                                        $statusIcon = 'x-circle';
+                                        $lowerStatus = strtolower($payment->status);
+                                        if ($lowerStatus === 'success' || $lowerStatus === 'suss' || $lowerStatus === 'completed') {
+                                            $statusClass = 'text-green-500';
+                                            $statusIcon = 'check-circle-2';
+                                        } elseif ($lowerStatus === 'pending') {
+                                            $statusClass = 'text-orange-500';
+                                            $statusIcon = 'clock';
+                                        }
+                                    @endphp
+                                    <div class="flex items-center gap-2 {{ $statusClass }}">
+                                        <i data-lucide="{{ $statusIcon }}" size="14"></i>
                                         <span class="text-xs font-bold">{{ $payment->status }}</span>
                                     </div>
                                 </td>
@@ -135,91 +147,7 @@
         </div>
     </div>
 
-    <!-- Package Approvals -->
-    <div class="bg-white rounded-[40px] shadow-soft p-10 space-y-6">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <h3 class="text-2xl font-black text-foreground">Package Approvals</h3>
-                @if($pendingPackagesCount > 0)
-                    <span class="text-[10px] font-black text-white px-3 py-1 rounded-full uppercase tracking-wider flex items-center" style="background-color:#af3a03;">
-                        {{ $pendingPackagesCount }} NEW
-                    </span>
-                @endif
-            </div>
-            <a href="{{ url('/admin/packages') }}" class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
-                View All <i data-lucide="arrow-up-right" size="14"></i>
-            </a>
-        </div>
 
-        @if(session('success'))
-            <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-xs flex items-center gap-3">
-                <i data-lucide="check-circle-2" size="16" class="shrink-0"></i>
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
-
-        <div class="space-y-4">
-            @forelse($pendingPackages as $pkg)
-                @php
-                    $agent = json_decode($pkg->agent);
-                    $priceSym = $pkg->price < 10000 ? '$' : '₹';
-                    
-                    // Format time ago to match "14 MIN AGO" style
-                    $timeAgo = $pkg->created_at ? \Carbon\Carbon::parse($pkg->created_at)->diffForHumans() : '';
-                    $timeAgoFormatted = strtoupper(str_replace(
-                        [' minutes ago', ' minute ago', ' hours ago', ' hour ago', ' days ago', ' day ago', ' ago'], 
-                        [' MIN AGO', ' MIN AGO', ' HOURS AGO', ' HOUR AGO', ' DAYS AGO', ' DAY AGO', ' AGO'], 
-                        $timeAgo
-                    ));
-                @endphp
-                <div class="flex items-center justify-between p-6 bg-gray-50/50 rounded-[32px] border border-gray-100 hover:bg-gray-50/80 transition-all">
-                    <div class="flex items-center gap-5">
-                        <!-- Package image -->
-                        <div class="w-16 h-16 rounded-full overflow-hidden shrink-0 bg-gray-100 border border-gray-200/50">
-                            <img src="{{ asset($pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=200') }}"
-                                 alt="{{ $pkg->title }}"
-                                 class="w-full h-full object-cover">
-                        </div>
-                        <!-- Info -->
-                        <div>
-                            <p class="text-base font-bold text-foreground">{{ $pkg->title }}</p>
-                            <p class="text-xs text-muted-text font-medium mt-0.5">
-                                Submitted by: {{ $agent->name ?? 'Wanderlust Pro' }}
-                            </p>
-                            <!-- Action buttons -->
-                            <div class="flex items-center gap-3 mt-3">
-                                <a href="{{ route('admin.package.approve', $pkg->id) }}"
-                                   class="px-5 py-2 rounded-full text-white text-[10px] font-black uppercase tracking-wider transition-all hover:opacity-90 shadow-sm"
-                                   style="background-color:#af3a03;"
-                                   onclick="return confirm('Approve and publish this package?')">
-                                    Approve
-                                </a>
-                                <a href="{{ route('admin.package.decline', $pkg->id) }}"
-                                   class="px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-wider bg-gray-200/60 text-gray-700 hover:bg-gray-200 transition-all"
-                                   onclick="return confirm('Decline this package?')">
-                                    Decline
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Price and Time -->
-                    <div class="text-right shrink-0 ml-4">
-                        <p class="text-lg font-black text-foreground">{{ $priceSym }}{{ number_format($pkg->price, 0) }}</p>
-                        <p class="text-[10px] font-bold text-muted-text tracking-widest mt-1 opacity-80">{{ $timeAgoFormatted }}</p>
-                    </div>
-                </div>
-            @empty
-                <div class="py-12 text-center bg-gray-50/50 rounded-[32px] border border-gray-100">
-                    <div class="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center mx-auto mb-4">
-                        <i data-lucide="check-circle-2" size="28" class="text-green-500"></i>
-                    </div>
-                    <p class="text-sm font-bold text-muted-text">All packages are reviewed!</p>
-                    <p class="text-xs text-muted-text/60 mt-1">No packages pending approval right now.</p>
-                </div>
-            @endforelse
-        </div>
-    </div>
-    </div>
 
 </div>
 @endsection

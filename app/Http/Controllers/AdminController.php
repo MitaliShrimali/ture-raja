@@ -1566,8 +1566,37 @@ class AdminController extends Controller
                 'notes' => "All payments should be made in favor of Tour Raja Private Limited.\nInterest at 18% p.a. will be charged if the bill is not paid by the due date.\nGoods/Services once sold cannot be returned.\nSubject to Noida Jurisdiction only."
             ];
         } else {
-            if ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') {
-                if (isset($invoiceData['services'])) {
+            $defaultData = [
+                'invoice_no' => 'TR-INV-2024-' . str_pad($payment->id, 3, '0', STR_PAD_LEFT),
+                'invoice_date' => \Carbon\Carbon::parse($payment->date)->format('F d, Y'),
+                'due_date' => \Carbon\Carbon::parse($payment->date)->addDays(30)->format('F d, Y'),
+                'customer_name' => $payment->user_name,
+                'customer_address' => "12th Floor, Trade Center, Bandra Kurla Complex\nMumbai, Maharashtra - 400051",
+                'customer_gstin' => '27AABCA1234B1Z2',
+                'customer_phone' => '+91 98765 43210',
+                'customer_email' => $payment->email,
+                'place_of_supply' => 'Uttar Pradesh (09)',
+                'state_code' => '09',
+                'payment_due' => 'Net 30 Days (' . \Carbon\Carbon::parse($payment->date)->addDays(30)->format('M d, Y') . ')',
+                'services' => [],
+                'notes' => "All payments should be made in favor of Tour Raja Private Limited.\nInterest at 18% p.a. will be charged if the bill is not paid by the due date.\nGoods/Services once sold cannot be returned.\nSubject to Noida Jurisdiction only."
+            ];
+            $invoiceData = array_merge($defaultData, $invoiceData);
+
+            if (empty($invoiceData['services'])) {
+                $price = ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') ? 0 : $payment->amount;
+                $invoiceData['services'] = [
+                    [
+                        'name' => $payment->plan_type,
+                        'description' => 'Subscription package fee for ' . $payment->plan_type,
+                        'sac_hsn' => '998522',
+                        'qty' => 1,
+                        'price' => $price,
+                        'total' => $price
+                    ]
+                ];
+            } else {
+                if ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') {
                     foreach ($invoiceData['services'] as &$svc) {
                         $svc['price'] = 0;
                         $svc['total'] = 0;

@@ -198,6 +198,50 @@
     },
     removeGalleryPhoto(index) {
         this.galleryPreviews.splice(index, 1);
+    },
+    // Gallery Modal State
+    isGalleryModalOpen: false,
+    galleryModalType: 'main', // 'main' or 'gallery'
+    currentGalleryFolder: null,
+    galleryBreadcrumbs: [],
+    galleryFolders: [],
+    galleryImages: [],
+    
+    openGalleryModal(type) {
+        this.galleryModalType = type;
+        this.isGalleryModalOpen = true;
+        this.fetchGallery();
+    },
+    closeGalleryModal() {
+        this.isGalleryModalOpen = false;
+    },
+    fetchGallery(folderId = null) {
+        let url = '/agent/api/gallery';
+        if (folderId) url += '?folder=' + folderId;
+        
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                this.galleryFolders = data.folders;
+                this.galleryImages = data.images;
+                this.galleryBreadcrumbs = data.breadcrumbs;
+                this.currentGalleryFolder = folderId;
+            });
+    },
+    selectGalleryImage(image) {
+        if (this.galleryModalType === 'main') {
+            this.previewUrl = '/' + image.file_path;
+            const input = document.getElementById('image_url');
+            if (input) input.value = '/' + image.file_path;
+        } else {
+            this.galleryPreviews.push({
+                url: '/' + image.file_path,
+                name: image.name,
+                is_gallery: true,
+                path: '/' + image.file_path
+            });
+        }
+        this.closeGalleryModal();
     }
 }">
     <!-- Custom Style Tags for Step Track and Segmented Controls -->
@@ -978,10 +1022,15 @@
                             </template>
                         </div>
                         <div class="flex items-center gap-3">
-                            <button type="button" class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs" @click="$refs.mainImageInput.click()">
+                            <button type="button" class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs shadow-sm transition-all" @click="$refs.mainImageInput.click()">
                                 Choose File
                             </button>
-                            <input type="file" name="image_file" x-ref="mainImageInput" class="hidden" accept="image/*" @change="previewUrl = URL.createObjectURL($event.target.files[0])" />
+                            <input type="file" name="image_file" x-ref="mainImageInput" class="hidden" accept="image/*" @change="previewUrl = URL.createObjectURL($event.target.files[0]); document.getElementById('image_url').value = '';" />
+                            <div class="text-[10px] text-gray-400 font-bold text-center">OR</div>
+                            <button type="button" class="px-4 py-2 bg-orange-50 hover:bg-orange-100 text-primary border border-orange-200 rounded-xl font-bold text-xs shadow-sm transition-all" @click="openGalleryModal('main')">
+                                Choose from Gallery
+                            </button>
+                            <input type="hidden" name="image_url" id="image_url" />
                             <span class="text-xs text-gray-400 font-bold" x-text="previewUrl ? 'Image Selected' : 'No file chosen'"></span>
                         </div>
                     </div>
@@ -994,6 +1043,9 @@
                             <template x-for="(img, idx) in galleryPreviews" :key="idx">
                                 <div class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100">
                                     <img :src="img.url" class="w-full h-full object-cover" />
+                                    <template x-if="img.is_gallery">
+                                        <input type="hidden" name="gallery_urls[]" :value="img.path" />
+                                    </template>
                                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                         <button type="button" @click="removeGalleryPhoto(idx)" class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
                                             <i data-lucide="trash-2" size="14"></i>
@@ -1007,6 +1059,10 @@
                                 <span class="text-xs font-bold text-gray-800">Add More</span>
                                 <span class="text-[9px] text-gray-400 font-semibold mt-1">Upload multiple photos</span>
                                 <input type="file" name="gallery_files[]" x-ref="galleryFilesInput" multiple class="hidden" accept="image/*" @change="handleGalleryChange($event)" />
+                            </div>
+                            <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-orange-200 hover:border-primary/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-orange-50/30 hover:bg-orange-50/60" @click="openGalleryModal('gallery')">
+                                <i data-lucide="image" class="text-primary mb-1" size="20"></i>
+                                <span class="text-xs font-bold text-primary text-center">From<br>Gallery</span>
                             </div>
                         </div>
                     </div>
@@ -1032,6 +1088,57 @@
             </div>
         </div>
     </form>
+
+    <!-- Gallery Selection Modal -->
+    <div x-show="isGalleryModalOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white rounded-[32px] w-full max-w-4xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden" @click.away="closeGalleryModal()">
+            <div class="flex items-center justify-between p-6 border-b border-gray-100">
+                <h3 class="text-lg font-black text-gray-800">Select Image from Gallery</h3>
+                <button type="button" @click="closeGalleryModal()" class="text-gray-400 hover:text-red-500 transition-colors">
+                    <i data-lucide="x" size="24"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+                <button type="button" @click="fetchGallery()" class="text-sm font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-1">
+                    <i data-lucide="home" size="16"></i> Home
+                </button>
+                <template x-for="(crumb, idx) in galleryBreadcrumbs" :key="idx">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="chevron-right" size="14" class="text-gray-400"></i>
+                        <button type="button" @click="fetchGallery(crumb.id)" class="text-sm font-bold text-gray-500 hover:text-primary transition-colors" x-text="crumb.name"></button>
+                    </div>
+                </template>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6 bg-white">
+                <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                    <template x-for="folder in galleryFolders" :key="folder.id">
+                        <div class="group cursor-pointer" @click="fetchGallery(folder.id)">
+                            <div class="aspect-square bg-gray-50 rounded-2xl border border-gray-100 flex flex-col items-center justify-center hover:bg-orange-50 hover:border-orange-200 transition-all">
+                                <i data-lucide="folder" size="32" class="text-yellow-400 mb-2"></i>
+                                <span class="text-xs font-bold text-gray-700 truncate w-full text-center px-2" x-text="folder.name"></span>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template x-for="img in galleryImages" :key="img.id">
+                        <div class="group cursor-pointer relative aspect-square rounded-2xl overflow-hidden border border-gray-100 hover:border-primary transition-all" @click="selectGalleryImage(img)">
+                            <img :src="'/' + img.file_path" class="w-full h-full object-cover" />
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <span class="px-3 py-1 bg-white rounded-full text-xs font-bold text-gray-800">Select</span>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <div x-show="galleryFolders.length === 0 && galleryImages.length === 0" class="col-span-full py-12 text-center text-gray-400">
+                        <i data-lucide="image" size="48" class="mx-auto mb-3 opacity-20"></i>
+                        <p class="text-sm font-bold">This folder is empty.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>

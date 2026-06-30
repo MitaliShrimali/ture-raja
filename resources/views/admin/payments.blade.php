@@ -16,11 +16,31 @@
             <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
                 <i data-lucide="plus" size="20"></i> Add Payment
             </button>
-            <a href="{{ url('/admin/reports/payments/download') }}" class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">
-                <i data-lucide="download" size="20"></i> Export Reports
-            </a>
+            <button onclick="window.print()" class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3 print:hidden">
+                <i data-lucide="download" size="20"></i> Download PDF
+            </button>
         </div>
     </div>
+
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-section, .print-section * {
+                visibility: visible;
+            }
+            .print-section {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .print\:hidden {
+                display: none !important;
+            }
+        }
+    </style>
 
     <!-- Financial Overview Metrics -->
     @php
@@ -60,7 +80,7 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
+    <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden print-section">
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
             <h3 class="text-xl font-black">Transaction History</h3>
         </div>
@@ -77,7 +97,7 @@
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">AMOUNT</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">SERVICE GUARANTEED</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">STATUS</th>
-                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">ACTIONS</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-right print:hidden">ACTIONS</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border-soft">
@@ -130,7 +150,7 @@
                                     {{ $tx->status }}
                                 </span>
                             </td>
-                            <td class="py-6 px-8 text-right">
+                            <td class="py-6 px-8 text-right print:hidden">
                                 <div class="flex items-center justify-end gap-2">
                                     <button 
                                         @click="showEditModal = true; editTx = { id: '{{ $tx->id }}', user_name: '{{ addslashes($tx->user_name) }}', email: '{{ addslashes($tx->email) }}', plan_type: '{{ $tx->plan_type }}', amount: '{{ $tx->amount }}', payment_id: '{{ $tx->payment_id }}', date: '{{ $tx->date }}', status: '{{ $tx->status }}', service_guaranteed: '{{ $tx->service_guaranteed }}' }"

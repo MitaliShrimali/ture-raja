@@ -188,7 +188,7 @@
             
             <div class="flex items-center justify-end gap-4 pt-4 border-t border-gray-100">
                 <button type="button" @click="editMode = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                <button type="submit" class="px-6 py-3 bg-[#D35400] text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-orange-500/20 hover:bg-[#b84500] transition-all">Save Changes</button>
+                <button type="submit" style="background-color: #D35400 !important;" class="px-6 py-3 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-orange-500/20 transition-all hover:opacity-90">Save Changes</button>
             </div>
         </form>
     </div>
