@@ -145,7 +145,7 @@
         x-transition:leave-end="opacity-0 scale-95"
         style="display: none;"
     >
-        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
+        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-3xl w-full mx-auto overflow-y-auto max-h-[90vh] p-6 md:p-10 space-y-8">
             <div class="flex items-center justify-between border-b border-border-soft pb-4">
                 <div class="space-y-1">
                     <h3 class="text-xl font-black text-foreground">Create New Campaign</h3>
@@ -156,8 +156,32 @@
                 </button>
             </div>
             
-            <form action="{{ url('/admin/ads/store') }}" method="POST" class="space-y-6">
+            <form action="{{ url('/admin/ads/store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @csrf
+                
+                <!-- Full width image upload zone -->
+                <div class="col-span-1 md:col-span-2 space-y-2" x-data="{ imagePreview: null }">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Image Upload <span class="text-primary">*</span></label>
+                    <div class="relative w-full border-2 border-dashed border-border-soft hover:border-primary/50 rounded-2xl p-8 transition-colors bg-gray-50 flex flex-col items-center justify-center gap-3 text-center cursor-pointer group overflow-hidden" :class="imagePreview ? 'border-primary/50' : ''">
+                        
+                        <!-- Preview Image -->
+                        <img x-show="imagePreview" :src="imagePreview" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-20 transition-opacity" style="display: none;" />
+                        
+                        <div class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-primary group-hover:scale-110 transition-transform relative z-10">
+                            <i data-lucide="upload-cloud" size="24"></i>
+                        </div>
+                        <input type="file" name="image_file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" 
+                               @change="if($event.target.files.length) imagePreview = URL.createObjectURL($event.target.files[0]); else imagePreview = null" />
+                        <div class="relative z-10">
+                            <span class="text-sm font-bold text-foreground block" x-text="imagePreview ? 'Click or drag to replace image' : 'Click or drag image to upload'"></span>
+                            <p class="text-[10px] text-muted-text font-bold mt-1 flex items-center justify-center gap-1">
+                                <i data-lucide="image" size="12"></i> Suggested size: 
+                                <span x-text="addPosition === 'Home Hero' ? '1920x600px' : (addPosition === 'Package Sidebar' ? '1200x200px' : '1200x200px')"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Campaign Name<span class="text-primary">*</span></label>
                     <input required type="text" name="campaign_name" placeholder="E.g. Summer Expedition Promo" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
@@ -187,8 +211,9 @@
                         @endforeach
                     </select>
                 </div>
+
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Image URL</label>
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Or Ad Image URL</label>
                     <input type="text" name="image" placeholder="E.g. https://images.unsplash.com/..." class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                 </div>
                 <div class="space-y-2">
@@ -203,7 +228,7 @@
                     </select>
                 </div>
                 
-                <div class="flex items-center justify-end gap-4 pt-4">
+                <div class="col-span-1 md:col-span-2 flex items-center justify-end gap-4 pt-4 border-t border-border-soft">
                     <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
                     <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Campaign</button>
                 </div>
@@ -223,7 +248,7 @@
         x-transition:leave-end="opacity-0 scale-95"
         style="display: none;"
     >
-        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-10 space-y-8">
+        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-3xl w-full mx-auto overflow-y-auto max-h-[90vh] p-6 md:p-10 space-y-8">
             <div class="flex items-center justify-between border-b border-border-soft pb-4">
                 <div class="space-y-1">
                     <h3 class="text-xl font-black text-foreground">Edit Campaign</h3>
@@ -234,9 +259,35 @@
                 </button>
             </div>
             
-            <form action="{{ url('/admin/ads/update') }}" method="POST" class="space-y-6">
+            <form action="{{ url('/admin/ads/update') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @csrf
                 <input type="hidden" name="id" x-model="editAd.id" />
+
+                <!-- Full width image upload zone -->
+                <div class="col-span-1 md:col-span-2 space-y-2" x-data="{ imagePreview: null }">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Upload New Image (Overrides URL)</label>
+                    <div class="relative w-full border-2 border-dashed border-border-soft hover:border-primary/50 rounded-2xl p-8 transition-colors bg-gray-50 flex flex-col items-center justify-center gap-3 text-center cursor-pointer group overflow-hidden" :class="(imagePreview || editAd.image) ? 'border-primary/50' : ''">
+                        
+                        <!-- Preview Image -->
+                        <template x-if="imagePreview || editAd.image">
+                            <img :src="imagePreview || (editAd.image.startsWith('http') ? editAd.image : '/' + editAd.image)" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-20 transition-opacity" />
+                        </template>
+                        
+                        <div class="w-12 h-12 bg-white rounded-full shadow-sm flex items-center justify-center text-primary group-hover:scale-110 transition-transform relative z-10">
+                            <i data-lucide="upload-cloud" size="24"></i>
+                        </div>
+                        <input type="file" name="image_file" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" 
+                               @change="if($event.target.files.length) imagePreview = URL.createObjectURL($event.target.files[0]); else imagePreview = null" />
+                        <div class="relative z-10">
+                            <span class="text-sm font-bold text-foreground block" x-text="(imagePreview || editAd.image) ? 'Click or drag to replace image' : 'Click or drag image to upload'"></span>
+                            <p class="text-[10px] text-muted-text font-bold mt-1 flex items-center justify-center gap-1">
+                                <i data-lucide="image" size="12"></i> Suggested size: 
+                                <span x-text="editAd.position === 'Home Hero' ? '1920x600px' : (editAd.position === 'Package Sidebar' ? '1200x200px' : '1200x200px')"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Campaign Name<span class="text-primary">*</span></label>
                     <input required type="text" name="campaign_name" x-model="editAd.campaign_name" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
@@ -267,7 +318,7 @@
                     </select>
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Image URL</label>
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Current Ad Image URL</label>
                     <input type="text" name="image" x-model="editAd.image" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                 </div>
                 <div class="space-y-2">
@@ -282,9 +333,9 @@
                     </select>
                 </div>
                 
-                <div class="flex items-center justify-end gap-4 pt-4">
+                <div class="col-span-1 md:col-span-2 flex items-center justify-end gap-4 pt-4 border-t border-border-soft">
                     <button type="button" @click="showEditModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Changes</button>
+                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Update Campaign</button>
                 </div>
             </form>
         </div>

@@ -1598,8 +1598,13 @@ class AdminController extends Controller
         }
 
         $query = DB::table('payments')
-            ->leftJoin('agents', 'payments.email', '=', 'agents.email')
-            ->select('payments.*', 'agents.service_guaranteed');
+            ->select('payments.*')
+            ->addSelect([
+                'service_guaranteed' => DB::table('agents')
+                    ->select('service_guaranteed')
+                    ->whereColumn('agents.email', 'payments.email')
+                    ->limit(1)
+            ]);
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -1619,7 +1624,13 @@ class AdminController extends Controller
         }
 
         if ($request->filled('service_guaranteed')) {
-            $query->where('agents.service_guaranteed', $request->service_guaranteed);
+            // Since we are using a subquery for service_guaranteed, filtering requires a whereExists or similar
+            $query->whereExists(function ($q) use ($request) {
+                $q->select(DB::raw(1))
+                  ->from('agents')
+                  ->whereColumn('agents.email', 'payments.email')
+                  ->where('service_guaranteed', $request->service_guaranteed);
+            });
         }
 
         if ($request->filled('generate_bill')) {
@@ -1644,8 +1655,13 @@ class AdminController extends Controller
         }
 
         $payment = DB::table('payments')
-            ->leftJoin('agents', 'payments.email', '=', 'agents.email')
-            ->select('payments.*', 'agents.service_guaranteed')
+            ->select('payments.*')
+            ->addSelect([
+                'service_guaranteed' => DB::table('agents')
+                    ->select('service_guaranteed')
+                    ->whereColumn('agents.email', 'payments.email')
+                    ->limit(1)
+            ])
             ->where('payments.id', $id)
             ->first();
 
@@ -1884,10 +1900,18 @@ class AdminController extends Controller
     {
         $request->validate(['campaign_name' => 'required', 'position' => 'required']);
         
+        $imagePath = $request->image;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/ads'), $filename);
+            $imagePath = 'uploads/ads/' . $filename;
+        }
+
         DB::table('ads')->insert([
             'campaign_name' => $request->campaign_name,
             'position' => $request->position,
-            'image' => $request->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
+            'image' => $imagePath ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
             'link' => $request->link ?? '/discover',
             'subtitle' => $request->subtitle,
             'agent_id' => $request->agent_id,
@@ -1905,10 +1929,18 @@ class AdminController extends Controller
     {
         $request->validate(['id' => 'required', 'campaign_name' => 'required']);
         
+        $imagePath = $request->image;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/ads'), $filename);
+            $imagePath = 'uploads/ads/' . $filename;
+        }
+
         DB::table('ads')->where('id', $request->id)->update([
             'campaign_name' => $request->campaign_name,
             'position' => $request->position,
-            'image' => $request->image,
+            'image' => $imagePath,
             'link' => $request->link,
             'subtitle' => $request->subtitle,
             'agent_id' => $request->agent_id,
@@ -2053,15 +2085,6 @@ class AdminController extends Controller
         
         $subscribedAgents = DB::table('agents')
             ->where('plan_id', $plan->id)
-            ->orWhere(function($q) use ($nameLower) {
-                if (str_contains($nameLower, 'premium')) {
-                    $q->where('tier', 'Premium');
-                } elseif (str_contains($nameLower, 'enterprise')) {
-                    $q->where('tier', 'Enterprise');
-                } elseif (str_contains($nameLower, 'standard') || str_contains($nameLower, 'basic')) {
-                    $q->where('tier', 'Standard')->orWhere('tier', 'Basic')->orWhereNull('plan_id');
-                }
-            })
             ->get();
 
         return view('admin.plans-preview', compact('plan', 'subscribedAgents'));

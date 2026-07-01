@@ -179,9 +179,7 @@
                 </button>
                 
                 <!-- Cards Track -->
-                <div id="promo-slider" class="flex-1 overflow-x-auto hide-scrollbar z-10 relative scroll-smooth snap-x snap-mandatory">
-                    <div class="flex gap-4 md:gap-6 min-w-max items-center justify-start">
-
+                <div id="promo-slider" class="flex-1 min-w-0 flex gap-4 md:gap-6 items-center justify-start overflow-x-auto hide-scrollbar z-10 relative scroll-smooth snap-x snap-mandatory pb-4">
                         @if(isset($offerStickers) && $offerStickers->count() > 0)
                             {{-- Dynamic stickers from admin --}}
                             @foreach($offerStickers as $sticker)
@@ -287,8 +285,6 @@
                                 </div>
                             </a>
                         @endif
-
-                    </div>
                 </div>
 
                 <!-- Next Button -->

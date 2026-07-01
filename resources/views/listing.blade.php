@@ -220,44 +220,7 @@
 
                 <x-filter-sidebar />
 
-                @if(isset($sidebarAds) && $sidebarAds->count() > 0)
-                <div class="mt-8 space-y-6">
-                    <div class="border-t border-gray-100 pt-6">
-                        <h4 class="text-[10px] font-black text-muted-text uppercase tracking-widest mb-4">Sponsored Deals</h4>
-                        <div class="space-y-4">
-                            @foreach($sidebarAds as $ad)
-                                <div class="bg-white rounded-3xl border border-gray-100 p-4 shadow-sm relative group hover:shadow-md transition-shadow">
-                                    <div class="relative w-full h-32 rounded-2xl overflow-hidden mb-3">
-                                        <img src="{{ asset($ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300') }}" 
-                                             alt="{{ $ad->campaign_name }}" 
-                                             class="w-full h-full object-cover">
-                                        <span class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[8px] tracking-widest px-1.5 py-0.5 rounded-md backdrop-blur-xs">AD</span>
-                                    </div>
-                                    <div class="space-y-1">
-                                        @if($ad->subtitle)
-                                            <p class="text-[9px] font-black text-gray-400 uppercase tracking-wider mb-0.5 truncate">{{ $ad->subtitle }}</p>
-                                        @endif
-                                        <h5 class="font-extrabold text-foreground text-xs leading-snug line-clamp-2">
-                                            {{ $ad->campaign_name }}
-                                        </h5>
-                                        <div class="flex items-center justify-between pt-2 mt-2 border-t border-gray-50">
-                                            <a href="{{ route('ad.click', $ad->id) }}" target="_blank"
-                                               class="bg-[#4c75d4] hover:bg-[#3b62c2] text-white px-3.5 py-2 rounded-xl text-[9px] font-bold transition-all shadow-md shadow-[#4c75d4]/10">
-                                                Check Now
-                                            </a>
-                                            @if($ad->agent_logo)
-                                                <img src="{{ asset($ad->agent_logo) }}" 
-                                                     alt="{{ $ad->agent_name ?? 'Agent' }}" 
-                                                     class="h-6 max-w-[80px] object-contain opacity-80">
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-                @endif
+
                 
                 <div class="mt-8 lg:hidden">
                     <button type="submit" @click="mobileFiltersOpen = false" class="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-2xl font-bold transition-all shadow-lg shadow-primary/20">
@@ -402,10 +365,36 @@
 
                 <!-- Grid -->
                 <div id="packages-list-container" :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'">
+                    @php $adIndex = 0; @endphp
                     @forelse($packages as $index => $pkg)
                         <div class="package-item {{ $index >= 6 ? 'hidden' : '' }}" :class="viewStyle === 'list' ? 'list-view-wrapper' : ''">
                             <x-package-card :pkg="$pkg" />
                         </div>
+
+                        {{-- 6-3-3 Pattern (6, 3, 3, 6, 3, 3...) for Ads --}}
+                        @php
+                            $showAd = false;
+                            $localIndex = $index % 12;
+                            if ($localIndex == 5 || $localIndex == 8 || $localIndex == 11) {
+                                $showAd = true;
+                            }
+                        @endphp
+
+                        @if($showAd && isset($sidebarAds) && $sidebarAds->count() > $adIndex)
+                            @php
+                                $inlineAd = $sidebarAds[$adIndex];
+                                $adIndex++;
+                            @endphp
+                            @if(!empty($inlineAd->image))
+                                <div class="col-span-full package-item {{ $index >= 6 ? 'hidden' : '' }} w-full rounded-2xl overflow-hidden shadow-sm relative group transition-all" style="display: flex; justify-content: center; align-items: center; background: transparent;">
+                                    <a href="{{ route('ad.click', $inlineAd->id) }}" target="_blank" class="block w-full relative">
+                                        <img src="{{ asset($inlineAd->image) }}" alt="{{ $inlineAd->campaign_name }}" class="w-full h-auto object-contain rounded-2xl">
+                                        <span class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[10px] tracking-widest px-2 py-1 rounded-md backdrop-blur-xs">AD</span>
+                                    </a>
+                                </div>
+                            @endif
+                        @endif
+
                     @empty
                         <div class="col-span-full py-20 text-center space-y-4">
                             <h4 class="text-2xl font-bold">No packages found</h4>

@@ -437,8 +437,34 @@
     <div class="bg-[#FAFAFA] py-12">
         <div class="container-custom">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                @forelse($packages as $pkg)
+                @php $adIndex = 0; @endphp
+                @forelse($packages as $index => $pkg)
                     <x-package-card :pkg="$pkg" :hideAgent="true" />
+                    
+                    {{-- 6-3-3 Pattern (6, 3, 3, 6, 3, 3...) for Ads --}}
+                    @php
+                        $showAd = false;
+                        $localIndex = $index % 12;
+                        if ($localIndex == 5 || $localIndex == 8 || $localIndex == 11) {
+                            $showAd = true;
+                        }
+                    @endphp
+
+                    @if($showAd && isset($sidebarAds) && $sidebarAds->count() > $adIndex)
+                        @php
+                            $inlineAd = $sidebarAds[$adIndex];
+                            $adIndex++;
+                        @endphp
+                        @if(!empty($inlineAd->image))
+                            <div class="col-span-full w-full rounded-2xl overflow-hidden shadow-sm relative group transition-all" style="display: flex; justify-content: center; align-items: center; background: transparent;">
+                                <a href="{{ route('ad.click', $inlineAd->id) }}" target="_blank" class="block w-full relative">
+                                    <img src="{{ asset($inlineAd->image) }}" alt="{{ $inlineAd->campaign_name }}" class="w-full h-auto object-contain rounded-2xl">
+                                    <span class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[10px] tracking-widest px-2 py-1 rounded-md backdrop-blur-xs">AD</span>
+                                </a>
+                            </div>
+                        @endif
+                    @endif
+
                 @empty
                     <div class="col-span-full py-16 text-center">
                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
