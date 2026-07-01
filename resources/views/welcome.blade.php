@@ -174,7 +174,7 @@
                 </div>
 
                 <!-- Prev Button -->
-                <button id="prev-promo" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 mr-2 md:mr-6">
+                <button id="prev-promo" onclick="document.getElementById('promo-slider').scrollBy({ left: -344, behavior: 'smooth' })" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 mr-2 md:mr-6">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
                 </button>
                 
@@ -288,7 +288,7 @@
                 </div>
 
                 <!-- Next Button -->
-                <button id="next-promo" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 ml-2 md:ml-6">
+                <button id="next-promo" onclick="document.getElementById('promo-slider').scrollBy({ left: 344, behavior: 'smooth' })" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 ml-2 md:ml-6">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
                 </button>
             </div>
@@ -943,28 +943,50 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // ── Sliders ──────────────────────────────────────────────
-            const setupSlider = (sliderId, prevBtnId, nextBtnId, scrollAmount = 400, autoSwipe = true) => {
+            const setupSlider = (sliderId, prevBtnId, nextBtnId, fallbackScroll = 340, autoSwipe = true) => {
                 const slider = document.getElementById(sliderId);
                 const prevBtn = document.getElementById(prevBtnId);
                 const nextBtn = document.getElementById(nextBtnId);
+
                 if (!slider) return;
                 
+                const getScrollAmount = () => {
+                    const firstChild = slider.firstElementChild;
+                    if (firstChild) {
+                        const gap = parseFloat(window.getComputedStyle(slider).gap) || 0;
+                        return firstChild.offsetWidth + gap;
+                    }
+                    return fallbackScroll;
+                };
+
                 const moveNext = () => {
-                    if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
+                    const maxScroll = slider.scrollWidth - slider.clientWidth;
+                    if (maxScroll <= 5) return; // No scrolling needed
+                    
+                    if (slider.scrollLeft >= maxScroll - 10) {
                         slider.scrollTo({ left: 0, behavior: 'smooth' });
                     } else {
-                        slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                        slider.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+                    }
+                };
+
+                const movePrev = () => {
+                    if (slider.scrollLeft <= 10) {
+                        const maxScroll = slider.scrollWidth - slider.clientWidth;
+                        slider.scrollTo({ left: maxScroll, behavior: 'smooth' });
+                    } else {
+                        slider.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
                     }
                 };
 
                 if (nextBtn) nextBtn.addEventListener('click', moveNext);
-                if (prevBtn) prevBtn.addEventListener('click', () => slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' }));
+                if (prevBtn) prevBtn.addEventListener('click', movePrev);
 
                 if (autoSwipe) {
-                    let interval = setInterval(moveNext, 1500);
+                    let interval = setInterval(moveNext, 2500);
                     const resetInterval = () => {
                         clearInterval(interval);
-                        interval = setInterval(moveNext, 1500);
+                        interval = setInterval(moveNext, 2500);
                     };
                     slider.addEventListener('mouseenter', () => clearInterval(interval));
                     slider.addEventListener('mouseleave', resetInterval);
@@ -973,14 +995,15 @@
                     slider.addEventListener('scroll', () => {
                         clearTimeout(slider.scrollTimeout);
                         clearInterval(interval);
-                        slider.scrollTimeout = setTimeout(resetInterval, 1500);
+                        slider.scrollTimeout = setTimeout(resetInterval, 2500);
                     }, {passive: true});
                 }
             };
+            
             // 350px width + 24px gap = 374
             setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, true);
             setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, true);
-            setupSlider('promo-slider', 'prev-promo', 'next-promo', 320, false);
+            setupSlider('promo-slider', 'prev-promo', 'next-promo', 360, false);
 
             // ── Close dropdowns when clicking outside ─────────────────
             document.addEventListener('click', (e) => {
