@@ -1085,7 +1085,8 @@ class AdminController extends Controller
     public function agents(Request $request)
     {
         $agents = DB::table('agents')->orderBy('id', 'desc')->get();
-        return view('admin.agents', compact('agents'));
+        $plans = DB::table('plans')->get();
+        return view('admin.agents', compact('agents', 'plans'));
     }
 
     public function registeredAgents(Request $request)
@@ -1094,19 +1095,27 @@ class AdminController extends Controller
             ->leftJoin('plans', 'agents.plan_id', '=', 'plans.id')
             ->select('agents.*', 'plans.name as plan_name');
 
-        if ($request->filled('guaranteed')) {
+        if ($request->has('guaranteed') && $request->input('guaranteed') !== null && $request->input('guaranteed') !== '') {
             $query->where('agents.service_guaranteed', $request->guaranteed);
         }
 
-        if ($request->filled('plan_id')) {
-            $query->where('agents.plan_id', $request->plan_id);
+        if ($request->has('plan_id') && $request->input('plan_id') !== null && $request->input('plan_id') !== '') {
+            $selectedPlan = DB::table('plans')->where('id', $request->plan_id)->first();
+            if ($selectedPlan && strtolower($selectedPlan->name) === 'basic') {
+                $query->where(function($q) use ($request) {
+                    $q->where('agents.plan_id', $request->plan_id)
+                      ->orWhereNull('agents.plan_id');
+                });
+            } else {
+                $query->where('agents.plan_id', $request->plan_id);
+            }
         }
 
-        if ($request->filled('status')) {
+        if ($request->has('status') && $request->input('status') !== null && $request->input('status') !== '') {
             $query->where('agents.status', $request->status);
         }
 
-        if ($request->filled('search')) {
+        if ($request->has('search') && $request->input('search') !== null && $request->input('search') !== '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('agents.name', 'like', "%{$search}%")
@@ -1138,6 +1147,14 @@ class AdminController extends Controller
              $logoUrl = '/uploads/agents/' . $fileName;
          }
          
+         $plan_id = null;
+         if ($request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
+             $planRecord = DB::table('plans')->where('name', $request->custom_plan_tier)->first();
+             if ($planRecord) {
+                 $plan_id = $planRecord->id;
+             }
+         }
+
          DB::table('agents')->insert([
              'name' => $request->name,
              'logo' => $logoUrl,
@@ -1159,6 +1176,7 @@ class AdminController extends Controller
              'website' => $request->website,
              'region' => $request->region ?? 'Asia Pacific',
              'tier' => $request->tier ?? 'Premium',
+             'plan_id' => $plan_id,
              'status' => $request->status ?? 'Active',
              'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
              'generate_bill' => $request->has('generate_bill') ? true : false,
@@ -1169,16 +1187,22 @@ class AdminController extends Controller
              'updated_at' => now(),
          ]);
  
+
          return redirect('/admin/registered-agents')->with('success', 'New Travel Agent onboarded successfully!');
      }
  
      public function editAgent($id)
      {
-         $agent = DB::table('agents')->where('id', $id)->first();
+         $agent = DB::table('agents')
+             ->leftJoin('plans', 'agents.plan_id', '=', 'plans.id')
+             ->select('agents.*', 'plans.name as plan_name')
+             ->where('agents.id', $id)
+             ->first();
          if (!$agent) {
              return redirect()->back()->with('error', 'Agent not found.');
          }
-         return view('admin.agents-edit', compact('agent'));
+         $plans = DB::table('plans')->where('status', 'Active')->get();
+         return view('admin.agents-edit', compact('agent', 'plans'));
      }
 
      public function agentProfile($id)
@@ -1235,6 +1259,14 @@ class AdminController extends Controller
              $logoUrl = '/uploads/agents/' . $fileName;
          }
  
+         $plan_id = null;
+         if ($request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
+             $planRecord = DB::table('plans')->where('name', $request->custom_plan_tier)->first();
+             if ($planRecord) {
+                 $plan_id = $planRecord->id;
+             }
+         }
+
          DB::table('agents')->where('id', $request->id)->update([
              'name' => $request->name,
              'logo' => $logoUrl,
@@ -1256,6 +1288,7 @@ class AdminController extends Controller
              'website' => $request->website,
              'region' => $request->region ?? 'Asia Pacific',
              'tier' => $request->tier ?? 'Premium',
+             'plan_id' => ($request->tier === 'Customise' && $plan_id) ? $plan_id : DB::raw('plan_id'),
              'status' => $request->status ?? 'Active',
              'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
              'generate_bill' => $request->has('generate_bill') ? true : false,
@@ -1264,7 +1297,7 @@ class AdminController extends Controller
              'approved' => $request->approved ?? 0,
              'updated_at' => now(),
          ]);
- 
+
          return redirect('/admin/registered-agents')->with('success', 'Travel Agent updated successfully!');
      }
  
@@ -1520,41 +1553,86 @@ class AdminController extends Controller
 
     public function payments(Request $request)
     {
-        // Ensure invoice_data column exists
+        // Ensure invoice_data and generate_bill columns exist
         try {
-            DB::statement("SELECT invoice_data FROM payments LIMIT 1");
+            DB::statement("SELECT invoice_data, generate_bill FROM payments LIMIT 1");
         } catch (\Exception $e) {
-            DB::statement("ALTER TABLE payments ADD COLUMN invoice_data LONGTEXT NULL");
+            try { DB::statement("ALTER TABLE payments ADD COLUMN invoice_data LONGTEXT NULL"); } catch (\Exception $ex) {}
+            try { DB::statement("ALTER TABLE payments ADD COLUMN generate_bill TINYINT(1) DEFAULT 1"); } catch (\Exception $ex) {}
+        }
+
+        // Ensure is_synced column exists
+        try {
+            DB::statement("SELECT is_synced FROM paid_users LIMIT 1");
+        } catch (\Exception $e) {
+            try { DB::statement("ALTER TABLE paid_users ADD COLUMN is_synced TINYINT(1) DEFAULT 0"); } catch (\Exception $ex) {}
+            // For existing records, set is_synced to 1 if they already exist in payments
+            try {
+                $existingEmails = DB::table('payments')->pluck('email')->toArray();
+                if (!empty($existingEmails)) {
+                    DB::table('paid_users')->whereIn('email', $existingEmails)->update(['is_synced' => 1]);
+                }
+            } catch (\Exception $ex) {}
         }
 
         // Sync paid_users records to payments table
-        $paidUsers = DB::table('paid_users')->get();
+        $paidUsers = DB::table('paid_users')->where('is_synced', 0)->get();
         foreach ($paidUsers as $pu) {
-            $exists = DB::table('payments')
-                ->where('email', $pu->email)
-                ->where('plan_type', $pu->plan)
-                ->exists();
+            $paymentId = 'TXN_PU_' . str_pad($pu->id, 4, '0', STR_PAD_LEFT);
+            $exists = DB::table('payments')->where('payment_id', $paymentId)->exists();
+            
             if (!$exists) {
                 DB::table('payments')->insert([
                     'user_name' => $pu->name,
                     'email' => $pu->email,
                     'plan_type' => $pu->plan,
                     'amount' => $pu->amount,
-                    'payment_id' => 'TXN_PU_' . str_pad($pu->id, 4, '0', STR_PAD_LEFT),
+                    'payment_id' => $paymentId,
                     'date' => $pu->joined_date,
                     'status' => $pu->status === 'Active' ? 'Completed' : 'Failed',
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
             }
+            DB::table('paid_users')->where('id', $pu->id)->update(['is_synced' => 1]);
         }
 
-        $payments = DB::table('payments')
+        $query = DB::table('payments')
             ->leftJoin('agents', 'payments.email', '=', 'agents.email')
-            ->select('payments.*', 'agents.service_guaranteed')
-            ->orderBy('payments.id', 'desc')
-            ->paginate(5);
-        return view('admin.payments', compact('payments'));
+            ->select('payments.*', 'agents.service_guaranteed');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('payments.payment_id', 'like', "%{$search}%")
+                  ->orWhere('payments.user_name', 'like', "%{$search}%")
+                  ->orWhere('payments.email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('plan_type')) {
+            $query->where('payments.plan_type', 'like', "%{$request->plan_type}%");
+        }
+
+        if ($request->filled('status')) {
+            $query->where('payments.status', $request->status);
+        }
+
+        if ($request->filled('service_guaranteed')) {
+            $query->where('agents.service_guaranteed', $request->service_guaranteed);
+        }
+
+        if ($request->filled('generate_bill')) {
+            $query->where('payments.generate_bill', $request->generate_bill);
+        }
+
+        $payments = $query->orderBy('payments.id', 'desc')->paginate(10);
+        $payments->appends($request->all());
+
+        $plans = DB::table('plans')->where('status', 'Active')->orderBy('name')->get();
+        $agentsList = DB::table('agents')->select('name', 'email')->get();
+
+        return view('admin.payments', compact('payments', 'plans', 'agentsList'));
     }
 
     public function paymentInvoice($id)
@@ -1567,7 +1645,7 @@ class AdminController extends Controller
 
         $payment = DB::table('payments')
             ->leftJoin('agents', 'payments.email', '=', 'agents.email')
-            ->select('payments.*', 'agents.service_guaranteed', 'agents.generate_bill')
+            ->select('payments.*', 'agents.service_guaranteed')
             ->where('payments.id', $id)
             ->first();
 
@@ -1575,11 +1653,13 @@ class AdminController extends Controller
             abort(404, 'Payment record not found');
         }
 
-        if (!$payment->service_guaranteed) {
+
+
+        if (!$payment->generate_bill) {
             return response()->make("<div style='font-family: system-ui, -apple-system, sans-serif; padding: 40px; text-align: center; max-width: 600px; margin: 100px auto; background: #fff; border-radius: 28px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;'>
                 <div style='color: #D35400; font-size: 56px; margin-bottom: 20px;'>⚠️</div>
                 <h2 style='color: #1a1a1a; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.02em;'>Generation Blocked</h2>
-                <p style='color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;'>Invoice cannot be generated because Service Guaranteed is No.</p>
+                <p style='color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;'>Invoice cannot be generated because Bill Generate is No.</p>
                 <a href='" . url('/admin/payments') . "' style='display: inline-flex; align-items: center; justify-content: center; padding: 14px 32px; background: #D35400; color: #fff; text-decoration: none; border-radius: 16px; font-weight: bold; font-size: 14px; transition: all 0.2s;'>Back to Payments</a>
             </div>", 400);
         }
@@ -1734,6 +1814,7 @@ class AdminController extends Controller
             'payment_id' => 'TXN_' . strtoupper(bin2hex(random_bytes(4))),
             'date' => $request->date ?? now()->toDateString(),
             'status' => $request->status ?? 'Completed',
+            'generate_bill' => $request->input('generate_bill', 1),
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -1769,6 +1850,7 @@ class AdminController extends Controller
             'payment_id' => $request->payment_id,
             'date' => $request->date,
             'status' => $request->status,
+            'generate_bill' => $request->input('generate_bill', 0),
             'updated_at' => now(),
         ]);
 
@@ -1967,18 +2049,19 @@ class AdminController extends Controller
             return redirect('/admin/plans')->with('error', 'Plan not found!');
         }
 
-        $tier = 'Standard';
-        $nameLower = strtolower($plan->name);
-        if (str_contains($nameLower, 'premium')) {
-            $tier = 'Premium';
-        } elseif (str_contains($nameLower, 'enterprise')) {
-            $tier = 'Enterprise';
-        } elseif (str_contains($nameLower, 'customise') || str_contains($nameLower, 'custom')) {
-            $tier = 'Customise';
-        }
-
+        $nameLower = strtolower(trim($plan->name));
+        
         $subscribedAgents = DB::table('agents')
-            ->where('tier', 'like', '%' . $tier . '%')
+            ->where('plan_id', $plan->id)
+            ->orWhere(function($q) use ($nameLower) {
+                if (str_contains($nameLower, 'premium')) {
+                    $q->where('tier', 'Premium');
+                } elseif (str_contains($nameLower, 'enterprise')) {
+                    $q->where('tier', 'Enterprise');
+                } elseif (str_contains($nameLower, 'standard') || str_contains($nameLower, 'basic')) {
+                    $q->where('tier', 'Standard')->orWhere('tier', 'Basic')->orWhereNull('plan_id');
+                }
+            })
             ->get();
 
         return view('admin.plans-preview', compact('plan', 'subscribedAgents'));

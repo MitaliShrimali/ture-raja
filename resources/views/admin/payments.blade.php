@@ -4,7 +4,7 @@
 <div class="space-y-10 pb-12" x-data="{ 
     showAddModal: false, 
     showEditModal: false, 
-    editTx: { id: '', user_name: '', email: '', plan_type: '', amount: '', payment_id: '', date: '', status: '', service_guaranteed: '' } 
+    editTx: { id: '', user_name: '', email: '', plan_type: '', amount: '', payment_id: '', date: '', status: '', service_guaranteed: '', generate_bill: '' } 
 }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
@@ -83,6 +83,41 @@
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden print-section">
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
             <h3 class="text-xl font-black">Transaction History</h3>
+            
+            <form action="{{ url('/admin/payments') }}" method="GET" class="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                <div class="relative w-full md:w-64">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i data-lucide="search" class="w-4 h-4 text-muted-text"></i>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search ID, Name, Email..." class="w-full bg-[#F5F5F5] border-none rounded-xl py-2 pl-10 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
+                </div>
+                <select name="plan_type" class="w-full md:w-40 bg-[#F5F5F5] border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">All Plans</option>
+                    @foreach($plans ?? [] as $plan)
+                        <option value="{{ $plan->name }}" {{ request('plan_type') == $plan->name ? 'selected' : '' }}>{{ strtoupper($plan->name) }}</option>
+                    @endforeach
+                </select>
+                <select name="status" class="w-full md:w-32 bg-[#F5F5F5] border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">All Status</option>
+                    <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="Pending" {{ request('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="Failed" {{ request('status') == 'Failed' ? 'selected' : '' }}>Failed</option>
+                </select>
+                <select name="service_guaranteed" class="w-full md:w-40 bg-[#F5F5F5] border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">All Services</option>
+                    <option value="1" {{ request('service_guaranteed') === '1' ? 'selected' : '' }}>Guaranteed</option>
+                    <option value="0" {{ request('service_guaranteed') === '0' ? 'selected' : '' }}>Not Guaranteed</option>
+                </select>
+                <select name="generate_bill" class="w-full md:w-32 bg-[#F5F5F5] border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">Bill Gen</option>
+                    <option value="1" {{ request('generate_bill') === '1' ? 'selected' : '' }}>Yes</option>
+                    <option value="0" {{ request('generate_bill') === '0' ? 'selected' : '' }}>No</option>
+                </select>
+                <button type="submit" class="w-full md:w-auto bg-primary text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all">Filter</button>
+                @if(request()->hasAny(['search', 'plan_type', 'status', 'service_guaranteed', 'generate_bill']))
+                    <a href="{{ url('/admin/payments') }}" class="w-full md:w-auto bg-gray-100 text-muted-text px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-200 transition-all text-center">Clear</a>
+                @endif
+            </form>
         </div>
 
         <div class="admin-table-container">
@@ -96,6 +131,7 @@
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">PLAN TYPE</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">AMOUNT</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">SERVICE GUARANTEED</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">BILL GENERATE</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">STATUS</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-right print:hidden">ACTIONS</th>
                     </tr>
@@ -133,6 +169,17 @@
                             </td>
                             <td class="py-6 px-8 text-center">
                                 @if($tx->service_guaranteed)
+                                    <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-500 text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5" title="Trusted Agent">
+                                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> YES
+                                    </span>
+                                @else
+                                    <span class="px-3 py-1 rounded-full bg-gray-100 text-muted-text opacity-60 text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5" title="Standard Agent">
+                                        <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span> NO
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="py-6 px-8 text-center">
+                                @if($tx->generate_bill)
                                     <span class="px-3 py-1 rounded-full bg-green-50 text-green-500 text-[10px] font-black uppercase tracking-wider inline-flex items-center gap-1.5" title="Invoice generated automatically">
                                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> YES
                                     </span>
@@ -153,7 +200,7 @@
                             <td class="py-6 px-8 text-right print:hidden">
                                 <div class="flex items-center justify-end gap-2">
                                     <button 
-                                        @click="showEditModal = true; editTx = { id: '{{ $tx->id }}', user_name: '{{ addslashes($tx->user_name) }}', email: '{{ addslashes($tx->email) }}', plan_type: '{{ $tx->plan_type }}', amount: '{{ $tx->amount }}', payment_id: '{{ $tx->payment_id }}', date: '{{ $tx->date }}', status: '{{ $tx->status }}', service_guaranteed: '{{ $tx->service_guaranteed }}' }"
+                                        @click="showEditModal = true; editTx = { id: '{{ $tx->id }}', user_name: '{{ addslashes($tx->user_name) }}', email: '{{ addslashes($tx->email) }}', plan_type: '{{ $tx->plan_type }}', amount: '{{ $tx->amount }}', payment_id: '{{ $tx->payment_id }}', date: '{{ $tx->date }}', status: '{{ $tx->status }}', service_guaranteed: '{{ $tx->service_guaranteed }}', generate_bill: '{{ $tx->generate_bill ?? 0 }}' }"
                                         class="p-2 text-muted-text hover:text-primary transition-all"
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
@@ -239,9 +286,15 @@
             
             <form action="{{ url('/admin/payments/store') }}" method="POST" class="space-y-6">
                 @csrf
+                <datalist id="agentsList">
+                    @foreach($agentsList as $agent)
+                        <option value="{{ $agent->name }}">
+                    @endforeach
+                </datalist>
+
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">User / Agency Name<span class="text-primary">*</span></label>
-                    <input required type="text" name="user_name" placeholder="E.g. Nomad Ventures" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    <input required list="agentsList" name="user_name" placeholder="E.g. Nomad Ventures" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
@@ -251,10 +304,9 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Plan type</label>
                         <select name="plan_type" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                            <option value="WELCOME OFFER 1">WELCOME OFFER 1</option>
-                            <option value="PREMIUM ANNUAL 2024">PREMIUM ANNUAL 2024</option>
-                            <option value="ENTERPRISE TRIAL">ENTERPRISE TRIAL</option>
-                            <option value="CUSTOMISE PLAN">CUSTOMISE PLAN</option>
+                            @foreach($plans as $plan)
+                                <option value="{{ $plan->name }}">{{ strtoupper($plan->name) }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -272,7 +324,7 @@
                         <input type="date" name="date" value="{{ date('Y-m-d') }}" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
                         <select name="status" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
@@ -284,6 +336,13 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Service Guaranteed</label>
                         <select name="service_guaranteed" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Bill Generate</label>
+                        <select name="generate_bill" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                             <option value="0">No</option>
                             <option value="1">Yes</option>
                         </select>
@@ -327,7 +386,7 @@
                 
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">User / Agency Name<span class="text-primary">*</span></label>
-                    <input required type="text" name="user_name" x-model="editTx.user_name" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    <input required list="agentsList" name="user_name" x-model="editTx.user_name" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email Address<span class="text-primary">*</span></label>
@@ -337,10 +396,9 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Plan type</label>
                         <select name="plan_type" x-model="editTx.plan_type" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                            <option value="WELCOME OFFER 1">WELCOME OFFER 1</option>
-                            <option value="PREMIUM ANNUAL 2024">PREMIUM ANNUAL 2024</option>
-                            <option value="ENTERPRISE TRIAL">ENTERPRISE TRIAL</option>
-                            <option value="CUSTOMISE PLAN">CUSTOMISE PLAN</option>
+                            @foreach($plans as $plan)
+                                <option value="{{ $plan->name }}">{{ strtoupper($plan->name) }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="space-y-2">
@@ -358,7 +416,7 @@
                         <input required type="date" name="date" x-model="editTx.date" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-3 gap-4">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
                         <select name="status" x-model="editTx.status" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
@@ -370,6 +428,13 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Service Guaranteed</label>
                         <select name="service_guaranteed" x-model="editTx.service_guaranteed" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Bill Generate</label>
+                        <select name="generate_bill" x-model="editTx.generate_bill" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                             <option value="0">No</option>
                             <option value="1">Yes</option>
                         </select>

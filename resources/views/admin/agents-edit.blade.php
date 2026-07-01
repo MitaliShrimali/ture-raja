@@ -1,7 +1,15 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ tier: '{{ $agent->tier ?? 'Premium' }}', status: '{{ $agent->status ?? 'Active' }}' }">
+<div class="space-y-10 pb-12" x-data="{ 
+    tier: '{{ $agent->tier ?? 'Premium' }}', 
+    status: '{{ $agent->status ?? 'Active' }}',
+    showCustomPlanModal: false, 
+    customAgentSearch: '{{ $agent->name }}', 
+    customPlanTier: '{{ $agent->plan_name ?? '' }}', 
+    customSacHsn: '', 
+    customSaleType: 'Direct Sale' 
+}">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border-soft pb-6">
         <div class="flex items-center gap-4">
@@ -281,7 +289,7 @@
                             <span class="text-sm font-black transition-colors" :class="tier === 'Enterprise' ? 'text-primary' : 'text-gray-800'">Enterprise</span>
                             <span class="text-[10px] text-muted-text font-semibold">Custom white-label solutions</span>
                         </button>
-                        <button type="button" @click="tier = 'Customise'" :class="tier === 'Customise' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-200 bg-white'" class="w-full p-4 rounded-2xl text-left border transition-all flex flex-col">
+                        <button type="button" @click="tier = 'Customise'; showCustomPlanModal = true" :class="tier === 'Customise' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-200 bg-white'" class="w-full p-4 rounded-2xl text-left border transition-all flex flex-col">
                             <span class="text-sm font-black transition-colors" :class="tier === 'Customise' ? 'text-primary' : 'text-gray-800'">Customise</span>
                             <span class="text-[10px] text-muted-text font-semibold">Custom package</span>
                         </button>
@@ -301,6 +309,94 @@
             </div>
 
         </div>
+
+        <!-- Custom Plan Modal -->
+        <div x-show="showCustomPlanModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" x-cloak x-transition>
+            <div @click.away="showCustomPlanModal = false" class="bg-white w-full max-w-3xl rounded-[32px] shadow-2xl p-8 relative max-h-[90vh] overflow-y-auto">
+                
+                <div class="space-y-2 mb-8">
+                    <div class="flex items-center gap-2 text-[#e85d26] font-bold text-xs tracking-widest uppercase">
+                        <i data-lucide="shield" size="14"></i> Administrative Task
+                    </div>
+                    <h2 class="text-4xl font-black text-gray-900">Custom User Plan</h2>
+                    <p class="text-gray-500 font-medium">Configure and assign a specialized subscription tier to a travel partner. All fields are mandatory for billing integrity.</p>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- 1. AGENT SELECTION -->
+                    <div class="space-y-3">
+                        <label class="text-xs font-black text-gray-600 uppercase tracking-widest">1. Agent Selection</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
+                                <i data-lucide="search" size="20"></i>
+                            </div>
+                            <input type="text" name="custom_agent_search" x-model="customAgentSearch" placeholder="Search by name or UID..." class="w-full bg-[#F8F8F8] border-none rounded-2xl py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-gray-800">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- 2. PLAN TIER -->
+                        <div class="space-y-3">
+                            <label class="text-xs font-black text-gray-600 uppercase tracking-widest">2. Plan Tier</label>
+                            <select name="custom_plan_tier" x-model="customPlanTier" class="w-full bg-[#F8F8F8] border-none rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-gray-800 appearance-none">
+                                <option value="">Select available tier</option>
+                                @foreach($plans as $plan)
+                                    <option value="{{ $plan->name }}">{{ $plan->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- 3. SAC/HSN CODE -->
+                        <div class="space-y-3">
+                            <label class="text-xs font-black text-gray-600 uppercase tracking-widest">3. SAC/HSN Code</label>
+                            <input type="text" name="custom_sac_hsn" x-model="customSacHsn" placeholder="e.g. 998511" class="w-full bg-[#F8F8F8] border-none rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-gray-800">
+                        </div>
+                    </div>
+
+                    <!-- 4. SALE TYPE -->
+                    <div class="space-y-3">
+                        <label class="text-xs font-black text-gray-600 uppercase tracking-widest">4. Sale Type</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="relative cursor-pointer block">
+                                <input type="radio" name="custom_sale_type" value="Direct Sale" x-model="customSaleType" class="sr-only">
+                                <div class="p-5 bg-[#F8F8F8] rounded-2xl border-2 transition-all flex items-center justify-between" :class="customSaleType === 'Direct Sale' ? 'border-primary bg-primary/5' : 'border-transparent'">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="store" size="24" :class="customSaleType === 'Direct Sale' ? 'text-primary' : 'text-gray-400'"></i>
+                                        <span class="font-black text-gray-900">Direct Sale</span>
+                                    </div>
+                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors" :class="customSaleType === 'Direct Sale' ? 'border-primary' : 'border-gray-300'">
+                                        <div class="w-3 h-3 rounded-full bg-primary transition-opacity" :class="customSaleType === 'Direct Sale' ? 'opacity-100' : 'opacity-0'"></div>
+                                    </div>
+                                </div>
+                            </label>
+                            
+                            <label class="relative cursor-pointer block">
+                                <input type="radio" name="custom_sale_type" value="Partner Ref" x-model="customSaleType" class="sr-only">
+                                <div class="p-5 bg-[#F8F8F8] rounded-2xl border-2 transition-all flex items-center justify-between" :class="customSaleType === 'Partner Ref' ? 'border-primary bg-primary/5' : 'border-transparent'">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="users" size="24" :class="customSaleType === 'Partner Ref' ? 'text-primary' : 'text-gray-400'"></i>
+                                        <span class="font-black text-gray-900">Partner Ref</span>
+                                    </div>
+                                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors" :class="customSaleType === 'Partner Ref' ? 'border-primary' : 'border-gray-300'">
+                                        <div class="w-3 h-3 rounded-full bg-primary transition-opacity" :class="customSaleType === 'Partner Ref' ? 'opacity-100' : 'opacity-0'"></div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 pt-4">
+                        <button type="button" @click="document.getElementById('agentForm').submit()" class="flex-1 bg-[#e85d26] hover:opacity-90 text-white py-4 rounded-2xl font-black text-lg transition-colors flex items-center justify-center gap-2">
+                            <i data-lucide="shield-check" size="20"></i> Assign Plan
+                        </button>
+                        <button type="button" @click="showCustomPlanModal = false" class="px-8 py-4 bg-[#E5E5E5] hover:bg-gray-300 text-gray-800 rounded-2xl font-black text-lg transition-colors">
+                            Discard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </form>
 </div>
 @endsection

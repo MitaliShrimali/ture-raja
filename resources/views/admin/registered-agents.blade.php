@@ -119,25 +119,28 @@
                             <!-- Plan -->
                             <td class="py-6 px-8">
                                 <a href="{{ url('/admin/plans') }}" class="inline-block hover:scale-105 transition-all">
-                                    @if(strtolower($agent->plan_name ?? '') === 'premium')
+                                    @php
+                                        $pName = strtolower($agent->plan_name ?? 'basic');
+                                    @endphp
+                                    @if(isset($agent->tier) && $agent->tier === 'Customise')
+                                        <span class="px-3 py-1 rounded-full bg-yellow-50 text-yellow-600 text-[10px] font-black uppercase tracking-wider">
+                                            Custom
+                                        </span>
+                                    @elseif($pName === 'premium')
                                         <span class="px-3 py-1 rounded-full bg-purple-50 text-purple-500 text-[10px] font-black uppercase tracking-wider">
                                             Premium
                                         </span>
-                                    @elseif(strtolower($agent->plan_name ?? '') === 'enterprise')
+                                    @elseif($pName === 'enterprise')
                                         <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-500 text-[10px] font-black uppercase tracking-wider">
                                             Enterprise
                                         </span>
-                                    @elseif(strtolower($agent->plan_name ?? '') === 'customise')
-                                        <span class="px-3 py-1 rounded-full bg-green-50 text-green-500 text-[10px] font-black uppercase tracking-wider">
-                                            Customise
-                                        </span>
-                                    @elseif(strtolower($agent->plan_name ?? '') === 'standard')
+                                    @elseif($pName === 'standard')
                                         <span class="px-3 py-1 rounded-full bg-orange-50 text-orange-500 text-[10px] font-black uppercase tracking-wider">
                                             Standard
                                         </span>
                                     @else
                                         <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-wider">
-                                            Basic
+                                            {{ $agent->plan_name ?? 'Basic' }}
                                         </span>
                                     @endif
                                 </a>
