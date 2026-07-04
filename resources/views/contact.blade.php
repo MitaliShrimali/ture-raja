@@ -3,7 +3,7 @@
 @section('content')
     <!-- Hero Section -->
     <div class="relative w-full flex items-center justify-center bg-gray-900" style="height: 550px;">
-        <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/1.png" alt="Rome Vatican" class="absolute inset-0 w-full h-full object-cover">
+        <img src="{{ asset('images/about_contact page.jpg') }}" alt="Rome Vatican" class="absolute inset-0 w-full h-full object-cover">
         <!-- Blur fade to white at bottom -->
         <div class="absolute bottom-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-0"></div>
         <div class="relative z-10 text-left w-full max-w-6xl px-6">
@@ -54,7 +54,7 @@
             <div class="flex-1 w-1/2 flex flex-col items-center">
                 <!-- Illustration -->
                 <div class="w-full mb-4 sm:mb-10 flex justify-center">
-                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/414506927f0d73bf9a720f34a71881c9fd4d0003.png" class="w-full h-auto max-w-[300px] object-contain" style="max-height: 220px;" alt="Contact Illustration">
+                    <img src="{{ asset('images/contact_iilustration.png') }}" class="w-full h-auto max-w-[300px] object-contain" style="max-height: 220px;" alt="Contact Illustration">
                 </div>
                 
                 <div class="space-y-3 sm:space-y-6 w-full max-w-[300px] mx-auto">

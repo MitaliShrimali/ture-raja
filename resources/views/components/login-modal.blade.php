@@ -30,7 +30,7 @@
         @click.stop
     >
         <!-- Image Side (Left) - Shorter to give overlapping effect -->
-        <div style="height: 480px; background: #f3f4f6 url('https://6a0bf3ee063c0d21459114f4.imgix.net/istockphoto-1141191468-612x612.jpg') left center/cover no-repeat;"
+        <div style="height: 480px; background: #f3f4f6 url('{{ asset('images/login_pic.jpg') }}') center center / cover no-repeat;"
              class="rounded-xl relative z-0 hidden md:block w-full md:w-[45%] shadow-sm">
         </div>
 
