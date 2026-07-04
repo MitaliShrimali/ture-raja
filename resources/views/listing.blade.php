@@ -367,7 +367,7 @@
                 <div id="packages-list-container" :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'">
                     @php $adIndex = 0; @endphp
                     @forelse($packages as $index => $pkg)
-                        <div class="package-item {{ $index >= 6 ? 'hidden' : '' }}" :class="viewStyle === 'list' ? 'list-view-wrapper' : ''">
+                        <div class="package-item {{ $index >= 25 ? 'hidden' : '' }}" :class="viewStyle === 'list' ? 'list-view-wrapper' : ''">
                             <x-package-card :pkg="$pkg" />
                         </div>
 
@@ -386,11 +386,13 @@
                                 $adIndex++;
                             @endphp
                             @if(!empty($inlineAd->image))
-                                <div class="col-span-full package-item {{ $index >= 6 ? 'hidden' : '' }} w-full rounded-2xl overflow-hidden shadow-sm relative group transition-all" style="display: flex; justify-content: center; align-items: center; background: transparent;">
-                                    <a href="{{ route('ad.click', $inlineAd->id) }}" target="_blank" class="block w-full relative">
-                                        <img src="{{ asset($inlineAd->image) }}" alt="{{ $inlineAd->campaign_name }}" class="w-full h-auto object-contain rounded-2xl">
-                                        <span class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[10px] tracking-widest px-2 py-1 rounded-md backdrop-blur-xs">AD</span>
-                                    </a>
+                                <div class="col-span-full package-item {{ $index >= 25 ? 'hidden' : '' }}">
+                                    <div class="w-full rounded-2xl overflow-hidden shadow-sm relative group transition-all flex justify-center items-center bg-transparent">
+                                        <a href="{{ route('ad.click', $inlineAd->id) }}" target="_blank" class="block w-full relative">
+                                            <img src="{{ asset($inlineAd->image) }}" alt="{{ $inlineAd->campaign_name }}" class="w-full h-auto object-contain rounded-2xl">
+                                            <span class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[10px] tracking-widest px-2 py-1 rounded-md backdrop-blur-xs">AD</span>
+                                        </a>
+                                    </div>
                                 </div>
                             @endif
                         @endif
@@ -405,7 +407,7 @@
 
                 <!-- Load More Section -->
                 <div id="load-more-section">
-                    @if($packages->count() > 6)
+                    @if($packages->count() > 25)
                         <div class="text-center pt-10" id="loadMoreContainer">
                             <button type="button" onclick="loadMorePackages()" class="bg-white hover:bg-gray-50 text-foreground px-10 py-5 rounded-full font-bold shadow-soft transition-all border border-gray-100">
                                 Load More Results
@@ -420,7 +422,7 @@
     <script>
     function loadMorePackages() {
         const hiddenItems = document.querySelectorAll('.package-item.hidden');
-        for (let i = 0; i < 20 && i < hiddenItems.length; i++) {
+        for (let i = 0; i < 25 && i < hiddenItems.length; i++) {
             hiddenItems[i].classList.remove('hidden');
         }
         if (document.querySelectorAll('.package-item.hidden').length === 0) {

@@ -142,6 +142,12 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
     }
+    html {
+        scroll-behavior: smooth;
+    }
+    #overview, #itinerary, #sightseeing, #hotels, #terms, #faq {
+        scroll-margin-top: 120px;
+    }
     
     .package-gallery-details-grid {
         display: grid !important;
@@ -383,6 +389,51 @@
                     </div>
                 </div>
 
+                {{-- Section Navigation Tabs --}}
+                <div class="relative flex items-center mb-6 group bg-[#F8F9FA]">
+                    <!-- Left Arrow -->
+                    <button type="button" class="absolute left-0 z-10 w-12 h-full flex items-center justify-start bg-gradient-to-r from-[#F8F9FA] via-[#F8F9FA] to-transparent text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex" onclick="document.getElementById('section-nav').scrollBy({left: -250, behavior: 'smooth'})">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+
+                    <div id="section-nav" class="flex overflow-x-auto gap-3 py-1 px-1 md:px-8 hide-scrollbar scroll-smooth w-full">
+                        <a href="#overview" class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                            <i data-lucide="map" class="w-4 h-4"></i> Overview
+                        </a>
+                        @if(count($parsedItinerary) > 0)
+                        <a href="#itinerary" class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                            <i data-lucide="list" class="w-4 h-4"></i> Itinerary
+                        </a>
+                        @endif
+                        @if(count($sightseeingPills) > 0)
+                        <a href="#sightseeing" class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                            <i data-lucide="binoculars" class="w-4 h-4"></i> Sightseeing
+                        </a>
+                        @endif
+                        <button type="button" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })" class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                            <i data-lucide="image" class="w-4 h-4"></i> Gallery
+                        </button>
+                        @if(!empty($package['hotels']))
+                        <a href="#hotels" class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                            <i data-lucide="building" class="w-4 h-4"></i> Hotels
+                        </a>
+                        @endif
+                        @if(!empty($package['terms']))
+                        <a href="#terms" class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> Tour Info
+                        </a>
+                        @endif
+                        <a href="#faq" class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                            <i data-lucide="help-circle" class="w-4 h-4"></i> FAQ
+                        </a>
+                    </div>
+
+                    <!-- Right Arrow -->
+                    <button type="button" class="absolute right-0 z-10 w-12 h-full flex items-center justify-end bg-gradient-to-l from-[#F8F9FA] via-[#F8F9FA] to-transparent text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex" onclick="document.getElementById('section-nav').scrollBy({left: 250, behavior: 'smooth'})">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
+
                 {{-- Document / Brochure Download Section --}}
                 <div class="bg-white rounded-lg border border-gray-150 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm mb-6">
                     <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
@@ -445,7 +496,7 @@
                 </div>
 
                 {{-- Tour Overview & Editorial --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
+                <div id="overview" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
                     <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
                     <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
 
@@ -551,7 +602,7 @@
                         @endif
 
                         @if(!empty($package['hotels']))
-                        <div class="col-span-1 md:col-span-2">
+                        <div id="hotels" class="col-span-1 md:col-span-2">
                             <h4 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3"><i data-lucide="building" class="w-4 h-4 text-orange-500"></i> Hotels</h4>
                             <div class="overflow-hidden rounded-xl border border-gray-200">
                                 <table class="w-full text-left border-collapse">
@@ -632,7 +683,7 @@
 
                 {{-- Itinerary Timeline --}}
                 @if(count($parsedItinerary) > 0)
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                <div id="itinerary" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
                     <h2 class="font-black text-gray-900 mb-8 section-heading text-xl">Itinerary</h2>
                     <div class="relative pl-2">
                         @foreach($parsedItinerary as $idx => $day)
@@ -661,7 +712,7 @@
 
                 {{-- Sightseeing Details --}}
                 @if(count($sightseeingPills) > 0)
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                <div id="sightseeing" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
                     <h2 class="font-black text-gray-900 mb-6 section-heading text-xl">Sightseeing Details</h2>
                     <div class="flex flex-wrap gap-2">
                         @foreach($sightseeingPills as $place)
@@ -678,7 +729,7 @@
 
                 {{-- Terms & Conditions --}}
                 @if(!empty($package['terms']))
-                <div class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                <div id="terms" class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
                     <div class="flex items-center gap-3 mb-6">
                         <!-- <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0"> -->
                             <!-- <i data-lucide="file-text" size="20" class="text-gray-600"></i> -->
@@ -692,7 +743,7 @@
                 @endif
 
                 {{-- FAQ Section --}}
-                <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8" x-data="{ activeFaq: 0 }">
+                <div id="faq" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8" x-data="{ activeFaq: 0 }">
                     <h2 class="font-black text-gray-900 mb-6 section-heading">FAQ</h2>
                     <div class="space-y-3">
                         @php
