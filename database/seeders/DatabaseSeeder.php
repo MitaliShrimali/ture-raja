@@ -829,7 +829,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Other',
+                'name' => 'Land',
                 'description' => 'General transportation options',
                 'selected_icon' => 'map-pin',
                 'status' => 'Active',
