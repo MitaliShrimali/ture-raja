@@ -42,7 +42,7 @@
             @php
                 $allTourTypes = DB::table('transits')->where('status', 'Active')->pluck('name')->toArray();
                 if (empty($allTourTypes)) {
-                    $allTourTypes = ['Flight Package', 'Train Package', 'Bus Package', 'Bullet Ride', 'Cruise Package', 'Tracking Package', 'Helicopter Package', 'Other'];
+                    $allTourTypes = ['Flight Package', 'Train Package', 'Bus Package', 'Bullet Ride', 'Cruise Package', 'Tracking Package', 'Helicopter Package', 'Land'];
                 }
                 $visibleTypes = array_slice($allTourTypes, 0, 5);
                 $hiddenTypes = array_slice($allTourTypes, 5);
