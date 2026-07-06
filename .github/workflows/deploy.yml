@@ -38,8 +38,6 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         known_hosts: unnecessary
 
-    - name: Add Known Hosts
-      run: ssh-keyscan -p ${{ secrets.SERVER_PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
     - name: Sync Core App Files
       run: rsync -avz --exclude='.git' --exclude='public' --exclude='node_modules' -e "ssh -p ${{ secrets.SERVER_PORT }}" ./ ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/home/u362391755/domains/vardaansmartsolutions.com/tour-raja/
