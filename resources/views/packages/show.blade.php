@@ -87,6 +87,15 @@
         $gallerySlides = $defaultGallery;
     }
     $gallerySlides = array_map('asset', array_values($gallerySlides)); // apply asset() and reindex for valid JSON array
+
+    $navSections = [
+        ['id' => 'overview', 'title' => 'Overview']
+    ];
+    if(count($parsedItinerary) > 0) $navSections[] = ['id' => 'itinerary', 'title' => 'Itinerary'];
+    if(count($sightseeingPills) > 0) $navSections[] = ['id' => 'sightseeing', 'title' => 'Sightseeing'];
+    if(!empty($package['hotels'])) $navSections[] = ['id' => 'hotels', 'title' => 'Hotels'];
+    if(!empty($package['terms'])) $navSections[] = ['id' => 'terms', 'title' => 'Tour Info'];
+    $navSections[] = ['id' => 'faq', 'title' => 'FAQ'];
 @endphp
 @extends('layouts.app')
 
@@ -154,12 +163,9 @@
         grid-template-columns: 1fr !important;
         gap: 1.5rem !important;
     }
-    .package-gallery-images-col {
+    .package-gallery-slider-col {
         grid-column: span 1 / span 1 !important;
-        display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
         height: 240px !important;
-        gap: 0.5rem !important;
     }
     .package-gallery-details-col {
         grid-column: span 1 / span 1 !important;
@@ -168,7 +174,7 @@
         .package-gallery-details-grid {
             grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         }
-        .package-gallery-images-col {
+        .package-gallery-slider-col {
             grid-column: span 3 / span 3 !important;
             height: 320px !important;
         }
@@ -193,7 +199,7 @@
     }
 </style>
 
-<div class="bg-[#F8F9FA] min-h-screen pt-24 lg:pt-32" x-data='{ showBookingModal: false, slides: @json($gallerySlides) }'>
+<div class="bg-[#F8F9FA] min-h-screen pt-24 lg:pt-32" x-data='{ showBookingModal: false, slides: @json($gallerySlides), sections: @json($navSections) }'>
     {{-- Breadcrumb --}}
     <div>
         <div class="container-custom py-2">
@@ -301,28 +307,35 @@
 
                     {{-- Gallery & Details Container --}}
                     <div class="package-gallery-details-grid">
-                        {{-- Left Column: Images Grid (Takes 3/4 space on desktop) --}}
-                        <div class="package-gallery-images-col relative w-full overflow-hidden">
-                            {{-- Large Left Image --}}
-                            <div class="col-span-2 h-full w-full relative cursor-pointer hover:opacity-95 transition overflow-hidden" style="grid-column: span 2 / span 2;" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
-                                <img :src="slides[0]" class="w-full h-full object-cover" alt="Package Main Image">
-                            </div>
+                        {{-- Left Column: Images Slider (Takes 3/4 space on desktop) --}}
+                        <div class="package-gallery-slider-col relative w-full overflow-hidden group">
+                            <!-- Left Arrow -->
+                            <button type="button" class="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#e85d26] transition-colors opacity-0 group-hover:opacity-100 hidden md:flex" onclick="document.getElementById('package-gallery-slider').scrollBy({left: -300, behavior: 'smooth'})">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                            </button>
                             
-                            {{-- Small Right Images (Top and Bottom) --}}
-                            <div class="col-span-1 grid grid-rows-2 gap-2 h-full w-full relative" style="grid-column: span 1 / span 1; display: grid; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 0.5rem;">
-                                <img :src="slides[1] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
-                                <img :src="slides[2] || slides[0]" class="w-full h-full object-cover cursor-pointer hover:opacity-95 transition" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
-                                
-                                {{-- View Gallery Button --}}
-                                <button @click.stop="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })" class="absolute top-6 right-6 view-gallery-btn text-[12px] font-bold px-4 py-2.5 flex items-center gap-2 z-30 shadow-lg rounded-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                                        <polyline points="21 15 16 10 5 21"/>
-                                    </svg>
-                                    <span>View Gallery</span>
-                                </button>
+                            <!-- Slider Container -->
+                            <div id="package-gallery-slider" class="flex overflow-x-auto gap-4 items-stretch h-full w-full hide-scrollbar scroll-smooth snap-x snap-mandatory">
+                                <template x-for="(slide, idx) in slides" :key="idx">
+                                    <a :href="'#' + (sections[idx % sections.length]?.id || 'overview')" 
+                                       @click.prevent="document.getElementById(sections[idx % sections.length]?.id || 'overview').scrollIntoView({behavior:'smooth', block:'start'})"
+                                       class="relative shrink-0 w-64 md:w-80 h-full rounded-xl overflow-hidden group/slide cursor-pointer shadow-sm hover:shadow-md transition-shadow snap-start">
+                                        <img :src="slide" class="w-full h-full object-cover group-hover/slide:scale-105 transition-transform duration-700">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                                            <span class="text-white font-black text-lg drop-shadow-md" x-text="sections[idx % sections.length]?.title || 'View Section'"></span>
+                                            <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white group-hover/slide:bg-[#e85d26] transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </template>
                             </div>
+
+                            <!-- Right Arrow -->
+                            <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#e85d26] transition-colors opacity-0 group-hover:opacity-100 hidden md:flex" onclick="document.getElementById('package-gallery-slider').scrollBy({left: 300, behavior: 'smooth'})">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </button>
                         </div>
 
                         {{-- Right Column: Package Details (Duration, Group Size, Type, Inquiry Now) --}}

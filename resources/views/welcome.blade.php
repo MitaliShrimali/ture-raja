@@ -356,7 +356,7 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
 
-                <div id="theme-slider" class="flex overflow-x-auto gap-4 lg:gap-8 items-start w-max max-w-full mx-auto hide-scrollbar scroll-smooth pb-4 px-2">
+                <div id="theme-slider" class="flex overflow-x-auto gap-4 lg:gap-8 items-start w-full hide-scrollbar scroll-smooth pb-4 px-2">
                     @if(isset($themes) && !$themes->isEmpty())
                         @foreach($themes as $theme)
                             <a href="{{ url('/discover?theme=' . urlencode($theme->name)) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer shrink-0 w-24 md:w-28 lg:w-32 animate-hover">
