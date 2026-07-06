@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('packages', function (Blueprint $table) {
             if (!Schema::hasColumn('packages', 'editorial_itinerary')) {
-                $table->longText('editorial_itinerary')->nullable()->after('itinerary');
+                $table->longText('editorial_itinerary')->nullable();
             }
             if (!Schema::hasColumn('packages', 'hotel_id')) {
                 $table->unsignedBigInteger('hotel_id')->nullable()->after('editorial_itinerary');
