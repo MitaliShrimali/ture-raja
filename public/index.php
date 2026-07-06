@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
+define('CUSTOM_PUBLIC_PATH', __DIR__);
+
 // Determine environment paths
 $isHostinger = file_exists(__DIR__.'/../../tour-raja/bootstrap/app.php');
 

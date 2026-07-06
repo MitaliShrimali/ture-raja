@@ -18,6 +18,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
     })
     ->create();
 
-$app->usePublicPath(__DIR__.'/..');
+$app->usePublicPath(
+    defined('CUSTOM_PUBLIC_PATH') 
+        ? CUSTOM_PUBLIC_PATH 
+        : __DIR__.'/../public'
+);
 
 return $app;
