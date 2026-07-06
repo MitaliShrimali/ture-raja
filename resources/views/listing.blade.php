@@ -122,10 +122,20 @@
                 text-align: center !important;
             }
         }
+
+        /* IMMEDIATE SEARCHBAR ALIGNMENT */
+        main {
+            padding-top: 80px !important;
+        }
+        @media (min-width: 1024px) {
+            main {
+                padding-top: 90px !important;
+            }
+        }
     </style>
 
     <!-- Small Hero Header -->
-    <div class="pt-20 pb-6 bg-gray-50">
+    <div class="pt-0 pb-6 bg-gray-50">
 
         <!-- Sticky Search Bar Wrapper with Placeholder height -->
         <div x-data="{ isSticky: false, topOffset: 0 }" 

@@ -176,18 +176,18 @@
             </div>
 
             <!-- Bottom Indicators/Badges -->
-            <div class="mt-auto pt-4 border-t border-black/5 grid grid-cols-3 gap-1.5 text-center w-full">
+            <div class="mt-auto pt-4 border-t border-white/10 grid grid-cols-3 gap-1.5 text-center w-full bg-black/20 backdrop-blur-xs rounded-xl py-2 px-1">
                 <div class="flex flex-col items-center">
-                    <i data-lucide="users" class="w-3.5 h-3.5 text-gray-600 mb-0.5"></i>
-                    <span class="text-[8px] font-bold text-gray-800 leading-tight">Experienced</span>
+                    <i data-lucide="users" class="w-3.5 h-3.5 text-white mb-0.5"></i>
+                    <span class="text-[8px] font-extrabold text-white leading-tight">Experienced</span>
                 </div>
-                <div class="flex flex-col items-center border-x border-black/5">
-                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-gray-600 mb-0.5"></i>
-                    <span class="text-[8px] font-bold text-gray-800 leading-tight">Verified</span>
+                <div class="flex flex-col items-center border-x border-white/10">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5 text-white mb-0.5"></i>
+                    <span class="text-[8px] font-extrabold text-white leading-tight">Verified</span>
                 </div>
                 <div class="flex flex-col items-center">
-                    <i data-lucide="phone-call" class="w-3.5 h-3.5 text-gray-600 mb-0.5"></i>
-                    <span class="text-[8px] font-bold text-gray-800 leading-tight">24/7 Support</span>
+                    <i data-lucide="phone-call" class="w-3.5 h-3.5 text-white mb-0.5"></i>
+                    <span class="text-[8px] font-extrabold text-white leading-tight">24/7 Support</span>
                 </div>
             </div>
         </div>

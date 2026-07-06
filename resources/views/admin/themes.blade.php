@@ -6,7 +6,23 @@
 <div class="space-y-8 pb-12" x-data="{
     showAddModal: false,
     showEditModal: false,
-    editItem: { id: '', name: '', description: '', status: '', image_url: '' }
+    editItem: { id: '', name: '', description: '', status: '', image_url: '' },
+    addImagePreview: '',
+    editImagePreview: '',
+    previewImage(event, type) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (type === 'add') {
+                    this.addImagePreview = e.target.result;
+                } else {
+                    this.editImagePreview = e.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    }
 }">
 
     {{-- ===== PAGE HEADER ===== --}}
@@ -21,7 +37,7 @@
             <h2 class="text-3xl font-black text-foreground tracking-tight pl-9">Theme Library</h2>
             <p class="text-xs text-muted-text font-medium pl-9">Curate and manage the stylistic frameworks for your travel expeditions.</p>
         </div>
-        <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-6 py-3.5 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2">
+        <button @click="showAddModal = true; addImagePreview = ''" class="bg-primary hover:bg-primary-hover text-white px-6 py-3.5 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2">
             <i data-lucide="plus" size="18"></i> Add Theme
         </button>
     </div>
@@ -125,7 +141,7 @@
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 rounded-2xl overflow-hidden bg-gray-100 flex items-center justify-center shrink-0 border border-gray-100 shadow-sm">
                                         @if($item->image)
-                                            <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
+                                            <img src="{{ str_starts_with($item->image, 'http') ? $item->image : asset(ltrim($item->image, '/')) }}" alt="{{ $item->name }}" class="w-full h-full object-cover">
                                         @else
                                             <i data-lucide="shapes" class="text-gray-400 w-5 h-5"></i>
                                         @endif
@@ -154,7 +170,7 @@
                             <td class="py-6 px-10 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button 
-                                        @click="showEditModal = true; editItem = { id: '{{ $item->id }}', name: '{{ addslashes($item->name) }}', description: '{{ addslashes($item->description) }}', status: '{{ $item->status }}', image_url: '{{ $item->image }}' }"
+                                        @click="showEditModal = true; editImagePreview = ''; editItem = { id: '{{ $item->id }}', name: '{{ addslashes($item->name) }}', description: '{{ addslashes($item->description) }}', status: '{{ $item->status }}', image_url: '{{ $item->image ? (str_starts_with($item->image, 'http') ? $item->image : asset(ltrim($item->image, '/'))) : '' }}' }"
                                         class="p-2 text-muted-text hover:text-primary transition-all animate-hover"
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
@@ -259,7 +275,7 @@
                     <input required type="text" name="name" placeholder="E.g. Adventure, Honeymoon" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                 </div>
 
-                {{-- Subtitle/Description --}}
+                {{-- Description --}}
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Description / Subtitle</label>
                     <input type="text" name="description" placeholder="E.g. Romantic & intimate escapes" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
@@ -269,13 +285,23 @@
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Theme Picture</label>
                     <div class="flex items-center justify-center w-full">
-                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-[24px] cursor-pointer bg-gray-50 hover:bg-gray-100/50 transition-colors">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <i data-lucide="image" class="w-8 h-8 text-gray-400 mb-2"></i>
-                                <p class="text-xs text-gray-500 font-bold"><span class="text-primary">Click to upload</span> or drag and drop</p>
-                                <p class="text-[10px] text-gray-400 mt-1">PNG, JPG, JPEG (Max. 2MB)</p>
-                            </div>
-                            <input type="file" name="image" class="hidden" accept="image/*" />
+                        <label class="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-[24px] cursor-pointer bg-gray-50 hover:bg-gray-100/50 transition-colors overflow-hidden">
+                            <template x-if="!addImagePreview">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <i data-lucide="image" class="w-8 h-8 text-gray-400 mb-2"></i>
+                                    <p class="text-xs text-gray-500 font-bold"><span class="text-primary">Click to upload</span> or drag and drop</p>
+                                    <p class="text-[10px] text-gray-400 mt-1">PNG, JPG, JPEG (Max. 2MB)</p>
+                                </div>
+                            </template>
+                            <template x-if="addImagePreview">
+                                <div class="w-full h-full relative">
+                                    <img :src="addImagePreview" class="w-full h-full object-cover" />
+                                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                        <span class="text-white text-xs font-bold">Change Image</span>
+                                    </div>
+                                </div>
+                            </template>
+                            <input type="file" name="image" class="hidden" accept="image/*" @change="previewImage($event, 'add')" />
                         </label>
                     </div>
                 </div>
@@ -339,19 +365,35 @@
                 {{-- Current Image Preview & Image Upload --}}
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Theme Picture</label>
-                    <div class="flex items-center gap-4 mb-3" x-show="editItem.image_url">
-                        <div class="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
-                            <img :src="editItem.image_url" class="w-full h-full object-cover" />
-                        </div>
-                        <span class="text-xs text-muted-text font-bold">Current picture</span>
-                    </div>
                     <div class="flex items-center justify-center w-full">
-                        <label class="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-200 rounded-[24px] cursor-pointer bg-gray-50 hover:bg-gray-100/50 transition-colors">
-                            <div class="flex flex-col items-center justify-center pt-4 pb-4">
-                                <i data-lucide="image" class="w-6 h-6 text-gray-400 mb-1"></i>
-                                <p class="text-xs text-gray-500 font-bold"><span class="text-primary">Click to upload new</span> or drag</p>
-                            </div>
-                            <input type="file" name="image" class="hidden" accept="image/*" />
+                        <label class="relative flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-200 rounded-[24px] cursor-pointer bg-gray-50 hover:bg-gray-100/50 transition-colors overflow-hidden">
+                            <!-- Case 1: No new image selected & no current image exists -->
+                            <template x-if="!editImagePreview && !editItem.image_url">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <i data-lucide="image" class="w-8 h-8 text-gray-400 mb-2"></i>
+                                    <p class="text-xs text-gray-500 font-bold"><span class="text-primary">Click to upload new</span> or drag</p>
+                                    <p class="text-[10px] text-gray-400 mt-1">PNG, JPG, JPEG (Max. 2MB)</p>
+                                </div>
+                            </template>
+                            <!-- Case 2: No new image selected, but current image exists -->
+                            <template x-if="!editImagePreview && editItem.image_url">
+                                <div class="w-full h-full relative">
+                                    <img :src="editItem.image_url" class="w-full h-full object-cover" />
+                                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                        <span class="text-white text-xs font-bold">Click to Change Image</span>
+                                    </div>
+                                </div>
+                            </template>
+                            <!-- Case 3: New image selected (Show dynamic preview) -->
+                            <template x-if="editImagePreview">
+                                <div class="w-full h-full relative">
+                                    <img :src="editImagePreview" class="w-full h-full object-cover" />
+                                    <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                        <span class="text-white text-xs font-bold">Change Image</span>
+                                    </div>
+                                </div>
+                            </template>
+                            <input type="file" name="image" class="hidden" accept="image/*" @change="previewImage($event, 'edit')" />
                         </label>
                     </div>
                 </div>
