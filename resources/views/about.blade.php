@@ -3,7 +3,7 @@
 @section('content')
     <!-- Hero Section -->
     <div class="relative w-full flex items-center justify-center bg-gray-900" style="height: 550px;">
-        <img src="{{ asset('images/about_contact page.jpg') }}" alt="Hero Image" class="absolute inset-0 w-full h-full object-cover">
+        <img src="{{ asset('images/about_contact_page.jpg') }}?v={{ time() }}" alt="Hero Image" class="absolute inset-0 w-full h-full object-cover">
         <!-- Blur fade to white at bottom -->
         <div class="absolute bottom-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-0"></div>
         <div class="relative z-10 text-left w-full max-w-7xl px-6">
