@@ -5,27 +5,31 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
+// Determine environment paths
+$isHostinger = file_exists(__DIR__.'/../../tour-raja/bootstrap/app.php');
+
+$maintenancePath = $isHostinger 
+    ? __DIR__.'/../../tour-raja/storage/framework/maintenance.php' 
+    : __DIR__.'/../storage/framework/maintenance.php';
+
+$vendorPath = $isHostinger 
+    ? __DIR__.'/../../tour-raja/vendor/autoload.php' 
+    : __DIR__.'/../vendor/autoload.php';
+
+$bootstrapPath = $isHostinger 
+    ? __DIR__.'/../../tour-raja/bootstrap/app.php' 
+    : __DIR__.'/../bootstrap/app.php';
+
 // Determine if the application is in maintenance mode...
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
-    require $maintenance;
-} elseif (file_exists($maintenance = __DIR__.'/../../tour-raja/storage/framework/maintenance.php')) {
-    require $maintenance;
+if (file_exists($maintenancePath)) {
+    require $maintenancePath;
 }
 
 // Register the Composer autoloader...
-if (file_exists(__DIR__.'/../vendor/autoload.php')) {
-    require __DIR__.'/../vendor/autoload.php';
-} else {
-    require __DIR__.'/../../tour-raja/vendor/autoload.php';
-}
+require $vendorPath;
 
 // Bootstrap Laravel and handle the request...
-if (file_exists(__DIR__.'/../bootstrap/app.php')) {
-    /** @var Application $app */
-    $app = require_once __DIR__.'/../bootstrap/app.php';
-} else {
-    /** @var Application $app */
-    $app = require_once __DIR__.'/../../tour-raja/bootstrap/app.php';
-}
+/** @var Application $app */
+$app = require_once $bootstrapPath;
 
 $app->handleRequest(Request::capture());
