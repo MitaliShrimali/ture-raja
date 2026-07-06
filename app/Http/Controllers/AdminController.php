@@ -104,11 +104,11 @@ class AdminController extends Controller
         DB::table('home_packages')->insert([
             'type' => $request->type,
             'title' => $request->title,
-            'departure_city'      => $request->departure_city ?? null,
-            'terms'               => $request->terms ?? null,
-            'sightseeing_list'    => json_encode($sightseeing_list),
-            'currency'            => $request->currency ?? '₹',
-    
+            'departure_city' => $request->departure_city ?? null,
+            'terms' => $request->terms ?? null,
+            'sightseeing_list' => json_encode($sightseeing_list),
+            'currency' => $request->currency ?? '₹',
+
             'subtitle' => $request->subtitle,
             'image' => $imagePath,
             'price' => $request->price,
@@ -129,11 +129,11 @@ class AdminController extends Controller
 
         $data = [
             'title' => $request->title,
-            'departure_city'      => $request->departure_city ?? null,
-            'terms'               => $request->terms ?? null,
-            'sightseeing_list'    => json_encode($sightseeing_list),
-            'currency'            => $request->currency ?? '₹',
-    
+            'departure_city' => $request->departure_city ?? null,
+            'terms' => $request->terms ?? null,
+            'sightseeing_list' => json_encode($sightseeing_list),
+            'currency' => $request->currency ?? '₹',
+
             'subtitle' => $request->subtitle,
             'price' => $request->price,
             'status' => $request->status ?? 'Live',
@@ -189,16 +189,16 @@ class AdminController extends Controller
         }
 
         DB::table('offer_stickers')->insert([
-            'title'    => $request->title,
-            'departure_city'      => $request->departure_city ?? null,
-            'terms'               => $request->terms ?? null,
-            'sightseeing_list'    => json_encode($sightseeing_list),
-            'currency'            => $request->currency ?? '₹',
-    
+            'title' => $request->title,
+            'departure_city' => $request->departure_city ?? null,
+            'terms' => $request->terms ?? null,
+            'sightseeing_list' => json_encode($sightseeing_list),
+            'currency' => $request->currency ?? '₹',
+
             'subtitle' => $request->subtitle,
-            'image'    => $imagePath,
-            'link'     => $request->link ?? '/discover',
-            'status'   => $request->status ?? 'Live',
+            'image' => $imagePath,
+            'link' => $request->link ?? '/discover',
+            'status' => $request->status ?? 'Live',
             'bg_color' => $request->bg_color,
             'created_at' => now(),
             'updated_at' => now(),
@@ -212,15 +212,15 @@ class AdminController extends Controller
         $request->validate(['id' => 'required', 'title' => 'required']);
 
         $data = [
-            'title'    => $request->title,
-            'departure_city'      => $request->departure_city ?? null,
-            'terms'               => $request->terms ?? null,
-            'sightseeing_list'    => json_encode($sightseeing_list),
-            'currency'            => $request->currency ?? '₹',
-    
+            'title' => $request->title,
+            'departure_city' => $request->departure_city ?? null,
+            'terms' => $request->terms ?? null,
+            'sightseeing_list' => json_encode($sightseeing_list),
+            'currency' => $request->currency ?? '₹',
+
             'subtitle' => $request->subtitle,
-            'link'     => $request->link ?? '/discover',
-            'status'   => $request->status ?? 'Live',
+            'link' => $request->link ?? '/discover',
+            'status' => $request->status ?? 'Live',
             'bg_color' => $request->bg_color,
             'updated_at' => now(),
         ];
@@ -258,9 +258,9 @@ class AdminController extends Controller
         $query = DB::table('packages')->where('status', '!=', 'Pending');
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%");
+                    ->orWhere('location', 'like', "%{$search}%");
             });
         }
 
@@ -274,9 +274,9 @@ class AdminController extends Controller
         $query = DB::table('packages')->where('status', 'Pending');
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%");
+                    ->orWhere('location', 'like', "%{$search}%");
             });
         }
 
@@ -382,7 +382,7 @@ class AdminController extends Controller
                 $sightseeing_list = array_values(array_filter(array_map('trim', explode("\n", $request->sightseeing_list))));
             }
         }
-    
+
 
         // Itinerary Days parsing
         $itinerary = [];
@@ -405,10 +405,11 @@ class AdminController extends Controller
         if ($request->has('hotels')) {
             foreach ($request->hotels as $hotelJson) {
                 $hotelData = json_decode($hotelJson, true);
-                if ($hotelData) $hotels[] = $hotelData;
+                if ($hotelData)
+                    $hotels[] = $hotelData;
             }
         }
-        
+
         $keywords = [];
         if ($request->has('keywords') && !empty($request->keywords)) {
             $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
@@ -417,7 +418,7 @@ class AdminController extends Controller
         $amenities = $request->input('amenities', []);
         $transfers = $request->input('transfers', []);
         $meals = $request->input('meals', []);
-        
+
         $expiry_date = null;
         if (!empty($request->validity) && strpos($request->validity, ' to ') !== false) {
             $parts = explode(' to ', $request->validity);
@@ -448,13 +449,13 @@ class AdminController extends Controller
 
         DB::table('packages')->insert([
             'title' => $request->title,
-            'departure_city'      => $request->departure_city ?? null,
-            'departure_state'     => $request->departure_state ?? null,
-            'departure_country'   => $request->departure_country ?? null,
-            'terms'               => $request->terms ?? null,
-            'sightseeing_list'    => json_encode($sightseeing_list),
-            'currency'            => $request->currency ?? '₹',
-    
+            'departure_city' => $request->departure_city ?? null,
+            'departure_state' => $request->departure_state ?? null,
+            'departure_country' => $request->departure_country ?? null,
+            'terms' => $request->terms ?? null,
+            'sightseeing_list' => json_encode($sightseeing_list),
+            'currency' => $request->currency ?? '₹',
+
             'location' => $request->location ?? 'Global',
             'price' => $request->price,
             'old_price' => $request->old_price,
@@ -483,10 +484,10 @@ class AdminController extends Controller
             'amenities' => json_encode($amenities),
             'transfers' => json_encode($transfers),
             'meals' => json_encode($meals),
-            'itinerary'            => json_encode($itinerary),
-            'editorial_itinerary'  => $request->editorial_itinerary ?? null,
-            'created_at'           => now(),
-            'updated_at'           => now(),
+            'itinerary' => json_encode($itinerary),
+            'editorial_itinerary' => $request->editorial_itinerary ?? null,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         return redirect('/admin/packages')->with('success', 'Package created successfully!');
@@ -504,7 +505,7 @@ class AdminController extends Controller
         if (empty($imageUrl) && $oldPkg) {
             $imageUrl = $oldPkg->image;
         }
-        
+
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
             if (!$file->isValid()) {
@@ -567,12 +568,13 @@ class AdminController extends Controller
         if ($request->has('hotels')) {
             foreach ($request->hotels as $hotelJson) {
                 $hotelData = json_decode($hotelJson, true);
-                if ($hotelData) $hotels[] = $hotelData;
+                if ($hotelData)
+                    $hotels[] = $hotelData;
             }
         } else {
             $hotels = $oldPkg && isset($oldPkg->hotels) ? json_decode($oldPkg->hotels, true) ?: [] : [];
         }
-        
+
         $keywords = [];
         if ($request->has('keywords') && !empty($request->keywords)) {
             $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
@@ -603,7 +605,7 @@ class AdminController extends Controller
                 $sightseeing_list = array_values(array_filter(array_map('trim', explode("\n", $request->sightseeing_list))));
             }
         }
-    
+
 
         // Itinerary Days parsing
         $itinerary = [];
@@ -620,7 +622,7 @@ class AdminController extends Controller
                 }
             }
         }
-        
+
         if ($request->has('agent')) {
             $agentName = $request->agent;
             $agentDb = DB::table('agents')->where('name', $agentName)->first();
@@ -656,13 +658,13 @@ class AdminController extends Controller
 
         DB::table('packages')->where('id', $request->id)->update([
             'title' => $request->title,
-            'departure_city'      => $request->departure_city ?? null,
-            'departure_state'     => $request->departure_state ?? null,
-            'departure_country'   => $request->departure_country ?? null,
-            'terms'               => $request->terms ?? null,
-            'sightseeing_list'    => json_encode($sightseeing_list),
-            'currency'            => $request->currency ?? '₹',
-    
+            'departure_city' => $request->departure_city ?? null,
+            'departure_state' => $request->departure_state ?? null,
+            'departure_country' => $request->departure_country ?? null,
+            'terms' => $request->terms ?? null,
+            'sightseeing_list' => json_encode($sightseeing_list),
+            'currency' => $request->currency ?? '₹',
+
             'location' => $request->location,
             'price' => $request->price,
             'old_price' => $request->old_price,
@@ -691,9 +693,9 @@ class AdminController extends Controller
             'amenities' => json_encode($amenities),
             'transfers' => json_encode($transfers),
             'meals' => json_encode($meals),
-            'itinerary'            => json_encode($itinerary),
-            'editorial_itinerary'  => $request->editorial_itinerary ?? null,
-            'updated_at'           => now(),
+            'itinerary' => json_encode($itinerary),
+            'editorial_itinerary' => $request->editorial_itinerary ?? null,
+            'updated_at' => now(),
         ]);
 
         return redirect('/admin/packages')->with('success', 'Package updated successfully!');
@@ -736,7 +738,7 @@ class AdminController extends Controller
 
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%");
+                ->orWhere('location', 'like', "%{$search}%");
         }
 
         $hotels = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
@@ -746,7 +748,7 @@ class AdminController extends Controller
     public function storeHotel(Request $request)
     {
         $request->validate(['name' => 'required', 'location' => 'required']);
-        
+
         DB::table('hotels')->insert([
             'name' => $request->name,
             'category' => $request->category ?? 'Luxury Resort',
@@ -763,7 +765,7 @@ class AdminController extends Controller
     public function updateHotel(Request $request)
     {
         $request->validate(['id' => 'required', 'name' => 'required']);
-        
+
         DB::table('hotels')->where('id', $request->id)->update([
             'name' => $request->name,
             'category' => $request->category,
@@ -899,9 +901,9 @@ class AdminController extends Controller
         } elseif ($request->status === 'inactive') {
             $query->where('status', 'Inactive');
         }
-        $activities    = $query->paginate(10)->withQueryString();
-        $totalCount    = DB::table('activities')->count();
-        $activeCount   = DB::table('activities')->where('status', 'Active')->count();
+        $activities = $query->paginate(10)->withQueryString();
+        $totalCount = DB::table('activities')->count();
+        $activeCount = DB::table('activities')->where('status', 'Active')->count();
         $inactiveCount = DB::table('activities')->where('status', 'Inactive')->count();
         return view('admin.activities', compact('activities', 'totalCount', 'activeCount', 'inactiveCount'));
     }
@@ -910,11 +912,11 @@ class AdminController extends Controller
     {
         $request->validate(['name' => 'required', 'icon' => 'required']);
         DB::table('activities')->insert([
-            'name'       => $request->name,
-            'icon'       => $request->icon,
-            'intensity'  => $request->intensity ?? 'Medium',
-            'price'      => $request->price ?? 0,
-            'status'     => $request->status ?? 'Active',
+            'name' => $request->name,
+            'icon' => $request->icon,
+            'intensity' => $request->intensity ?? 'Medium',
+            'price' => $request->price ?? 0,
+            'status' => $request->status ?? 'Active',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -925,11 +927,11 @@ class AdminController extends Controller
     {
         $request->validate(['id' => 'required', 'name' => 'required']);
         DB::table('activities')->where('id', $request->id)->update([
-            'name'       => $request->name,
-            'icon'       => $request->icon,
-            'intensity'  => $request->intensity,
-            'price'      => $request->price ?? 0,
-            'status'     => $request->status ?? 'Active',
+            'name' => $request->name,
+            'icon' => $request->icon,
+            'intensity' => $request->intensity,
+            'price' => $request->price ?? 0,
+            'status' => $request->status ?? 'Active',
             'updated_at' => now(),
         ]);
         return redirect()->back()->with('success', 'Activity updated!');
@@ -962,9 +964,9 @@ class AdminController extends Controller
         $query = DB::table('users')->whereIn('role', ['SUPER ADMIN', 'MANAGER', 'EDITOR']);
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -995,9 +997,9 @@ class AdminController extends Controller
         $query = DB::table('users')->whereNotIn('role', ['SUPER ADMIN', 'MANAGER', 'EDITOR'])->orWhereNull('role');
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -1014,7 +1016,7 @@ class AdminController extends Controller
     public function storeUser(Request $request)
     {
         $request->validate(['name' => 'required', 'email' => 'required|email|unique:users,email']);
-        
+
         $avatarPath = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($request->name);
         if ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
@@ -1040,7 +1042,7 @@ class AdminController extends Controller
     public function updateUser(Request $request)
     {
         $request->validate(['id' => 'required', 'name' => 'required', 'email' => 'required|email']);
-        
+
         $updateData = [
             'name' => $request->name,
             'email' => $request->email,
@@ -1102,9 +1104,9 @@ class AdminController extends Controller
         if ($request->has('plan_id') && $request->input('plan_id') !== null && $request->input('plan_id') !== '') {
             $selectedPlan = DB::table('plans')->where('id', $request->plan_id)->first();
             if ($selectedPlan && strtolower($selectedPlan->name) === 'basic') {
-                $query->where(function($q) use ($request) {
+                $query->where(function ($q) use ($request) {
                     $q->where('agents.plan_id', $request->plan_id)
-                      ->orWhereNull('agents.plan_id');
+                        ->orWhereNull('agents.plan_id');
                 });
             } else {
                 $query->where('agents.plan_id', $request->plan_id);
@@ -1117,205 +1119,205 @@ class AdminController extends Controller
 
         if ($request->has('search') && $request->input('search') !== null && $request->input('search') !== '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('agents.name', 'like', "%{$search}%")
-                  ->orWhere('agents.email', 'like', "%{$search}%")
-                  ->orWhere('agents.phone', 'like', "%{$search}%");
+                    ->orWhere('agents.email', 'like', "%{$search}%")
+                    ->orWhere('agents.phone', 'like', "%{$search}%");
             });
         }
 
         $agents = $query->orderBy('agents.id', 'desc')->paginate(10)->withQueryString();
-        
+
         $plans = DB::table('plans')->get();
 
         return view('admin.registered-agents', compact('agents', 'plans'));
     }
 
-     public function storeAgent(Request $request)
-     {
-         $request->validate([
-             'name' => 'required',
-             'email' => 'required|email',
-             'logo' => 'nullable|image|max:2048'
-         ]);
- 
-         $logoUrl = null;
-         if ($request->hasFile('logo')) {
-             $file = $request->file('logo');
-             $fileName = time() . '_' . $file->getClientOriginalName();
-             $file->move(public_path('uploads/agents'), $fileName);
-             $logoUrl = '/uploads/agents/' . $fileName;
-         }
-         
-         $plan_id = null;
-         if ($request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
-             $planRecord = DB::table('plans')->where('name', $request->custom_plan_tier)->first();
-             if ($planRecord) {
-                 $plan_id = $planRecord->id;
-             }
-         }
+    public function storeAgent(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email',
+            'logo' => 'nullable|image|max:2048'
+        ]);
 
-         DB::table('agents')->insert([
-             'name' => $request->name,
-             'logo' => $logoUrl,
-             'email' => $request->email,
-             'phone' => $request->phone,
-             'landline' => $request->landline,
-             'country' => $request->country,
-             'state' => $request->state,
-             'city' => $request->city,
-             'pincode' => $request->pincode,
-             'address' => $request->address,
-             'about' => $request->about,
-             'facebook' => $request->facebook,
-             'twitter' => $request->twitter,
-             'linkedin' => $request->linkedin,
-             'google_plus' => $request->google_plus,
-             'instagram' => $request->instagram,
-             'skype' => $request->skype,
-             'website' => $request->website,
-             'region' => $request->region ?? 'Asia Pacific',
-             'tier' => $request->tier ?? 'Premium',
-             'plan_id' => $plan_id,
-             'status' => $request->status ?? 'Active',
-             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
-             'generate_bill' => $request->has('generate_bill') ? true : false,
-             'api_access' => $request->has('api_access') ? true : false,
-             'pending' => $request->pending ?? 0,
-             'approved' => $request->approved ?? 0,
-             'created_at' => now(),
-             'updated_at' => now(),
-         ]);
- 
+        $logoUrl = null;
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/agents'), $fileName);
+            $logoUrl = '/uploads/agents/' . $fileName;
+        }
 
-         return redirect('/admin/registered-agents')->with('success', 'New Travel Agent onboarded successfully!');
-     }
- 
-     public function editAgent($id)
-     {
-         $agent = DB::table('agents')
-             ->leftJoin('plans', 'agents.plan_id', '=', 'plans.id')
-             ->select('agents.*', 'plans.name as plan_name')
-             ->where('agents.id', $id)
-             ->first();
-         if (!$agent) {
-             return redirect()->back()->with('error', 'Agent not found.');
-         }
-         $plans = DB::table('plans')->where('status', 'Active')->get();
-         return view('admin.agents-edit', compact('agent', 'plans'));
-     }
+        $plan_id = null;
+        if ($request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
+            $planRecord = DB::table('plans')->where('name', $request->custom_plan_tier)->first();
+            if ($planRecord) {
+                $plan_id = $planRecord->id;
+            }
+        }
 
-     public function agentProfile($id)
-     {
-         $agent = DB::table('agents')->where('id', $id)->first();
-         if (!$agent) {
-             return redirect()->back()->with('error', 'Agent not found.');
-         }
-         
-         // Seed realistic default values for empty fields based on reference design
-         if (empty($agent->address)) {
-             $agent->address = "102 Royal Plaza, Opp. Crystal Mall";
-         }
-         if (empty($agent->city)) {
-             $agent->city = "Rajkot";
-         }
-         if (empty($agent->pincode)) {
-             $agent->pincode = "360003";
-         }
-         if (empty($agent->state)) {
-             $agent->state = "Gujarat";
-         }
-         if (empty($agent->about)) {
-             $agent->about = "Specializing in luxury domestic tours and international holiday packages. We pride ourselves on customer satisfaction and 24/7 on-ground support for all our clients.";
-         }
-         if (empty($agent->landline)) {
-             $agent->landline = "0281-2233445";
-         }
+        DB::table('agents')->insert([
+            'name' => $request->name,
+            'logo' => $logoUrl,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'landline' => $request->landline,
+            'country' => $request->country,
+            'state' => $request->state,
+            'city' => $request->city,
+            'pincode' => $request->pincode,
+            'address' => $request->address,
+            'about' => $request->about,
+            'facebook' => $request->facebook,
+            'twitter' => $request->twitter,
+            'linkedin' => $request->linkedin,
+            'google_plus' => $request->google_plus,
+            'instagram' => $request->instagram,
+            'skype' => $request->skype,
+            'website' => $request->website,
+            'region' => $request->region ?? 'Asia Pacific',
+            'tier' => $request->tier ?? 'Premium',
+            'plan_id' => $plan_id,
+            'status' => $request->status ?? 'Active',
+            'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
+            'generate_bill' => $request->has('generate_bill') ? true : false,
+            'api_access' => $request->has('api_access') ? true : false,
+            'pending' => $request->pending ?? 0,
+            'approved' => $request->approved ?? 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
-         $activePlan = DB::table('plans')->where('id', $agent->plan_id ?? null)->first();
-         $payments = DB::table('payments')->where('email', $agent->email)->orderBy('id', 'desc')->get();
 
-         return view('admin.agent-profile', compact('agent', 'activePlan', 'payments'));
-     }
- 
-     public function updateAgent(Request $request)
-     {
-         $request->validate([
-             'id' => 'required',
-             'name' => 'required',
-             'email' => 'required|email',
-         ]);
- 
-         $agent = DB::table('agents')->where('id', $request->id)->first();
-         if (!$agent) {
-             return redirect()->back()->with('error', 'Agent not found.');
-         }
- 
-         $logoUrl = $agent->logo;
-         if ($request->hasFile('logo')) {
-             $file = $request->file('logo');
-             $fileName = time() . '_' . $file->getClientOriginalName();
-             $file->move(public_path('uploads/agents'), $fileName);
-             $logoUrl = '/uploads/agents/' . $fileName;
-         }
- 
-         $plan_id = null;
-         if ($request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
-             $planRecord = DB::table('plans')->where('name', $request->custom_plan_tier)->first();
-             if ($planRecord) {
-                 $plan_id = $planRecord->id;
-             }
-         }
+        return redirect('/admin/registered-agents')->with('success', 'New Travel Agent onboarded successfully!');
+    }
 
-         DB::table('agents')->where('id', $request->id)->update([
-             'name' => $request->name,
-             'logo' => $logoUrl,
-             'email' => $request->email,
-             'phone' => $request->phone,
-             'landline' => $request->landline,
-             'country' => $request->country,
-             'state' => $request->state,
-             'city' => $request->city,
-             'pincode' => $request->pincode,
-             'address' => $request->address,
-             'about' => $request->about,
-             'facebook' => $request->facebook,
-             'twitter' => $request->twitter,
-             'linkedin' => $request->linkedin,
-             'google_plus' => $request->google_plus,
-             'instagram' => $request->instagram,
-             'skype' => $request->skype,
-             'website' => $request->website,
-             'region' => $request->region ?? 'Asia Pacific',
-             'tier' => $request->tier ?? 'Premium',
-             'plan_id' => ($request->tier === 'Customise' && $plan_id) ? $plan_id : DB::raw('plan_id'),
-             'status' => $request->status ?? 'Active',
-             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
-             'generate_bill' => $request->has('generate_bill') ? true : false,
-             'api_access' => $request->has('api_access') ? true : false,
-             'pending' => $request->pending ?? 0,
-             'approved' => $request->approved ?? 0,
-             'updated_at' => now(),
-         ]);
+    public function editAgent($id)
+    {
+        $agent = DB::table('agents')
+            ->leftJoin('plans', 'agents.plan_id', '=', 'plans.id')
+            ->select('agents.*', 'plans.name as plan_name')
+            ->where('agents.id', $id)
+            ->first();
+        if (!$agent) {
+            return redirect()->back()->with('error', 'Agent not found.');
+        }
+        $plans = DB::table('plans')->where('status', 'Active')->get();
+        return view('admin.agents-edit', compact('agent', 'plans'));
+    }
 
-         return redirect('/admin/registered-agents')->with('success', 'Travel Agent updated successfully!');
-     }
- 
-     public function deleteAgent($id)
-     {
-         DB::table('agents')->where('id', $id)->delete();
-         return redirect()->back()->with('success', 'Agent removed successfully!');
-     }
- 
-     public function toggleAgent($id)
-     {
-         $agent = DB::table('agents')->where('id', $id)->first();
-         if ($agent) {
-             $newStatus = strtolower($agent->status) === 'active' ? 'Inactive' : 'Active';
-             DB::table('agents')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
-         }
-         return redirect('/admin/registered-agents')->with('success', 'Agent status toggled!');
-     }
+    public function agentProfile($id)
+    {
+        $agent = DB::table('agents')->where('id', $id)->first();
+        if (!$agent) {
+            return redirect()->back()->with('error', 'Agent not found.');
+        }
+
+        // Seed realistic default values for empty fields based on reference design
+        if (empty($agent->address)) {
+            $agent->address = "102 Royal Plaza, Opp. Crystal Mall";
+        }
+        if (empty($agent->city)) {
+            $agent->city = "Rajkot";
+        }
+        if (empty($agent->pincode)) {
+            $agent->pincode = "360003";
+        }
+        if (empty($agent->state)) {
+            $agent->state = "Gujarat";
+        }
+        if (empty($agent->about)) {
+            $agent->about = "Specializing in luxury domestic tours and international holiday packages. We pride ourselves on customer satisfaction and 24/7 on-ground support for all our clients.";
+        }
+        if (empty($agent->landline)) {
+            $agent->landline = "0281-2233445";
+        }
+
+        $activePlan = DB::table('plans')->where('id', $agent->plan_id ?? null)->first();
+        $payments = DB::table('payments')->where('email', $agent->email)->orderBy('id', 'desc')->get();
+
+        return view('admin.agent-profile', compact('agent', 'activePlan', 'payments'));
+    }
+
+    public function updateAgent(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'name' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        $agent = DB::table('agents')->where('id', $request->id)->first();
+        if (!$agent) {
+            return redirect()->back()->with('error', 'Agent not found.');
+        }
+
+        $logoUrl = $agent->logo;
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/agents'), $fileName);
+            $logoUrl = '/uploads/agents/' . $fileName;
+        }
+
+        $plan_id = null;
+        if ($request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
+            $planRecord = DB::table('plans')->where('name', $request->custom_plan_tier)->first();
+            if ($planRecord) {
+                $plan_id = $planRecord->id;
+            }
+        }
+
+        DB::table('agents')->where('id', $request->id)->update([
+            'name' => $request->name,
+            'logo' => $logoUrl,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'landline' => $request->landline,
+            'country' => $request->country,
+            'state' => $request->state,
+            'city' => $request->city,
+            'pincode' => $request->pincode,
+            'address' => $request->address,
+            'about' => $request->about,
+            'facebook' => $request->facebook,
+            'twitter' => $request->twitter,
+            'linkedin' => $request->linkedin,
+            'google_plus' => $request->google_plus,
+            'instagram' => $request->instagram,
+            'skype' => $request->skype,
+            'website' => $request->website,
+            'region' => $request->region ?? 'Asia Pacific',
+            'tier' => $request->tier ?? 'Premium',
+            'plan_id' => ($request->tier === 'Customise' && $plan_id) ? $plan_id : DB::raw('plan_id'),
+            'status' => $request->status ?? 'Active',
+            'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
+            'generate_bill' => $request->has('generate_bill') ? true : false,
+            'api_access' => $request->has('api_access') ? true : false,
+            'pending' => $request->pending ?? 0,
+            'approved' => $request->approved ?? 0,
+            'updated_at' => now(),
+        ]);
+
+        return redirect('/admin/registered-agents')->with('success', 'Travel Agent updated successfully!');
+    }
+
+    public function deleteAgent($id)
+    {
+        DB::table('agents')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Agent removed successfully!');
+    }
+
+    public function toggleAgent($id)
+    {
+        $agent = DB::table('agents')->where('id', $id)->first();
+        if ($agent) {
+            $newStatus = strtolower($agent->status) === 'active' ? 'Inactive' : 'Active';
+            DB::table('agents')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect('/admin/registered-agents')->with('success', 'Agent status toggled!');
+    }
 
     // LEAD MANAGEMENT
     public function leads(Request $request)
@@ -1324,7 +1326,8 @@ class AdminController extends Controller
         try {
             $leadAgents = DB::table('leads')->distinct()->pluck('agent');
             foreach ($leadAgents as $laName) {
-                if (empty($laName)) continue;
+                if (empty($laName))
+                    continue;
                 $exists = DB::table('agents')
                     ->where('name', $laName)
                     ->orWhere('name', 'like', "%{$laName}%")
@@ -1339,7 +1342,7 @@ class AdminController extends Controller
                     $state = $states[array_rand($states)];
                     $pincodes = ['360001', '380001', '395001', '390001', '400001'];
                     $pincode = $pincodes[array_rand($pincodes)];
-                    
+
                     DB::table('agents')->insert([
                         'name' => $laName,
                         'email' => $email,
@@ -1366,28 +1369,28 @@ class AdminController extends Controller
         $query = DB::table('leads');
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('agent', 'like', "%{$search}%")
-                  ->orWhere('package', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('agent', 'like', "%{$search}%")
+                    ->orWhere('package', 'like', "%{$search}%");
             });
         }
-        
+
         if ($type) {
             if ($type === 'Other') {
                 $query->where('package', 'not like', "%Flight%")
-                      ->where('package', 'not like', "%Train%")
-                      ->where('package', 'not like', "%Bus%")
-                      ->where('package', 'not like', "%Cruise%")
-                      ->where('package', 'not like', "%Land%");
+                    ->where('package', 'not like', "%Train%")
+                    ->where('package', 'not like', "%Bus%")
+                    ->where('package', 'not like', "%Cruise%")
+                    ->where('package', 'not like', "%Land%");
             } else {
                 $query->where('package', 'like', "%{$type}%");
             }
         }
 
         $leads = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
-        
+
         // Fetch all agents to pass for name to ID mapping
         $agents = DB::table('agents')->get();
 
@@ -1397,7 +1400,7 @@ class AdminController extends Controller
     public function storeLead(Request $request)
     {
         $request->validate(['name' => 'required', 'email' => 'required']);
-        
+
         DB::table('leads')->insert([
             'name' => $request->name,
             'email' => $request->email,
@@ -1415,7 +1418,7 @@ class AdminController extends Controller
     public function updateLead(Request $request)
     {
         $request->validate(['id' => 'required', 'name' => 'required']);
-        
+
         $oldLead = DB::table('leads')->where('id', $request->id)->first();
 
         DB::table('leads')->where('id', $request->id)->update([
@@ -1436,7 +1439,7 @@ class AdminController extends Controller
                 } elseif ($request->status === 'Lost') {
                     $mappedStatus = 'Cancelled';
                 }
-                
+
                 // Update booking status
                 DB::table('user_bookings')
                     ->where('traveler_email', $oldLead->email)
@@ -1488,7 +1491,7 @@ class AdminController extends Controller
 
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%");
         }
 
         $paidUsers = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
@@ -1503,7 +1506,7 @@ class AdminController extends Controller
     public function storePaidUser(Request $request)
     {
         $request->validate(['name' => 'required', 'email' => 'required']);
-        
+
         DB::table('paid_users')->insert([
             'name' => $request->name,
             'email' => $request->email,
@@ -1522,7 +1525,7 @@ class AdminController extends Controller
     public function updatePaidUser(Request $request)
     {
         $request->validate(['id' => 'required', 'name' => 'required']);
-        
+
         DB::table('paid_users')->where('id', $request->id)->update([
             'name' => $request->name,
             'email' => $request->email,
@@ -1557,22 +1560,32 @@ class AdminController extends Controller
         try {
             DB::statement("SELECT invoice_data, generate_bill FROM payments LIMIT 1");
         } catch (\Exception $e) {
-            try { DB::statement("ALTER TABLE payments ADD COLUMN invoice_data LONGTEXT NULL"); } catch (\Exception $ex) {}
-            try { DB::statement("ALTER TABLE payments ADD COLUMN generate_bill TINYINT(1) DEFAULT 1"); } catch (\Exception $ex) {}
+            try {
+                DB::statement("ALTER TABLE payments ADD COLUMN invoice_data LONGTEXT NULL");
+            } catch (\Exception $ex) {
+            }
+            try {
+                DB::statement("ALTER TABLE payments ADD COLUMN generate_bill TINYINT(1) DEFAULT 1");
+            } catch (\Exception $ex) {
+            }
         }
 
         // Ensure is_synced column exists
         try {
             DB::statement("SELECT is_synced FROM paid_users LIMIT 1");
         } catch (\Exception $e) {
-            try { DB::statement("ALTER TABLE paid_users ADD COLUMN is_synced TINYINT(1) DEFAULT 0"); } catch (\Exception $ex) {}
+            try {
+                DB::statement("ALTER TABLE paid_users ADD COLUMN is_synced TINYINT(1) DEFAULT 0");
+            } catch (\Exception $ex) {
+            }
             // For existing records, set is_synced to 1 if they already exist in payments
             try {
                 $existingEmails = DB::table('payments')->pluck('email')->toArray();
                 if (!empty($existingEmails)) {
                     DB::table('paid_users')->whereIn('email', $existingEmails)->update(['is_synced' => 1]);
                 }
-            } catch (\Exception $ex) {}
+            } catch (\Exception $ex) {
+            }
         }
 
         // Sync paid_users records to payments table
@@ -1580,7 +1593,7 @@ class AdminController extends Controller
         foreach ($paidUsers as $pu) {
             $paymentId = 'TXN_PU_' . str_pad($pu->id, 4, '0', STR_PAD_LEFT);
             $exists = DB::table('payments')->where('payment_id', $paymentId)->exists();
-            
+
             if (!$exists) {
                 DB::table('payments')->insert([
                     'user_name' => $pu->name,
@@ -1608,10 +1621,10 @@ class AdminController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('payments.payment_id', 'like', "%{$search}%")
-                  ->orWhere('payments.user_name', 'like', "%{$search}%")
-                  ->orWhere('payments.email', 'like', "%{$search}%");
+                    ->orWhere('payments.user_name', 'like', "%{$search}%")
+                    ->orWhere('payments.email', 'like', "%{$search}%");
             });
         }
 
@@ -1627,9 +1640,9 @@ class AdminController extends Controller
             // Since we are using a subquery for service_guaranteed, filtering requires a whereExists or similar
             $query->whereExists(function ($q) use ($request) {
                 $q->select(DB::raw(1))
-                  ->from('agents')
-                  ->whereColumn('agents.email', 'payments.email')
-                  ->where('service_guaranteed', $request->service_guaranteed);
+                    ->from('agents')
+                    ->whereColumn('agents.email', 'payments.email')
+                    ->where('service_guaranteed', $request->service_guaranteed);
             });
         }
 
@@ -1821,7 +1834,7 @@ class AdminController extends Controller
     public function storePayment(Request $request)
     {
         $request->validate(['user_name' => 'required', 'amount' => 'required|numeric']);
-        
+
         DB::table('payments')->insert([
             'user_name' => $request->user_name,
             'email' => $request->email ?? 'guest@example.com',
@@ -1857,7 +1870,7 @@ class AdminController extends Controller
             'date' => 'required|date',
             'status' => 'required'
         ]);
-        
+
         DB::table('payments')->where('id', $request->id)->update([
             'user_name' => $request->user_name,
             'email' => $request->email,
@@ -1899,7 +1912,7 @@ class AdminController extends Controller
     public function storeAd(Request $request)
     {
         $request->validate(['campaign_name' => 'required', 'position' => 'required']);
-        
+
         $imagePath = $request->image;
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
@@ -1928,7 +1941,7 @@ class AdminController extends Controller
     public function updateAd(Request $request)
     {
         $request->validate(['id' => 'required', 'campaign_name' => 'required']);
-        
+
         $imagePath = $request->image;
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
@@ -1972,16 +1985,16 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
         $status = $request->input('status');
-        
+
         $query = DB::table('plans');
-        
+
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
         }
         if ($status) {
             $query->where('status', $status);
         }
-        
+
         $plans = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
         return view('admin.plans', compact('plans', 'search', 'status'));
     }
@@ -1998,7 +2011,7 @@ class AdminController extends Controller
             'price' => 'required|numeric',
             'package_limit' => 'required|integer'
         ]);
-        
+
         DB::table('plans')->insert([
             'name' => $request->name,
             'price' => $request->price,
@@ -2031,7 +2044,7 @@ class AdminController extends Controller
             'price' => 'required|numeric',
             'package_limit' => 'required|integer'
         ]);
-        
+
         DB::table('plans')->where('id', $request->id)->update([
             'name' => $request->name,
             'price' => $request->price,
@@ -2082,7 +2095,7 @@ class AdminController extends Controller
         }
 
         $nameLower = strtolower(trim($plan->name));
-        
+
         $subscribedAgents = DB::table('agents')
             ->where('plan_id', $plan->id)
             ->get();
@@ -2095,16 +2108,16 @@ class AdminController extends Controller
         $plans = DB::table('plans')->orderBy('id', 'asc')->get();
         $csvFileName = 'plans_export_' . time() . '.csv';
         $headers = [
-            "Content-type"        => "text/csv",
+            "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=$csvFileName",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
         ];
 
         $columns = ['ID', 'Plan Name', 'Price', 'Package Limit', 'Duration', 'Status', 'Created At'];
 
-        $callback = function() use($plans, $columns) {
+        $callback = function () use ($plans, $columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
 
@@ -2150,7 +2163,7 @@ class AdminController extends Controller
     public function storeBanner(Request $request)
     {
         $request->validate(['title' => 'required']);
-        
+
         $imageUrl = $request->image;
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
@@ -2158,7 +2171,7 @@ class AdminController extends Controller
             $file->move(public_path('uploads/banners'), $filename);
             $imageUrl = '/uploads/banners/' . $filename;
         }
-        
+
         DB::table('banners')->insert([
             'title' => $request->title,
 
@@ -2176,7 +2189,7 @@ class AdminController extends Controller
     public function updateBanner(Request $request)
     {
         $request->validate(['id' => 'required', 'title' => 'required']);
-        
+
         $imageUrl = $request->image;
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
@@ -2184,7 +2197,7 @@ class AdminController extends Controller
             $file->move(public_path('uploads/banners'), $filename);
             $imageUrl = '/uploads/banners/' . $filename;
         }
-        
+
         DB::table('banners')->where('id', $request->id)->update([
             'title' => $request->title,
 
@@ -2240,7 +2253,7 @@ class AdminController extends Controller
     public function storeNotification(Request $request)
     {
         $request->validate(['title' => 'required', 'message' => 'required']);
-        
+
         $targetAudience = $request->target_audience ?? 'all_users';
         $agentId = $request->agent_id ?? null;
 
@@ -2303,7 +2316,7 @@ class AdminController extends Controller
     public function storeCmsPage(Request $request)
     {
         $request->validate(['title' => 'required', 'slug' => 'required|unique:cms_pages,slug']);
-        
+
         DB::table('cms_pages')->insert([
             'title' => $request->title,
 
@@ -2320,7 +2333,7 @@ class AdminController extends Controller
     public function updateCmsPage(Request $request)
     {
         $request->validate(['id' => 'required', 'title' => 'required']);
-        
+
         DB::table('cms_pages')->where('id', $request->id)->update([
             'title' => $request->title,
 
@@ -2358,7 +2371,7 @@ class AdminController extends Controller
     public function storeContact(Request $request)
     {
         $request->validate(['name' => 'required', 'email' => 'required', 'message' => 'required']);
-        
+
         DB::table('contacts')->insert([
             'name' => $request->name,
             'email' => $request->email,
@@ -2414,7 +2427,7 @@ class AdminController extends Controller
     public function storeSubscriber(Request $request)
     {
         $request->validate(['email' => 'required|email|unique:subscribers,email']);
-        
+
         DB::table('subscribers')->insert([
             'email' => $request->email,
             'status' => 'Subscribed',
@@ -2451,15 +2464,16 @@ class AdminController extends Controller
     public function updateSettings(Request $request)
     {
         foreach ($request->all() as $key => $value) {
-            if ($key === '_token') continue;
-            
+            if ($key === '_token')
+                continue;
+
             if ($request->hasFile($key)) {
                 $file = $request->file($key);
                 $filename = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/settings'), $filename);
                 $value = '/uploads/settings/' . $filename;
             }
-            
+
             DB::table('settings')->updateOrInsert(['key' => $key], ['value' => $value, 'updated_at' => now()]);
         }
         return redirect()->back()->with('success', 'Settings updated successfully!');
@@ -2535,9 +2549,9 @@ class AdminController extends Controller
     public function updateProfile(Request $request)
     {
         $request->validate(['name' => 'required', 'email' => 'required|email']);
-        
+
         $adminId = Auth::check() ? Auth::id() : 1;
-        
+
         DB::table('users')->where('id', $adminId)->update([
             'name' => $request->name,
             'email' => $request->email,
@@ -2546,26 +2560,26 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Admin profile updated!');
     }
-    
+
     public function downloadInquiryReport(Request $request)
     {
         $contacts = DB::table('contacts')->orderBy('id', 'desc')->get();
         $filename = "inquiry_report_" . date('Y-m-d') . ".csv";
 
         $headers = [
-            "Content-type"        => "text/csv",
+            "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
         ];
 
         $columns = ['ID', 'Name', 'Email', 'Phone', 'Subject', 'Message', 'Status', 'Date'];
 
-        $callback = function() use($contacts, $columns) {
+        $callback = function () use ($contacts, $columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-            
+
             foreach ($contacts as $contact) {
                 fputcsv($file, [
                     $contact->id,
@@ -2583,26 +2597,26 @@ class AdminController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-    
+
     public function downloadLeadsReport(Request $request)
     {
         $leads = DB::table('leads')->orderBy('id', 'desc')->get();
         $filename = "leads_report_" . date('Y-m-d') . ".csv";
 
         $headers = [
-            "Content-type"        => "text/csv",
+            "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
         ];
 
         $columns = ['ID', 'Name', 'Email', 'Phone', 'Package', 'Agent', 'Status', 'Date'];
 
-        $callback = function() use($leads, $columns) {
+        $callback = function () use ($leads, $columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-            
+
             foreach ($leads as $lead) {
                 fputcsv($file, [
                     $lead->id,
@@ -2620,26 +2634,26 @@ class AdminController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-    
+
     public function downloadPaymentsReport(Request $request)
     {
         $payments = DB::table('payments')->orderBy('id', 'desc')->get();
         $filename = "payments_report_" . date('Y-m-d') . ".csv";
 
         $headers = [
-            "Content-type"        => "text/csv",
+            "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
         ];
 
         $columns = ['ID', 'User Name', 'Email', 'Plan Type', 'Amount', 'Payment ID', 'Status', 'Date'];
 
-        $callback = function() use($payments, $columns) {
+        $callback = function () use ($payments, $columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-            
+
             foreach ($payments as $payment) {
                 fputcsv($file, [
                     $payment->id,
@@ -2657,26 +2671,26 @@ class AdminController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-    
+
     public function downloadSubscribersReport(Request $request)
     {
         $subscribers = DB::table('subscribers')->orderBy('id', 'desc')->get();
         $filename = "subscribers_report_" . date('Y-m-d') . ".csv";
 
         $headers = [
-            "Content-type"        => "text/csv",
+            "Content-type" => "text/csv",
             "Content-Disposition" => "attachment; filename=$filename",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
         ];
 
         $columns = ['ID', 'Email Address', 'Status', 'Date Joined'];
 
-        $callback = function() use($subscribers, $columns) {
+        $callback = function () use ($subscribers, $columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-            
+
             foreach ($subscribers as $sub) {
                 fputcsv($file, [
                     $sub->id,
@@ -2698,23 +2712,23 @@ class AdminController extends Controller
         $totalLeads = DB::table('leads')->count();
         $totalBookings = DB::table('user_bookings')->count();
         $totalRevenue = DB::table('user_bookings')->sum('package_price');
-        
+
         $recentInquiries = DB::table('contacts')->orderBy('id', 'desc')->limit(5)->get();
-        
+
         return view('admin.reports', compact('totalInquiries', 'totalLeads', 'totalBookings', 'totalRevenue', 'recentInquiries'));
     }
 
     public function adminProfile()
     {
         $admin = Auth::check() ? Auth::user() : DB::table('users')->where('id', 1)->first();
-        
+
         // System and analytical overview stats for admin profile!
         $totalPackages = DB::table('packages')->count();
         $totalLeads = DB::table('leads')->count();
         $totalUsers = DB::table('users')->count();
         $totalPayments = DB::table('payments')->count();
         $totalRevenue = DB::table('payments')->sum('amount');
-        
+
         return view('admin.profile', compact('admin', 'totalPackages', 'totalLeads', 'totalUsers', 'totalPayments', 'totalRevenue'));
     }
 
@@ -2728,14 +2742,14 @@ class AdminController extends Controller
     public function deleteCareer($id)
     {
         $application = \App\Models\CareerApplication::findOrFail($id);
-        
+
         // Delete the resume file if it exists
         if ($application->resume_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($application->resume_path)) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($application->resume_path);
         }
-        
+
         $application->delete();
-        
+
         return redirect()->back()->with('success', 'Career application deleted successfully.');
     }
 
@@ -2905,7 +2919,7 @@ class AdminController extends Controller
     public function durations(Request $request)
     {
         $durations = DB::table('durations')->orderBy('id', 'asc')->paginate(10);
-        
+
         $totalDurations = DB::table('durations')->count();
         $activeDurations = DB::table('durations')->where('status', 'Active')->count();
         $avgLength = round(DB::table('durations')->avg('nights') + 1);
@@ -3168,7 +3182,7 @@ class AdminController extends Controller
             ->groupBy('region')
             ->orderBy('count', 'desc')
             ->first();
-            
+
         $primaryRegionName = $primaryRegion ? $primaryRegion->region : 'N/A';
 
         return view('admin.countries', compact('countries', 'totalCountries', 'activeCountries', 'primaryRegionName'));
@@ -3289,7 +3303,7 @@ class AdminController extends Controller
 
         $states = DB::table('states')->orderBy('id', 'asc')->paginate(10);
         $totalStates = DB::table('states')->count();
-        
+
         $activeStates = DB::table('states')->where('status', 'Active')->count();
         $utilizationRate = $totalStates > 0 ? round(($activeStates / $totalStates) * 100) : 0;
 
@@ -3523,7 +3537,8 @@ class AdminController extends Controller
     public function updateMailSetup(Request $request)
     {
         foreach ($request->all() as $key => $value) {
-            if ($key === '_token') continue;
+            if ($key === '_token')
+                continue;
             DB::table('settings')->updateOrInsert(
                 ['key' => $key],
                 ['value' => $value, 'updated_at' => now()]
@@ -3542,7 +3557,8 @@ class AdminController extends Controller
     public function updatePaymentSetup(Request $request)
     {
         foreach ($request->all() as $key => $value) {
-            if ($key === '_token') continue;
+            if ($key === '_token')
+                continue;
             DB::table('settings')->updateOrInsert(
                 ['key' => $key],
                 ['value' => $value, 'updated_at' => now()]
@@ -3561,7 +3577,8 @@ class AdminController extends Controller
     public function updateWhatsappTemplate(Request $request)
     {
         foreach ($request->all() as $key => $value) {
-            if ($key === '_token') continue;
+            if ($key === '_token')
+                continue;
             DB::table('settings')->updateOrInsert(
                 ['key' => $key],
                 ['value' => $value, 'updated_at' => now()]
@@ -3580,7 +3597,8 @@ class AdminController extends Controller
     public function updateEmailTemplate(Request $request)
     {
         foreach ($request->all() as $key => $value) {
-            if ($key === '_token') continue;
+            if ($key === '_token')
+                continue;
             DB::table('settings')->updateOrInsert(
                 ['key' => $key],
                 ['value' => $value, 'updated_at' => now()]
@@ -3595,7 +3613,7 @@ function human_timing($time)
 {
     $time = time() - $time;
     $time = ($time < 1) ? 1 : $time;
-    $tokens = array (
+    $tokens = array(
         31536000 => 'year',
         2592000 => 'month',
         604800 => 'week',
@@ -3606,8 +3624,9 @@ function human_timing($time)
     );
 
     foreach ($tokens as $unit => $text) {
-        if ($time < $unit) continue;
+        if ($time < $unit)
+            continue;
         $numberOfUnits = floor($time / $unit);
-        return $numberOfUnits.' '.$text.(($numberOfUnits>1)?'s':'');
+        return $numberOfUnits . ' ' . $text . (($numberOfUnits > 1) ? 's' : '');
     }
 }

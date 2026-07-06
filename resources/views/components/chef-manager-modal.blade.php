@@ -25,7 +25,7 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-        class="relative w-full max-w-5xl max-h-[90vh] overflow-y-auto md:overflow-y-visible bg-white rounded-[32px] shadow-2xl flex flex-col md:flex-row z-10 border border-white/20"
+        class="relative w-full max-w-5xl max-h-[90vh] overflow-hidden bg-white rounded-[32px] shadow-2xl flex flex-col md:flex-row z-10 border border-white/20"
         @click.stop
     >
         <!-- Close Button (Outside the modal container in the top-right corner) -->
@@ -37,25 +37,25 @@
         </button>
 
         <!-- Left Side: Text Details (62% width on desktop) -->
-        <div class="w-full md:w-[62%] p-6 md:p-12 flex flex-col justify-between bg-white rounded-t-[32px] md:rounded-t-none md:rounded-l-[32px] relative">
-            <div class="space-y-6">
+        <div class="w-full md:w-[62%] p-5 md:p-10 flex flex-col justify-between bg-white rounded-t-[32px] md:rounded-t-none md:rounded-l-[32px] relative">
+            <div class="space-y-4">
                 <!-- Badge -->
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase border" style="background-color: #FFF4CE !important; color: #E85D26 !important; border-color: #FFE7A3 !important;">
-                    <span class="inline-block w-2 h-2 rounded-full bg-[#E85D26] animate-pulse" style="background-color: #E85D26 !important;"></span>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase border" style="background-color: #FFF4CE !important; color: #E85D26 !important; border-color: #FFE7A3 !important;">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#E85D26] animate-pulse" style="background-color: #E85D26 !important;"></span>
                     New on TourRaja
                 </div>
 
                 <!-- Main Heading -->
-                <div class="space-y-3">
-                    <h2 class="text-2xl md:text-4xl font-extrabold text-gray-900 leading-tight">
+                <div class="space-y-2">
+                    <h2 class="text-xl md:text-3xl font-extrabold text-gray-900 leading-tight">
                         Travel in Style with <br class="hidden md:inline" />
                         <span style="color: #E85D26 !important;">Private Chef</span> & <br class="hidden md:inline" />
                         <span style="color: #E85D26 !important;">Tour Manager</span>
                     </h2>
-                    <p class="text-gray-500 font-medium text-xs md:text-base leading-relaxed">
+                    <p class="text-gray-500 font-medium text-xs md:text-sm leading-relaxed">
                         Make your journey more comfortable, personalized and unforgettable.
                     </p>
-                    <div class="w-24 h-1 rounded-full mt-2" style="background-color: #E85D26 !important;"></div>
+                    <div class="w-20 h-0.5 rounded-full mt-1.5" style="background-color: #E85D26 !important;"></div>
                 </div>
 
 <style>
@@ -84,65 +84,65 @@
 </style>
 
                 <!-- Features list -->
-                <div class="space-y-4 pt-2">
+                <div class="space-y-3 pt-1">
                     <!-- Feature 1 -->
-                    <a href="{{ url('/discover?private_chef=1') }}" class="flex items-start gap-4 p-3 rounded-2xl chef-hover-item cursor-pointer block group">
-                        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200" style="background-color: #FFF4CE !important; color: #E85D26 !important;">
-                            <i data-lucide="utensils" class="w-6 h-6"></i>
+                    <a href="{{ url('/discover?private_chef=1') }}" class="flex items-start gap-3.5 p-2.5 rounded-2xl chef-hover-item cursor-pointer block group">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200" style="background-color: #FFF4CE !important; color: #E85D26 !important;">
+                            <i data-lucide="utensils" class="w-5.5 h-5.5"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-gray-900 text-base transition-colors">Private Chef</h4>
-                            <p class="text-xs text-gray-500 font-medium mt-0.5">Enjoy hygienic, delicious meals made just the way you like.</p>
+                            <h4 class="font-bold text-gray-900 text-sm transition-colors">Private Chef</h4>
+                            <p class="text-[11px] text-gray-500 font-medium mt-0.5">Enjoy hygienic, delicious meals made just the way you like.</p>
                         </div>
                     </a>
 
                     <!-- Feature 2 -->
-                    <a href="{{ url('/discover?tour_manager=1') }}" class="flex items-start gap-4 p-3 rounded-2xl manager-hover-item cursor-pointer block group">
-                        <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200" style="background-color: #FFE4E6 !important; color: #E11D48 !important;">
-                            <i data-lucide="map-pin" class="w-6 h-6"></i>
+                    <a href="{{ url('/discover?tour_manager=1') }}" class="flex items-start gap-3.5 p-2.5 rounded-2xl manager-hover-item cursor-pointer block group">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200" style="background-color: #FFE4E6 !important; color: #E11D48 !important;">
+                            <i data-lucide="map-pin" class="w-5.5 h-5.5"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-gray-900 text-base transition-colors">Tour Manager</h4>
-                            <p class="text-xs text-gray-500 font-medium mt-0.5">Personal guidance, local expertise and stress-free travel.</p>
+                            <h4 class="font-bold text-gray-900 text-sm transition-colors">Tour Manager</h4>
+                            <p class="text-[11px] text-gray-500 font-medium mt-0.5">Personal guidance, local expertise and stress-free travel.</p>
                         </div>
                     </a>
                 </div>
             </div>
 
             <!-- Bottom Action Row -->
-            <div class="mt-6 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background-color: #FFF4CE !important; color: #E85D26 !important;">
-                        <i data-lucide="sparkles" class="w-5 h-5"></i>
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm" style="background-color: #FFF4CE !important; color: #E85D26 !important;">
+                        <i data-lucide="sparkles" class="w-4.5 h-4.5"></i>
                     </div>
-                    <p class="text-xs font-bold text-gray-700 max-w-[200px] leading-tight">
+                    <p class="text-[11px] font-bold text-gray-700 max-w-[210px] leading-tight">
                         Select Chef or Manager to add comfort & luxury to your next trip!
                     </p>
                 </div>
                 <a 
                     href="{{ url('/discover') }}" 
-                    class="w-full sm:w-auto px-6 py-3.5 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200"
+                    class="w-full sm:w-auto px-5 py-3 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200"
                     style="background-color: #E85D26 !important; color: #ffffff !important;"
                 >
                     Explore Now
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                 </a>
             </div>
         </div>
 
-        <!-- Right Side: Interactive Card Visuals with Real Images (38% width on desktop) -->
-        <div class="hidden md:flex w-full md:w-[38%] bg-[#F0F2F5] p-6 md:p-8 flex flex-col justify-between relative overflow-hidden min-h-[350px] md:min-h-auto rounded-b-[32px] md:rounded-b-none md:rounded-r-[32px]">
+        <!-- Right Side: Interactive Card Visuals (38% width on desktop) -->
+        <div class="w-full md:w-[38%] bg-[#F0F2F5] p-5 md:p-8 flex flex-col justify-between relative overflow-hidden min-h-[380px] md:min-h-auto rounded-b-[32px] md:rounded-b-none md:rounded-r-[32px]" style="background-image: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.3)), url('{{ asset('images/chef2.jpg') }}'); background-size: cover; background-position: center;">
             <!-- Overlapping Cards Area -->
-            <div class="relative flex-grow flex items-center justify-center min-h-[280px] my-auto">
+            <div class="relative flex-grow flex items-center justify-center min-h-[300px] my-auto">
                 
                 <!-- Card 1: Private Chef (Top Left, Tilted Left) -->
-                <a href="{{ url('/discover?private_chef=1') }}" class="absolute top-2 left-4 w-[180px] bg-white rounded-2xl p-3 shadow-xl border border-gray-100/50 transform -rotate-6 hover:rotate-0 hover:scale-105 transition-all duration-300 z-20 block cursor-pointer group">
+                <a href="{{ url('/discover?private_chef=1') }}" class="absolute top-2 left-4 w-[210px] bg-white rounded-2xl p-3 shadow-xl border border-gray-100/50 transform -rotate-6 hover:rotate-0 hover:scale-105 transition-all duration-300 z-20 block cursor-pointer group">
                     <div class="absolute top-2 left-2 bg-[#22C55E] text-white text-[8px] font-black tracking-wider uppercase px-2 py-0.5 rounded flex items-center gap-1">
                         <i data-lucide="sun" class="w-2.5 h-2.5"></i> PRIVATE CHEF
                     </div>
-                    <div class="mt-4 overflow-hidden rounded-xl bg-gray-50 h-[110px]">
+                    <div class="mt-4 overflow-hidden rounded-xl bg-gray-50 h-[135px]">
                         <img 
-                            src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=300" 
+                            src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=350" 
                             alt="Chef at Work" 
                             class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500"
                         />
@@ -150,13 +150,13 @@
                 </a>
 
                 <!-- Card 2: Tour Manager (Bottom Right, Tilted Right) -->
-                <a href="{{ url('/discover?tour_manager=1') }}" class="absolute bottom-2 right-4 w-[190px] bg-white rounded-2xl p-3 shadow-2xl border border-gray-100/50 transform rotate-6 hover:rotate-0 hover:scale-105 transition-all duration-300 z-10 block cursor-pointer group">
+                <a href="{{ url('/discover?tour_manager=1') }}" class="absolute bottom-2 right-4 w-[220px] bg-white rounded-2xl p-3 shadow-2xl border border-gray-100/50 transform rotate-6 hover:rotate-0 hover:scale-105 transition-all duration-300 z-10 block cursor-pointer group">
                     <div class="absolute top-2 left-2 bg-[#2563EB] text-white text-[8px] font-black tracking-wider uppercase px-2 py-0.5 rounded flex items-center gap-1">
                         <i data-lucide="user" class="w-2.5 h-2.5"></i> TOUR MANAGER
                     </div>
-                    <div class="mt-4 overflow-hidden rounded-xl bg-gray-50 h-[110px]">
+                    <div class="mt-4 overflow-hidden rounded-xl bg-gray-50 h-[135px]">
                         <img 
-                            src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=300" 
+                            src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?auto=format&fit=crop&q=80&w=350" 
                             alt="Travel Tour Manager" 
                             class="w-full h-full object-cover rounded-xl group-hover:scale-105 transition-transform duration-500"
                         />
@@ -176,7 +176,7 @@
             </div>
 
             <!-- Bottom Indicators/Badges -->
-            <div class="mt-auto pt-4 border-t border-black/5 grid grid-cols-3 gap-1.5 text-center">
+            <div class="mt-auto pt-4 border-t border-black/5 grid grid-cols-3 gap-1.5 text-center w-full">
                 <div class="flex flex-col items-center">
                     <i data-lucide="users" class="w-3.5 h-3.5 text-gray-600 mb-0.5"></i>
                     <span class="text-[8px] font-bold text-gray-800 leading-tight">Experienced</span>

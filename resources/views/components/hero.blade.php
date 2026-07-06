@@ -134,19 +134,7 @@
 
 
 
-    {{-- ── Slide dots (Centered) ── --}}
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-3 bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm">
-      <button onclick="prevHeroSlide()" class="text-white/60 hover:text-white transition-colors">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      @foreach($slides as $i => $url)
-        <div class="hero-dot {{ $i===0?'opacity-100':'opacity-40' }}" data-dot="{{ $i }}" onclick="goToHeroSlide({{ $i }})"
-            style="width:8px;height:8px;border-radius:50%;background:#fff;cursor:pointer;transition:opacity .3s;"></div>
-      @endforeach
-      <button onclick="nextHeroSlide()" class="text-white/60 hover:text-white transition-colors">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
-    </div>
+
 
     <script>
       let currentSlide = 0;
@@ -305,11 +293,11 @@
               $label = str_replace(" Package", "\nPackage", $t->name);
           @endphp
           <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
-            class="group flex-1 min-w-0 max-w-[80px] md:max-w-[110px] lg:max-w-[130px] flex flex-col items-center gap-1.5 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
-            <div class="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex items-center justify-center">
+            class="group flex-1 min-w-0 max-w-[65px] md:max-w-[85px] lg:max-w-[105px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
+            <div class="w-9 h-9 md:w-11 md:h-11 lg:w-13 lg:h-13 flex items-center justify-center">
               <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
             </div>
-            <span class="text-center text-[10px] md:text-xs lg:text-sm font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
+            <span class="text-center text-[9px] md:text-[10px] lg:text-[11px] font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
           </a>
         @endforeach
       </div>
@@ -320,8 +308,9 @@
   <section class="bg-white pb-8 md:pb-12 border-b border-gray-100">
     <div class="container-custom">
       @if(isset($homeAd) && $homeAd)
-          <a href="{{ route('ad.click', ['id' => $homeAd->id]) }}" target="_blank" class="block w-full h-[80px] md:h-[100px] lg:h-[120px] bg-gray-100 rounded-[20px] shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex items-center justify-center">
-              <img src="{{ asset($homeAd->image) }}" alt="{{ $homeAd->campaign_name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500">
+          <a href="{{ route('ad.click', ['id' => $homeAd->id]) }}" target="_blank" class="block w-full rounded-[20px] shadow-sm hover:shadow-md transition-shadow overflow-hidden group relative">
+              <span class="absolute top-3 left-3 bg-black/60 text-white font-extrabold text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-md z-10 pointer-events-none font-sans">AD</span>
+              <img src="{{ asset($homeAd->image) }}" alt="{{ $homeAd->campaign_name }}" class="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500">
           </a>
       @else
           <div class="w-full h-[80px] md:h-[100px] lg:h-[120px] bg-[#d5d5d5] rounded-[20px] flex items-center justify-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
@@ -330,24 +319,4 @@
       @endif
     </div>
   </section>
-
-  <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          const section = document.getElementById('popular-transits-section');
-          const navbarTransits = document.getElementById('navbar-transits');
-          
-          if(section && navbarTransits) {
-              window.addEventListener('scroll', function() {
-                  // Trigger when scrollY > section end
-                  const triggerPoint = section.offsetTop + section.offsetHeight - 80; 
-                  if (window.scrollY > triggerPoint) {
-                      navbarTransits.classList.remove('opacity-0', 'pointer-events-none', 'scale-90', 'translate-y-4');
-                      navbarTransits.classList.add('opacity-100', 'scale-100', 'translate-y-0');
-                  } else {
-                      navbarTransits.classList.add('opacity-0', 'pointer-events-none', 'scale-90', 'translate-y-4');
-                      navbarTransits.classList.remove('opacity-100', 'scale-100', 'translate-y-0');
-                  }
-              });
-          }
-      });
-  </script>
+  {{-- Navbar transit visibility is handled by Alpine isScrolled in navbar.blade.php --}}

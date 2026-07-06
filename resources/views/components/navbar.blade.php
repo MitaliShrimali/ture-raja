@@ -33,7 +33,7 @@
         @endphp
         
         <div class="flex-1 relative flex justify-center items-center z-20">
-            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-[60%] sm:w-[50%] md:w-[45%] lg:w-[40vw] xl:w-[45vw] overflow-hidden items-center justify-center gap-1 sm:gap-2 md:gap-3 lg:gap-4 xl:gap-6 px-1 lg:px-0 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
+            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-auto items-center justify-center gap-1 sm:gap-2.5 md:gap-3.5 px-2 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
                 @foreach($dbTransits as $t)
                   @php
                       $imgUrl = '';
@@ -50,11 +50,11 @@
                           $shortLabel = 'Car';
                       }
                   @endphp
-                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group flex-1 min-w-0 max-w-[55px] sm:max-w-[65px] md:max-w-[75px] lg:max-w-[85px] xl:max-w-[95px] flex-shrink">
-                     <div class="w-9 h-9 md:w-11 md:h-11 xl:w-13 xl:h-13 flex items-center justify-center">
+                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group w-12 sm:w-14 flex-shrink-0">
+                     <div class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center">
                         <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
-                     <span class="text-[8px] md:text-[9px] lg:text-[9.5px] xl:text-[10px] font-bold text-gray-800 tracking-tight group-hover:text-primary transition-colors mt-0.5 truncate w-full text-center">{{ $shortLabel }}</span>
+                     <span class="text-[9px] md:text-[9.5px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-0.5 truncate w-full text-center leading-tight">{{ $shortLabel }}</span>
                   </a>
                 @endforeach
             </div>
@@ -76,10 +76,6 @@
         <div class="flex items-center justify-end gap-4 lg:gap-6 flex-shrink-0 z-10">
             
             <div class="hidden lg:flex items-center gap-5 text-[13px] font-bold transition-all duration-500 overflow-hidden" :class="(isScrolled || !isHome) ? 'opacity-100 pointer-events-auto max-w-[500px] mr-2 text-text-main' : 'opacity-0 pointer-events-none max-w-0 mr-0'">
-                <a href="{{ url('/') }}" class="hover:text-primary transition-colors flex items-center gap-1.5 relative group whitespace-nowrap {{ request()->is('/') ? 'text-primary' : '' }}">
-                    Home
-                    <span class="absolute -bottom-1 left-0 {{ request()->is('/') ? 'w-full' : 'w-0' }} h-0.5 bg-primary group-hover:w-full transition-all duration-300"></span>
-                </a>
                 @if(!request()->is('discover'))
                 <a href="{{ url('/discover') }}" class="hover:text-primary transition-colors flex items-center gap-1.5 relative group whitespace-nowrap {{ request()->is('discover') ? 'text-primary' : '' }}">
                     Top Destinations
