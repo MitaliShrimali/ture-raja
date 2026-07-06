@@ -27,11 +27,6 @@ jobs:
       with:
         node-version: '20'
 
-    - name: Install NPM Dependencies and Build
-      run: |
-        npm install
-        npm run build
-
     - name: Setup SSH
       uses: shimataro/ssh-key-action@v2
       with:
