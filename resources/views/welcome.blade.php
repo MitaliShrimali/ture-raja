@@ -949,221 +949,236 @@
             <!-- Front Wave (Little Dark Orange) -->
             <svg class="absolute bottom-0 left-0 w-full pointer-events-none" viewBox="0 0 1440 320" preserveAspectRatio="none" style="height: 60px; color: #fb923c;">
                 <path fill="currentColor" fill-opacity="1" d="M0,96L60,117.3C120,139,240,181,360,192C480,203,600,181,720,149.3C840,117,960,75,1080,80C1200,85,1320,139,1380,165.3L1440,192L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
-            </svg>
-        </div>
-    </div>
-
-
-
-    @push('scripts')
+              @push('scripts')
     <script>
-        let welcomePopupTimeout;
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            const popup = document.getElementById('welcome-popup');
-            const content = document.getElementById('welcome-popup-content');
-            
-            // Show smoothly after a short delay
-            setTimeout(() => {
-                popup.classList.remove('opacity-0', 'pointer-events-none');
-                popup.classList.add('opacity-100');
-                content.classList.remove('scale-95');
-                content.classList.add('scale-100');
+        (function() {
+            let welcomePopupTimeout;
+
+            function initWelcome() {
+                const popup = document.getElementById('welcome-popup');
+                const content = document.getElementById('welcome-popup-content');
+                if (!popup) return;
                 
-                // Auto-hide after 3 seconds
-                welcomePopupTimeout = setTimeout(() => {
-                    closeWelcomePopup();
-                }, 3000);
-            }, 500);
-        });
-
-        function closeWelcomePopup() {
-            const popup = document.getElementById('welcome-popup');
-            const content = document.getElementById('welcome-popup-content');
-            
-            // Hide smoothly
-            popup.classList.remove('opacity-100');
-            popup.classList.add('opacity-0', 'pointer-events-none');
-            content.classList.remove('scale-100');
-            content.classList.add('scale-95');
-            
-            sessionStorage.setItem('welcomePopupShown', 'true');
-            
-            if (welcomePopupTimeout) {
-                clearTimeout(welcomePopupTimeout);
-            }
-
-            // Smooth transition to show Chef modal popup
-            setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('open-chef-modal'));
-            }, 400);
-        }
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // ── Sliders ──────────────────────────────────────────────
-            const setupSlider = (sliderId, prevBtnId, nextBtnId, fallbackScroll = 340, autoSwipe = true) => {
-                const slider = document.getElementById(sliderId);
-                const prevBtn = document.getElementById(prevBtnId);
-                const nextBtn = document.getElementById(nextBtnId);
-
-                if (!slider) return;
-                
-                const getScrollAmount = () => {
-                    const firstChild = slider.firstElementChild;
-                    if (firstChild) {
-                        const gap = parseFloat(window.getComputedStyle(slider).gap) || 0;
-                        return firstChild.offsetWidth + gap;
+                // Show smoothly after a short delay
+                setTimeout(() => {
+                    popup.classList.remove('opacity-0', 'pointer-events-none');
+                    popup.classList.add('opacity-100');
+                    if (content) {
+                        content.classList.remove('scale-95');
+                        content.classList.add('scale-100');
                     }
-                    return fallbackScroll;
-                };
-
-                const moveNext = () => {
-                    const maxScroll = slider.scrollWidth - slider.clientWidth;
-                    if (maxScroll <= 5) return; // No scrolling needed
                     
-                    if (slider.scrollLeft >= maxScroll - 10) {
-                        slider.scrollTo({ left: 0, behavior: 'smooth' });
-                    } else {
-                        slider.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
-                    }
-                };
-
-                const movePrev = () => {
-                    if (slider.scrollLeft <= 10) {
-                        const maxScroll = slider.scrollWidth - slider.clientWidth;
-                        slider.scrollTo({ left: maxScroll, behavior: 'smooth' });
-                    } else {
-                        slider.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
-                    }
-                };
-
-                if (nextBtn) nextBtn.addEventListener('click', moveNext);
-                if (prevBtn) prevBtn.addEventListener('click', movePrev);
-
-                if (autoSwipe) {
-                    let interval = setInterval(moveNext, 2500);
-                    const resetInterval = () => {
-                        clearInterval(interval);
-                        interval = setInterval(moveNext, 2500);
-                    };
-                    slider.addEventListener('mouseenter', () => clearInterval(interval));
-                    slider.addEventListener('mouseleave', resetInterval);
-                    slider.addEventListener('touchstart', () => clearInterval(interval), {passive: true});
-                    slider.addEventListener('touchend', resetInterval, {passive: true});
-                    slider.addEventListener('scroll', () => {
-                        clearTimeout(slider.scrollTimeout);
-                        clearInterval(interval);
-                        slider.scrollTimeout = setTimeout(resetInterval, 2500);
-                    }, {passive: true});
-                }
-            };
-            
-            // 350px width + 24px gap = 374
-            setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, true);
-            setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, true);
-            setupSlider('promo-slider', 'prev-promo', 'next-promo', 360, false);
-
-            // ── Close dropdowns when clicking outside ─────────────────
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.filter-dropdown')) {
-                    document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
-                }
-            });
-        });
-
-        // ── Filter State ─────────────────────────────────────────────
-        const activeFilters = { category: 'all', duration: 'all', rating: 'all', price: 'all' };
-
-        function toggleDropdown(menuId) {
-            const menu = document.getElementById(menuId);
-            const allMenus = document.querySelectorAll('[id$="-menu"]');
-            allMenus.forEach(m => { if (m.id !== menuId) m.classList.add('hidden'); });
-            menu.classList.toggle('hidden');
-        }
-
-        function applyFilter(type, value, btnId, label) {
-            activeFilters[type] = value;
-            const btn = document.getElementById(btnId);
-            if (btn) {
-                btn.childNodes[0].textContent = label + ' ';
-                btn.classList.toggle('bg-primary', value !== 'all');
-                btn.classList.toggle('text-white', value !== 'all');
-                btn.classList.toggle('border-primary', value !== 'all');
-                btn.classList.toggle('bg-white', value === 'all');
-                btn.classList.toggle('text-foreground', value === 'all');
-                btn.classList.toggle('border-border-soft', value === 'all');
+                    // Auto-hide after 3 seconds
+                    welcomePopupTimeout = setTimeout(() => {
+                        window.closeWelcomePopup();
+                    }, 3000);
+                }, 500);
             }
-            // hide this dropdown
-            document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
-            filterCards();
-        }
 
-        function filterCards() {
-            const cards = document.querySelectorAll('.pkg-card');
-            let visible = 0;
+            window.closeWelcomePopup = function() {
+                const popup = document.getElementById('welcome-popup');
+                const content = document.getElementById('welcome-popup-content');
+                if (!popup) return;
+                
+                // Hide smoothly
+                popup.classList.remove('opacity-100');
+                popup.classList.add('opacity-0', 'pointer-events-none');
+                if (content) {
+                    content.classList.remove('scale-100');
+                    content.classList.add('scale-95');
+                }
+                
+                sessionStorage.setItem('welcomePopupShown', 'true');
+                
+                if (welcomePopupTimeout) {
+                    clearTimeout(welcomePopupTimeout);
+                }
 
-            cards.forEach(card => {
-                const cat      = card.dataset.category;
-                const days     = parseInt(card.dataset.duration);
-                const rating   = parseFloat(card.dataset.rating);
-                const price    = parseInt(card.dataset.price);
+                // Smooth transition to show Chef modal popup
+                setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('open-chef-modal'));
+                }, 400);
+            };
 
-                // Category
-                const catOk = activeFilters.category === 'all' || cat === activeFilters.category;
+            function initSlidersAndFilters() {
+                // ── Sliders ──────────────────────────────────────────────
+                const setupSlider = (sliderId, prevBtnId, nextBtnId, fallbackScroll = 340, autoSwipe = true) => {
+                    const slider = document.getElementById(sliderId);
+                    const prevBtn = document.getElementById(prevBtnId);
+                    const nextBtn = document.getElementById(nextBtnId);
 
-                // Duration
-                let durOk = true;
-                if (activeFilters.duration === '1-3') durOk = days >= 1 && days <= 3;
-                else if (activeFilters.duration === '4-6') durOk = days >= 4 && days <= 6;
-                else if (activeFilters.duration === '7+') durOk = days >= 7;
+                    if (!slider) return;
+                    
+                    const getScrollAmount = () => {
+                        const firstChild = slider.firstElementChild;
+                        if (firstChild) {
+                            const gap = parseFloat(window.getComputedStyle(slider).gap) || 0;
+                            return firstChild.offsetWidth + gap;
+                        }
+                        return fallbackScroll;
+                    };
 
-                // Rating
-                let ratOk = true;
-                if (activeFilters.rating !== 'all') ratOk = rating >= parseFloat(activeFilters.rating);
+                    const moveNext = () => {
+                        const maxScroll = slider.scrollWidth - slider.clientWidth;
+                        if (maxScroll <= 5) return; // No scrolling needed
+                        
+                        if (slider.scrollLeft >= maxScroll - 10) {
+                            slider.scrollTo({ left: 0, behavior: 'smooth' });
+                        } else {
+                            slider.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+                        }
+                    };
 
-                // Price
-                let priOk = true;
-                if (activeFilters.price === '0-20000') priOk = price < 20000;
-                else if (activeFilters.price === '20000-40000') priOk = price >= 20000 && price <= 40000;
-                else if (activeFilters.price === '40000+') priOk = price > 40000;
+                    const movePrev = () => {
+                        if (slider.scrollLeft <= 10) {
+                            const maxScroll = slider.scrollWidth - slider.clientWidth;
+                            slider.scrollTo({ left: maxScroll, behavior: 'smooth' });
+                        } else {
+                            slider.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+                        }
+                    };
 
-                const show = catOk && durOk && ratOk && priOk;
-                card.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
+                    if (nextBtn) nextBtn.addEventListener('click', moveNext);
+                    if (prevBtn) prevBtn.addEventListener('click', movePrev);
 
-            const noResults = document.getElementById('no-results');
-            if (noResults) noResults.classList.toggle('hidden', visible > 0);
-        }
+                    if (autoSwipe) {
+                        let interval = setInterval(moveNext, 2500);
+                        const resetInterval = () => {
+                            clearInterval(interval);
+                            interval = setInterval(moveNext, 2500);
+                        };
+                        slider.addEventListener('mouseenter', () => clearInterval(interval));
+                        slider.addEventListener('mouseleave', resetInterval);
+                        slider.addEventListener('touchstart', () => clearInterval(interval), {passive: true});
+                        slider.addEventListener('touchend', resetInterval, {passive: true});
+                        slider.addEventListener('scroll', () => {
+                            clearTimeout(slider.scrollTimeout);
+                            clearInterval(interval);
+                            slider.scrollTimeout = setTimeout(resetInterval, 2500);
+                        }, {passive: true});
+                    }
+                };
+                
+                setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, true);
+                setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, true);
+                setupSlider('promo-slider', 'prev-promo', 'next-promo', 360, false);
 
-        function resetFilters() {
-            ['category','duration','rating','price'].forEach(t => {
-                activeFilters[t] = 'all';
-            });
-            const defaults = { 'cat-btn':'Categories','dur-btn':'Duration','rat-btn':'Review / Rating','pri-btn':'Price range' };
-            Object.entries(defaults).forEach(([id, label]) => {
-                const btn = document.getElementById(id);
+                // ── Close dropdowns when clicking outside ─────────────────
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.filter-dropdown')) {
+                        document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+                    }
+                });
+            }
+
+            // ── Filter State ─────────────────────────────────────────────
+            const activeFilters = { category: 'all', duration: 'all', rating: 'all', price: 'all' };
+
+            window.toggleDropdown = function(menuId) {
+                const menu = document.getElementById(menuId);
+                if (!menu) return;
+                const allMenus = document.querySelectorAll('[id$="-menu"]');
+                allMenus.forEach(m => { if (m.id !== menuId) m.classList.add('hidden'); });
+                menu.classList.toggle('hidden');
+            };
+
+            window.applyFilter = function(type, value, btnId, label) {
+                activeFilters[type] = value;
+                const btn = document.getElementById(btnId);
                 if (btn) {
                     btn.childNodes[0].textContent = label + ' ';
-                    btn.className = btn.className
-                        .replace('bg-primary','bg-white')
-                        .replace('text-white','text-foreground')
-                        .replace('border-primary','border-border-soft');
+                    const isActive = value !== 'all';
+                    btn.classList.toggle('bg-primary', isActive);
+                    btn.classList.toggle('text-white', isActive);
+                    btn.classList.toggle('border-primary', isActive);
+                    btn.classList.toggle('hover:bg-primary', isActive);
+                    btn.classList.toggle('hover:text-white', isActive);
+                    btn.classList.toggle('bg-white', !isActive);
+                    btn.classList.toggle('text-foreground', !isActive);
+                    btn.classList.toggle('border-border-soft', !isActive);
+                    btn.classList.toggle('hover:bg-gray-50', !isActive);
                 }
-            });
-            filterCards();
-        }
-        function loadMoreFeatured() {
-            const hiddenCards = document.querySelectorAll('.pkg-card.hidden');
-            for (let i = 0; i < 3 && i < hiddenCards.length; i++) {
-                hiddenCards[i].classList.remove('hidden');
-                hiddenCards[i].classList.add('animate-fade-up');
+                // hide this dropdown
+                document.querySelectorAll('[id$="-menu"]').forEach(m => m.classList.add('hidden'));
+                filterCards();
+            };
+
+            function filterCards() {
+                const cards = document.querySelectorAll('.pkg-card');
+                let visible = 0;
+
+                cards.forEach(card => {
+                    const cat      = card.dataset.category;
+                    const days     = parseInt(card.dataset.duration);
+                    const rating   = parseFloat(card.dataset.rating);
+                    const price    = parseInt(card.dataset.price);
+
+                    // Category
+                    const catOk = activeFilters.category === 'all' || cat === activeFilters.category;
+
+                    // Duration
+                    let durOk = true;
+                    if (activeFilters.duration === '1-3') durOk = days >= 1 && days <= 3;
+                    else if (activeFilters.duration === '4-6') durOk = days >= 4 && days <= 6;
+                    else if (activeFilters.duration === '7+') durOk = days >= 7;
+
+                    // Rating
+                    let ratOk = true;
+                    if (activeFilters.rating !== 'all') ratOk = rating >= parseFloat(activeFilters.rating);
+
+                    // Price
+                    let priOk = true;
+                    if (activeFilters.price === '0-20000') priOk = price < 20000;
+                    else if (activeFilters.price === '20000-40000') priOk = price >= 20000 && price <= 40000;
+                    else if (activeFilters.price === '40000+') priOk = price > 40000;
+
+                    const show = catOk && durOk && ratOk && priOk;
+                    card.style.display = show ? '' : 'none';
+                    if (show) visible++;
+                });
+
+                const noResults = document.getElementById('no-results');
+                if (noResults) noResults.classList.toggle('hidden', visible > 0);
             }
-            if (document.querySelectorAll('.pkg-card.hidden').length === 0) {
-                document.getElementById('load-more-container').style.display = 'none';
+
+            window.resetFilters = function() {
+                ['category','duration','rating','price'].forEach(t => {
+                    activeFilters[t] = 'all';
+                });
+                const defaults = { 'cat-btn':'Categories','dur-btn':'Duration','rat-btn':'Review / Rating','pri-btn':'Price range' };
+                Object.entries(defaults).forEach(([id, label]) => {
+                    const btn = document.getElementById(id);
+                    if (btn) {
+                        btn.childNodes[0].textContent = label + ' ';
+                        btn.className = "px-5 py-2.5 rounded-full bg-white border border-border-soft text-foreground text-xs font-bold flex items-center gap-2 hover:bg-gray-50 transition-all";
+                    }
+                });
+                filterCards();
+            };
+
+            window.loadMoreFeatured = function() {
+                const hiddenCards = document.querySelectorAll('.pkg-card.hidden');
+                for (let i = 0; i < 3 && i < hiddenCards.length; i++) {
+                    hiddenCards[i].classList.remove('hidden');
+                    hiddenCards[i].classList.add('animate-fade-up');
+                }
+                if (document.querySelectorAll('.pkg-card.hidden').length === 0) {
+                    document.getElementById('load-more-container').style.display = 'none';
+                }
+            };
+
+            // Run setups safely
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => {
+                    initWelcome();
+                    initSlidersAndFilters();
+                });
+            } else {
+                initWelcome();
+                initSlidersAndFilters();
             }
-        }
+        })();
+    </script>
     @endpush
 @endsection
 
