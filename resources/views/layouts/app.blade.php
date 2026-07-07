@@ -64,7 +64,7 @@
         <x-mobile-menu />
     </div>
 
-    <main class="relative flex-grow" :class="(isHome) ? '' : 'pt-[120px] lg:pt-[140px]'">
+    <main class="relative flex-grow" :style="!isHome ? 'padding-top: 80px;' : ''">
         @yield('content')
     </main>
 

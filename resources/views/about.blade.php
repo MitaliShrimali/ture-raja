@@ -24,10 +24,24 @@
             <!-- Right: Text Content (Flexibly fills the rest of the space) -->
             <div class="w-full flex-2">
                 <h4 class="text-gray-500 font-bold text-[12px] uppercase mb-2 tracking-wider">WELCOME TO OUR SITE!</h4>
-                <h2 class="text-2xl lg:text-[40px] font-black text-black mb-4 leading-[1.15] tracking-tight">We are the bridge to gap between travel agents and customers.</h2>
-                <div class="text-gray-800 font-medium text-[15px] leading-relaxed space-y-3">
-                    <p>Welcome to <span class="font-bold text-black">tourraja.com</span> – your trusted platform connecting travel agents with customers through seamless brochure uploads and easy access to contact details.</p>
+                <h2 class="text-2xl lg:text-[40px] font-black text-black mb-4 leading-[1.15] tracking-tight">About Us</h2>
+                <div class="text-gray-800 font-medium text-[15px] leading-relaxed space-y-4">
+                    <p>Welcome to <span class="font-bold text-black">www.tourraja.com</span> [“Tourraja”] – your trusted platform connecting travel agents with customers through seamless brochure uploads and easy access to contact details.</p>
                     <p>At Tourraja, we specialize in offering travel agents a user-friendly space to showcase their brochures, upload their latest travel offerings, and manage essential contact details. Our platform is designed to make it easier for both travel agents and customers to find what they need, when they need it.</p>
+                    
+                    <div class="mt-6 space-y-2">
+                        <h3 class="text-lg font-bold text-black">For Travel Agents:</h3>
+                        <p>We simplify the process of sharing your brochures with potential clients, providing a hassle-free solution for managing and displaying your travel products and services online. You can easily upload, update, and organize your brochures, making them accessible to your customers in just a few clicks.</p>
+                    </div>
+
+                    <div class="mt-6 space-y-2">
+                        <h3 class="text-lg font-bold text-black">For Customers:</h3>
+                        <p>Our platform makes it easier than ever to explore a wide range of travel options, from brochures to contact details. Whether you're planning your next vacation or researching travel services, you’ll find all the information you need in one place.</p>
+                    </div>
+
+                    <p class="mt-6">Our mission is to bridge the gap between travel agents and customers by providing a straightforward, efficient platform that saves time and enhances business opportunities. Whether you’re a travel agent looking to showcase your offerings or a customer seeking personalized travel information, Tourraja is here to make the process smooth and seamless for everyone.</p>
+                    
+                    <p class="mt-4 font-bold text-black">Join Tourraja today and experience the convenience of connecting, sharing, and discovering travel options with ease.</p>
                 </div>
             </div>
         </div>

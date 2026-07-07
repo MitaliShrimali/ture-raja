@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="bg-gray-50 pt-32 pb-12">
+<div class="bg-gray-50 pb-12" style="padding-top: 48px;">
     <div class="container-custom">
         <div class="w-full">
             <h1 class="font-black text-primary mb-6" style="font-size: 30px; line-height: 1.2;">PRIVACY POLICY AND TERM OF USE</h1>
@@ -31,36 +31,32 @@
                 </p>
 
                 <h3 class="text-lg font-bold text-foreground mt-8 mb-3">4. Collection of Information</h3>
-                <p>
-                    We will collect personal information from Users only if they voluntarily submit such information to us.
-                    We may collect personal information from Users in a variety of ways while visit or use of our website or software or mobile application;
-                </p>
+                <ul class="list-disc pl-5 space-y-1 mb-4">
+                    <li><strong>4.1.</strong> We will collect personal information from Users only if they voluntarily submit such information to us.</li>
+                    <li><strong>4.2.</strong> We may collect personal information from Users in a variety of ways while visit or use of our website or software or mobile application;</li>
+                </ul>
 
                 <h3 class="text-lg font-bold text-foreground mt-8 mb-3">5. Permitted Sharing and use of Information</h3>
                 <p>
-                    Tourraja does not share or use personal information about you with non-affiliated companies except:
+                    <strong>5.1.</strong> Tourraja does not share or use personal information about you with non-affiliated companies except:
                 </p>
-                <ul class="list-disc pl-5 space-y-2 mb-4">
-                    <li>To provide products or services requested by you;</li>
-                    <li>To improve our Customer Support service;</li>
-                    <li>To personalize user experience.</li>
+                <ul class="list-disc pl-5 space-y-2 mb-4 mt-2">
+                    <li><strong>5.1.1.</strong> To provide products or services requested by you;</li>
+                    <li><strong>5.1.2.</strong> To improve our Customer Support service;</li>
+                    <li><strong>5.1.3.</strong> To personalize user experience;</li>
+                    <li><strong>5.1.4.</strong> We may use such information in the aggregate to understand how our Users, as a group, utilize the services and resources available on our Site;</li>
+                    <li><strong>5.1.5.</strong> To improve our Software or website Site or mobile application;</li>
+                    <li><strong>5.1.6.</strong> We provide the information to trusted entities who work on behalf of or with Tourraja under strict confidentiality agreements. These entities may use your personal information to help Tourraja communicate with you about offers from Tourraja and our marketing partners. However, these companies do not have any independent right to further share or disseminate this information;</li>
+                    <li><strong>5.1.7.</strong> To respond to subpoenas, court orders, or legal process, or to establish or exercise our legal rights or defend against legal claims;</li>
+                    <li><strong>5.1.8.</strong> To protect or enforce Tourraja’s rights, usage terms, intellectual or physical property or for safety of Tourraja or associated parties;</li>
+                    <li><strong>5.1.9.</strong> Aggregate tracking and site usage information that we gather automatically as you access our Site;</li>
+                    <li><strong>5.1.10.</strong> To run a promotion, contest, survey or other advertising event;</li>
+                    <li><strong>5.1.11.</strong> To send periodic emails;</li>
+                    <li><strong>5.1.12.</strong> To improve our products and services;</li>
+                    <li><strong>5.1.13.</strong> To process payments;</li>
+                    <li><strong>5.1.14.</strong> We may send our Users the information they agreed to receive about the topics we think will be of interest to them.</li>
                 </ul>
-                <p>
-                    We may use such information in the aggregate to understand how our Users, as a group, utilize the services and resources available on our Site.
-                </p>
-                <ul class="list-disc pl-5 space-y-2 mb-4">
-                    <li>To improve our Software or website Site or mobile application</li>
-                    <li>We provide the information to trusted entities who work on behalf of or with Tourraja under strict confidentiality agreements. These entities may use your personal information to help Tourraja communicate with you about offers from Tourraja and our marketing partners. However, these companies do not have any independent right to further share or disseminate this information;</li>
-                    <li>To respond to subpoenas, court orders, or legal process, or to establish or exercise our legal rights or defend against legal claims;</li>
-                    <li>To protect or enforce Tourraja’s rights, usage terms, intellectual or physical property or for safety of Tourraja or associated parties.</li>
-                    <li>Aggregate tracking and site usage information that we gather automatically as you access our Site.</li>
-                    <li>To run a promotion, contest, survey or other advertising event.</li>
-                    <li>To send periodic emails.</li>
-                    <li>To improve our products and services.</li>
-                    <li>To process payments</li>
-                </ul>
-                <p>
-                    We may send our Users the information they agreed to receive about the topics we think will be of interest to them.
+                <p class="mt-4">
                     We may use email addresses provided by our Users to send them the information and any updates on their order. Email addresses may also be used to respond to our Users’ inquiries, questions, and/or other requests. If the User decides to opt-in to our mailing list, they will receive emails that may include company news, updates, product or service-related information, etc.
                 </p>
                 <p>

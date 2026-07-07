@@ -83,7 +83,7 @@
     </style>
 
     <!-- Hero Section -->
-    <div class="relative w-full flex items-center justify-center wave-bg" style="min-height: 400px; padding-top: 60px;">
+    <div class="relative w-full flex items-center justify-center wave-bg" style="min-height: 400px; padding-top: 16px;">
         <div class="relative z-10 text-center w-full max-w-7xl px-6 mb-12">
             <h1 style="font-size: 38px;" class="font-extrabold text-white mb-4 tracking-tight">Careers</h1>
             <div class="text-white/80 font-medium text-sm flex items-center justify-center gap-2">

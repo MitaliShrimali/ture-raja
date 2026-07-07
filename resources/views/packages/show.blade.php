@@ -163,9 +163,12 @@
         grid-template-columns: 1fr !important;
         gap: 1.5rem !important;
     }
-    .package-gallery-slider-col {
+    .package-gallery-images-col {
         grid-column: span 1 / span 1 !important;
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
         height: 240px !important;
+        gap: 0.5rem !important;
     }
     .package-gallery-details-col {
         grid-column: span 1 / span 1 !important;
@@ -174,7 +177,7 @@
         .package-gallery-details-grid {
             grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         }
-        .package-gallery-slider-col {
+        .package-gallery-images-col {
             grid-column: span 3 / span 3 !important;
             height: 320px !important;
         }
@@ -197,9 +200,19 @@
             margin-top: 1.5rem !important;
         }
     }
+
+    /* IMMEDIATE NAVBAR ALIGNMENT */
+    main {
+        padding-top: 80px !important;
+    }
+    @media (min-width: 1024px) {
+        main {
+            padding-top: 90px !important;
+        }
+    }
 </style>
 
-<div class="bg-[#F8F9FA] min-h-screen pt-24 lg:pt-32" x-data='{ showBookingModal: false, slides: @json($gallerySlides), sections: @json($navSections) }'>
+<div class="bg-[#F8F9FA] min-h-screen pt-4 lg:pt-6" x-data='{ showBookingModal: false, slides: @json($gallerySlides), sections: @json($navSections) }'>
     {{-- Breadcrumb --}}
     <div>
         <div class="container-custom py-2">
@@ -307,35 +320,27 @@
 
                     {{-- Gallery & Details Container --}}
                     <div class="package-gallery-details-grid">
-                        {{-- Left Column: Images Slider (Takes 3/4 space on desktop) --}}
-                        <div class="package-gallery-slider-col relative w-full overflow-hidden group">
-                            <!-- Left Arrow -->
-                            <button type="button" class="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#e85d26] transition-colors opacity-0 group-hover:opacity-100 hidden md:flex" onclick="document.getElementById('package-gallery-slider').scrollBy({left: -300, behavior: 'smooth'})">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                            </button>
-                            
-                            <!-- Slider Container -->
-                            <div id="package-gallery-slider" class="flex overflow-x-auto gap-4 items-stretch h-full w-full hide-scrollbar scroll-smooth snap-x snap-mandatory">
-                                <template x-for="(slide, idx) in slides" :key="idx">
-                                    <a :href="'#' + (sections[idx % sections.length]?.id || 'overview')" 
-                                       @click.prevent="document.getElementById(sections[idx % sections.length]?.id || 'overview').scrollIntoView({behavior:'smooth', block:'start'})"
-                                       class="relative shrink-0 w-64 md:w-80 h-full rounded-xl overflow-hidden group/slide cursor-pointer shadow-sm hover:shadow-md transition-shadow snap-start">
-                                        <img :src="slide" class="w-full h-full object-cover group-hover/slide:scale-105 transition-transform duration-700">
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                                        <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                                            <span class="text-white font-black text-lg drop-shadow-md" x-text="sections[idx % sections.length]?.title || 'View Section'"></span>
-                                            <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white group-hover/slide:bg-[#e85d26] transition-colors">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </template>
+                        {{-- Left Column: Images Grid (Takes 3/4 space on desktop) --}}
+                        <div class="package-gallery-images-col relative w-full overflow-hidden">
+                            {{-- Large Left Image --}}
+                            <div class="col-span-2 h-full w-full relative cursor-pointer hover:opacity-95 transition overflow-hidden rounded-2xl" style="grid-column: span 2 / span 2;" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
+                                <img :src="slides[0]" class="w-full h-full object-cover rounded-2xl" alt="Package Main Image">
                             </div>
-
-                            <!-- Right Arrow -->
-                            <button type="button" class="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#e85d26] transition-colors opacity-0 group-hover:opacity-100 hidden md:flex" onclick="document.getElementById('package-gallery-slider').scrollBy({left: 300, behavior: 'smooth'})">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </button>
+                            
+                            {{-- Right Stacked Images --}}
+                            <div class="flex flex-col gap-2 h-full w-full justify-between">
+                                <div class="relative h-[calc(50%-4px)] w-full overflow-hidden cursor-pointer hover:opacity-95 transition rounded-2xl" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
+                                    <img :src="slides[1] || slides[0]" class="w-full h-full object-cover rounded-2xl">
+                                </div>
+                                <div class="relative h-[calc(50%-4px)] w-full overflow-hidden cursor-pointer hover:opacity-95 transition rounded-2xl" @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })">
+                                    <img :src="slides[2] || slides[1] || slides[0]" class="w-full h-full object-cover rounded-2xl">
+                                    {{-- View Gallery Overlay --}}
+                                    <div class="absolute inset-0 bg-black/50 flex flex-col items-center justify-center text-white rounded-2xl">
+                                        <span class="text-xs font-black uppercase tracking-widest leading-none">View</span>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider mt-1 opacity-80">Gallery</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         {{-- Right Column: Package Details (Duration, Group Size, Type, Inquiry Now) --}}

@@ -598,10 +598,12 @@ Route::get('/packages/{slug}', function ($slug) {
         ],
     ];
 
-    // Try to find the package in the database first
-    $dbPkg = DB::table('packages')->get()->first(function($p) use ($slug) {
+    // Try to find the package in the database by matching title slugs efficiently
+    $matched = DB::table('packages')->select('id', 'title')->get()->first(function($p) use ($slug) {
         return \Illuminate\Support\Str::slug($p->title) === $slug;
     });
+
+    $dbPkg = $matched ? DB::table('packages')->where('id', $matched->id)->first() : null;
 
     if ($dbPkg) {
         $gallery = [];
