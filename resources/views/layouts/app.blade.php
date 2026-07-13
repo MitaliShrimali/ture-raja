@@ -672,6 +672,17 @@
     </div>
 
     @stack('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const links = document.querySelectorAll('a[href]');
+            links.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && (href.includes('/package') || href.includes('/discover'))) {
+                    link.setAttribute('target', '_blank');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

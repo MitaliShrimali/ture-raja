@@ -73,7 +73,7 @@
     $detailUrl = $slug ? url('packages/' . $slug) : '#';
 @endphp
 
-<div onclick="window.location.href='{{ $detailUrl }}'" {{ $attributes->merge(['class' => 'cursor-pointer group bg-white rounded-lg overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50 package-card-inner']) }}>
+<div onclick="window.open('{{ $detailUrl }}', '_blank')" {{ $attributes->merge(['class' => 'cursor-pointer group bg-white rounded-lg overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50 package-card-inner']) }}>
     <!-- Image Container -->
     <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-md package-image-container" style="aspect-ratio: 1.2/1;">
         <img 
@@ -179,7 +179,7 @@
                 @endif
             </div>
 
-            <a href="{{ $detailUrl }}" onclick="event.stopPropagation()" class="px-6 py-2.5 rounded-full bg-primary text-white text-xs font-black shadow-glow hover:bg-primary/90 hover:shadow-primary/40 transition-all duration-300 inline-block whitespace-nowrap shrink-0 text-center">
+            <a href="{{ $detailUrl }}" target="_blank" onclick="event.stopPropagation()" class="px-6 py-2.5 rounded-full bg-primary text-white text-xs font-black shadow-glow hover:bg-primary/90 hover:shadow-primary/40 transition-all duration-300 inline-block whitespace-nowrap shrink-0 text-center">
                 Search Now
             </a>
         </div>
