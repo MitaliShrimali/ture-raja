@@ -71,7 +71,7 @@
     {{-- Overlay --}}
     <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60 pointer-events-none"></div>
     {{-- Background Music --}}
-    <audio id="heroBgMusic" src="{{ asset('audio/bg_music.mp3') }}?v={{ time() }}" autoplay loop></audio>
+    <audio id="heroBgMusic" src="{{ asset('audio/bg_music.mp3') }}?v={{ time() }}" loop></audio>
   </div>
 
   <div class="absolute bottom-2 right-4 md:bottom-8 md:right-8 z-40 select-none hero-sound-toggle-wrapper">
@@ -201,10 +201,12 @@
       if (bgMusic.paused) {
         bgMusic.play().then(() => {
           updateSoundToggleState(true);
+          sessionStorage.setItem('heroMusicState', 'enabled');
         }).catch(e => console.log('Audio play failed:', e));
       } else {
         bgMusic.pause();
         updateSoundToggleState(false);
+        sessionStorage.setItem('heroMusicState', 'disabled');
       }
     }
 
@@ -215,21 +217,41 @@
       if (bgMusic) {
         bgMusic.volume = 0.5;
 
-        const startPlay = () => {
-          bgMusic.play()
-            .then(() => {
-              updateSoundToggleState(true);
-              document.removeEventListener('click', startPlay);
-              document.removeEventListener('keydown', startPlay);
-            })
-            .catch(e => {
-              console.log('Autoplay blocked, waiting for interaction...', e);
-            });
-        };
+        const state = sessionStorage.getItem('heroMusicState');
 
-        startPlay();
-        document.addEventListener('click', startPlay);
-        document.addEventListener('keydown', startPlay);
+        if (state === 'disabled' || state === 'played') {
+          // If it was explicitly disabled, or it already played on first load, don't autoplay on refresh.
+          bgMusic.pause();
+          updateSoundToggleState(false);
+        } else if (state === 'enabled') {
+          // If explicitly enabled, play it.
+          bgMusic.play().then(() => {
+            updateSoundToggleState(true);
+          }).catch(e => {
+            updateSoundToggleState(false);
+          });
+        } else {
+          // First time visit
+          const startPlay = () => {
+            if (sessionStorage.getItem('heroMusicState') === 'disabled') return;
+            bgMusic.play()
+              .then(() => {
+                updateSoundToggleState(true);
+                document.removeEventListener('click', startPlay);
+                document.removeEventListener('keydown', startPlay);
+                if (!sessionStorage.getItem('heroMusicState')) {
+                  sessionStorage.setItem('heroMusicState', 'played');
+                }
+              })
+              .catch(e => {
+                console.log('Autoplay blocked, waiting for interaction...', e);
+              });
+          };
+
+          startPlay();
+          document.addEventListener('click', startPlay);
+          document.addEventListener('keydown', startPlay);
+        }
       }
     });
   </script>
@@ -304,19 +326,19 @@
         }
 
         $gifMap = [
-          'flight' => 'https://s13.gifyu.com/images/bIHxe.gif',
-          'plane' => 'https://s13.gifyu.com/images/bIHxe.gif',
-          'train' => 'https://s13.gifyu.com/images/bIHxG.gif',
-          'bus' => 'https://s13.gifyu.com/images/bIHxJ.gif',
-          'bike' => 'https://s13.gifyu.com/images/bIHxP.gif',
-          'motorcycle' => 'https://s13.gifyu.com/images/bIHxP.gif',
-          'ship' => 'https://s13.gifyu.com/images/bIHxX.gif',
-          'cruise' => 'https://s13.gifyu.com/images/bIHxX.gif',
-          'footprints' => 'https://s13.gifyu.com/images/bIHHt.png',
-          'user' => 'https://s13.gifyu.com/images/bIHHt.png',
-          'helicopter' => 'https://s13.gifyu.com/images/bIHH5.png',
-          'car' => 'https://s13.gifyu.com/images/bIHHY.png',
-          'map-pin' => 'https://s13.gifyu.com/images/bIHHY.png',
+          'flight' => 'images/airplane.gif',
+          'plane' => 'images/airplane.gif',
+          'train' => 'images/train.gif',
+          'bus' => 'images/bus.gif',
+          'bike' => 'images/motorcycle.gif',
+          'motorcycle' => 'images/motorcycle.gif',
+          'ship' => 'images/cruise-ship.gif',
+          'cruise' => 'images/cruise-ship.gif',
+          'footprints' => 'images/hiking.gif',
+          'user' => 'images/hiking.gif',
+          'helicopter' => 'images/helicopter.gif',
+          'car' => 'images/beach.gif',
+          'map-pin' => 'images/beach.gif',
         ];
       @endphp
       @foreach($dbTransits as $t)

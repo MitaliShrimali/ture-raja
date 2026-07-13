@@ -29,19 +29,19 @@
               return $sortOrder[$t->name] ?? 999;
           });
           $gifMap = [
-              'flight' => 'https://s13.gifyu.com/images/bIHxe.gif',
-              'plane' => 'https://s13.gifyu.com/images/bIHxe.gif',
-              'train' => 'https://s13.gifyu.com/images/bIHxG.gif',
-              'bus' => 'https://s13.gifyu.com/images/bIHxJ.gif',
-              'bike' => 'https://s13.gifyu.com/images/bIHxP.gif',
-              'motorcycle' => 'https://s13.gifyu.com/images/bIHxP.gif',
-              'ship' => 'https://s13.gifyu.com/images/bIHxX.gif',
-              'cruise' => 'https://s13.gifyu.com/images/bIHxX.gif',
-              'footprints' => 'https://s13.gifyu.com/images/bIHHt.png',
-              'user' => 'https://s13.gifyu.com/images/bIHHt.png',
-              'helicopter' => 'https://s13.gifyu.com/images/bIHH5.png',
-              'car' => 'https://s13.gifyu.com/images/bIHHY.png',
-              'map-pin' => 'https://s13.gifyu.com/images/bIHHY.png',
+              'flight' => 'images/airplane.gif',
+              'plane' => 'images/airplane.gif',
+              'train' => 'images/train.gif',
+              'bus' => 'images/bus.gif',
+              'bike' => 'images/motorcycle.gif',
+              'motorcycle' => 'images/motorcycle.gif',
+              'ship' => 'images/cruise-ship.gif',
+              'cruise' => 'images/cruise-ship.gif',
+              'footprints' => 'images/hiking.gif',
+              'user' => 'images/hiking.gif',
+              'helicopter' => 'images/helicopter.gif',
+              'car' => 'images/beach.gif',
+              'map-pin' => 'images/beach.gif',
           ];
         @endphp
         

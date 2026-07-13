@@ -955,6 +955,8 @@
             let welcomePopupTimeout;
 
             function initWelcome() {
+                if (sessionStorage.getItem('welcomePopupShown') === 'true') return;
+                
                 const popup = document.getElementById('welcome-popup');
                 const content = document.getElementById('welcome-popup-content');
                 if (!popup) return;
