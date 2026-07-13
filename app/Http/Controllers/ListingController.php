@@ -155,52 +155,87 @@ class ListingController extends Controller
             return $tier;
         })->values();
 
+        // Keep a backup of all packages sorted by tier, to use for suggestions
+        $allPackages = clone $packages;
+
         // ── Search by destination / title / agent name / keywords ──
         if ($request->filled('search')) {
             $searchVal = $request->search;
             $search = strtolower(is_array($searchVal) ? implode(' ', $searchVal) : (string)$searchVal);
-            $packages = $packages->filter(function($pkg) use ($search) {
-                $pkg = (array) $pkg;
-                $title = strtolower((string)($pkg['title'] ?? ''));
-                $location = strtolower((string)($pkg['location'] ?? ''));
+            
+            $packages = $packages->map(function($pkg) use ($search) {
+                $pkgArray = (array) $pkg;
+                $title = strtolower((string)($pkgArray['title'] ?? ''));
+                $location = strtolower((string)($pkgArray['location'] ?? ''));
+                $city = strtolower((string)($pkgArray['city'] ?? ''));
                 
                 $agentName = '';
-                if (isset($pkg['agent'])) {
-                    if (is_array($pkg['agent'])) {
-                        $agentName = $pkg['agent']['name'] ?? '';
-                    } elseif (is_string($pkg['agent'])) {
-                        $decoded = json_decode($pkg['agent'], true);
+                if (isset($pkgArray['agent'])) {
+                    if (is_array($pkgArray['agent'])) {
+                        $agentName = $pkgArray['agent']['name'] ?? '';
+                    } elseif (is_string($pkgArray['agent'])) {
+                        $decoded = json_decode($pkgArray['agent'], true);
                         if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                             $agentName = $decoded['name'] ?? '';
                         } else {
-                            $agentName = $pkg['agent'];
+                            $agentName = $pkgArray['agent'];
                         }
-                    } elseif (is_object($pkg['agent'])) {
-                        $agentName = $pkg['agent']->name ?? '';
+                    } elseif (is_object($pkgArray['agent'])) {
+                        $agentName = $pkgArray['agent']->name ?? '';
                     }
                 }
                 $agent = strtolower((string)$agentName);
                 
                 $keywordsStr = '';
-                if (isset($pkg['keywords'])) {
-                    if (is_array($pkg['keywords'])) {
-                        $keywordsStr = implode(' ', $pkg['keywords']);
-                    } elseif (is_string($pkg['keywords'])) {
-                        $decoded = json_decode($pkg['keywords'], true);
+                if (isset($pkgArray['keywords'])) {
+                    if (is_array($pkgArray['keywords'])) {
+                        $keywordsStr = implode(' ', $pkgArray['keywords']);
+                    } elseif (is_string($pkgArray['keywords'])) {
+                        $decoded = json_decode($pkgArray['keywords'], true);
                         if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
                             $keywordsStr = implode(' ', $decoded);
                         } else {
-                            $keywordsStr = $pkg['keywords'];
+                            $keywordsStr = $pkgArray['keywords'];
                         }
                     }
                 }
                 $keywords = strtolower($keywordsStr);
                 
-                return str_contains($title, $search)
-                    || str_contains($location, $search)
-                    || ($agent && str_contains($agent, $search))
-                    || ($keywords && str_contains($keywords, $search));
-            });
+                $score = 0;
+                
+                if ($search === $title || $search === $location || $search === $city) {
+                    $score += 1000;
+                }
+                
+                if (str_contains($title, $search)) $score += 500;
+                if (str_contains($location, $search) || str_contains($city, $search)) $score += 400;
+                if ($agent && str_contains($agent, $search)) $score += 200;
+                if ($keywords && str_contains($keywords, $search)) $score += 100;
+                
+                if ($score > 0) {
+                    $tt = strtolower($pkgArray['tour_type'] ?? '');
+                    if (str_contains($tt, 'land')) $score += 80;
+                    elseif (str_contains($tt, 'flight')) $score += 70;
+                    elseif (str_contains($tt, 'train')) $score += 60;
+                    elseif (str_contains($tt, 'bus')) $score += 50;
+                    elseif (str_contains($tt, 'bullet')) $score += 40;
+                    elseif (str_contains($tt, 'cruise')) $score += 30;
+                    elseif (str_contains($tt, 'trek') || str_contains($tt, 'track')) $score += 20;
+                    elseif (str_contains($tt, 'helicopter')) $score += 10;
+                }
+                
+                if (is_object($pkg)) {
+                    $pkg->search_score = $score;
+                } elseif (is_array($pkg)) {
+                    $pkg['search_score'] = $score;
+                }
+                return $pkg;
+            })->filter(function($pkg) {
+                $score = is_object($pkg) ? ($pkg->search_score ?? 0) : ($pkg['search_score'] ?? 0);
+                return $score > 0;
+            })->sortByDesc(function($pkg) {
+                return is_object($pkg) ? ($pkg->search_score ?? 0) : ($pkg['search_score'] ?? 0);
+            })->values();
         }
 
         // ── Destination Type / Category filter ─────────────────────
@@ -686,6 +721,30 @@ class ListingController extends Controller
             });
         } elseif ($sort === 'Top Rated') {
             $packages = $packages->sortByDesc(fn($p) => ((array)$p)['rating'] ?? 0);
+        } else {
+            // Default Sort: Sort by Tour Type Order (Land -> Flight -> Train -> Bus -> Bullet -> Cruise -> Trekking -> Helicopter)
+            // Because Laravel's sortBy is stable, the initial tier sorting will be preserved within each tour type group.
+            $typeOrder = [
+                'land' => 1,
+                'flight' => 2,
+                'train' => 3,
+                'bus' => 4,
+                'bullet' => 5,
+                'cruise' => 6,
+                'trackking' => 7,
+                'trekking' => 7,
+                'helicopter' => 8
+            ];
+            $packages = $packages->sortBy(function($p) use ($typeOrder) {
+                $pkg = (array) $p;
+                $tt = strtolower($pkg['tour_type'] ?? '');
+                foreach ($typeOrder as $key => $val) {
+                    if (str_contains($tt, $key)) {
+                        return $val;
+                    }
+                }
+                return 99; // Default for other types
+            });
         }
 
         // Fetch active ads for Package Sidebar
@@ -699,6 +758,17 @@ class ListingController extends Controller
                 ->get();
         } catch (\Exception $e) {
             $sidebarAds = collect();
+        }
+
+        // If no packages or limited packages (< 4), provide suggestions
+        $suggestedPackages = collect();
+        if ($packages->count() <= 3) {
+            $existingIds = $packages->pluck('id')->toArray();
+            // Since $allPackages is already sorted by tier (premium/boosted/guaranteed first),
+            // we just take the top 6 that aren't already in the results.
+            $suggestedPackages = $allPackages->filter(function($p) use ($existingIds) {
+                return !in_array(((array)$p)['id'] ?? null, $existingIds);
+            })->take(6)->values();
         }
 
         if ($agent) {
@@ -718,6 +788,7 @@ class ListingController extends Controller
 
             return view('agent-showcase', [
                 'packages' => $packages->values(),
+                'suggestedPackages' => $suggestedPackages,
                 'agent' => $agent,
                 'sidebarAds' => $sidebarAds,
                 'locationCatalog' => $locationCatalog,
@@ -727,6 +798,7 @@ class ListingController extends Controller
 
         return view('listing', [
             'packages' => $packages->values(),
+            'suggestedPackages' => $suggestedPackages,
             'agent' => $agent,
             'sidebarAds' => $sidebarAds,
             'locationCatalog' => $locationCatalog

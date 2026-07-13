@@ -169,80 +169,22 @@
         }
     </style>
 
-    <!-- Small Hero Header -->
-    <div class="pt-0 pb-6 bg-gray-50">
-
-        <!-- Sticky Search Bar Wrapper with Placeholder height -->
-        <div x-data="{ isSticky: false, topOffset: 0 }"
-            x-init="$nextTick(() => { topOffset = $el.getBoundingClientRect().top + window.pageYOffset - 80 })"
-            @scroll.window="isSticky = window.pageYOffset > topOffset" class="w-full" style="min-height: 72px;">
-
-            <div :class="isSticky ? 'fixed top-20 left-0 right-0 z-50 py-2' : 'relative z-40'">
-                <div class="container-custom text-center">
-                    <div class="w-full max-w-5xl mx-auto">
-                        <form id="top-search-form" action="{{ url('/discover') }}" method="GET">
-                            <div class="p-3 md:p-3 flex flex-col md:flex-row items-center gap-3 w-full transition-all duration-300"
-                                style="background: #e85d26;"
-                                :class="isSticky ? 'rounded-xl shadow-2xl' : 'rounded-lg shadow-sm'">
-
-                                {{-- Destination Field --}}
-                                <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3"
-                                    style="background: rgba(255,255,255,0.2);">
-                                    <i data-lucide="search" class="text-white" size="18"></i>
-                                    <input type="text" name="search" placeholder="Where You Go !!!"
-                                        class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
-                                        value="{{ request('search') }}">
-                                </div>
-
-                                {{-- Agent/City Field --}}
-                                <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3"
-                                    style="background: rgba(255,255,255,0.2);">
-                                    <i data-lucide="user" class="text-white" size="18"></i>
-                                    <input type="text" name="city"
-                                        placeholder="Search Agent from your city/Near by Location"
-                                        class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
-                                        value="{{ is_array(request('city')) ? implode(', ', request('city')) : request('city') }}">
-                                </div>
-
-                                {{-- Check In Field --}}
-                                <div class="flex items-center gap-3 w-full md:w-auto rounded-md px-4 py-3 shrink-0"
-                                    style="background: rgba(255,255,255,0.2);">
-                                    <i data-lucide="calendar" class="text-white" size="18"></i>
-                                    <input type="text" name="check_in" placeholder="Check in" onfocus="(this.type='date')"
-                                        onblur="(this.type='text')"
-                                        class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full md:w-28 p-0"
-                                        value="{{ request('check_in') }}">
-                                </div>
-
-                                {{-- Search Button --}}
-                                <div class="w-full md:w-auto shrink-0">
-                                    <button type="submit"
-                                        class="bg-white text-gray-900 font-bold text-sm hover:bg-gray-100 transition-colors w-full sm:w-auto px-10 py-3 rounded-md shadow-sm">
-                                        Search
-                                    </button>
-                                </div>
-
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Header search bar removed -->
 
     <style>
         @media (min-width: 1024px) {
             .desktop-sidebar-reset {
-                position: static !important;
+                position: sticky !important;
+                top: 90px !important;
+                height: calc(100vh - 100px) !important;
+                overflow-y: auto !important;
                 background: transparent !important;
                 background-image: none !important;
                 box-shadow: none !important;
                 padding: 0 !important;
                 transform: none !important;
-                z-index: 0 !important;
+                z-index: 10 !important;
                 width: 25% !important;
-                height: auto !important;
-                overflow: visible !important;
             }
         }
     </style>
@@ -368,11 +310,9 @@
                 <div
                     class="bg-white rounded-lg py-3 px-5 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
                     <div class="text-center md:text-left flex items-center flex-wrap gap-3" style="font-size: 16px;">
-                        <span class="text-gray-500 font-bold uppercase tracking-widest" style="font-size: 16px;">Search
-                            Results:</span>
                         <h3 class="font-black cursor-pointer hover:text-primary transition-colors"
                             @click="stateModalOpen = true" style="font-size: 16px;">
-                            Showing <span id="results-count" class="text-primary">{{ $packages->count() }}</span> Packages
+                            <span id="results-count" class="text-primary">{{ $packages->count() }}</span> Packages
                         </h3>
 
                         <!-- Dropdown Pill -->
@@ -402,7 +342,7 @@
                         <div class="relative mobile-sort-select-wrapper md:w-64 flex-1 md:flex-none">
                             <select name="sort"
                                 class="w-full bg-background border border-gray-100 rounded-2xl py-2.5 pl-4 pr-10 text-[12px] font-black focus:outline-none appearance-none cursor-pointer hover:border-primary/30 transition-all">
-                                <option value="SHOW ALL" {{ !request('sort') || request('sort') == 'SHOW ALL' ? 'selected' : '' }}>SHOW ALL</option>
+                                <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
                                 <option value="GUARANTEED SERVICE" {{ request('sort') == 'GUARANTEED SERVICE' || request('sort') == 'Recommended' ? 'selected' : '' }}>GUARANTEED SERVICE</option>
                                 <option value="PRICE (LOW TO HIGH)" {{ request('sort') == 'PRICE (LOW TO HIGH)' || request('sort') == 'Price: Low to High' ? 'selected' : '' }}>PRICE (LOW TO HIGH)</option>
                                 <option value="PRICE (HIGH TO LOW)" {{ request('sort') == 'PRICE (HIGH TO LOW)' || request('sort') == 'Price: High to Low' ? 'selected' : '' }}>PRICE (HIGH TO LOW)</option>
@@ -473,8 +413,8 @@
 
                     @empty
                         <div class="col-span-full py-20 text-center space-y-4">
-                            <h4 class="text-2xl font-bold">No packages found</h4>
-                            <p class="text-gray-500">Try adjusting your filters or search term.</p>
+                            <h4 class="text-2xl font-bold text-gray-800">No packages found {{ request('search') ? "for '" . e(request('search')) . "'" : '' }}</h4>
+                            <p class="text-gray-500">We couldn't find any packages matching your exact search.</p>
                         </div>
                     @endforelse
                 </div>
@@ -490,6 +430,28 @@
                         </div>
                     @endif
                 </div>
+
+                <!-- Suggested Packages Section -->
+                @if(isset($suggestedPackages) && $suggestedPackages->count() > 0)
+                    <div class="mt-16 border-t border-gray-100 pt-12">
+                        <div class="flex flex-col gap-2 mb-8">
+                            <div class="flex items-center gap-3">
+                                <h3 class="text-2xl md:text-3xl font-black text-foreground">Suggested Packages</h3>
+                                <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Premium & Guaranteed</span>
+                            </div>
+                            <p class="text-gray-500 text-sm">We couldn't find many exact matches, so here are some highly recommended tours you might love.</p>
+                        </div>
+                        
+                        <div :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'">
+                            @foreach($suggestedPackages as $pkg)
+                                <div :class="viewStyle === 'list' ? 'list-view-wrapper' : ''">
+                                    <x-package-card :pkg="$pkg" />
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+                
                 <!-- Modal placeholder (moved to root for relative viewport alignment) -->
         </form>
     </div>
@@ -682,10 +644,10 @@
             <!-- Footer -->
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 shrink-0">
                 <button type="button" @click="
-                            document.querySelectorAll('input[name=\'selected_cities[]\']').forEach(cb => cb.checked = false);
-                            stateModalOpen = false;
-                            document.getElementById('filter-form').dispatchEvent(new Event('submit'));
-                        "
+                                    document.querySelectorAll('input[name=\'selected_cities[]\']').forEach(cb => cb.checked = false);
+                                    stateModalOpen = false;
+                                    document.getElementById('filter-form').dispatchEvent(new Event('submit'));
+                                "
                     class="px-5 py-2.5 hover:bg-gray-50 rounded-xl text-xs font-black text-primary uppercase tracking-widest transition-all">
                     Clear
                 </button>

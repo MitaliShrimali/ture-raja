@@ -8,33 +8,174 @@
         color: #e85d26 !important;
         border-color: #e85d26 !important;
     }
+    .custom-sidebar-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+    .custom-sidebar-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-sidebar-scroll::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
 </style>
 
-<aside class="w-full bg-white rounded-lg font-sans border-0 shadow-sm">
+<aside class="w-full bg-white rounded-lg font-sans border-0 shadow-sm flex flex-col h-full">
     <!-- Header -->
-    <div class="bg-primary text-white py-4 px-5 flex items-center justify-between rounded-t-lg">
+    <div class="bg-primary text-white py-4 px-5 flex items-center justify-between rounded-t-lg shrink-0">
         <h2 class="font-bold uppercase tracking-wide" style="font-size: 26px;">Filters</h2>
         <button type="button" onclick="clearAllFilters()" class="text-[10px] font-bold bg-white/20 hover:bg-white text-white hover:text-primary px-3 py-1.5 rounded-lg transition-all uppercase tracking-wider">
             Clear All
         </button>
     </div>
 
-    <div class="p-5 space-y-6"> 
+    <div class="p-5 space-y-6 flex-1 overflow-y-auto custom-sidebar-scroll"> 
 
-        <!-- Search (Hidden on Mobile, Visible on Desktop within Sidebar) -->
-        <div class="relative group hidden lg:block mb-6">
-            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <i data-lucide="search" class="text-gray-400" size="16"></i>
+        <!-- Search Fields in Sidebar -->
+        <div class="space-y-4 mb-6">
+            <!-- Travel Destination -->
+            <div x-data="{
+                open: false,
+                query: '{{ request('search') }}',
+                results: [],
+                loading: false,
+                init() {
+                    this.$watch('query', value => {
+                        this.loading = true;
+                        fetch(`/api/search-suggestions?q=${encodeURIComponent(value)}&type=destination`)
+                            .then(res => res.json())
+                            .then(data => {
+                                this.results = data;
+                                this.loading = false;
+                            })
+                            .catch(() => { this.loading = false; });
+                    });
+                    
+                    // Initial load if open is true
+                    this.$watch('open', value => {
+                        if (value && this.results.length === 0) {
+                            this.loading = true;
+                            fetch(`/api/search-suggestions?q=${encodeURIComponent(this.query)}&type=destination`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    this.results = data;
+                                    this.loading = false;
+                                })
+                                .catch(() => { this.loading = false; });
+                        }
+                    });
+                },
+                selectOption(text) {
+                    this.query = text;
+                    this.open = false;
+                }
+            }" class="relative" @click.away="open = false">
+                <label class="block text-sm font-bold text-gray-900 mb-1.5">Travel Destination</label>
+                <div class="relative">
+                    <input type="text" name="search" x-model.debounce.300ms="query" @focus="open = true" autocomplete="off" placeholder="Search travel destination..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
+                    <i data-lucide="search" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
+                </div>
+                
+                <div x-show="open" x-transition.opacity.duration.200ms class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg" x-cloak>
+                    <div class="text-sm text-gray-700 py-1 max-h-48 overflow-y-auto custom-sidebar-scroll">
+                        <template x-if="loading">
+                            <div class="text-gray-600 px-3 py-2">Loading...</div>
+                        </template>
+                        <template x-if="!loading">
+                            <div>
+                                <template x-for="item in results" :key="item.text">
+                                    <div @click="selectOption(item.text)" class="cursor-pointer hover:bg-[#e85d26] hover:text-white px-3 py-2 transition-colors" x-text="item.text"></div>
+                                </template>
+                                <template x-if="results.length === 0">
+                                    <div class="text-gray-500 px-3 py-2">No results found for '<span x-text="query"></span>'</div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
             </div>
-            <input 
-                type="text" 
-                name="search"
-                placeholder="Search destination or package..." 
-                value="{{ request('search') }}"
-                class="w-full bg-gray-50 border border-gray-200 py-3 pr-4 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm font-semibold text-gray-800 placeholder:text-gray-400"
-                style="padding-left: 44px; border-radius: 6px;"
-            >
+            
+            <!-- Travel Agent Location -->
+            <div x-data="{
+                open: false,
+                query: '{{ is_array(request('city')) ? implode(', ', request('city')) : request('city') }}',
+                results: [],
+                loading: false,
+                init() {
+                    this.$watch('query', value => {
+                        this.loading = true;
+                        fetch(`/api/search-suggestions?q=${encodeURIComponent(value)}&type=agent_location`)
+                            .then(res => res.json())
+                            .then(data => {
+                                this.results = data;
+                                this.loading = false;
+                            })
+                            .catch(() => { this.loading = false; });
+                    });
+                    
+                    // Initial load if open is true
+                    this.$watch('open', value => {
+                        if (value && this.results.length === 0) {
+                            this.loading = true;
+                            fetch(`/api/search-suggestions?q=${encodeURIComponent(this.query)}&type=agent_location`)
+                                .then(res => res.json())
+                                .then(data => {
+                                    this.results = data;
+                                    this.loading = false;
+                                })
+                                .catch(() => { this.loading = false; });
+                        }
+                    });
+                },
+                selectOption(text) {
+                    this.query = text;
+                    this.open = false;
+                }
+            }" class="relative" @click.away="open = false">
+                <label class="block text-sm font-bold text-gray-900 mb-1.5">Travel Agent Location</label>
+                <div class="relative">
+                    <input type="text" name="city" x-model.debounce.300ms="query" @focus="open = true" autocomplete="off" placeholder="Search agent location..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
+                    <i data-lucide="search" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
+                </div>
+                
+                <div x-show="open" x-transition.opacity.duration.200ms class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg" x-cloak>
+                    <div class="text-sm text-gray-700 py-1 max-h-48 overflow-y-auto custom-sidebar-scroll">
+                        <template x-if="loading">
+                            <div class="text-gray-600 px-3 py-2">Loading...</div>
+                        </template>
+                        <template x-if="!loading">
+                            <div>
+                                <template x-for="item in results" :key="item.text">
+                                    <div @click="selectOption(item.text)" class="cursor-pointer hover:bg-[#e85d26] hover:text-white px-3 py-2 transition-colors" x-text="item.text"></div>
+                                </template>
+                                <template x-if="results.length === 0">
+                                    <div class="text-gray-500 px-3 py-2">No results found for '<span x-text="query"></span>'</div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                .no-cal-icon::-webkit-calendar-picker-indicator {
+                    display: none;
+                    -webkit-appearance: none;
+                }
+            </style>
+            <div>
+                <label class="block text-sm font-bold text-gray-900 mb-1.5">Date of Travel</label>
+                <div class="relative">
+                    <input type="text" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" name="check_in" value="{{ request('check_in') }}" class="no-cal-icon w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-gray-400" placeholder="YYYY-MM-DD">
+                    <i data-lucide="calendar" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-[#e85d26] hover:bg-[#d04c1a] text-white font-bold py-2.5 rounded-lg text-sm transition-colors shadow-sm mt-2">
+                Search
+            </button>
         </div>
+        <hr class="border-gray-100 mb-6">
 
         <!-- 1. Tour Type -->
         <div x-data="{ expanded: false }">
@@ -205,7 +346,7 @@
                 </label>
             </div>
             <hr class="mt-5 border-gray-100">
-        <div x-data="rangeSlider({{ request('min_nights', 2) }}, {{ request('max_nights', 11) }}, 1, 20)" class="pt-6">
+        <div x-data="rangeSlider({{ request('min_nights', 0) }}, {{ request('max_nights', 100) }}, 0, 100)" class="pt-6">
             <h3 class="font-bold text-gray-900 mb-5 uppercase tracking-wide" style="font-size: 20px;">Duration (Nights)</h3>
             
             <div class="px-2 mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
@@ -233,18 +374,7 @@
                 </div>
             </div>
 
-            <!-- Duration Radios -->
-            <div class="space-y-2.5 mt-6">
-                @php $dr = request('duration_radio', 'all'); @endphp
-                <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="duration_radio" value="all" {{ $dr === 'all' ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">All Durations</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="duration_radio" id="duration_custom" value="custom" {{ $dr === 'custom' ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Custom Range</span>
-                </label>
-            </div>
+            <!-- Duration Radios removed -->
             <hr class="mt-5 border-gray-100">
         </div>
 
@@ -293,46 +423,7 @@
             <hr class="mt-5 border-gray-100">
         </div>
 
-        <!-- 4. City -->
-        <div x-data="{ expanded: false }" class="pt-6">
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">City</h3>
-            <div class="relative mb-3">
-                <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                    <i data-lucide="search" class="text-gray-400" size="14"></i>
-                </div>
-                <input type="text" placeholder="Search cities..." class="w-full bg-gray-50 border border-gray-200 rounded-lg py-2 pl-8 pr-3 text-xs font-semibold text-gray-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-gray-400">
-            </div>
-            
-            @php
-                $allCities = ['Manali', 'Goa', 'Shimla', 'Rishikesh', 'Kasol', 'Munnar', 'Darjeeling', 'Paris', 'Monaco', 'Hanoi', 'Dubai', 'Bali'];
-                $visibleCities = array_slice($allCities, 0, 5);
-                $hiddenCities = array_slice($allCities, 5);
-                $selectedCities = (array) request('city', []);
-            @endphp
-            
-            <div class="space-y-2">
-                @foreach($visibleCities as $city)
-                    <label class="flex items-center gap-2 cursor-pointer group">
-                        <input type="checkbox" name="city[]" value="{{ $city }}" {{ in_array($city, $selectedCities) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $city }}</span>
-                    </label>
-                @endforeach
-                
-                <div x-show="expanded" x-transition.opacity class="space-y-2 pt-2">
-                    @foreach($hiddenCities as $city)
-                        <label class="flex items-center gap-2 cursor-pointer group">
-                            <input type="checkbox" name="city[]" value="{{ $city }}" {{ in_array($city, $selectedCities) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $city }}</span>
-                        </label>
-                    @endforeach
-                </div>
-            </div>
-            <button type="button" @click="expanded = !expanded" class="text-primary text-[10px] font-bold mt-3 hover:opacity-80 uppercase tracking-wider flex items-center gap-1">
-                <span x-text="expanded ? 'See Less' : 'See More'"></span>
-                <i :data-lucide="expanded ? 'chevron-up' : 'chevron-down'" size="12"></i>
-            </button>
-            <hr class="mt-5 border-gray-100">
-        </div>
+        <!-- 4. City Removed -->
 
         <!-- 5. Rating -->
         <div class="pt-6">
@@ -425,7 +516,7 @@
         </div>
         <!-- 8. Travel Company -->
         <div class="pt-6">
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Travel Company</h3>
+            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Travel Company/Agent</h3>
             <div class="relative group mb-3">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i data-lucide="building" class="text-gray-400" size="14"></i>
