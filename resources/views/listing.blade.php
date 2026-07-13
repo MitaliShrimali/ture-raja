@@ -153,7 +153,7 @@
                           {{-- Destination Field --}}
                           <div class="flex items-center gap-3 flex-1 w-full rounded-md px-4 py-3" style="background: rgba(255,255,255,0.2);">
                             <i data-lucide="search" class="text-white" size="18"></i>
-                            <input type="text" name="search" placeholder="Search Where You Go !!!"
+                            <input type="text" name="search" placeholder="Where You Go !!!"
                                    class="bg-transparent border-none focus:ring-0 text-white placeholder-white/90 text-sm font-bold outline-none w-full p-0"
                                    value="{{ request('search') }}">
                           </div>

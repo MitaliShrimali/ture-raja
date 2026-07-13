@@ -298,7 +298,7 @@
     <!-- Section 3: Why Travel With TourRaja -->
     <div class="max-w-7xl mx-auto px-6 py-6 md:py-12 lg:py-16">
         <x-section-title subtitle="The TourRaja Advantage" align="center">
-            Why Travel With TourRaja?
+            Why tourraja !!!
             <x-slot:description>The best booking platform you can trust</x-slot:description>
         </x-section-title><br class="hidden md:block">
 

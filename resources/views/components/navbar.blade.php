@@ -33,7 +33,7 @@
         @endphp
         
         <div class="flex-1 relative flex justify-center items-center z-20">
-            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-auto items-center justify-center gap-1 sm:gap-2.5 md:gap-3.5 px-2 transition-all duration-500 z-50" :class="(isScrolled || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
+            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-auto items-center justify-center gap-1 sm:gap-2.5 md:gap-3.5 px-2 transition-all duration-500 z-50" :class="(isPastTransits || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
                 @foreach($dbTransits as $t)
                   @php
                       $imgUrl = '';
@@ -91,8 +91,8 @@
                         @click="open = !open"
                         class="relative flex items-center gap-2.5 text-left group"
                     >
-                        <div class="relative w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                            <i data-lucide="heart" size="18" class="text-primary fill-primary"></i>
+                        <div class="relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                            <i data-lucide="heart" size="20" class="text-primary"></i>
                             <span id="wishlist-count" class="absolute -top-1 -right-1 w-4 h-4 bg-black text-white text-[10px] font-black rounded-full flex items-center justify-center hidden">0</span>
                         </div>
                         <div class="hidden xl:flex flex-col justify-center transition-colors duration-300" :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'">
@@ -129,8 +129,8 @@
                         @click="$dispatch('open-login-modal')"
                         class="relative flex items-center gap-2.5 text-left group"
                     >
-                        <div class="relative w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-black/5 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                            <i data-lucide="heart" size="18" class="text-primary fill-primary"></i>
+                        <div class="relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                            <i data-lucide="heart" size="20" class="text-primary"></i>
                         </div>
                         <div class="hidden xl:flex flex-col justify-center transition-colors duration-300" :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'">
                             <span class="text-[14px] font-black leading-tight tracking-wide">Wishlist</span>
@@ -155,9 +155,9 @@
             <!-- Mobile Wishlist Icon -->
             <button 
                 @click="{{ Auth::check() ? 'window.location.href=\''.url('/profile').'\'' : '$dispatch(\'open-login-modal\')' }}"
-                class="hidden relative flex items-center justify-center w-10 h-10 bg-primary/10 text-primary rounded-full border border-primary/20"
+                class="hidden relative flex items-center justify-center text-primary"
             >
-                <i data-lucide="heart" size="18" class="fill-primary"></i>
+                <i data-lucide="heart" size="20" class=""></i>
             </button>
 
             <!-- Mobile Toggle -->

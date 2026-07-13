@@ -30,6 +30,7 @@
 
 <body x-data="{ 
         isScrolled: false, 
+        isPastTransits: false,
         isMobileMenuOpen: false, 
         isHome: {{ request()->is('/') ? 'true' : 'false' }}, 
         showLoginModal: false, 
@@ -49,7 +50,11 @@
         prevImage() {
             this.globalLightboxIndex = (this.globalLightboxIndex - 1 + this.globalSlides.length) % this.globalSlides.length;
         }
-    }" @scroll.window="isScrolled = window.pageYOffset > 50" @open-login-modal.window="showLoginModal = true"
+    }" @scroll.window="
+        isScrolled = window.pageYOffset > 50;
+        let pt = document.getElementById('popular-transits-section');
+        isPastTransits = pt ? (window.pageYOffset > (pt.offsetTop + pt.offsetHeight - 80)) : isScrolled;
+    " @open-login-modal.window="showLoginModal = true"
     @open-chef-modal.window="showChefModal = true; setTimeout(() => { showChefModal = false }, 5000)"
     @open-gallery.window="globalShowGallery = true; globalLightboxOpen = false; globalSlides = $event.detail.slides; globalGalleryTitle = $event.detail.title"
     class="min-h-full flex flex-col font-body bg-background text-text-main"
@@ -75,7 +80,7 @@
     <x-login-modal />
 
     <!-- Chef & Tour Manager Modal -->
-    <x-chef-manager-modal />
+    {{-- <x-chef-manager-modal /> --}}
 
 
 
