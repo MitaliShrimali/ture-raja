@@ -42,8 +42,23 @@
             @php
                 $allTourTypes = DB::table('transits')->where('status', 'Active')->pluck('name')->toArray();
                 if (empty($allTourTypes)) {
-                    $allTourTypes = ['Flight Package', 'Train Package', 'Bus Package', 'Bullet Ride', 'Cruise Package', 'Tracking Package', 'Helicopter Package', 'Land'];
+                    $allTourTypes = ['Land/Customised Packages', 'Flight Package', 'Train Package', 'Bus Package', 'Bullet Packages', 'Cruise Package', 'Tracking Package', 'Helicopter Package'];
                 }
+                $sortOrder = [
+                    'Land/Customised Packages' => 1,
+                    'Flight Package' => 2,
+                    'Train Package' => 3,
+                    'Bus Package' => 4,
+                    'Bullet Packages' => 5,
+                    'Cruise Package' => 6,
+                    'Tracking Package' => 7,
+                    'Helicopter Package' => 8,
+                ];
+                usort($allTourTypes, function($a, $b) use ($sortOrder) {
+                    $orderA = $sortOrder[$a] ?? 999;
+                    $orderB = $sortOrder[$b] ?? 999;
+                    return $orderA <=> $orderB;
+                });
                 $visibleTypes = array_slice($allTourTypes, 0, 5);
                 $hiddenTypes = array_slice($allTourTypes, 5);
                 $selectedTypes = (array) request('tour_type', []);

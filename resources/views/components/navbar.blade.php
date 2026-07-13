@@ -15,6 +15,19 @@
         @php
           $isHome = request()->is('/');
           $dbTransits = DB::table('transits')->where('status', 'Active')->get();
+          $sortOrder = [
+              'Land/Customised Packages' => 1,
+              'Flight Package' => 2,
+              'Train Package' => 3,
+              'Bus Package' => 4,
+              'Bullet Packages' => 5,
+              'Cruise Package' => 6,
+              'Tracking Package' => 7,
+              'Helicopter Package' => 8,
+          ];
+          $dbTransits = $dbTransits->sortBy(function($t) use ($sortOrder) {
+              return $sortOrder[$t->name] ?? 999;
+          });
           $gifMap = [
               'flight' => 'https://s13.gifyu.com/images/bIHxe.gif',
               'plane' => 'https://s13.gifyu.com/images/bIHxe.gif',
