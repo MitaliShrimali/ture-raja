@@ -361,29 +361,11 @@
                 <i data-lucide="arrow-left" size="20"></i>
             </a>
             <div>
-                <h2 class="font-black text-gray-800 tracking-tight text-2xl" x-text="step === 1 ? 'Edit Travel Package' : 'Build Your Journey'"></h2>
-                <p class="text-gray-400 font-medium text-xs mt-0.5" x-text="step === 1 ? 'Step 1: Configure core metadata, location, logistics & base pricing.' : 'Step 2: Upload brochures, edit itineraries, and add gallery portfolio.'"></p>
+                <h2 class="font-black text-gray-800 tracking-tight text-2xl">Edit Travel Package</h2>
+                <p class="text-gray-400 font-medium text-xs mt-0.5">Configure package details, upload brochures, and add gallery portfolio.</p>
             </div>
         </div>
         
-    </div>
-
-    <!-- Step Tracker Bar -->
-    <div class="step-track-container max-w-4xl mx-auto py-6">
-        <div class="step-track-line"></div>
-        <div class="step-track-line-active" :style="step === 2 ? 'width: 100%' : 'width: 0%'"></div>
-        
-        <!-- Step 1 Node -->
-        <div class="step-node" :class="step === 1 ? 'active' : 'completed'" @click="step = 1">
-            <div class="step-circle">1</div>
-            <span class="step-label">Identity & Logistics</span>
-        </div>
-
-        <!-- Step 2 Node -->
-        <div class="step-node" :class="step === 2 ? 'active' : ''" @click="if (document.getElementById('packageMainForm').querySelector('[name=title]').reportValidity() && document.getElementById('packageMainForm').querySelector('[name=price]').reportValidity()) step = 2;">
-            <div class="step-circle">2</div>
-            <span class="step-label">Itinerary, Meals & Photos</span>
-        </div>
     </div>
 
     @if ($errors->any())
@@ -403,7 +385,7 @@
         <input type="hidden" name="id" value="{{ $pkg->id }}" />
 
         <!-- ==================== STEP 1: IDENTITY & LOGISTICS ==================== -->
-        <div x-show="step === 1" class="space-y-8" x-transition>
+        <div class="space-y-8">
             <!-- Package Identity Card -->
             <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
                 <div class="flex items-center gap-3">
@@ -445,20 +427,6 @@
                     </div>
                 </div>
 
-                <!-- Cities List (location) -->
-                <div class="space-y-2">
-                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">City List (Select cities included)</label>
-                    <div class="w-full bg-[#F5F5F5] rounded-2xl p-4 flex flex-wrap items-center gap-2 border border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/25 transition-all">
-                        <template x-for="(city, idx) in cities" :key="idx">
-                            <span class="px-3.5 py-1.5 text-white rounded-full text-xs font-bold flex items-center gap-1.5 shadow-sm bg-primary" style="background-color: #e85d26 !important; color: #ffffff !important;">
-                                <span x-text="city"></span>
-                                <i class="cursor-pointer font-black text-xs leading-none" @click="removeCity(idx)">&times;</i>
-                            </span>
-                        </template>
-                        <input type="text" x-model="newCity" @keydown.enter.prevent="addCity()" @keydown.comma.prevent="addCity()" @keydown.space.prevent="addCity()" placeholder="Type city & enter/space..." class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0" style="border: none !important; outline: none !important; box-shadow: none !important;" />
-                        <input type="hidden" name="location" :value="cities.join(', ')" />
-                    </div>
-                </div>
             </div>
 
             <!-- Logistics & Departure Card -->
@@ -483,17 +451,10 @@
 
                     <!-- Package Validity -->
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Package Validity</label>
-                        <input type="hidden" name="validity" x-model="validity">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="relative">
-                                <i data-lucide="calendar" size="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input type="text" x-model="validity_from" x-ref="validityFromPicker" placeholder="From Date" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-10 pr-4 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
-                            </div>
-                            <div class="relative">
-                                <i data-lucide="calendar" size="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input type="text" x-model="validity_to" x-ref="validityToPicker" placeholder="To Date" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-10 pr-4 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
-                            </div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Package Expiry Date</label>
+                        <div class="relative">
+                            <i data-lucide="calendar" size="16" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="validity" value="{{ $pkg->validity ?? '' }}" placeholder="Select Expiry Date" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-10 pr-4 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                         </div>
                     </div>
 
@@ -516,11 +477,6 @@
                         <input type="text" name="departure_city" value="{{ $pkg->departure_city ?? '' }}" placeholder="New Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
-                    <!-- Sightseeing Details -->
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Sightseeing Details (comma-separated)</label>
-                        <input type="text" name="sightseeing" x-model="sightseeing" placeholder="e.g. 4 Sightseeing" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
-                    </div>
 
                     <!-- Departure State -->
                     <div class="space-y-2">
@@ -569,9 +525,15 @@
 
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Price Per Person (<span x-text="currency"></span>)</label>
-                        <div class="relative">
-                            <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400" x-text="currency"></span>
-                            <input required type="number" step="0.01" name="price" x-model="price" @input="updatePrice(true)" placeholder="45999" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400" x-text="currency"></span>
+                                <input required type="number" step="0.01" name="price" x-model="price" @input="updatePrice(true)" placeholder="45999" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                            </div>
+                            <div class="relative">
+                                <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400" x-text="currency"></span>
+                                <input type="number" step="0.01" name="old_price" x-model="old_price" placeholder="Old Price" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm line-through text-gray-500" />
+                            </div>
                         </div>
                     </div>
 
@@ -657,7 +619,7 @@
                                     <i class="cursor-pointer font-black text-xs leading-none text-gray-400 hover:text-gray-600" @click="removeKeyword(idx)">&times;</i>
                                 </span>
                             </template>
-                            <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" @keydown.comma.prevent="addKeyword()" @keydown.space.prevent="addKeyword()" placeholder="Type keyword & enter/space..." class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0" style="border: none !important; outline: none !important; box-shadow: none !important;" />
+                            <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" @keydown.comma.prevent="addKeyword()" placeholder="Type keyword & enter/comma..." class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0" style="border: none !important; outline: none !important; box-shadow: none !important;" />
                             <input type="hidden" name="keywords" :value="keywords.join(',')" />
                         </div>
                     </div>
@@ -666,7 +628,7 @@
         </div>
 
         <!-- ==================== STEP 2: ITINERARY, MEALS & PHOTOS ==================== -->
-        <div x-show="step === 2" class="space-y-8" x-transition>
+        <div class="space-y-8 mt-8">
 
             <!-- ── Full-width row: Upload Brochure  OR  Itinerary (Day-by-Day Plan) ── -->
             <div class="flex flex-col md:flex-row gap-4 items-stretch">
@@ -697,27 +659,14 @@
                 </div>
 
                 <!-- Itinerary card  ~65% -->
-                <div class="flex-1 bg-white rounded-[28px] border border-gray-100 p-6 space-y-3 shadow-sm flex flex-col">
+                <div x-show="!brochureName" class="flex-1 bg-white rounded-[28px] border border-gray-100 p-6 space-y-3 shadow-sm flex flex-col">
                     <div class="flex items-center gap-2">
                         <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                            <i data-lucide="pencil" size="16" class="text-primary"></i>
+                            <i data-lucide="pencil" size="16" class="text-[#e85d26]"></i>
                         </div>
                         <h4 class="text-sm font-bold text-gray-800">Itinerary (Day-by-Day Plan)</h4>
                     </div>
-                    <div class="flex-1 bg-[#F8F8F8] rounded-2xl overflow-hidden border border-gray-100 flex flex-col">
-                        <div class="flex items-center gap-1 px-4 py-2.5 border-b border-gray-200 bg-white">
-                            <button type="button" onclick="itineraryFormat('bold')" title="Bold" class="w-7 h-7 rounded-md flex items-center justify-center text-sm font-black text-gray-500 hover:bg-orange-50 hover:text-primary transition-all">B</button>
-                            <button type="button" onclick="itineraryFormat('italic')" title="Italic" class="w-7 h-7 rounded-md flex items-center justify-center text-sm italic font-black text-gray-500 hover:bg-orange-50 hover:text-primary transition-all">I</button>
-                            <div class="w-px h-4 bg-gray-200 mx-1"></div>
-                            <button type="button" onclick="itineraryFormat('list')" title="Bullet list" class="w-7 h-7 rounded-md flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-primary transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-                            </button>
-                            <button type="button" onclick="itineraryFormat('link')" title="Insert link" class="w-7 h-7 rounded-md flex items-center justify-center text-gray-500 hover:bg-orange-50 hover:text-primary transition-all">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                            </button>
-                        </div>
                         <textarea id="itinerary-textarea" name="editorial_itinerary" rows="9" placeholder="Explain why this tour is unique..." class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none">{{ $pkg->editorial_itinerary ?? '' }}</textarea>
-                    </div>
                 </div>
             </div>
 
@@ -732,34 +681,6 @@
                         <h3 class="text-lg font-bold text-gray-900">Editorial Details</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Transfers sub-card -->
-                            <div class="bg-[#FFF5F0] rounded-2xl p-5 space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0642F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-                                        <span class="text-sm font-bold text-gray-800">Transfers</span>
-                                    </div>
-                                </div>
-                                <div class="space-y-2">
-                                    <template x-for="(tr, idx) in transfers" :key="idx">
-                                        <div class="bg-white rounded-xl py-2.5 px-4 flex items-center justify-between text-xs font-semibold text-gray-700 shadow-sm">
-                                            <input type="hidden" name="transfers[]" :value="tr">
-                                            <span x-text="tr"></span>
-                                            <button type="button" @click="transfers.splice(idx, 1)" class="text-gray-300 hover:text-gray-500 ml-2">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                                            </button>
-                                        </div>
-                                    </template>
-                                    <template x-if="transfers.length === 0">
-                                        <p class="text-xs text-gray-400 bg-white rounded-xl py-2.5 px-4">No transfers added yet</p>
-                                    </template>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <input type="text" x-model="newTransfer" @keydown.enter.prevent="if(newTransfer.trim()){transfers.push(newTransfer.trim()); newTransfer='';}" placeholder="Enter transfer details..." class="flex-1 bg-white border border-gray-100 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-orange-200" />
-                                    <button type="button" @click="if(newTransfer.trim()){transfers.push(newTransfer.trim()); newTransfer='';}" class="w-10 h-10 shrink-0 text-white rounded-xl text-sm font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity bg-primary" style="background-color: #e85d26 !important; color: white !important;">+</button>
-                                </div>
-                            </div>
-
                             <!-- Hotels sub-card -->
                             <div class="bg-[#FFF5F0] rounded-2xl p-5 space-y-3">
                                 <div class="flex items-center justify-between">
@@ -797,28 +718,6 @@
                             </div>
                         </div>
 
-                        <!-- Meals Included - pill style -->
-                        <div class="space-y-3">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Meals Included</label>
-                            <div class="flex items-center gap-3">
-                                <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="meals[]" value="Breakfast" {{ in_array('Breakfast', $meals) ? 'checked' : '' }} class="hidden">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" x-show="$el.previousElementSibling.checked" style="display: {{ in_array('Breakfast', $meals) ? 'block' : 'none' }};"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    <span class="text-xs font-semibold">Breakfast</span>
-                                </label>
-                                <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="meals[]" value="Lunch" {{ in_array('Lunch', $meals) ? 'checked' : '' }} class="hidden">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" x-show="$el.previousElementSibling.checked" style="display: {{ in_array('Lunch', $meals) ? 'block' : 'none' }};"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    <span class="text-xs font-semibold text-gray-700">Lunch</span>
-                                </label>
-                                <label class="meal-pill flex items-center gap-2.5 px-4 py-2.5 rounded-full cursor-pointer select-none border border-gray-200 transition-all">
-                                    <input type="checkbox" name="meals[]" value="Dinner" {{ in_array('Dinner', $meals) ? 'checked' : '' }} class="hidden">
-                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" x-show="$el.previousElementSibling.checked" style="display: {{ in_array('Dinner', $meals) ? 'block' : 'none' }};"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                    <span class="text-xs font-semibold">Dinner</span>
-                                </label>
-                            </div>
-                        </div>
-
                         <!-- Terms & Conditions -->
                         <div class="space-y-2">
                             
@@ -830,7 +729,7 @@
                     </div>
 
                     <!-- Sightseeing Details Card -->
-                    <div class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-5 shadow-sm">
+                    <div x-show="!brochureName" class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-5 shadow-sm">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c7ed6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -855,10 +754,10 @@
                                     <template x-for="(day, index) in days" :key="index">
                                         <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-all">
                                             <td class="py-4 px-6">
-                                                <input required type="text" name="itinerary_titles[]" x-model="day.title" class="w-full bg-transparent border-none outline-none font-bold text-gray-800 focus:ring-0 p-0 text-sm" placeholder="e.g. Red Fort" />
+                                                <input :required="!brochureName" type="text" name="itinerary_titles[]" x-model="day.title" class="w-full bg-transparent border-none outline-none font-bold text-gray-800 focus:ring-0 p-0 text-sm" placeholder="e.g. Red Fort" />
                                             </td>
                                             <td class="py-4 px-6">
-                                                <input required type="text" name="itinerary_descriptions[]" x-model="day.desc" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. Historical Guided Tour" />
+                                                <input :required="!brochureName" type="text" name="itinerary_descriptions[]" x-model="day.desc" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. Historical Guided Tour" />
                                             </td>
                                             <td class="py-4 px-6">
                                                 <input type="text" name="itinerary_durations[]" x-model="day.duration" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. 3 Hours" />
@@ -876,7 +775,7 @@
                     </div>
 
                     <!-- Inclusions & Exclusions Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div x-show="!brochureName" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Inclusions Card -->
                         <div class="bg-[#F0FAF5] rounded-[28px] border border-green-100 p-6 space-y-4 shadow-sm" style="background-color: #F0FAF5 !important; border-color: #d3f9d8 !important;">
                             <div class="flex items-center justify-between">
@@ -1142,9 +1041,25 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
+<style>
+    .tox-notifications-container { display: none !important; }
+</style>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
+
+        tinymce.init({
+            selector: '#itinerary-textarea',
+            plugins: 'lists link image table code help wordcount',
+            toolbar: 'undo redo | blocks | ' +
+            'bold italic strikethrough | alignleft aligncenter ' +
+            'alignright alignjustify | bullist numlist outdent indent | ' +
+            'removeformat | help',
+            menubar: false,
+            promotion: false,
+            height: 400
+        });
     });
 
     // Inserts formatting at cursor / wraps selection in the itinerary textarea

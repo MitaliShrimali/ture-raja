@@ -204,7 +204,7 @@
 
         @media (min-width: 1024px) {
             .package-gallery-details-grid {
-                grid-template-columns: 7fr 3fr !important;
+                grid-template-columns: 1fr !important;
             }
 
             .package-gallery-images-col {
@@ -360,16 +360,16 @@
 
                                 <!-- Prev Button (Left) -->
                                 <button @click.stop="prev()"
-                                    class="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white rounded-full px-4 py-2 backdrop-blur-sm transition-all pointer-events-auto">
-                                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    class="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/40 hover:bg-black/60 text-white rounded-full p-3 backdrop-blur-sm transition-all pointer-events-auto flex items-center justify-center shadow-lg border border-white/20 hover:scale-110">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </button>
 
                                 <!-- Next Button (Right) -->
                                 <button @click.stop="next()"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/30 hover:bg-black/50 text-white rounded-full px-4 py-2 backdrop-blur-sm transition-all pointer-events-auto">
-                                    <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/40 hover:bg-black/60 text-white rounded-full p-3 backdrop-blur-sm transition-all pointer-events-auto flex items-center justify-center shadow-lg border border-white/20 hover:scale-110">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                                     </svg>
                                 </button>
@@ -845,85 +845,96 @@
 
                         $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentId);
                     @endphp
-                    <div class="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_20px_rgba(0,0,0,0.04)] overflow-hidden">
+                    <div class="relative bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
                         <!-- Header / Cover -->
-                        <div class="h-24 bg-gradient-to-r from-[#e85d26] to-orange-400 relative">
-                            <div class="absolute -bottom-10 left-6">
-                                <div class="w-20 h-20 bg-white rounded-xl shadow-md p-2 flex items-center justify-center border border-gray-100">
-                                    <img src="{{ asset($agentLogo) }}" alt="{{ $agentName }}" class="max-w-full max-h-full object-contain rounded-lg">
-                                </div>
-                            </div>
+                        <div class="absolute inset-x-0 top-0 h-32 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+                            <!-- Subtle Pattern Overlay -->
+                            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
                         </div>
                         
-                        <div class="pt-12 px-6 pb-6">
-                            <!-- Agent Name & Badge -->
-                            <div class="flex items-center gap-2 mb-1">
-                                <h3 class="font-black text-gray-900 text-xl">{{ $agentName }}</h3>
-                                @if($serviceGuaranteed)
-                                    <div class="bg-blue-50 text-blue-500 p-1 rounded-full" title="Trusted Agent">
-                                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        <div class="relative pt-20 px-6 pb-6">
+                            <!-- Avatar & Verification -->
+                            <div class="flex justify-between items-end mb-4">
+                                <div class="relative">
+                                    <div class="w-24 h-24 bg-white rounded-2xl shadow-xl p-1.5 flex items-center justify-center relative z-10 border border-gray-100">
+                                        <img src="{{ asset($agentLogo) }}" alt="{{ $agentName }}" class="max-w-full max-h-full object-contain rounded-xl">
                                     </div>
-                                @endif
-                            </div>
-                            <div class="text-sm font-medium text-gray-500 flex items-center gap-1.5 mb-5">
-                                <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> {{ $agentRegion }}
-                            </div>
-
-                            <!-- Contact Info Grid -->
-                            <div class="grid grid-cols-1 gap-3 mb-6">
-                                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $agentPhone) }}" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-100">
-                                    <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                                        <i data-lucide="phone" class="w-4 h-4"></i>
+                                    @if($serviceGuaranteed)
+                                    <div class="absolute -right-2 -bottom-2 bg-blue-500 text-white p-1.5 rounded-full border-2 border-white z-20 shadow-sm" title="Verified Partner">
+                                        <i data-lucide="shield-check" class="w-4 h-4"></i>
                                     </div>
-                                    <div class="flex flex-col">
-                                        <span class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Phone</span>
-                                        <span class="text-sm font-bold text-gray-900">{{ $agentPhone }}</span>
-                                    </div>
-                                </a>
-                                
-                                <a href="mailto:{{ $agentEmail }}" class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-100">
-                                    <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
-                                        <i data-lucide="mail" class="w-4 h-4"></i>
-                                    </div>
-                                    <div class="flex flex-col overflow-hidden">
-                                        <span class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Email</span>
-                                        <span class="text-sm font-bold text-gray-900 truncate">{{ $agentEmail }}</span>
-                                    </div>
-                                </a>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="grid grid-cols-2 gap-2 mb-6">
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" target="_blank" style="background-color: #25D366;" class="flex items-center justify-center gap-2 hover:opacity-90 text-white py-2.5 rounded-xl text-xs font-bold transition-opacity shadow-sm">
-                                    <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
-                                </a>
-                                <a href="mailto:{{ $agentEmail }}" style="background-color: #3B82F6;" class="flex items-center justify-center gap-2 hover:opacity-90 text-white py-2.5 rounded-xl text-xs font-bold transition-opacity shadow-sm">
-                                    <i data-lucide="mail" class="w-4 h-4"></i> Email
-                                </a>
-                                <a href="{{ $agentRedirectUrl }}" style="background-color: #e85d26;" class="flex items-center justify-center gap-1.5 hover:opacity-90 text-white py-2.5 rounded-xl text-[10px] font-bold transition-opacity shadow-sm uppercase text-center px-1">
-                                    View Packages
-                                </a>
-                                <a href="{{ $agentRedirectUrl }}" style="background-color: #000000;" class="flex items-center justify-center gap-1.5 hover:opacity-90 text-white py-2.5 rounded-xl text-[10px] font-bold transition-opacity shadow-sm uppercase text-center px-1">
-                                    View Profile
-                                </a>
-                            </div>
-
-                            <!-- Services & Rating -->
-                            <div class="border-t border-gray-100 pt-5">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h4 class="font-bold text-gray-900 text-sm uppercase tracking-wide">Our Services</h4>
-                                    <div class="flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2.5 py-1 rounded-full text-xs font-bold border border-yellow-200">
-                                        <span class="text-yellow-500">★</span> 4.5
-                                    </div>
+                                    @endif
                                 </div>
                                 
+                                <div class="flex items-center gap-1.5 bg-gray-100/80 backdrop-blur-md px-3 py-1.5 rounded-full mb-2 border border-gray-200/50">
+                                    <span class="text-yellow-500 text-sm leading-none">★</span>
+                                    <span class="text-xs font-black text-gray-700">4.9/5</span>
+                                </div>
+                            </div>
+
+                            <!-- Name & Location -->
+                            <div class="mb-6">
+                                <h3 class="font-black text-gray-900 text-2xl tracking-tight mb-1">{{ $agentName }}</h3>
+                                <div class="text-sm font-medium text-gray-500 flex items-center gap-1.5">
+                                    <i data-lucide="map-pin" class="w-4 h-4 text-gray-400"></i> {{ $agentRegion }}
+                                </div>
+                            </div>
+
+                            <!-- Quick Contact -->
+                            <div class="flex flex-col gap-2.5 mb-6">
+                                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $agentPhone) }}" class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all group/phone border border-transparent hover:border-gray-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-600 group-hover/phone:text-blue-500 transition-colors">
+                                            <i data-lucide="phone-call" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Direct Line</div>
+                                            <div class="text-sm font-bold text-gray-900">{{ $agentPhone }}</div>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover/phone:translate-x-1 transition-transform"></i>
+                                </a>
+                                
+                                <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all group/mail border border-transparent hover:border-gray-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-600 group-hover/mail:text-orange-500 transition-colors">
+                                            <i data-lucide="mail" class="w-4 h-4"></i>
+                                        </div>
+                                        <div class="overflow-hidden">
+                                            <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Email Address</div>
+                                            <div class="text-sm font-bold text-gray-900 truncate">{{ $agentEmail }}</div>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover/mail:translate-x-1 transition-transform"></i>
+                                </a>
+                            </div>
+
+                            <!-- Action Grid -->
+                            <div class="grid grid-cols-2 gap-2.5 mb-6">
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" target="_blank" class="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#1DA851] text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                                    <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
+                                </a>
+                                <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-center gap-1.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                                    <i data-lucide="send" class="w-4 h-4"></i> Send Email
+                                </a>
+                                <a href="{{ $agentRedirectUrl }}" class="flex items-center justify-center gap-1.5 bg-[#e85d26] hover:bg-[#d0501f] text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
+                                    Packages
+                                </a>
+                                <a href="{{ $agentRedirectUrl }}" class="flex items-center justify-center gap-1.5 bg-gray-900 hover:bg-black text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
+                                    Profile
+                                </a>
+                            </div>
+
+                            <!-- Expertise Tags -->
+                            <div class="pt-5 border-t border-gray-100">
+                                <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Specialized In</h4>
                                 <div class="flex flex-wrap gap-2">
                                     @php
-                                        $services = ['Flight Booking', 'Train Booking', 'Passport', 'Visa', 'International Courier', 'Domestic Tour'];
+                                        $services = ['Flight Booking', 'Visa', 'International Tours', 'Domestic Escapes'];
                                     @endphp
                                     @foreach($services as $service)
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 text-gray-700 border border-gray-200 rounded-lg text-xs font-semibold">
-                                            <i data-lucide="check" class="w-3.5 h-3.5 text-[#e85d26]"></i> {{ $service }}
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-600 rounded-lg text-[11px] font-bold hover:bg-gray-100 transition-colors">
+                                            {{ $service }}
                                         </span>
                                     @endforeach
                                 </div>

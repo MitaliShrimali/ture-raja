@@ -664,10 +664,10 @@
                                     <template x-for="(day, index) in days" :key="index">
                                         <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-all">
                                             <td class="py-4 px-6">
-                                                <input required type="text" name="itinerary_titles[]" x-model="day.title" class="w-full bg-transparent border-none outline-none font-bold text-gray-800 focus:ring-0 p-0 text-sm" placeholder="e.g. Red Fort" />
+                                                <input :required="!brochureName" type="text" name="itinerary_titles[]" x-model="day.title" class="w-full bg-transparent border-none outline-none font-bold text-gray-800 focus:ring-0 p-0 text-sm" placeholder="e.g. Red Fort" />
                                             </td>
                                             <td class="py-4 px-6">
-                                                <input required type="text" name="itinerary_descriptions[]" x-model="day.desc" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. Historical Guided Tour" />
+                                                <input :required="!brochureName" type="text" name="itinerary_descriptions[]" x-model="day.desc" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. Historical Guided Tour" />
                                             </td>
                                             <td class="py-4 px-6">
                                                 <input type="text" name="itinerary_durations[]" x-model="day.duration" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. 3 Hours" />
@@ -865,6 +865,9 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>
+<style>
+    .tox-notifications-container { display: none !important; }
+</style>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();

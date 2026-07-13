@@ -918,6 +918,9 @@ class AgentController extends Controller
         ]);
 
         $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
+        }
 
         // Check if parent folder belongs to agent
         if ($request->parent_id) {
@@ -945,6 +948,9 @@ class AgentController extends Controller
         ]);
 
         $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
+        }
 
         if ($request->parent_id) {
             $parent = AgentMedia::where('id', $request->parent_id)->where('agent_id', $agentId)->first();
@@ -992,6 +998,9 @@ class AgentController extends Controller
         ]);
 
         $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
+        }
         $targetId = $request->target_folder_id === 'root' ? null : $request->target_folder_id;
 
         if ($targetId) {
@@ -1015,6 +1024,9 @@ class AgentController extends Controller
         ]);
 
         $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
+        }
         
         $items = AgentMedia::whereIn('id', $request->selected_ids)
             ->where('agent_id', $agentId)
