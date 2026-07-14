@@ -204,11 +204,11 @@
 
         @media (min-width: 1024px) {
             .package-gallery-details-grid {
-                grid-template-columns: 1fr !important;
+                grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
             }
 
             .package-gallery-images-col {
-                grid-column: span 1 / span 1 !important;
+                grid-column: span 3 / span 3 !important;
                 height: 500px !important; /* Made taller vertically as requested */
             }
 
@@ -847,12 +847,12 @@
                     @endphp
                     <div class="relative bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
                         <!-- Header / Cover -->
-                        <div class="absolute inset-x-0 top-0 h-32 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+                        <div class="absolute inset-x-0 top-0 w-full z-0" style="height: 8rem; background-color: #e85d26 !important;">
                             <!-- Subtle Pattern Overlay -->
                             <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
                         </div>
                         
-                        <div class="relative pt-20 px-6 pb-6">
+                        <div class="relative z-10 pt-20 px-6 pb-6">
                             <!-- Avatar & Verification -->
                             <div class="flex justify-between items-end mb-4">
                                 <div class="relative">
@@ -911,10 +911,10 @@
 
                             <!-- Action Grid -->
                             <div class="grid grid-cols-2 gap-2.5 mb-6">
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" target="_blank" class="flex items-center justify-center gap-1.5 bg-[#25D366] hover:bg-[#1DA851] text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" target="_blank" class="flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                                     <i data-lucide="message-circle" class="w-4 h-4"></i> WhatsApp
                                 </a>
-                                <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-center gap-1.5 bg-[#3B82F6] hover:bg-[#2563EB] text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                                <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                                     <i data-lucide="send" class="w-4 h-4"></i> Send Email
                                 </a>
                                 <a href="{{ $agentRedirectUrl }}" class="flex items-center justify-center gap-1.5 bg-[#e85d26] hover:bg-[#d0501f] text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">

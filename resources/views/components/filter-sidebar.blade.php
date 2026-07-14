@@ -72,7 +72,7 @@
             }" class="relative" @click.away="open = false">
                 <label class="block text-sm font-bold text-gray-900 mb-1.5">Travel Destination</label>
                 <div class="relative">
-                    <input type="text" name="search" x-model.debounce.300ms="query" @focus="open = true" autocomplete="off" placeholder="Search travel destination..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
+                    <input type="text" name="search" x-model.debounce.300ms="query" @focus="open = true" autocomplete="new-password" placeholder="Search travel destination..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
                     <i data-lucide="search" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
                 </div>
                 
@@ -84,7 +84,7 @@
                         <template x-if="!loading">
                             <div>
                                 <template x-for="item in results" :key="item.text">
-                                    <div @click="selectOption(item.text)" class="cursor-pointer hover:bg-[#e85d26] hover:text-white px-3 py-2 transition-colors" x-text="item.text"></div>
+                                    <div @click.prevent.stop="selectOption(item.text)" class="cursor-pointer hover:bg-[#e85d26] hover:text-white px-3 py-2 transition-colors" x-text="item.text"></div>
                                 </template>
                                 <template x-if="results.length === 0">
                                     <div class="text-gray-500 px-3 py-2">No results found for '<span x-text="query"></span>'</div>
@@ -134,7 +134,7 @@
             }" class="relative" @click.away="open = false">
                 <label class="block text-sm font-bold text-gray-900 mb-1.5">Travel Agent Location</label>
                 <div class="relative">
-                    <input type="text" name="city" x-model.debounce.300ms="query" @focus="open = true" autocomplete="off" placeholder="Search agent location..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
+                    <input type="text" name="city" x-model.debounce.300ms="query" @focus="open = true" autocomplete="new-password" placeholder="Search agent location..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
                     <i data-lucide="search" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
                 </div>
                 
@@ -146,7 +146,7 @@
                         <template x-if="!loading">
                             <div>
                                 <template x-for="item in results" :key="item.text">
-                                    <div @click="selectOption(item.text)" class="cursor-pointer hover:bg-[#e85d26] hover:text-white px-3 py-2 transition-colors" x-text="item.text"></div>
+                                    <div @click.prevent.stop="selectOption(item.text)" class="cursor-pointer hover:bg-[#e85d26] hover:text-white px-3 py-2 transition-colors" x-text="item.text"></div>
                                 </template>
                                 <template x-if="results.length === 0">
                                     <div class="text-gray-500 px-3 py-2">No results found for '<span x-text="query"></span>'</div>

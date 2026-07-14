@@ -159,8 +159,8 @@ class ListingController extends Controller
         $allPackages = clone $packages;
 
         // ── Search by destination / title / agent name / keywords ──
-        if ($request->filled('search')) {
-            $searchVal = $request->search;
+        $searchVal = $request->input('search') ?: $request->input('mobile_search');
+        if (!empty($searchVal)) {
             $search = strtolower(is_array($searchVal) ? implode(' ', $searchVal) : (string)$searchVal);
             
             $packages = $packages->map(function($pkg) use ($search) {
@@ -726,30 +726,6 @@ class ListingController extends Controller
             });
         } elseif ($sort === 'Top Rated') {
             $packages = $packages->sortByDesc(fn($p) => ((array)$p)['rating'] ?? 0);
-        } else {
-            // Default Sort: Sort by Tour Type Order (Land -> Flight -> Train -> Bus -> Bullet -> Cruise -> Trekking -> Helicopter)
-            // Because Laravel's sortBy is stable, the initial tier sorting will be preserved within each tour type group.
-            $typeOrder = [
-                'land' => 1,
-                'flight' => 2,
-                'train' => 3,
-                'bus' => 4,
-                'bullet' => 5,
-                'cruise' => 6,
-                'trackking' => 7,
-                'trekking' => 7,
-                'helicopter' => 8
-            ];
-            $packages = $packages->sortBy(function($p) use ($typeOrder) {
-                $pkg = (array) $p;
-                $tt = strtolower($pkg['tour_type'] ?? '');
-                foreach ($typeOrder as $key => $val) {
-                    if (str_contains($tt, $key)) {
-                        return $val;
-                    }
-                }
-                return 99; // Default for other types
-            });
         }
 
         // Fetch active ads for Package Sidebar

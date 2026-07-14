@@ -193,10 +193,10 @@
         x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tourraja_view_style') || 'grid'" }}, mobileFiltersOpen: false, stateModalOpen: false, expandedStates: {} }"
         x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
 
-        <form id="filter-form" action="{{ url('/listing') }}" method="GET" class="flex flex-col lg:flex-row gap-12 w-full">
+        <form id="filter-form" action="{{ url('/listing') }}" method="GET" class="flex flex-col lg:flex-row gap-12 w-full items-start">
             <!-- Sidebar Wrapper (Responsive: Slide-over Drawer on Mobile, Sticky Column on Desktop) -->
             <div :class="mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-                class="desktop-sidebar-reset fixed inset-y-0 left-0 w-[85vw] sm:w-[400px] lg:w-1/4 lg:static lg:h-auto bg-white lg:bg-transparent z-50 lg:z-0 shadow-2xl lg:shadow-none p-6 lg:p-0 transition-transform duration-300 overflow-y-auto shrink-0">
+                class="desktop-sidebar-reset fixed inset-y-0 left-0 w-[85vw] sm:w-[400px] lg:w-1/4 lg:sticky lg:top-[90px] lg:max-h-[calc(100vh-100px)] bg-white lg:bg-transparent z-50 lg:z-0 shadow-2xl lg:shadow-none p-6 lg:p-0 transition-transform duration-300 overflow-y-auto shrink-0">
                 <!-- Mobile Drawer Header -->
                 <div class="flex items-center justify-between lg:hidden border-b border-gray-100 pb-4 mb-6">
                     <h3 class="text-sm font-black">Filters</h3>
@@ -299,8 +299,8 @@
 
                 <!-- Mobile Search Input (Visible only on mobile/tablet) -->
                 <div class="relative group lg:hidden w-full">
-                    <input type="text" name="search" placeholder="Search destination or package..."
-                        value="{{ request('search') }}"
+                    <input type="text" name="mobile_search" placeholder="Search destination or package..."
+                        value="{{ request('search') ?: request('mobile_search') }}"
                         class="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 shadow-soft focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-bold text-foreground placeholder:text-muted-text/40 text-sm">
                     <i data-lucide="search"
                         class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors"
