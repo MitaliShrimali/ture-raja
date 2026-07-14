@@ -428,34 +428,25 @@
         <!-- 5. Rating -->
         <div class="pt-6">
             <h3 class="font-bold text-gray-900 mb-4 uppercase tracking-wide" style="font-size: 20px;">Rating</h3>
-            <div class="flex items-center justify-between mb-3">
-                <div class="w-6 h-6 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0">
-                    <span class="text-[10px] font-bold text-gray-500">0</span>
-                </div>
-                <div class="flex-1 px-3 relative">
-                    <input type="range" name="min_rating" min="0" max="5" step="0.5" value="{{ request('min_rating', 0) }}" oninput="document.getElementById('ratingLabel').innerText = this.value + ' Stars'; document.getElementById('rating_custom').checked = true;" onchange="this.form.dispatchEvent(new Event('submit'))" class="w-full h-1.5 bg-gray-200 rounded-full appearance-none cursor-pointer accent-primary">
-                </div>
-                <div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span class="text-[10px] font-bold text-primary">5</span>
-                </div>
-            </div>
-            <div class="flex items-center justify-center gap-1.5 bg-gray-50 py-1.5 px-3 rounded-lg border border-gray-100 w-max mx-auto">
-                <i data-lucide="star" class="text-orange-400 fill-orange-400" size="14"></i>
-                <span class="text-xs font-bold text-gray-800" id="ratingLabel">{{ request('min_rating', 0) }} Stars</span>
-                <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wide ml-1">Or Above</span>
-            </div>
-
-            <!-- Rating Radios -->
-            <div class="space-y-2.5 mt-6">
-                @php $rr = request('rating_radio', 'all'); @endphp
-                <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="rating_radio" value="all" {{ $rr === 'all' ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">All Ratings</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="radio" name="rating_radio" id="rating_custom" value="custom" {{ $rr === 'custom' ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Custom Rating</span>
-                </label>
+            @php
+                $selectedRatings = (array) request('ratings', []);
+            @endphp
+            <div class="space-y-2.5">
+                @foreach(['5' => '5 Stars', '4' => '4 Stars', '3' => '3 Stars', '2' => '2 Stars', '1' => '1 Star', '0' => 'No rating'] as $val => $label)
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" name="ratings[]" value="{{ $val }}" {{ in_array($val, $selectedRatings) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
+                            @if($val > 0)
+                                @for($i = 0; $i < $val; $i++)
+                                    <i data-lucide="star" class="text-orange-400 fill-orange-400" size="12"></i>
+                                @endfor
+                                <span class="ml-1">{{ $label }}</span>
+                            @else
+                                {{ $label }}
+                            @endif
+                        </span>
+                    </label>
+                @endforeach
             </div>
             <hr class="mt-5 border-gray-100">
         </div>

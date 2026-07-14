@@ -9,7 +9,7 @@
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8">
             <div class="flex-grow flex items-center px-4">
                 <i class="fas fa-search text-gray-300 mr-3"></i>
-                <input type="text" placeholder="Search/Edit Hotel"
+                <input type="text" id="hotelsSearchInput" oninput="filterHotels()" placeholder="Search/Edit Hotel"
                     class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
             </div>
             <button
@@ -49,8 +49,6 @@
         <td class="py-4 pl-4 text-xs font-bold text-gray-800">{{ 101 + $index }}</td>
         <td class="py-4">
             <div class="flex items-center">
-                <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=50&auto=format&fit=crop"
-                    class="w-10 h-10 rounded-xl object-cover mr-3 border border-gray-100 shadow-sm">
                 <div>
                     <p class="text-[10px] font-bold text-gray-800 hotel-name">{{ $h->name }}</p>
                     <p class="text-[8px] text-gray-400 font-medium hotel-loc">{{ $h->location }}</p>
@@ -81,17 +79,7 @@
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-12 flex flex-col lg:flex-row items-center justify-between py-6 border-t border-gray-100">
-            <p class="text-xs text-gray-400 font-medium mb-4 lg:mb-0">Copyright © 2026 Tour Raja Private Limited, India.
-                All rights reserved.</p>
-            <div class="flex space-x-6 text-xs text-gray-400 font-medium">
-                <a href="#" class="hover:text-primary">About Us</a>
-                <a href="#" class="hover:text-primary">License</a>
-                <a href="#" class="hover:text-primary">Terms of Services</a>
-                <a href="#" class="hover:text-primary">Privacy Policy</a>
-            </div>
-        </footer>
+
     
 
 <!-- Add/Edit Hotel Modal -->
@@ -221,16 +209,7 @@
                 </div>
             </div>
 
-            <!-- Live Preview Area -->
-            <div class="relative rounded-[24px] overflow-hidden h-44 bg-gray-200">
-                <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=600&auto=format&fit=crop"
-                    class="w-full h-full object-cover brightness-50">
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                    <p class="text-[8px] font-bold text-white uppercase tracking-[3px] mb-1 opacity-80">Live Preview</p>
-                    <h4 class="text-white font-bold text-xs leading-relaxed max-w-[180px]">Imagery will be automatically
-                        fetched based on name.</h4>
-                </div>
-            </div>
+
 
             <div class="flex items-center justify-end space-x-6 pt-2">
                 <button type="button" onclick="toggleHotelModal()"
@@ -317,6 +296,22 @@
                 form.appendChild(csrf);
                 document.body.appendChild(form);
                 form.submit();
+            }
+        });
+    }
+
+    function filterHotels() {
+        const input = document.getElementById('hotelsSearchInput');
+        const filter = input.value.toLowerCase();
+        const tbody = document.getElementById('hotelTableBody');
+        const rows = tbody.querySelectorAll('tr[id^="hotel-row-"]');
+
+        rows.forEach(row => {
+            const text = row.textContent || row.innerText;
+            if (text.toLowerCase().indexOf(filter) > -1) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
             }
         });
     }

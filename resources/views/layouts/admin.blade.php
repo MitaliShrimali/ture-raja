@@ -260,11 +260,11 @@
 
                         <!-- Search -->
                         <div
-                            class="flex items-center bg-white border border-gray-200 rounded-full w-24 sm:w-32 md:w-56 overflow-hidden focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+                            class="relative flex items-center bg-white border border-gray-200 rounded-full w-24 sm:w-32 md:w-56 overflow-hidden focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary transition-all">
                             <div class="pl-3 flex items-center justify-center text-gray-400 pointer-events-none">
                                 <i data-lucide="search" size="14"></i>
                             </div>
-                            <input type="text" placeholder="Type"
+                            <input type="text" id="globalSearchAdmin" placeholder="Search Pages" autocomplete="off"
                                 class="w-full bg-transparent border-none py-1.5 pl-2 pr-3 text-sm font-semibold text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-0">
                         </div>
 
@@ -297,6 +297,12 @@
                             <img src="{{ asset($adminAvatar) }}" alt="Profile"
                                 class="w-10 h-10 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
                         </a>
+                    </div>
+                    
+                    <!-- Search Dropdown Container -->
+                    <div id="globalSearchAdminDropdown" class="absolute top-20 right-6 lg:right-10 w-64 bg-white border border-gray-200 rounded-xl shadow-lg hidden z-[100] max-h-64 overflow-y-auto">
+                        <ul id="globalSearchAdminResults" class="py-2 text-xs text-gray-700 divide-y divide-gray-50">
+                        </ul>
                     </div>
                 </div>
             </header>
@@ -404,6 +410,72 @@
             }, 100);
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            const pages = [
+                { name: 'Dashboard', url: '{{ url("/admin/dashboard") }}' },
+                { name: 'Admin Users', url: '{{ url("/admin/users") }}' },
+                { name: 'Paid Users', url: '{{ url("/admin/registered-agents") }}' },
+                { name: 'All Packages', url: '{{ url("/admin/packages") }}' },
+                { name: 'Pending Packages', url: '{{ url("/admin/packages/pending") }}' },
+                { name: 'Add New Package', url: '{{ url("/admin/packages/create") }}' },
+                { name: 'International Packages', url: '{{ url("/admin/packages/international") }}' },
+                { name: 'Domestic Packages', url: '{{ url("/admin/packages/domestic") }}' },
+                { name: 'Advertisements', url: '{{ url("/admin/ads") }}' },
+                { name: 'Leads', url: '{{ url("/admin/leads") }}' },
+                { name: 'Plans', url: '{{ url("/admin/plans") }}' },
+                { name: 'Payments', url: '{{ url("/admin/payments") }}' },
+                { name: 'Home Editor', url: '{{ url("/admin/home-editor") }}' },
+                { name: 'Offer Stickers', url: '{{ url("/admin/offer-stickers") }}' },
+                { name: 'Notifications', url: '{{ url("/admin/notifications") }}' },
+                { name: 'Pages', url: '{{ url("/admin/cms") }}' },
+                { name: 'Contact US', url: '{{ url("/admin/contact") }}' },
+                { name: 'Subscribers', url: '{{ url("/admin/subscribers") }}' },
+                { name: 'Careers', url: '{{ url("/admin/careers") }}' },
+                { name: 'Settings', url: '{{ url("/admin/settings") }}' }
+            ];
+
+            const input = document.getElementById('globalSearchAdmin');
+            const dropdown = document.getElementById('globalSearchAdminDropdown');
+            const resultsContainer = document.getElementById('globalSearchAdminResults');
+
+            if(input) {
+                input.addEventListener('input', function() {
+                    const val = this.value.toLowerCase();
+                    resultsContainer.innerHTML = '';
+                    
+                    if (!val) {
+                        dropdown.classList.add('hidden');
+                        return;
+                    }
+
+                    const matches = pages.filter(p => p.name.toLowerCase().includes(val));
+                    
+                    if (matches.length > 0) {
+                        matches.forEach(match => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<a href="${match.url}" class="block px-4 py-2 hover:bg-gray-100 text-gray-800 font-medium">${match.name}</a>`;
+                            resultsContainer.appendChild(li);
+                        });
+                        dropdown.classList.remove('hidden');
+                    } else {
+                        dropdown.classList.remove('hidden');
+                        resultsContainer.innerHTML = `<li class="px-4 py-2 text-gray-500 italic">No pages found</li>`;
+                    }
+                });
+
+                document.addEventListener('click', function(e) {
+                    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
+    @stack('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/confirm-interceptor.js') }}"></script>
     <style>

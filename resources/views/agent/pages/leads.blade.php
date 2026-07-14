@@ -9,7 +9,7 @@
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8">
             <div class="flex-grow flex items-center px-4">
                 <i class="fas fa-search text-gray-300 mr-3"></i>
-                <input type="text" placeholder="Search/Filter Leads" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
+                <input type="text" id="leadsSearchInput" oninput="filterLeads()" placeholder="Search/Filter Leads" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
             </div>
             <button class="bg-primary text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-orange-100">
                 <i class="fas fa-search"></i>
@@ -99,16 +99,7 @@
             </div>
         </div>
 
-        <!-- Footer -->
-        <footer class="mt-12 flex flex-col lg:flex-row items-center justify-between py-6 border-t border-gray-100">
-            <p class="text-xs text-gray-400 font-medium mb-4 lg:mb-0">Copyright © 2026 Tour Raja Private Limited, India. All rights reserved.</p>
-            <div class="flex space-x-6 text-xs text-gray-400 font-medium">
-                <a href="#" class="hover:text-primary">About Us</a>
-                <a href="#" class="hover:text-primary">License</a>
-                <a href="#" class="hover:text-primary">Terms of Services</a>
-                <a href="#" class="hover:text-primary">Privacy Policy</a>
-            </div>
-        </footer>
+
     
 
 <!-- Edit Lead Modal -->
@@ -357,6 +348,22 @@ function deleteLead(id) {
                     toastr.error('Failed to delete lead');
                 }
             });
+        }
+    });
+}
+
+function filterLeads() {
+    const input = document.getElementById('leadsSearchInput');
+    const filter = input.value.toLowerCase();
+    const tbody = document.querySelector('tbody');
+    const rows = tbody.querySelectorAll('tr[id^="lead-row-"]');
+
+    rows.forEach(row => {
+        const text = row.textContent || row.innerText;
+        if (text.toLowerCase().indexOf(filter) > -1) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
         }
     });
 }

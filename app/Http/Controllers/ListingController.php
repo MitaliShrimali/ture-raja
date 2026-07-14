@@ -342,14 +342,19 @@ class ListingController extends Controller
         }
 
         // ── Rating filter ──────────────────────────────────────────
-        if ($request->input('rating_radio', 'all') !== 'all') {
-            if ($request->filled('min_rating')) {
-                $packages = $packages->filter(function($pkg) use ($request) {
-                    $pkg = (array) $pkg;
-                    $minRating = (float)$request->min_rating;
-                    return ((float)($pkg['rating'] ?? 0)) >= $minRating;
-                });
-            }
+        if ($request->filled('ratings')) {
+            $ratings = (array) $request->ratings;
+            $packages = $packages->filter(function($pkg) use ($ratings) {
+                $pkg = (array) $pkg;
+                $pkgRating = (float)($pkg['rating'] ?? 0);
+                
+                if ($pkgRating == 0 && in_array('0', $ratings)) {
+                    return true;
+                }
+                
+                $roundedRating = (string) floor($pkgRating);
+                return in_array($roundedRating, $ratings);
+            });
         }
 
         // ── Theme filter ───────────────────────────────────────────

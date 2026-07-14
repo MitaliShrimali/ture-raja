@@ -304,15 +304,7 @@
             </div>
         </div>
 
-        <footer class="mt-16 flex flex-col lg:flex-row items-center justify-between py-8 border-t border-gray-100">
-            <p class="text-[11px] text-gray-400 font-bold mb-4 lg:mb-0 uppercase tracking-widest">Copyright © 2026 Tour Raja Private Limited, India. All rights reserved.</p>
-            <div class="flex space-x-8 text-[11px] text-gray-400 font-bold uppercase tracking-widest">
-                <a href="#" class="hover:text-primary transition-colors">About Us</a>
-                <a href="#" class="hover:text-primary transition-colors">License</a>
-                <a href="#" class="hover:text-primary transition-colors">Terms of Services</a>
-                <a href="#" class="hover:text-primary transition-colors">Privacy Policy</a>
-            </div>
-        </footer>
+
     
 
 <script>

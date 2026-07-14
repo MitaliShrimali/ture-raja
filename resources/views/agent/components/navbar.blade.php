@@ -16,16 +16,20 @@
         <div class="flex items-center bg-white rounded-full shadow-[0_2px_15px_-3px_rgba(0,0,0,0.05),0_10px_20px_-2px_rgba(0,0,0,0.02)] p-1 pl-3 gap-3 md:gap-5 border border-gray-50">
             
             <!-- Search -->
-            <div class="flex items-center bg-white border border-gray-200 rounded-full w-24 sm:w-32 md:w-48 overflow-hidden focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary transition-all">
+            <div class="relative flex items-center bg-white border border-gray-200 rounded-full w-24 sm:w-32 md:w-48 overflow-hidden focus-within:ring-1 focus-within:ring-primary/20 focus-within:border-primary transition-all">
                 <div class="pl-2.5 flex items-center justify-center text-gray-400 pointer-events-none">
                     <i class="fas fa-search text-xs"></i>
                 </div>
                 <input 
                     type="text" 
-                    placeholder="Type" 
+                    id="globalSearchAgent"
+                    placeholder="Search Pages" 
+                    autocomplete="off"
                     class="w-full bg-transparent border-none py-1.5 pl-2 pr-3 text-xs font-semibold text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-0"
                 >
             </div>
+            
+            <!-- Global Search Dropdown (Absolute to navbar, relative to body via script positioning or we can make the parent container relative) -->
 
             <!-- Icons -->
             <div class="flex items-center gap-1 md:gap-1.5">
@@ -54,5 +58,71 @@
                 @endif
             </a>
         </div>
+        
+        <!-- Search Dropdown Container -->
+        <div id="globalSearchAgentDropdown" class="absolute top-16 right-6 lg:right-8 w-64 bg-white border border-gray-200 rounded-xl shadow-lg hidden z-50 max-h-64 overflow-y-auto">
+            <ul id="globalSearchAgentResults" class="py-2 text-xs text-gray-700 divide-y divide-gray-50">
+            </ul>
+        </div>
     </div>
 </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pages = [
+        { name: 'Dashboard', url: '{{ route("agent.dashboard") }}' },
+        { name: 'Packages', url: '{{ route("agent.my-packages") }}' },
+        { name: 'Add Package / Create Package', url: '{{ route("agent.packages.create") }}' },
+        { name: 'Leads', url: '{{ route("agent.leads") }}' },
+        { name: 'Hotels', url: '{{ route("agent.hotels") }}' },
+        { name: 'Add Hotel', url: '{{ route("agent.add-hotel") }}' },
+        { name: 'Branches', url: '{{ route("agent.branch") }}' },
+        { name: 'Add Branch', url: '{{ route("agent.add-branch") }}' },
+        { name: 'Gallery', url: '{{ route("agent.gallery") }}' },
+        { name: 'Notifications', url: '{{ route("agent.notifications") }}' },
+        { name: 'Feedback', url: '{{ route("agent.feedback") }}' },
+        { name: 'Settings', url: '{{ route("agent.settings") }}' },
+        { name: 'Profile', url: '{{ route("agent.profile") }}' },
+        { name: 'About', url: '{{ route("agent.about") }}' },
+        { name: 'Services', url: '{{ route("agent.services") }}' },
+        { name: 'Contact', url: '{{ route("agent.contact") }}' },
+        { name: 'Payment / Invoice', url: '{{ route("agent.payment") }}' }
+    ];
+
+    const input = document.getElementById('globalSearchAgent');
+    const dropdown = document.getElementById('globalSearchAgentDropdown');
+    const resultsContainer = document.getElementById('globalSearchAgentResults');
+
+    if(input) {
+        input.addEventListener('input', function() {
+            const val = this.value.toLowerCase();
+            resultsContainer.innerHTML = '';
+            
+            if (!val) {
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            const matches = pages.filter(p => p.name.toLowerCase().includes(val));
+            
+            if (matches.length > 0) {
+                matches.forEach(match => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${match.url}" class="block px-4 py-2 hover:bg-gray-100 text-gray-800 font-medium">${match.name}</a>`;
+                    resultsContainer.appendChild(li);
+                });
+                dropdown.classList.remove('hidden');
+            } else {
+                dropdown.classList.remove('hidden');
+                resultsContainer.innerHTML = `<li class="px-4 py-2 text-gray-500 italic">No pages found</li>`;
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    }
+});
+</script>

@@ -9,7 +9,7 @@
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-12">
             <div class="flex-grow flex items-center px-4">
                 <i class="fas fa-search text-gray-300 mr-3"></i>
-                <input type="text" placeholder="Search Notification" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
+                <input type="text" id="notificationSearchInput" oninput="filterNotifications()" placeholder="Search Notification" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
             </div>
             <button class="bg-primary text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-orange-100">
                 <i class="fas fa-search"></i>
@@ -32,7 +32,7 @@
 
                 <div class="space-y-4">
                     <!-- Notification 1 -->
-                    <div class="flex items-start p-6 rounded-[32px] border-l-4 border-orange-400 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all group relative">
+                    <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 border-orange-400 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all group relative">
                         <div class="w-10 h-10 bg-orange-100 text-orange-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-star text-xs"></i></div>
                         <div class="ml-6 flex-grow">
                             <div class="flex items-center justify-between mb-1">
@@ -49,7 +49,7 @@
                     </div>
 
                     <!-- Notification 2 -->
-                    <div class="flex items-start p-6 rounded-[32px] border-l-4 border-green-400 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all group relative">
+                    <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 border-green-400 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all group relative">
                         <div class="w-10 h-10 bg-green-100 text-green-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-check text-xs"></i></div>
                         <div class="ml-6 flex-grow">
                             <div class="flex items-center justify-between mb-1">
@@ -65,7 +65,7 @@
                     </div>
 
                     <!-- Notification 3 -->
-                    <div class="flex items-start p-6 rounded-[32px] border-l-4 border-blue-400 bg-white shadow-sm transition-all group relative">
+                    <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 border-blue-400 bg-white shadow-sm transition-all group relative">
                         <div class="w-10 h-10 bg-blue-100 text-blue-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-check-circle text-xs"></i></div>
                         <div class="ml-6 flex-grow">
                             <div class="flex items-center justify-between mb-1">
@@ -78,7 +78,7 @@
                     </div>
 
                     <!-- Notification 4 -->
-                    <div class="flex items-start p-6 rounded-[32px] border-l-4 border-yellow-400 bg-white shadow-sm transition-all group relative">
+                    <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 border-yellow-400 bg-white shadow-sm transition-all group relative">
                         <div class="w-10 h-10 bg-yellow-100 text-yellow-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-chart-line text-xs"></i></div>
                         <div class="ml-6 flex-grow">
                             <div class="flex items-center justify-between mb-1">
@@ -129,4 +129,20 @@
         </div>
 
         <!-- Footer -->
+        <script>
+            function filterNotifications() {
+                const input = document.getElementById('notificationSearchInput');
+                const filter = input.value.toLowerCase();
+                const items = document.querySelectorAll('.notification-item');
+
+                items.forEach(item => {
+                    const text = item.textContent || item.innerText;
+                    if (text.toLowerCase().indexOf(filter) > -1) {
+                        item.style.display = "";
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+            }
+        </script>
 @endsection

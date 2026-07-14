@@ -23,7 +23,6 @@
                 ['name' => 'Ticket Reservation', 'icon' => 'fas fa-ticket-alt'],
                 ['name' => 'Rental Car/Bikes', 'icon' => 'fas fa-car'],
                 ['name' => 'Devotions Package', 'icon' => 'fas fa-pray'],
-                ['name' => 'Add More', 'icon' => 'fas fa-plus'],
             ];
             foreach($services as $s): ?>
             <div class="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100 flex items-center group hover:shadow-xl hover:shadow-gray-200/50 hover:scale-[1.02] transition-all cursor-pointer">

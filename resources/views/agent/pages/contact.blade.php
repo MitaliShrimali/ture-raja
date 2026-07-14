@@ -144,15 +144,7 @@
         </div>
     </div>
 
-    {{-- Footer --}}
-    <footer class="mt-12 flex flex-col lg:flex-row items-center justify-between py-6 border-t border-gray-100">
-        <p class="text-xs text-gray-400 font-medium mb-4 lg:mb-0">Copyright &copy; {{ date('Y') }} Tour Raja Private Limited, India. All rights reserved.</p>
-        <div class="flex space-x-6 text-xs text-gray-400 font-medium">
-            <a href="#" class="hover:text-primary">About Us</a>
-            <a href="#" class="hover:text-primary">Terms of Services</a>
-            <a href="#" class="hover:text-primary">Privacy Policy</a>
-        </div>
-    </footer>
+
 
 {{-- Edit Modal --}}
 <div id="editContactModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">

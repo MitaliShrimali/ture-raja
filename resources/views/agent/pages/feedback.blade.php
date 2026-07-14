@@ -9,7 +9,7 @@
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-12">
             <div class="flex-grow flex items-center px-4">
                 <i class="fas fa-search text-gray-300 mr-3"></i>
-                <input type="text" placeholder="Search Feedback" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
+                <input type="text" id="feedbackSearchInput" oninput="filterFeedbacks()" placeholder="Search Feedback" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
             </div>
             <button class="bg-primary text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-orange-100">
                 <i class="fas fa-search"></i>
@@ -26,7 +26,7 @@
         <!-- Feedback Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             @forelse($feedbacks as $feedback)
-            <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-gray-200/50 transition-all group">
+            <div class="feedback-item bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-gray-200/50 transition-all group">
                 <div class="flex items-center mb-6">
                     <div class="relative">
                         <img src="https://ui-avatars.com/api/?name={{ urlencode($feedback->customer_name) }}&background=random" class="w-14 h-14 rounded-2xl object-cover border-2 border-orange-50">
@@ -153,6 +153,21 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = url;
+                }
+            });
+        }
+
+        function filterFeedbacks() {
+            const input = document.getElementById('feedbackSearchInput');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.feedback-item');
+
+            items.forEach(item => {
+                const text = item.textContent || item.innerText;
+                if (text.toLowerCase().indexOf(filter) > -1) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
                 }
             });
         }

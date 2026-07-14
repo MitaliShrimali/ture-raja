@@ -38,7 +38,7 @@
     <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8">
         <div class="flex-grow flex items-center px-4">
             <i class="fas fa-search text-gray-300 mr-3"></i>
-            <input type="text" placeholder="Search Image" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
+            <input type="text" id="gallerySearchInput" oninput="filterGallery()" placeholder="Search Image/Folder" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
         </div>
         <button class="bg-primary text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-orange-100">
             <i class="fas fa-search"></i>
@@ -104,7 +104,7 @@
             
             <!-- Render Folders first -->
             @foreach($folders as $folder)
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group relative">
+                <div class="gallery-item bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group relative">
                     <a href="{{ route('agent.gallery', ['folder' => $folder->id]) }}" class="block p-6 text-center hover:bg-gray-50 transition-colors">
                         <i class="fas fa-folder text-yellow-400 text-5xl mb-3 group-hover:scale-110 transition-transform"></i>
                         <p class="text-[11px] font-bold text-gray-800 truncate">{{ $folder->name }}</p>
@@ -117,7 +117,7 @@
 
             <!-- Render Images -->
             @foreach($images as $img)
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group relative">
+                <div class="gallery-item bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group relative">
                     <div class="relative aspect-[4/3] overflow-hidden">
                         <img src="{{ asset($img->file_path) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute top-2 left-2 z-10">
@@ -243,6 +243,21 @@
                 form.action = "{{ route('agent.gallery.delete') }}";
                 form.submit();
             }
+        }
+
+        function filterGallery() {
+            const input = document.getElementById('gallerySearchInput');
+            const filter = input.value.toLowerCase();
+            const items = document.querySelectorAll('.gallery-item');
+
+            items.forEach(item => {
+                const text = item.textContent || item.innerText;
+                if (text.toLowerCase().indexOf(filter) > -1) {
+                    item.style.display = "";
+                } else {
+                    item.style.display = "none";
+                }
+            });
         }
     </script>
 @endsection
