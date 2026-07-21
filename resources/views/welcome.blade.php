@@ -111,12 +111,22 @@
 
     @if(isset($domesticAds) && $domesticAds->count() > 0)
     <!-- Section: Ads under Domestic Packages -->
-    <section class="py-10 bg-gray-50/40 border-t border-b border-gray-100">
-        <div class="container-custom">
+    <section class="py-10 bg-gray-50/40 border-t border-b border-gray-100 relative group">
+        <div class="container-custom relative flex items-center justify-between">
+            <!-- Prev Button -->
+            <button type="button" class="w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex-shrink-0 items-center justify-center text-gray-600 hover:text-primary transition-colors hidden md:flex mr-4 md:mr-6" onclick="document.getElementById('ads-slider').scrollBy({left: -document.getElementById('ads-slider').clientWidth, behavior: 'smooth'})">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            </button>
+
             <!-- Scrollable Ads Row -->
-            <div class="flex flex-nowrap gap-6 overflow-x-auto hide-scrollbar pb-2">
-                @foreach($domesticAds as $ad)
-                <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 24px; box-shadow: 0 8px 24px -8px rgba(0,0,0,0.06); padding: 12px; display: flex; gap: 12px; width: 300px; flex-shrink: 0; position: relative; box-sizing: border-box; transition: shadow 0.3s;" class="group hover:shadow-md">
+            <style>
+                .ad-card-custom { flex-shrink: 0; width: 280px; }
+                @media (min-width: 768px) { .ad-card-custom { width: calc(50% - 12px); } }
+                @media (min-width: 1024px) { .ad-card-custom { width: calc(25% - 18px); } }
+            </style>
+            <div id="ads-slider" class="flex-1 min-w-0 flex flex-nowrap gap-6 overflow-x-auto hide-scrollbar pb-2 snap-x snap-mandatory scroll-smooth {{ $domesticAds->count() < 4 ? 'lg:justify-center' : '' }}">
+                @foreach($domesticAds->take(4) as $ad)
+                <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 24px; box-shadow: 0 8px 24px -8px rgba(0,0,0,0.06); padding: 12px; display: flex; gap: 12px; box-sizing: border-box; transition: shadow 0.3s;" class="group hover:shadow-md relative snap-start ad-card-custom">
                     <!-- Left: Ad Image -->
                     <div style="width: 100px; height: 100px; border-radius: 16px; overflow: hidden; flex-shrink: 0; position: relative;">
                         <img src="{{ asset($ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300') }}" 
@@ -159,6 +169,11 @@
                 </div>
                 @endforeach
             </div>
+
+            <!-- Next Button -->
+            <button type="button" class="w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex-shrink-0 items-center justify-center text-gray-600 hover:text-primary transition-colors hidden md:flex ml-4 md:ml-6" onclick="document.getElementById('ads-slider').scrollBy({left: document.getElementById('ads-slider').clientWidth, behavior: 'smooth'})">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </button>
         </div>
     </section>
     @endif
@@ -166,7 +181,29 @@
     <!-- Section 7: Offer Stickers -->
     <section class="py-5 md:py-10 relative" style="background-color: #FFF4CE;">
         <div class="container-custom">
-            <div class="px-4 py-8 md:px-8 md:py-10 relative flex items-center justify-between">
+            <div class="px-4 py-8 md:px-8 md:py-10 relative flex items-center justify-between w-full" x-data="{
+                scrollAmount: 0,
+                scrollSpeed: 1,
+                animationFrame: null,
+                startAutoScroll() {
+                    let slider = document.getElementById('promo-slider');
+                    if (!slider) return;
+                    let scroll = () => {
+                        this.scrollAmount += this.scrollSpeed;
+                        if (this.scrollAmount >= slider.scrollWidth / 2) {
+                            this.scrollAmount = 0;
+                        }
+                        slider.scrollLeft = this.scrollAmount;
+                        this.animationFrame = requestAnimationFrame(scroll);
+                    };
+                    this.animationFrame = requestAnimationFrame(scroll);
+                },
+                stopAutoScroll() {
+                    cancelAnimationFrame(this.animationFrame);
+                    let slider = document.getElementById('promo-slider');
+                    if (slider) this.scrollAmount = slider.scrollLeft;
+                }
+            }" x-init="startAutoScroll()" @mouseenter="stopAutoScroll()" @mouseleave="startAutoScroll()" @touchstart="stopAutoScroll()" @touchend="startAutoScroll()">
                 
                 <!-- SVG Airplane Path Left -->
                 <div class="absolute -top-12 -left-8 md:-top-16 md:-left-16 hidden md:block w-64 h-32 pointer-events-none z-20">
@@ -194,124 +231,124 @@
                     </svg>
                 </div>
 
-                <!-- Prev Button -->
-                <button id="prev-promo" onclick="document.getElementById('promo-slider').scrollBy({ left: -344, behavior: 'smooth' })" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 mr-2 md:mr-6">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
-                </button>
-                
                 <!-- Cards Track -->
-                <div id="promo-slider" class="flex-1 min-w-0 flex gap-4 md:gap-6 items-center justify-start overflow-x-auto hide-scrollbar z-10 relative scroll-smooth snap-x snap-mandatory pb-4">
-                        @if(isset($offerStickers) && $offerStickers->count() > 0)
-                            {{-- Dynamic stickers from admin --}}
-                            @foreach($offerStickers as $sticker)
-                                <a href="{{ url($sticker->link ?? '/discover') }}"
-                                   class="flex-1 min-w-[260px] md:min-w-[280px] lg:min-w-0 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0 lg:flex-shrink"
-                                   style="{{ !empty($sticker->bg_color) ? 'background-color: ' . $sticker->bg_color . ';' : '' }}">
+                <style>
+                    .sticker-card-custom { flex-shrink: 0; width: 260px; }
+                    @media (min-width: 768px) { .sticker-card-custom { width: calc(50% - 12px); } }
+                    @media (min-width: 1024px) { .sticker-card-custom { width: calc(25% - 18px); } }
+                </style>
+                <div id="promo-slider" class="flex-1 min-w-0 flex items-center justify-start overflow-x-hidden hide-scrollbar z-10 relative pb-4">
+                            @if(isset($offerStickers) && $offerStickers->count() > 0)
+                                {{-- Dynamic stickers from admin --}}
+                                @php
+                                    $stickerArray = $offerStickers->all();
+                                    $seamlessStickers = array_merge($stickerArray, $stickerArray);
+                                @endphp
+                                @foreach($seamlessStickers as $sticker)
+                                    <a href="{{ url($sticker->link ?? '/discover') }}"
+                                       class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6"
+                                       style="{{ !empty($sticker->bg_color) ? 'background-color: ' . $sticker->bg_color . ';' : '' }}">
 
-                                    {{-- Image fills the fixed container, cover-cropped --}}
-                                    @if($sticker->image)
-                                        <img src="{{ asset($sticker->image) }}"
-                                             class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105"
-                                             style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);"
-                                             alt="{{ $sticker->title }}">
-                                    @endif
+                                        {{-- Image fills the fixed container, cover-cropped --}}
+                                        @if($sticker->image)
+                                            <img src="{{ asset($sticker->image) }}"
+                                                 class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105"
+                                                 style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);"
+                                                 alt="{{ $sticker->title }}">
+                                        @endif
 
+                                        <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                            <div class="max-w-[150px] mt-2">
+                                                @if($sticker->subtitle)
+                                                    <span class="text-[11px] font-bold text-gray-800 mb-1 block">{{ $sticker->subtitle }}</span>
+                                                @endif
+                                                <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">{{ $sticker->title }}</h3>
+                                            </div>
+                                            <div class="mt-auto">
+                                                <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            @else
+                                {{-- Static fallback cards (shown when no stickers added from admin yet) --}}
+                                @for($i = 0; $i < 2; $i++)
+                                <!-- Card 1 -->
+                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6">
+                                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img1offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Travel">
+                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                        <div class="text-right">
+                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-white mb-2 ml-auto transform -rotate-45" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                                            <h3 class="text-white text-[10px] font-bold leading-tight">We Make Every<br>Trips Special</h3>
+                                        </div>
+                                        <div class="mt-auto text-right">
+                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
+                                        </div>
+                                    </div>
+                                </a>
+
+                                <!-- Card 2 -->
+                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6" style="background-color: #FCE08F;">
+                                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img2offer.png" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Attractions">
                                     <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
                                         <div class="max-w-[150px] mt-2">
-                                            @if($sticker->subtitle)
-                                                <span class="text-[11px] font-bold text-gray-800 mb-1 block">{{ $sticker->subtitle }}</span>
-                                            @endif
-                                            <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">{{ $sticker->title }}</h3>
+                                            <span class="text-[11px] font-bold text-gray-800 mb-1 block">Limited Offers</span>
+                                            <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Buy 1, Get 1 Free<br>Attractions</h3>
                                         </div>
                                         <div class="mt-auto">
                                             <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
                                         </div>
                                     </div>
                                 </a>
-                            @endforeach
-                        @else
-                            {{-- Static fallback cards (shown when no stickers added from admin yet) --}}
 
-                            <!-- Card 1 -->
-                            <a href="{{ url('/discover') }}" class="flex-1 min-w-[260px] md:min-w-[280px] lg:min-w-0 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0 lg:flex-shrink">
-                                <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img1offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Travel">
-                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                    <div class="text-right">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-white mb-2 ml-auto transform -rotate-45" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                                        <h3 class="text-white text-[10px] font-bold leading-tight">We Make Every<br>Trips Special</h3>
+                                <!-- Card 3 -->
+                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6">
+                                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/images3offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Mountain Lake">
+                                    <div class="absolute inset-0 bg-black/20"></div>
+                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                        <div class="flex flex-col items-start space-y-[3px]">
+                                            <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Limited Offers</span>
+                                            <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Buy 1, Get 1 Free</span>
+                                            <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Attractions</span>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #e7602e;">View More &rarr;</span>
+                                        </div>
                                     </div>
-                                    <div class="mt-auto text-right">
-                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
-                                    </div>
-                                </div>
-                            </a>
+                                </a>
 
-                            <!-- Card 2 -->
-                            <a href="{{ url('/discover') }}" class="flex-1 min-w-[260px] md:min-w-[280px] lg:min-w-0 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0 lg:flex-shrink" style="background-color: #FCE08F;">
-                                <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img2offer.png" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Attractions">
-                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                    <div class="max-w-[150px] mt-2">
-                                        <span class="text-[11px] font-bold text-gray-800 mb-1 block">Limited Offers</span>
-                                        <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Buy 1, Get 1 Free<br>Attractions</h3>
+                                <!-- Card 4 -->
+                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6">
+                                    <img src="https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Beach Vacations">
+                                    <div class="absolute inset-0 bg-black/30"></div>
+                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                        <div class="flex flex-col items-start space-y-[3px]">
+                                            <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Special Discount</span>
+                                            <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">20% Off Family</span>
+                                            <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Vacations</span>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #3b82f6;">View More &rarr;</span>
+                                        </div>
                                     </div>
-                                    <div class="mt-auto">
-                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
-                                    </div>
-                                </div>
-                            </a>
+                                </a>
 
-                            <!-- Card 3 -->
-                            <a href="{{ url('/discover') }}" class="flex-1 min-w-[260px] md:min-w-[280px] lg:min-w-0 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0 lg:flex-shrink">
-                                <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/images3offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Mountain Lake">
-                                <div class="absolute inset-0 bg-black/20"></div>
-                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                    <div class="flex flex-col items-start space-y-[3px]">
-                                        <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Limited Offers</span>
-                                        <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Buy 1, Get 1 Free</span>
-                                        <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Attractions</span>
+                                <!-- Card 5 -->
+                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6" style="background-color: #FFC0CB;">
+                                    <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Honeymoon">
+                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                                        <div class="max-w-[150px] mt-2">
+                                            <span class="text-[11px] font-bold text-gray-800 mb-1 block">Couples Only</span>
+                                            <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Romantic<br>Getaways</h3>
+                                        </div>
+                                        <div class="mt-auto">
+                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #db2777;">View More &rarr;</span>
+                                        </div>
                                     </div>
-                                    <div class="mt-auto">
-                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #e7602e;">View More &rarr;</span>
-                                    </div>
-                                </div>
-                            </a>
-
-                            <!-- Card 4 -->
-                            <a href="{{ url('/discover') }}" class="flex-1 min-w-[260px] md:min-w-[280px] lg:min-w-0 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0 lg:flex-shrink">
-                                <img src="https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Beach Vacations">
-                                <div class="absolute inset-0 bg-black/30"></div>
-                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                    <div class="flex flex-col items-start space-y-[3px]">
-                                        <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Special Discount</span>
-                                        <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">20% Off Family</span>
-                                        <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Vacations</span>
-                                    </div>
-                                    <div class="mt-auto">
-                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #3b82f6;">View More &rarr;</span>
-                                    </div>
-                                </div>
-                            </a>
-
-                            <!-- Card 5 -->
-                            <a href="{{ url('/discover') }}" class="flex-1 min-w-[260px] md:min-w-[280px] lg:min-w-0 h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm snap-start flex-shrink-0 lg:flex-shrink" style="background-color: #FFC0CB;">
-                                <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Honeymoon">
-                                <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                    <div class="max-w-[150px] mt-2">
-                                        <span class="text-[11px] font-bold text-gray-800 mb-1 block">Couples Only</span>
-                                        <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Romantic<br>Getaways</h3>
-                                    </div>
-                                    <div class="mt-auto">
-                                        <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #db2777;">View More &rarr;</span>
-                                    </div>
-                                </div>
-                            </a>
+                                </a>
+                                @endfor
                         @endif
                 </div>
-
-                <!-- Next Button -->
-                <button id="next-promo" onclick="document.getElementById('promo-slider').scrollBy({ left: 344, behavior: 'smooth' })" class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/80 hover:bg-white flex-shrink-0 flex items-center justify-center text-gray-600 shadow-sm transition-all z-10 ml-2 md:ml-6">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 18l6-6-6-6"/></svg>
-                </button>
             </div>
         </div>
     </section>
