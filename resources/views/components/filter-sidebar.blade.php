@@ -3,6 +3,19 @@
 ])
 
 <style>
+    .range-slider-input::-webkit-slider-thumb {
+        pointer-events: auto !important;
+        width: 16px;
+        height: 16px;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    .range-slider-input::-moz-range-thumb {
+        pointer-events: auto !important;
+        width: 16px;
+        height: 16px;
+        appearance: none;
+    }
     .activity-checkbox-input:checked + .activity-checkbox-btn {
         background-color: rgba(232, 93, 38, 0.08) !important;
         color: #e85d26 !important;
@@ -177,9 +190,29 @@
         </div>
         <hr class="border-gray-100 mb-6">
 
+        <!-- Services (Private Chef / Tour Manager) -->
+        <div>
+            <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Services</h3>
+            <div class="space-y-2">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="checkbox" name="private_chef" value="1" {{ request('private_chef') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
+                        <i data-lucide="utensils" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Private Chef Included ({{ $filterCounts['services']['private_chef'] ?? 0 }})
+                    </span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer group">
+                    <input type="checkbox" name="tour_manager" value="1" {{ request('tour_manager') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
+                        <i data-lucide="user" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Tour Manager Included ({{ $filterCounts['services']['tour_manager'] ?? 0 }})
+                    </span>
+                </label>
+            </div>
+            <hr class="mt-5 border-gray-100">
+        </div>
+
         <!-- 1. Tour Type -->
         <div x-data="{ expanded: false }">
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Tour Type</h3>
+            <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Tour Type</h3>
             @php
                 $allTourTypes = DB::table('transits')->where('status', 'Active')->pluck('name')->toArray();
                 if (empty($allTourTypes)) {
@@ -208,7 +241,7 @@
                 @foreach($visibleTypes as $type)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="tour_type[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }}</span>
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }} ({{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }})</span>
                     </label>
                 @endforeach
                 
@@ -216,7 +249,7 @@
                     @foreach($hiddenTypes as $type)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="tour_type[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }}</span>
+                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }} ({{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }})</span>
                         </label>
                     @endforeach
                 </div>
@@ -230,18 +263,18 @@
 
                 <!-- 1.4. Destination Type -->
         <div>
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Destination Type</h3>
+            <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Destination Type</h3>
             @php
                 $selectedDestTypes = (array) request('category', []);
             @endphp
             <div class="space-y-2">
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="category[]" value="domestic" {{ in_array('domestic', $selectedDestTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Domestic</span>
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Domestic ({{ $filterCounts['destination_type']['domestic'] ?? 0 }})</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="category[]" value="international" {{ in_array('international', $selectedDestTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">International</span>
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">International ({{ $filterCounts['destination_type']['international'] ?? 0 }})</span>
                 </label>
             </div>
             <hr class="mt-5 border-gray-100">
@@ -249,7 +282,7 @@
 
         <!-- 1.5. Categories -->
         <div x-data="{ expanded: false }">
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Category</h3>
+            <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Category</h3>
             @php
                 $rawCategories = DB::table('packages')->whereNotNull('categories_list')->where('categories_list', '!=', '')->pluck('categories_list')->toArray();
                 $parsedCategories = [];
@@ -280,7 +313,7 @@
                 @foreach($visibleCategories as $category)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="categories[]" value="{{ $category }}" {{ in_array($category, $selectedCategories) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }}</span>
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }} ({{ $filterCounts['category'][strtolower($category)] ?? 0 }})</span>
                     </label>
                 @endforeach
                 
@@ -289,7 +322,7 @@
                     @foreach($hiddenCategories as $category)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="categories[]" value="{{ $category }}" {{ in_array($category, $selectedCategories) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }}</span>
+                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }} ({{ $filterCounts['category'][strtolower($category)] ?? 0 }})</span>
                         </label>
                     @endforeach
                 </div>
@@ -306,7 +339,7 @@
 
         <!-- Holiday Types -->
         <div>
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Holiday Types</h3>
+            <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Holiday Types</h3>
             @php
                 $selectedHolidayTypes = (array) request('holiday_type', []);
                 $holidayTypesOptions = [
@@ -321,44 +354,26 @@
                 @foreach($holidayTypesOptions as $label => $val)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="holiday_type[]" value="{{ $val }}" {{ in_array($val, $selectedHolidayTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $label }}</span>
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $label }} ({{ $filterCounts['holiday_type'][$val] ?? 0 }})</span>
                     </label>
                 @endforeach
             </div>
             <hr class="mt-5 border-gray-100">
         </div>
 
-        <!-- Services (Private Chef / Tour Manager) -->
-        <div>
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Services</h3>
-            <div class="space-y-2">
-                <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="checkbox" name="private_chef" value="1" {{ request('private_chef') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
-                        <i data-lucide="utensils" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Private Chef Included
-                    </span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer group">
-                    <input type="checkbox" name="tour_manager" value="1" {{ request('tour_manager') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
-                        <i data-lucide="user" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Tour Manager Included
-                    </span>
-                </label>
-            </div>
-            <hr class="mt-5 border-gray-100">
-        <div x-data="rangeSlider({{ request('min_nights', 0) }}, {{ request('max_nights', 100) }}, 0, 100)" class="pt-6">
-            <h3 class="font-bold text-gray-900 mb-5 uppercase tracking-wide" style="font-size: 20px;">Duration (Nights)</h3>
+        <div x-data="rangeSlider({{ request('min_nights', 0) }}, {{ request('max_nights', 365) }}, 0, 365)" class="pt-6">
+            <h3 class="font-bold text-gray-900 mb-5  tracking-wide" style="font-size: 20px;">Duration (Nights)</h3>
             
             <div class="px-2 mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <!-- Track Highlight -->
                 <div class="absolute h-full bg-primary rounded-full" :style="'left: ' + minPercent + '%; right: ' + (100 - maxPercent) + '%'"></div>
                 
                 <!-- Min Thumb -->
-                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
+                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + minPercent + '%'" style="z-index: 2;"></div>
                 
                 <!-- Max Thumb -->
-                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
+                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + maxPercent + '%'" style="z-index: 2;"></div>
             </div>
             
@@ -379,15 +394,15 @@
         </div>
 
         <!-- 3. Price -->
-        <div x-data="rangeSlider({{ request('min_price', 1000) }}, {{ request('max_price', 100000) }}, 0, 150000)" class="pt-6">
-            <h3 class="font-bold text-gray-900 mb-5 uppercase tracking-wide" style="font-size: 20px;">Price</h3>
+        <div x-data="rangeSlider({{ request('min_price', 1000) }}, {{ request('max_price', 500000) }}, 0, 500000)" class="pt-6">
+            <h3 class="font-bold text-gray-900 mb-5 tracking-wide" style="font-size: 20px;">Price</h3>
             
             <!-- Price Slider -->
             <div class="px-2 mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <div class="absolute h-full bg-primary rounded-full" :style="'left: ' + minPercent + '%; right: ' + (100 - maxPercent) + '%'"></div>
-                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1000" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
+                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1000" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + minPercent + '%'" style="z-index: 2;"></div>
-                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1000" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-auto" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
+                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1000" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
                 <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + maxPercent + '%'" style="z-index: 2;"></div>
             </div>
             
@@ -427,7 +442,7 @@
 
         <!-- 5. Rating -->
         <div class="pt-6">
-            <h3 class="font-bold text-gray-900 mb-4 uppercase tracking-wide" style="font-size: 20px;">Rating</h3>
+            <h3 class="font-bold text-gray-900 mb-4 tracking-wide" style="font-size: 20px;">Rating</h3>
             @php
                 $selectedRatings = (array) request('ratings', []);
             @endphp
@@ -453,7 +468,7 @@
 
         <!-- 6. Theme -->
         <div x-data="{ expanded: false }" class="pt-6">
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Theme</h3>
+            <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Theme</h3>
             @php
                 $allThemes = DB::table('themes')->where('status', 'Active')->pluck('name')->toArray();
                 if (empty($allThemes)) {
@@ -467,7 +482,7 @@
                 @foreach($visibleThemes as $theme)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="theme[]" value="{{ $theme }}" {{ in_array($theme, $selectedThemes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }}</span>
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }} ({{ $filterCounts['theme'][strtolower($theme)] ?? 0 }})</span>
                     </label>
                 @endforeach
                 
@@ -475,7 +490,7 @@
                     @foreach($hiddenThemes as $theme)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="theme[]" value="{{ $theme }}" {{ in_array($theme, $selectedThemes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }}</span>
+                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }} ({{ $filterCounts['theme'][strtolower($theme)] ?? 0 }})</span>
                         </label>
                     @endforeach
                 </div>
@@ -489,7 +504,7 @@
 
         <!-- 7. Activity Type (Tags) -->
         <div class="pt-6">
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Activity Type</h3>
+            <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Activity Type</h3>
             @php
                 $allActivities = ['Cable Car / Rope way', 'Adventure', 'Nature', 'Rides and Thrill', 'Water Activities', 'Jeep Safari', 'Hill Station', 'Religious'];
                 $selectedActs = request('activities', []);
@@ -507,7 +522,7 @@
         </div>
         <!-- 8. Travel Company -->
         <div class="pt-6">
-            <h3 class="font-bold text-gray-900 mb-3 uppercase tracking-wide" style="font-size: 20px;">Travel Company/Agent</h3>
+            <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Travel Company/Agent</h3>
             <div class="relative group mb-3">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i data-lucide="building" class="text-gray-400" size="14"></i>

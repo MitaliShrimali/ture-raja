@@ -127,9 +127,9 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
-            </svg>
+            </svg> 
             <input type="text" name="destination" placeholder="Where You Go !!!"
-              class="bg-transparent border-none focus:ring-0 text-white placeholder-white text-sm font-medium outline-none w-full pure-white-placeholder"
+              class="bg-transparent border-none focus:ring-0 text-white placeholder-white text-[14px] font-medium outline-none w-full pure-white-placeholder"
               style="box-shadow: none;" value="{{ request('destination') }}">
           </div>
 
@@ -140,7 +140,7 @@
               <circle cx="12" cy="7" r="4" />
             </svg>
             <input type="text" name="from_city" placeholder="Search agent from your city/near by location"
-              class="bg-transparent border-none focus:ring-0 text-white placeholder-white text-[12px] font-medium outline-none w-full pure-white-placeholder"
+              class="bg-transparent border-none focus:ring-0 text-white placeholder-white text-[14px] font-medium outline-none w-full pure-white-placeholder"
               style="box-shadow: none;" value="{{ request('from_city') }}">
           </div>
 

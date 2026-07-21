@@ -671,9 +671,13 @@
         </div>
     </div>
 
+
+
     <!-- Scroll to Top Button -->
     <button 
-        x-show="isScrolled" 
+        x-data="{ show: false }"
+        @scroll.window="show = window.pageYOffset > 300"
+        x-show="show"
         x-cloak
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-4"
@@ -682,10 +686,10 @@
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 translate-y-4"
         @click="window.scrollTo({top: 0, behavior: 'smooth'})"
-        class="fixed bottom-6 right-6 z-50 w-12 h-12 flex items-center justify-center rounded-full bg-orange-50 border border-orange-200 text-primary shadow-lg hover:bg-orange-100 hover:-translate-y-1 transition-all duration-300 group"
+        class="fixed right-6 bottom-24 md:bottom-8 z-[9999] w-12 h-12 flex items-center justify-center rounded-full bg-primary text-white shadow-[0_8px_20px_rgba(232,93,38,0.3)] hover:bg-[#d65220] hover:shadow-[0_12px_25px_rgba(232,93,38,0.4)] hover:-translate-y-1 transition-all duration-300 group"
         aria-label="Scroll to top"
     >
-        <i data-lucide="chevrons-up" class="w-6 h-6 group-hover:animate-bounce"></i>
+        <i data-lucide="chevron-up" class="w-6 h-6 group-hover:animate-bounce"></i>
     </button>
 
     @stack('scripts')

@@ -307,25 +307,15 @@
                         size="18"></i>
                 </div>
                 <!-- Top Bar -->
-                <div
-                    class="bg-white rounded-lg py-3 px-5 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
-                    <div class="text-center md:text-left flex items-center flex-wrap gap-3" style="font-size: 16px;">
-                        <h3 class="font-black cursor-pointer hover:text-primary transition-colors"
-                            @click="stateModalOpen = true" style="font-size: 16px;">
-                            <span id="results-count" class="text-primary">{{ $packages->count() }}</span> Packages
-                        </h3>
-
-                        <!-- Dropdown Pill -->
+                <div class="bg-white rounded-lg py-3 px-5 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
+                    <div class="text-center md:text-left flex items-center flex-wrap gap-3">
+                        <!-- Dropdown Pill replacing 'Packages' text -->
                         <button type="button" @click="stateModalOpen = true"
-                            class="flex items-center gap-1.5 px-3.5 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-xs font-black text-gray-700 transition-all shadow-sm shrink-0">
+                            class="flex items-center justify-between min-w-[90px] px-4 py-2 bg-white border border-[#e85d26] rounded-md text-base font-black text-foreground transition-all shadow-sm shrink-0 hover:bg-orange-50">
                             <span>
-                                @if(request()->filled('selected_cities'))
-                                    Selected ({{ count(request('selected_cities')) }})
-                                @else
-                                    Select State
-                                @endif
+                                (<span id="results-count">{{ $packages->count() }}</span>)
                             </span>
-                            <i data-lucide="chevron-down" size="14" class="text-gray-400"></i>
+                            <i data-lucide="chevron-down" size="18" class="text-[#e85d26] ml-3"></i>
                         </button>
                     </div>
 
@@ -339,9 +329,9 @@
                         </button>
 
                         <!-- Sort Dropdown: Constrained on mobile -->
-                        <div class="relative mobile-sort-select-wrapper md:w-64 flex-1 md:flex-none">
+                        <div class="relative mobile-sort-select-wrapper w-full md:w-48 flex-1 md:flex-none">
                             <select name="sort"
-                                class="w-full bg-background border border-gray-100 rounded-2xl py-2.5 pl-4 pr-10 text-[12px] font-black focus:outline-none appearance-none cursor-pointer hover:border-primary/30 transition-all">
+                                class="w-full bg-white border border-[#e85d26] rounded-md py-2 pl-4 pr-10 text-sm font-semibold focus:outline-none appearance-none cursor-pointer hover:bg-orange-50 transition-all text-[#e85d26]">
                                 <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
                                 <option value="GUARANTEED SERVICE" {{ request('sort') == 'GUARANTEED SERVICE' || request('sort') == 'Recommended' ? 'selected' : '' }}>GUARANTEED SERVICE</option>
                                 <option value="PRICE (LOW TO HIGH)" {{ request('sort') == 'PRICE (LOW TO HIGH)' || request('sort') == 'Price: Low to High' ? 'selected' : '' }}>PRICE (LOW TO HIGH)</option>
@@ -350,22 +340,22 @@
                                 <option value="DURATION (HIGH TO LOW)" {{ request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>DURATION (HIGH TO LOW)</option>
                             </select>
                             <i data-lucide="chevron-down"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-                                size="14"></i>
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none"
+                                size="18"></i>
                         </div>
 
                         <!-- View Toggle Buttons -->
                         @if(!isset($agent))
-                            <div class="flex bg-background p-1 rounded-2xl border border-gray-100 shrink-0">
+                            <div class="flex items-center gap-1 shrink-0 ml-2">
                                 <button @click="viewStyle = 'grid'" type="button"
-                                    :class="viewStyle === 'grid' ? 'bg-white shadow-soft text-primary' : 'text-gray-400 hover:text-primary transition-colors'"
-                                    class="p-2.5 rounded-xl transition-all duration-300">
-                                    <i data-lucide="layout-grid" size="18"></i>
+                                    :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
+                                    class="p-1.5 transition-all duration-300">
+                                    <i data-lucide="layout-grid" size="24"></i>
                                 </button>
                                 <button @click="viewStyle = 'list'" type="button"
-                                    :class="viewStyle === 'list' ? 'bg-white shadow-soft text-primary' : 'text-gray-400 hover:text-primary transition-colors'"
-                                    class="p-2.5 rounded-xl transition-all duration-300">
-                                    <i data-lucide="list" size="18"></i>
+                                    :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
+                                    class="p-1.5 transition-all duration-300">
+                                    <i data-lucide="list" size="24"></i>
                                 </button>
                             </div>
                         @endif
@@ -594,47 +584,69 @@
         x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
         style="display: none; z-index: 999999 !important;">
-        <div @click.away="stateModalOpen = false"
-            class="bg-white rounded-[32px] md:rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-6 md:p-8 space-y-4 md:space-y-6 flex flex-col max-h-[90%] md:max-h-[85%]">
+        <div @click.away="stateModalOpen = false" x-data="{ stateSearch: '' }"
+            class="bg-white rounded-[32px] md:rounded-[40px] shadow-premium border border-border-soft max-w-lg w-full overflow-hidden p-6 md:p-8 space-y-3 md:space-y-4 flex flex-col max-h-[90%] md:max-h-[85%]">
             <!-- Header -->
-            <div class="flex items-center justify-between border-b border-gray-100 pb-4 shrink-0">
+            <div class="flex items-center justify-between shrink-0">
                 <h3 class="text-lg md:text-xl font-black text-foreground">Select State</h3>
                 <button type="button" @click="stateModalOpen = false"
                     class="p-2 text-muted-text hover:text-primary transition-colors">
                     <i data-lucide="x" size="20"></i>
                 </button>
             </div>
+            
+            <!-- Search Bar -->
+            <div class="relative shrink-0 pb-2 border-b border-gray-100">
+                <input type="text" x-model="stateSearch" placeholder="Search state..." 
+                    class="w-full bg-gray-50 border border-gray-100 rounded-xl py-2 pl-10 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
+            </div>
 
-            <!-- Accordion Body -->
-            <div class="flex-1 overflow-y-auto space-y-3 md:space-y-4 pr-2 py-2">
-                @foreach($locationCatalog as $state => $cities)
+            <!-- Accordion Body (Max height limits to ~6 items before scroll) -->
+            <div class="overflow-y-auto space-y-1 pr-2 py-1" style="max-height: 200px;">
+                @foreach($locationCatalog as $country => $states)
                     @php
-                        $stateTotal = array_sum($cities);
-                        $stateSlug = \Illuminate\Support\Str::slug($state);
+                        $countryCities = [];
+                        foreach($states as $st => $cits) {
+                            $countryCities = array_merge($countryCities, array_keys($cits));
+                        }
+                        $countrySearchStr = strtolower($country . ' ' . implode(' ', array_keys($states)) . ' ' . implode(' ', $countryCities));
                     @endphp
-                    <div class="border border-gray-100 rounded-2xl overflow-hidden bg-gray-50/30">
-                        <!-- State Header -->
-                        <div @click="expandedStates['{{ $stateSlug }}'] = !expandedStates['{{ $stateSlug }}']"
-                            class="flex items-center justify-between p-3.5 bg-gray-50/50 hover:bg-gray-50 cursor-pointer select-none transition-colors">
-                            <span class="font-extrabold text-xs md:text-sm text-foreground">
-                                {{ $state }} <span class="text-[10px] md:text-xs text-muted-text/60">({{ $stateTotal }})</span>
-                            </span>
-                            <i data-lucide="chevron-down" class="text-gray-400 transition-transform duration-300"
-                                :class="expandedStates['{{ $stateSlug }}'] ? 'rotate-180' : ''" size="14"></i>
-                        </div>
+                    <div class="mb-2" x-show="'{{ $countrySearchStr }}'.includes(stateSearch.toLowerCase())">
+                        <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-1 px-1">{{ $country }}</h4>
+                        <div class="space-y-1">
+                            @foreach($states as $state => $cities)
+                                @php
+                                    $stateTotal = array_sum($cities);
+                                    $stateSlug = \Illuminate\Support\Str::slug($country . '-' . $state);
+                                    $stateSearchStr = strtolower($country . ' ' . $state . ' ' . implode(' ', array_keys($cities)));
+                                @endphp
+                                <div class="border border-gray-100 rounded-lg overflow-hidden bg-gray-50/30" x-show="'{{ $stateSearchStr }}'.includes(stateSearch.toLowerCase())">
+                                    <!-- State Header -->
+                                    <div @click="expandedStates['{{ $stateSlug }}'] = !expandedStates['{{ $stateSlug }}']"
+                                        class="flex items-center justify-between px-2 py-1.5 bg-gray-50/50 hover:bg-gray-50 cursor-pointer select-none transition-colors">
+                                        <span class="font-extrabold text-xs text-foreground">
+                                            {{ $state }} <span class="text-[9px] text-muted-text/60">({{ $stateTotal }})</span>
+                                        </span>
+                                        <i data-lucide="chevron-down" class="text-gray-400 transition-transform duration-300"
+                                            :class="expandedStates['{{ $stateSlug }}'] ? 'rotate-180' : ''" size="14"></i>
+                                    </div>
 
-                        <!-- Cities list -->
-                        <div x-show="expandedStates['{{ $stateSlug }}']"
-                            class="p-3.5 bg-white border-t border-gray-50 space-y-2.5" x-transition.opacity>
-                            @foreach($cities as $city => $count)
-                                <label class="flex items-center gap-3 cursor-pointer group select-none pl-2">
-                                    <input type="checkbox" name="selected_cities[]" form="filter-form"
-                                        value="{{ strtolower($city) }}" {{ in_array(strtolower($city), request('selected_cities', [])) ? 'checked' : '' }}
-                                        class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">
-                                        {{ $city }} <span class="text-[10px] text-gray-400">({{ $count }})</span>
-                                    </span>
-                                </label>
+                                    <!-- Cities list -->
+                                    <div x-show="expandedStates['{{ $stateSlug }}']"
+                                        class="px-3 py-2 bg-white border-t border-gray-50 space-y-1.5" x-transition.opacity>
+                                        @foreach($cities as $city => $count)
+                                            <label class="flex items-center gap-2.5 cursor-pointer group select-none pl-2">
+                                                <input type="checkbox" name="selected_cities[]" form="filter-form"
+                                                    value="{{ strtolower($city) }}" {{ in_array(strtolower($city), request('selected_cities', [])) ? 'checked' : '' }}
+                                                    class="w-3.5 h-3.5 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
+                                                <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">
+                                                    {{ $city }} <span class="text-[10px] text-gray-400">({{ $count }})</span>
+                                                </span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </div>
                             @endforeach
                         </div>
                     </div>

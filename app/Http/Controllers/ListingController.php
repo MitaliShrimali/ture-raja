@@ -238,6 +238,9 @@ class ListingController extends Controller
             })->values();
         }
 
+        // Keep a base copy of packages after text search but before any facet filters are applied
+        $basePackages = clone $packages;
+
         // ── Destination Type / Category filter ─────────────────────
         if ($request->filled('category')) {
             $catTypes = array_map('strtolower', (array) $request->category);
@@ -597,9 +600,170 @@ class ListingController extends Controller
             'paris' => 'France',
         ];
 
-        $locationCatalog = []; // State => [ City => Count ]
-        foreach ($packages as $pkg) {
-            $pkgArray = (array)$pkg;
+        $countryMapping = [
+            'Himachal Pradesh' => 'India',
+            'Goa' => 'India',
+            'Uttarakhand' => 'India',
+            'Kerala' => 'India',
+            'West Bengal' => 'India',
+            'Gujarat' => 'India',
+            'Monaco' => 'Monaco',
+            'Vietnam' => 'Vietnam',
+            'UAE' => 'UAE',
+            'Indonesia' => 'Indonesia',
+            'France' => 'France',
+            'Europe' => 'Europe'
+        ];
+
+        $locationCatalog = []; // Country => [ State => [ City => Count ] ]
+        $filterCounts = [
+            'tour_type' => [],
+            'category' => [],
+            'theme' => [],
+            'holiday_type' => [
+                'most popular' => 0,
+                'honeymoon' => 0,
+                'budget' => 0,
+                'multi city' => 0,
+                'short tour' => 0
+            ],
+            'destination_type' => ['domestic' => 0, 'international' => 0],
+            'services' => ['private_chef' => 0, 'tour_manager' => 0],
+        ];
+
+        foreach ($basePackages as $pkg) {
+            $pkgArray = is_object($pkg) && method_exists($pkg, 'toArray') ? $pkg->toArray() : (array)$pkg;
+
+            $title = strtolower((string)($pkgArray['title'] ?? ''));
+
+            // Infer missing tour_type for DB records
+            if (empty($pkgArray['tour_type'])) {
+                if (str_contains($title, 'flight') || str_contains($title, 'air')) {
+                    $pkgArray['tour_type'] = 'Flight Package';
+                } elseif (str_contains($title, 'train') || str_contains($title, 'rail')) {
+                    $pkgArray['tour_type'] = 'Train Package';
+                } elseif (str_contains($title, 'bus') || str_contains($title, 'coach')) {
+                    $pkgArray['tour_type'] = 'Bus Package';
+                } elseif (str_contains($title, 'cruise') || str_contains($title, 'boat')) {
+                    $pkgArray['tour_type'] = 'Cruise Package';
+                } else {
+                    $pkgArray['tour_type'] = 'Land/Customised Packages';
+                }
+            }
+
+            // Infer missing categories_list
+            if (empty($pkgArray['categories_list']) || $pkgArray['categories_list'] === '[]') {
+                $cats = [];
+                if (str_contains($title, 'safari') || str_contains($title, 'wildlife')) $cats[] = 'Safari';
+                if (str_contains($title, 'mountain') || str_contains($title, 'hill') || str_contains($title, 'valley')) $cats[] = 'Mountain';
+                if (str_contains($title, 'beach') || str_contains($title, 'goa') || str_contains($title, 'island')) $cats[] = 'Beach';
+                if (str_contains($title, 'desert') || str_contains($title, 'dune')) $cats[] = 'Desert';
+                if (str_contains($title, 'temple') || str_contains($title, 'yatra') || str_contains($title, 'darshan')) $cats[] = 'Temples';
+                if (str_contains($title, 'yacht') || str_contains($title, 'cruise')) $cats[] = 'Yacht';
+                if (empty($cats)) $cats[] = 'City';
+                $pkgArray['categories_list'] = json_encode($cats);
+            }
+
+            // Infer missing theme
+            if (empty($pkgArray['theme'])) {
+                if (str_contains($title, 'honeymoon') || str_contains($title, 'couple')) {
+                    $pkgArray['theme'] = 'Honeymoon';
+                } elseif (str_contains($title, 'adventure') || str_contains($title, 'trek')) {
+                    $pkgArray['theme'] = 'Adventure';
+                } else {
+                    $pkgArray['theme'] = 'Family/Group';
+                }
+            }
+
+            // --- Compute Filter Counts ---
+            // Tour Type
+            $tt = strtolower(trim($pkgArray['tour_type']));
+            $tt = rtrim($tt, 's'); // normalize trailing s
+            if ($tt) {
+                $filterCounts['tour_type'][$tt] = ($filterCounts['tour_type'][$tt] ?? 0) + 1;
+            }
+
+            // Destination Type (Category)
+            $cat = strtolower(trim($pkgArray['category'] ?? ''));
+            if ($cat === 'domestic' || $cat === 'international') {
+                $filterCounts['destination_type'][$cat]++;
+            }
+
+            // Theme
+            $theme = strtolower(trim($pkgArray['theme'] ?? ''));
+            if ($theme) {
+                $filterCounts['theme'][$theme] = ($filterCounts['theme'][$theme] ?? 0) + 1;
+            }
+
+            // Categories list
+            $pkgCategory = $pkgArray['categories_list'] ?? '';
+            $cats = [];
+            if (is_string($pkgCategory) && (str_starts_with(trim($pkgCategory), '[') || str_starts_with(trim($pkgCategory), '{'))) {
+                $decoded = json_decode($pkgCategory, true);
+                if (is_array($decoded)) {
+                    foreach ($decoded as $c) {
+                        if (is_string($c)) $cats[] = strtolower(trim($c));
+                    }
+                }
+            } elseif (is_array($pkgCategory)) {
+                foreach ($pkgCategory as $c) {
+                    if (is_string($c)) $cats[] = strtolower(trim($c));
+                }
+            } else {
+                $cats[] = strtolower(trim((string)$pkgCategory));
+            }
+            foreach ($cats as $c) {
+                if ($c) {
+                    $filterCounts['category'][$c] = ($filterCounts['category'][$c] ?? 0) + 1;
+                }
+            }
+            
+            // Holiday Types
+            $price = $pkgArray['price'] ?? 0;
+            $rating = (float)($pkgArray['rating'] ?? 0);
+            $badge = strtolower($pkgArray['badge'] ?? '');
+            $title = strtolower($pkgArray['title'] ?? '');
+            $nights = $pkgArray['nights'] ?? 0;
+            if (!$nights && isset($pkgArray['duration'])) {
+                if (preg_match('/(\d+)\s*nights?/', strtolower($pkgArray['duration']), $matches)) {
+                    $nights = (int)$matches[1];
+                }
+            }
+            
+            if (in_array($badge, ['popular', 'top rated']) || $rating >= 4.7 || (int)($pkgArray['reviews'] ?? 0) > 500) $filterCounts['holiday_type']['most popular']++;
+            
+            $ht = $pkgArray['holiday_type'] ?? [];
+            if (is_string($ht)) {
+                $decoded = json_decode($ht, true);
+                if (is_string($decoded)) $decoded = json_decode($decoded, true);
+                $ht = is_array($decoded) ? $decoded : [$ht];
+            }
+            if (!is_array($ht)) $ht = [];
+            foreach ($ht as $type) {
+                $typeStr = strtolower(trim($type));
+                if (isset($filterCounts['holiday_type'][$typeStr])) {
+                    $filterCounts['holiday_type'][$typeStr]++;
+                }
+            }
+            
+            if ($theme === 'honeymoon' || str_contains($title, 'honeymoon')) $filterCounts['holiday_type']['honeymoon']++;
+            if ($price < 20000) $filterCounts['holiday_type']['budget']++;
+            if (str_contains(strtolower($pkgArray['location'] ?? ''), 'europe') || str_contains($title, 'delight') || str_contains($title, 'multi') || str_contains(strtolower($pkgArray['location'] ?? ''), ',')) $filterCounts['holiday_type']['multi city']++;
+            if ($nights > 0 && $nights <= 3) $filterCounts['holiday_type']['short tour']++;
+
+            // Services
+            $included = $pkgArray['included'] ?? [];
+            if (!is_array($included)) $included = [];
+            $hasChef = false;
+            $hasManager = false;
+            foreach ($included as $item) {
+                if (str_contains(strtolower($item), 'chef')) $hasChef = true;
+                if (str_contains(strtolower($item), 'manager')) $hasManager = true;
+            }
+            if ($hasChef) $filterCounts['services']['private_chef']++;
+            if ($hasManager) $filterCounts['services']['tour_manager']++;
+            // ---------------------------
+
             $city = trim($pkgArray['city'] ?? '');
             
             if (!$city) {
@@ -630,14 +794,20 @@ class ListingController extends Controller
 
             $state = trim($state);
             $city = trim($city);
+            
+            $country = $countryMapping[$state] ?? 'International';
+            if ($state === 'Europe') $country = 'Europe';
 
-            if (!isset($locationCatalog[$state])) {
-                $locationCatalog[$state] = [];
+            if (!isset($locationCatalog[$country])) {
+                $locationCatalog[$country] = [];
             }
-            if (!isset($locationCatalog[$state][$city])) {
-                $locationCatalog[$state][$city] = 0;
+            if (!isset($locationCatalog[$country][$state])) {
+                $locationCatalog[$country][$state] = [];
             }
-            $locationCatalog[$state][$city]++;
+            if (!isset($locationCatalog[$country][$state][$city])) {
+                $locationCatalog[$country][$state][$city] = 0;
+            }
+            $locationCatalog[$country][$state][$city]++;
         }
 
         // Apply selected_cities filter if present
@@ -773,6 +943,7 @@ class ListingController extends Controller
                 'agent' => $agent,
                 'sidebarAds' => $sidebarAds,
                 'locationCatalog' => $locationCatalog,
+                'filterCounts' => $filterCounts,
                 'branches' => $branches
             ]);
         }
@@ -782,7 +953,8 @@ class ListingController extends Controller
             'suggestedPackages' => $suggestedPackages,
             'agent' => $agent,
             'sidebarAds' => $sidebarAds,
-            'locationCatalog' => $locationCatalog
+            'locationCatalog' => $locationCatalog,
+            'filterCounts' => $filterCounts
         ]);
     }
 

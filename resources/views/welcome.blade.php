@@ -179,7 +179,7 @@
     @endif
 
     <!-- Section 7: Offer Stickers -->
-    <section class="py-5 md:py-10 relative" style="background-color: #FFF4CE;">
+    <section class="pt-5 md:pt-10 pb-2 md:pb-4 relative" style="background-color: #FFF4CE;">
         <div class="container-custom">
             <div class="px-4 py-8 md:px-8 md:py-10 relative flex items-center justify-between w-full" x-data="{
                 scrollAmount: 0,
@@ -352,17 +352,17 @@
     </section>
 
     <!-- Section 3: Why Travel With TourRaja -->
-    <div class="max-w-7xl mx-auto px-6 py-6 md:py-12 lg:py-16">
+    <div class="max-w-7xl mx-auto px-6 py-4 md:py-8 lg:py-10">
         <x-section-title subtitle="The TourRaja Advantage" align="center">
             Why tourraja !!!
             <x-slot:description>The best booking platform you can trust</x-slot:description>
-        </x-section-title><br class="hidden md:block">
+        </x-section-title>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Card 1: Security Assurance -->
             <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
                 <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/security.svg.svg" alt="Security Assurance" class="w-8 h-8 object-contain">
+                    <img src="{{ asset('svgs/security.svg.svg') }}" alt="Security Assurance" class="w-8 h-8 object-contain">
                 </div>
                 <h4 class="font-extrabold text-black text-[16px] mb-3">Security Assurance</h4>
                 <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Demonstrates commitment to user data security</p>
@@ -372,7 +372,7 @@
             <!-- Card 2: Best Price Deals -->
             <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
                 <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/support.svg.svg" alt="Best Price Deals" class="w-8 h-8 object-contain">
+                    <img src="{{ asset('svgs/support.svg.svg') }}" alt="Best Price Deals" class="w-8 h-8 object-contain">
                 </div>
                 <h4 class="font-extrabold text-black text-[16px] mb-3">Best Price Deals</h4>
                 <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Compare and choose the most affordable package</p>
@@ -382,7 +382,7 @@
             <!-- Card 3: Direct Agent Contacts -->
             <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
                 <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/policy.svg.svg" alt="Direct Agent Contacts" class="w-8 h-8 object-contain">
+                    <img src="{{ asset('svgs/policy.svg.svg') }}" alt="Direct Agent Contacts" class="w-8 h-8 object-contain">
                 </div>
                 <h4 class="font-extrabold text-black text-[16px] mb-3">Direct Agent Contacts</h4>
                 <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">No middleman, connect instantly</p>
@@ -392,7 +392,7 @@
             <!-- Card 4: Find Nearby Travel Agent -->
             <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
                 <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/repu.svg.svg" alt="Find Nearby Travel Agent" class="w-8 h-8 object-contain">
+                    <img src="{{ asset('svgs/repu.svg.svg') }}" alt="Find Nearby Travel Agent" class="w-8 h-8 object-contain">
                 </div>
                 <h4 class="font-extrabold text-black text-[16px] mb-3">Find Nearby Travel Agent</h4>
                 <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Find the perfect trip without confusion with your local agent</p>
@@ -402,7 +402,7 @@
     </div>
 
     <!-- Section 6: Browse by Travel Theme -->
-    <section class="py-8 md:py-16 bg-white border-t border-border-soft/30 animate-fade-up">
+    <section class="py-6 md:py-10 bg-white border-t border-border-soft/30 animate-fade-up">
         <div class="container-custom">
             <h2 class="font-black text-foreground text-center mb-10 tracking-tight font-heading" style="font-size: 28px;">Browse by Travel Theme</h2>
 
@@ -459,7 +459,7 @@
     </section>
 
     <!-- Section 2: Featured Travel Packages -->
-    <section class="py-8 md:py-16 lg:py-20 bg-background">
+    <section class="py-6 md:py-10 lg:py-12 bg-background">
         <div class="container-custom">
             <!-- Header with Filters -->
             <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12" style="z-index: 40; position: relative;">
@@ -480,7 +480,7 @@
                             Categories
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
-                        <div id="cat-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl shadow-premium min-w-[160px] py-2" style="z-index: 40;">
+                        <div id="cat-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl overflow-hidden shadow-premium min-w-[160px]" style="z-index: 40;">
                             <button onclick="applyFilter('category','all','cat-btn','Categories')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">All</button>
                             <button onclick="applyFilter('category','domestic','cat-btn','Domestic')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">Domestic</button>
                             <button onclick="applyFilter('category','international','cat-btn','International')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">International</button>
@@ -495,7 +495,7 @@
                             Duration
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
-                        <div id="dur-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl shadow-premium min-w-[170px] py-2" style="z-index: 40;">
+                        <div id="dur-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl overflow-hidden shadow-premium min-w-[170px]" style="z-index: 40;">
                             <button onclick="applyFilter('duration','all','dur-btn','Duration')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">All</button>
                             <button onclick="applyFilter('duration','1-3','dur-btn','1–3 Days')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">1–3 Days</button>
                             <button onclick="applyFilter('duration','4-6','dur-btn','4–6 Days')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">4–6 Days</button>
@@ -509,7 +509,7 @@
                             Review / Rating
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
-                        <div id="rat-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl shadow-premium min-w-[160px] py-2" style="z-index: 40;">
+                        <div id="rat-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl overflow-hidden shadow-premium min-w-[160px]" style="z-index: 40;">
                             <button onclick="applyFilter('rating','all','rat-btn','Review / Rating')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">All</button>
                             <button onclick="applyFilter('rating','4.8','rat-btn','⭐ 4.8+')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">⭐ 4.8+</button>
                             <button onclick="applyFilter('rating','4.5','rat-btn','⭐ 4.5+')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">⭐ 4.5+</button>
@@ -523,7 +523,7 @@
                             Price range
                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                         </button>
-                        <div id="pri-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl shadow-premium min-w-[180px] py-2" style="z-index: 40;">
+                        <div id="pri-menu" class="hidden absolute right-0 top-12 bg-white border border-border-soft rounded-2xl overflow-hidden shadow-premium min-w-[180px]" style="z-index: 40;">
                             <button onclick="applyFilter('price','all','pri-btn','Price range')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">All</button>
                             <button onclick="applyFilter('price','0-20000','pri-btn','Under ₹20,000')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">Under ₹20,000</button>
                             <button onclick="applyFilter('price','20000-40000','pri-btn','₹20K – ₹40K')" class="w-full text-left px-4 py-2 text-xs font-bold hover:bg-gray-50 transition-colors">₹20,000 – ₹40,000</button>
@@ -651,7 +651,7 @@
 
 
     <!-- Section 7.5: Top Categories Packages -->
-    <section class="py-8 md:py-16 lg:pt-12 lg:pb-24 bg-white">
+    <section class="py-6 md:py-10 lg:pt-8 lg:pb-12 bg-white">
         <div class="container-custom">
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-10 gap-3">
@@ -799,25 +799,18 @@
     </section>
 
     <!-- Section 8: Testimonials -->
-    <section class="pt-8 md:pt-16 lg:pt-12 bg-white overflow-hidden">
+    <section class="pt-6 md:pt-10 lg:pt-8 bg-white overflow-hidden">
         <div class="container-custom">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 animate-fade-up gap-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2 md:mb-4 animate-fade-up gap-6">
                 <div class="space-y-2">
                     <h2 class="text-3xl md:text-4xl lg:text-6xl font-black text-foreground tracking-tight font-heading">What Our Clients Say!!!</h2>
                     <p class="text-text-muted text-base md:text-lg font-medium">They Love TourRaja!</p>
                 </div>
-                <div class="flex items-center gap-4 self-start md:self-auto">
-                    <button id="prev-testi" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 flex items-center justify-center text-foreground hover:bg-primary hover:text-white transition-all duration-300">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-                    </button>
-                    <button id="next-testi" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary flex items-center justify-center text-white shadow-glow hover:scale-110 transition-all duration-300">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                    </button>
-                </div>
+
             </div>
 
             <div class="relative group">
-                <div class="flex gap-6 overflow-hidden py-8 testimonial-track" id="testi-slider">
+                <div class="flex gap-6 overflow-hidden pt-2 pb-8 testimonial-track" id="testi-slider">
                     @php
                         $testimonials = [
                             ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara', 'rating' => 5],
