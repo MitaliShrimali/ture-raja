@@ -105,12 +105,12 @@
                             .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
                             .package-detail-title {
                                 font-size: 30px !important;
-                                font-family: 'Outfit', sans-serif !important;
+                                font-family: 'Poppins', sans-serif !important;
                                 line-height: 1.25 !important;
                             }
                             .section-heading {
                                 font-size: 30px !important;
-                                font-family: 'Outfit', sans-serif !important;
+                                font-family: 'Poppins', sans-serif !important;
                                 line-height: 1.3 !important;
                                 font-weight: 900 !important;
                                 position: relative;

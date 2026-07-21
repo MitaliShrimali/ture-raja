@@ -133,13 +133,13 @@
 
         .package-detail-title {
             font-size: 30px !important;
-            font-family: 'Outfit', sans-serif !important;
+            font-family: 'Poppins', sans-serif !important;
             line-height: 1.25 !important;
         }
 
         .section-heading {
             font-size: 30px !important;
-            font-family: 'Outfit', sans-serif !important;
+            font-family: 'Poppins', sans-serif !important;
             line-height: 1.3 !important;
             font-weight: 900 !important;
             position: relative;
@@ -474,7 +474,7 @@
                                             style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">DURATION
                                         </p>
                                         <p class="font-extrabold text-gray-800 text-base"
-                                            style="font-size: 16px; font-family: 'Outfit', sans-serif;">
+                                            style="font-size: 16px; font-family: 'Poppins', sans-serif;">
                                             {{ $formattedDuration }}</p>
                                     </div>
                                     <div>
@@ -482,7 +482,7 @@
                                             style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">GROUP
                                             SIZE</p>
                                         <p class="font-extrabold text-gray-800 text-base uppercase"
-                                            style="font-size: 16px; font-family: 'Outfit', sans-serif;">
+                                            style="font-size: 16px; font-family: 'Poppins', sans-serif;">
                                             {{ $package['groupSize'] }}</p>
                                     </div>
                                     <div>
@@ -490,7 +490,7 @@
                                             style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">THEME
                                         </p>
                                         <p class="font-extrabold text-gray-800 text-base uppercase"
-                                            style="font-size: 16px; font-family: 'Outfit', sans-serif;">
+                                            style="font-size: 16px; font-family: 'Poppins', sans-serif;">
                                             {{ $package['theme'] ?? 'Adventure' }}</p>
                                     </div>
                                 </div>
@@ -723,7 +723,7 @@
                                         </div>
                                         <div class="-mt-1 flex-1">
                                             <h4 class="font-black text-gray-800"
-                                                style="font-family: 'Outfit', sans-serif; font-size: 16px;">{{ $day['title'] }}</h4>
+                                                style="font-family: 'Poppins', sans-serif; font-size: 16px;">{{ $day['title'] }}</h4>
                                             @if(!empty($day['desc']))
                                                 <p class="standard-body-text mt-2 max-w-3xl">{!! $day['desc_html'] !!}</p>
                                             @endif
@@ -946,7 +946,7 @@
                     <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-5" id="contact-form">
                         <div style="margin-bottom: 0.5rem;">
                             <h3 class="font-black text-gray-900 section-heading"
-                                style="font-family: 'Outfit', sans-serif; font-size: 22px;">Get in touch</h3>
+                                style="font-family: 'Poppins', sans-serif; font-size: 22px;">Get in touch</h3>
                             <p class="text-gray-500 mt-4" style="font-size: 14px;">We are here for you, how can we help?</p>
                         </div>
 
@@ -1000,7 +1000,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 gap-6">
                     <div class="space-y-2">
                         <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight font-heading"
-                            style="font-family: 'Outfit', sans-serif;">What Our Clients Say!!!</h2>
+                            style="font-family: 'Poppins', sans-serif;">What Our Clients Say!!!</h2>
                         <p class="text-text-muted text-base md:text-lg font-medium">They Love TourRaja!</p>
                     </div>
                     <div class="flex items-center gap-4 self-start md:self-auto">
@@ -1039,7 +1039,7 @@
                                 <div
                                     class="p-6 md:p-10 rounded-lg border border-gray-200 bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-4 md:space-y-6">
                                     <h4 class="text-lg md:text-xl font-black text-foreground font-heading"
-                                        style="font-family: 'Outfit', sans-serif;">The best booking system</h4>
+                                        style="font-family: 'Poppins', sans-serif;">The best booking system</h4>
                                     <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic">
                                         "{{ $testi['text'] }}"</p>
 

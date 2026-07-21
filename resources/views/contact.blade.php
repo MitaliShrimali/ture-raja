@@ -203,7 +203,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 gap-6">
                 <div class="space-y-2">
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight font-heading"
-                        style="font-family: 'Outfit', sans-serif;">What Our Clients Say!!!</h2>
+                        style="font-family: 'Poppins', sans-serif;">What Our Clients Say!!!</h2>
                     <p class="text-text-muted text-base md:text-lg font-medium">They Love TourRaja!</p>
                 </div>
                 <div class="flex items-center gap-4 self-start md:self-auto">
@@ -240,7 +240,7 @@
                             <div
                                 class="p-6 md:p-10 rounded-lg border border-gray-200 bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-4 md:space-y-6">
                                 <h4 class="text-lg md:text-xl font-black text-foreground font-heading"
-                                    style="font-family: 'Outfit', sans-serif;">The best booking system</h4>
+                                    style="font-family: 'Poppins', sans-serif;">The best booking system</h4>
                                 <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic">
                                     "{{ $testi['text'] }}"</p>
 

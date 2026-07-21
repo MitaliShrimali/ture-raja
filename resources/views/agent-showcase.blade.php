@@ -20,7 +20,7 @@
             font-size: 3.5rem;
             font-weight: 900;
             text-align: center;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Poppins', sans-serif;
             text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             letter-spacing: -1px;
         }
@@ -58,7 +58,7 @@
             display: grid;
             grid-template-cols: 1fr;
             gap: 12px;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         @media (min-width: 768px) {
@@ -243,7 +243,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         .pkg-title {

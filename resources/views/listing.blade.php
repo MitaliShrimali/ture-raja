@@ -523,7 +523,7 @@
                         });
                 };
 
-                // Intercept manual submit
+                // Poppinscept manual submit
                 form.addEventListener('submit', (e) => {
                     clearTimeout(searchTimeout);
                     handleFilterUpdate(e);

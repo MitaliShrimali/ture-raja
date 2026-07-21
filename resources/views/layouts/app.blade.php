@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
 
     <!-- Styles & Scripts -->
@@ -584,7 +584,7 @@
                 <span class="text-[10px] font-black text-orange-500 uppercase tracking-widest"
                     style="letter-spacing: 0.1em;">Photo Gallery</span>
                 <h3 class="font-black text-gray-900 text-lg md:text-xl leading-tight mt-0.5"
-                    style="font-family: 'Outfit', sans-serif;" x-text="globalGalleryTitle"></h3>
+                    style="font-family: 'Poppins', sans-serif;" x-text="globalGalleryTitle"></h3>
             </div>
             <button @click="globalShowGallery = false"
                 class="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center transition-all shadow-sm">
