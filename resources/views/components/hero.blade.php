@@ -356,13 +356,13 @@
           $label = str_replace(" Package", "\nPackage", $t->name);
         @endphp
         <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
-          class="group flex-1 min-w-0 max-w-[65px] md:max-w-[85px] lg:max-w-[105px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
-          <div class="w-9 h-9 md:w-11 md:h-11 lg:w-13 lg:h-13 flex items-center justify-center">
+          class="group flex-1 min-w-0 max-w-[85px] md:max-w-[105px] lg:max-w-[125px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
+          <div class="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center">
             <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}"
               class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
           </div>
           <span
-            class="text-center text-[9px] md:text-[10px] lg:text-[11px] font-semibold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
+            class="text-center text-[11px] md:text-[12px] lg:text-[13px] font-bold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
         </a>
       @endforeach
     </div>

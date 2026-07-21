@@ -1,5 +1,5 @@
 <nav 
-    :class="(isScrolled || !isHome) ? 'bg-white shadow-sm py-4' : 'bg-transparent py-8'"
+    :class="(isScrolled || !isHome) ? 'bg-white shadow-sm py-5 lg:py-6' : 'bg-transparent py-8'"
     class="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
 >
 
@@ -46,7 +46,7 @@
         @endphp
         
         <div class="flex-1 relative flex justify-center items-center z-20">
-            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-auto items-center justify-center gap-1 sm:gap-2.5 md:gap-3.5 px-2 transition-all duration-500 z-50" :class="(isPastTransits || !isHome) ? 'opacity-100 scale-100 -translate-y-1/2' : 'opacity-0 scale-90 translate-y-0 pointer-events-none'">
+            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-auto items-center justify-center gap-2 sm:gap-3 md:gap-5 px-2 transition-all duration-500 z-50 opacity-0 scale-90 translate-y-0 pointer-events-none" :class="{ 'opacity-100 scale-100 -translate-y-1/2 pointer-events-auto': isPastTransits || !isHome, 'opacity-0 scale-90 translate-y-0 pointer-events-none': !(isPastTransits || !isHome) }">
                 @foreach($dbTransits as $t)
                   @php
                       $imgUrl = '';
@@ -58,16 +58,13 @@
                           $imgUrl = $gifMap[$t->selected_icon] ?? 'https://s13.gifyu.com/images/bIHHY.png';
                       }
                       $cleanType = $t->name;
-                      $shortLabel = str_replace(" Package", "", $t->name);
-                      if ($shortLabel === 'Int. tour by Car') {
-                          $shortLabel = 'Car';
-                      }
+                      $label = str_replace(" Package", "\nPackage", $t->name);
                   @endphp
-                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group w-12 sm:w-14 flex-shrink-0">
-                     <div class="w-8 h-8 md:w-9 md:h-9 flex items-center justify-center">
+                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group w-16 sm:w-20 md:w-24 flex-shrink-0">
+                     <div class="w-8 h-8 md:w-10 md:h-10 lg:w-11 lg:h-11 flex items-center justify-center">
                         <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
-                     <span class="text-[9px] md:text-[9.5px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-0.5 truncate w-full text-center leading-tight">{{ $shortLabel }}</span>
+                     <span class="text-[9px] md:text-[10px] lg:text-[11px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-1 w-full text-center leading-tight whitespace-pre-line">{{ $label }}</span>
                   </a>
                 @endforeach
             </div>
