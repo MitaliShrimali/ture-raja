@@ -104,11 +104,6 @@ class AdminController extends Controller
         DB::table('home_packages')->insert([
             'type' => $request->type,
             'title' => $request->title,
-            'departure_city' => $request->departure_city ?? null,
-            'terms' => $request->terms ?? null,
-            'sightseeing_list' => json_encode($sightseeing_list),
-            'currency' => $request->currency ?? '₹',
-
             'subtitle' => $request->subtitle,
             'image' => $imagePath,
             'price' => $request->price,
@@ -129,11 +124,6 @@ class AdminController extends Controller
 
         $data = [
             'title' => $request->title,
-            'departure_city' => $request->departure_city ?? null,
-            'terms' => $request->terms ?? null,
-            'sightseeing_list' => json_encode($sightseeing_list),
-            'currency' => $request->currency ?? '₹',
-
             'subtitle' => $request->subtitle,
             'price' => $request->price,
             'status' => $request->status ?? 'Live',
@@ -190,11 +180,6 @@ class AdminController extends Controller
 
         DB::table('offer_stickers')->insert([
             'title' => $request->title,
-            'departure_city' => $request->departure_city ?? null,
-            'terms' => $request->terms ?? null,
-            'sightseeing_list' => json_encode($sightseeing_list),
-            'currency' => $request->currency ?? '₹',
-
             'subtitle' => $request->subtitle,
             'image' => $imagePath,
             'link' => $request->link ?? '/discover',
@@ -213,11 +198,6 @@ class AdminController extends Controller
 
         $data = [
             'title' => $request->title,
-            'departure_city' => $request->departure_city ?? null,
-            'terms' => $request->terms ?? null,
-            'sightseeing_list' => json_encode($sightseeing_list),
-            'currency' => $request->currency ?? '₹',
-
             'subtitle' => $request->subtitle,
             'link' => $request->link ?? '/discover',
             'status' => $request->status ?? 'Live',

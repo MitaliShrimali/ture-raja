@@ -75,7 +75,7 @@
                                 @if($sticker->image)
                                     <img src="{{ asset($sticker->image) }}" class="w-20 h-14 rounded-xl object-cover border border-border-soft" alt="{{ $sticker->title }}">
                                 @else
-                                    <div class="w-20 h-14 rounded-xl flex items-center justify-center text-muted-text" style="background-color: {{ $sticker->bg_color ?? '#FCE08F' }}">
+                                    <div class="w-20 h-14 rounded-xl flex items-center justify-center bg-gray-100 text-muted-text">
                                         <i data-lucide="image" class="w-5 h-5"></i>
                                     </div>
                                 @endif
@@ -241,19 +241,18 @@
                 <!-- 2-col grid for color + status -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Background Color</label>
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Title Text Color</label>
                         <select name="bg_color"
                                 class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                            <option value="" :selected="!editPkg.bg_color || editPkg.bg_color === ''">None (Transparent)</option>
+                            <option value="" :selected="!editPkg.bg_color || editPkg.bg_color === ''">Default (Dark)</option>
+                            <option value="#FFFFFF" :selected="editPkg.bg_color === '#FFFFFF'">White</option>
+                            <option value="#111827" :selected="editPkg.bg_color === '#111827'">Black</option>
                             <option value="#FCE08F" :selected="editPkg.bg_color === '#FCE08F'">Yellow</option>
                             <option value="#FFC0CB" :selected="editPkg.bg_color === '#FFC0CB'">Pink</option>
                             <option value="#BFDBFE" :selected="editPkg.bg_color === '#BFDBFE'">Light Blue</option>
                             <option value="#BBF7D0" :selected="editPkg.bg_color === '#BBF7D0'">Light Green</option>
-                            <option value="#FED7AA" :selected="editPkg.bg_color === '#FED7AA'">Light Orange</option>
-                            <option value="#E9D5FF" :selected="editPkg.bg_color === '#E9D5FF'">Lavender</option>
-                            <option value="#1e3a5f" :selected="editPkg.bg_color === '#1e3a5f'">Dark Blue</option>
-                            <option value="#2c6e49" :selected="editPkg.bg_color === '#2c6e49'">Dark Green</option>
                             <option value="#3b82f6" :selected="editPkg.bg_color === '#3b82f6'">Blue</option>
+                            <option value="#E85D26" :selected="editPkg.bg_color === '#E85D26'">Orange</option>
                         </select>
                     </div>
                     <div class="space-y-2">

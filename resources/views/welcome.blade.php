@@ -125,7 +125,7 @@
                 @media (min-width: 1024px) { .ad-card-custom { width: calc(25% - 18px); } }
             </style>
             <div id="ads-slider" class="flex-1 min-w-0 flex flex-nowrap gap-6 overflow-x-auto hide-scrollbar pb-2 snap-x snap-mandatory scroll-smooth {{ $domesticAds->count() < 4 ? 'lg:justify-center' : '' }}">
-                @foreach($domesticAds->take(4) as $ad)
+                @foreach($domesticAds as $ad)
                 <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 24px; box-shadow: 0 8px 24px -8px rgba(0,0,0,0.06); padding: 12px; display: flex; gap: 12px; box-sizing: border-box; transition: shadow 0.3s;" class="group hover:shadow-md relative snap-start ad-card-custom">
                     <!-- Left: Ad Image -->
                     <div style="width: 100px; height: 100px; border-radius: 16px; overflow: hidden; flex-shrink: 0; position: relative;">
@@ -150,9 +150,9 @@
                             <p style="font-size: 10px; font-weight: 500; color: #9ca3af; margin: 2px 0 0 0;">Get Your Best Deal Now!</p>
                         </div>
                         
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 8px; gap: 4px;">
                             <a href="{{ route('ad.click', $ad->id) }}" target="_blank"
-                               style="background-color: #4c75d4; color: #ffffff; padding: 8px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; text-decoration: none; display: inline-block; transition: background-color 0.2s;"
+                               style="background-color: #4c75d4; color: #ffffff; padding: 8px 12px; border-radius: 10px; font-size: 11px; font-weight: 700; text-decoration: none; display: inline-block; white-space: nowrap; text-align: center; min-width: 85px; flex-shrink: 0; transition: background-color 0.2s;"
                                onmouseover="this.style.backgroundColor='#3b62c2'"
                                onmouseout="this.style.backgroundColor='#4c75d4'">
                                 Check Now
@@ -160,7 +160,7 @@
                             @if($ad->agent_logo)
                                 <img src="{{ asset($ad->agent_logo) }}" 
                                      alt="{{ $ad->agent_name ?? 'Agent' }}" 
-                                     style="height: 32px; max-width: 60px; object-fit: contain; opacity: 0.9; transition: opacity 0.2s;"
+                                     style="height: 32px; max-width: 50px; object-fit: contain; opacity: 0.9; transition: opacity 0.2s;"
                                      onmouseover="this.style.opacity='1'"
                                      onmouseout="this.style.opacity='0.9'">
                             @endif
@@ -246,23 +246,21 @@
                                 @endphp
                                 @foreach($seamlessStickers as $sticker)
                                     <a href="{{ url($sticker->link ?? '/discover') }}"
-                                       class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6"
-                                       style="{{ !empty($sticker->bg_color) ? 'background-color: ' . $sticker->bg_color . ';' : '' }}">
+                                       class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6">
 
                                         {{-- Image fills the fixed container, cover-cropped --}}
                                         @if($sticker->image)
                                             <img src="{{ asset($sticker->image) }}"
-                                                 class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105"
-                                                 style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);"
+                                                 class="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                                                  alt="{{ $sticker->title }}">
                                         @endif
 
                                         <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                            <div class="max-w-[150px] mt-2">
+                                            <div class="max-w-[200px] mt-2">
                                                 @if($sticker->subtitle)
-                                                    <span class="text-[11px] font-bold text-gray-800 mb-1 block">{{ $sticker->subtitle }}</span>
+                                                    <span class="text-[11px] font-bold mb-1 block" style="{{ !empty($sticker->bg_color) ? 'color: ' . $sticker->bg_color . ';' : 'color: #1f2937;' }}">{{ $sticker->subtitle }}</span>
                                                 @endif
-                                                <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">{{ $sticker->title }}</h3>
+                                                <h3 class="text-[18px] md:text-[20px] font-black leading-tight" style="{{ !empty($sticker->bg_color) ? 'color: ' . $sticker->bg_color . ';' : 'color: #111827;' }}">{{ $sticker->title }}</h3>
                                             </div>
                                             <div class="mt-auto">
                                                 <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
