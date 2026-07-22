@@ -273,6 +273,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/plans/create', [AdminController::class, 'createPlan']);
     Route::get('/plans/edit/{id}', [AdminController::class, 'editPlan']);
     Route::get('/plans/preview/{id}', [AdminController::class, 'previewPlan']);
+    Route::get('/plans/preview/{id}/export', [AdminController::class, 'exportPreviewPlan']);
     Route::get('/plans/duplicate/{id}', [AdminController::class, 'duplicatePlan']);
     Route::get('/plans/export', [AdminController::class, 'exportPlans']);
     Route::post('/plans/store', [AdminController::class, 'storePlan']);

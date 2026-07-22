@@ -2113,20 +2113,84 @@ class AdminController extends Controller
         return redirect('/admin/plans')->with('success', 'Plan duplicated successfully!');
     }
 
-    public function previewPlan($id)
+    public function previewPlan(Request $request, $id)
     {
         $plan = DB::table('plans')->where('id', $id)->first();
         if (!$plan) {
             return redirect('/admin/plans')->with('error', 'Plan not found!');
         }
 
-        $nameLower = strtolower(trim($plan->name));
+        $created_from = $request->input('created_from');
+        $created_to = $request->input('created_to');
 
-        $subscribedAgents = DB::table('agents')
-            ->where('plan_id', $plan->id)
-            ->get();
+        $query = DB::table('agents')->where(function($q) use ($plan) {
+            $q->where('plan_id', $plan->id)
+              ->orWhere('tier', $plan->name);
+        });
 
-        return view('admin.plans-preview', compact('plan', 'subscribedAgents'));
+        if ($created_from) {
+            $query->whereDate('created_at', '>=', $created_from);
+        }
+        if ($created_to) {
+            $query->whereDate('created_at', '<=', $created_to);
+        }
+
+        $subscribedAgents = $query->get();
+
+        return view('admin.plans-preview', compact('plan', 'subscribedAgents', 'created_from', 'created_to'));
+    }
+
+    public function exportPreviewPlan(Request $request, $id)
+    {
+        $plan = DB::table('plans')->where('id', $id)->first();
+        if (!$plan) {
+            return redirect('/admin/plans')->with('error', 'Plan not found!');
+        }
+
+        $created_from = $request->input('created_from');
+        $created_to = $request->input('created_to');
+
+        $query = DB::table('agents')->where(function($q) use ($plan) {
+            $q->where('plan_id', $plan->id)
+              ->orWhere('tier', $plan->name);
+        });
+
+        if ($created_from) {
+            $query->whereDate('created_at', '>=', $created_from);
+        }
+        if ($created_to) {
+            $query->whereDate('created_at', '<=', $created_to);
+        }
+
+        $agents = $query->get();
+
+        $csvFileName = 'plan_' . $plan->id . '_agents_export_' . time() . '.csv';
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$csvFileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function () use ($agents) {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['ID', 'Agent Name', 'Email', 'Tier', 'Status', 'Created At']);
+
+            foreach ($agents as $agent) {
+                fputcsv($handle, [
+                    $agent->id,
+                    $agent->name,
+                    $agent->email,
+                    $agent->tier,
+                    $agent->status,
+                    $agent->created_at
+                ]);
+            }
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function exportPlans()

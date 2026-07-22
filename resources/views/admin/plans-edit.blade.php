@@ -92,13 +92,7 @@
 
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Duration Threshold</label>
-                    <select name="duration" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground">
-                        <option value="1 Month" {{ ($plan->duration ?? '') === '1 Month' ? 'selected' : '' }}>1 Month</option>
-                        <option value="3 Months" {{ ($plan->duration ?? '') === '3 Months' ? 'selected' : '' }}>3 Months</option>
-                        <option value="6 Months" {{ ($plan->duration ?? '') === '6 Months' ? 'selected' : '' }}>6 Months</option>
-                        <option value="1 Year" {{ ($plan->duration ?? '') === '1 Year' ? 'selected' : '' }}>1 Year</option>
-                        <option value="Custom" {{ ($plan->duration ?? '') === 'Custom' ? 'selected' : '' }}>Custom / Unlimited</option>
-                    </select>
+                    <input type="text" name="duration" value="{{ $plan->duration ?? '' }}" placeholder="e.g. 1 Month, 30 Days" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground">
                 </div>
             </div>
 

@@ -131,22 +131,23 @@
 
     <!-- Subscribed Agents Table Section -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
-        <div class="p-8 border-b border-border-soft">
-            <div class="flex items-center justify-between">
-                <div class="space-y-1">
-                    <h3 class="text-xl font-black text-gray-800">Subscribed Agents</h3>
-                    <p class="text-xs text-muted-text font-semibold">Directly managing {{ count($subscribedAgents) }} active accounts on this plan</p>
-                </div>
-                <!-- Avatar Stack Indicator -->
-                <div class="flex items-center -space-x-2.5">
-                    @foreach($subscribedAgents->take(3) as $agent)
-                        <img class="w-8 h-8 rounded-full border-2 border-white object-cover shadow-sm" src="{{ asset($agent->logo ?: 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agent->name)) }}" alt="{{ $agent->name }}">
-                    @endforeach
-                    @if(count($subscribedAgents) > 3)
-                        <div class="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-black text-muted-text shadow-sm">+{{ count($subscribedAgents) - 3 }}</div>
-                    @endif
-                </div>
+        <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="space-y-1">
+                <h3 class="text-xl font-black text-gray-800">Subscribed Agents</h3>
+                <p class="text-xs text-muted-text font-semibold">Directly managing {{ count($subscribedAgents) }} active accounts on this plan</p>
             </div>
+            
+            <form action="{{ url('/admin/plans/preview/' . $plan->id) }}" method="GET" class="flex flex-wrap items-center gap-3">
+                <input type="date" name="created_from" value="{{ $created_from ?? '' }}" class="bg-[#F8F9FA] border-none rounded-xl px-4 py-2 text-xs font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-primary/20">
+                <span class="text-xs font-bold text-gray-400">TO</span>
+                <input type="date" name="created_to" value="{{ $created_to ?? '' }}" class="bg-[#F8F9FA] border-none rounded-xl px-4 py-2 text-xs font-semibold text-gray-700 outline-none focus:ring-2 focus:ring-primary/20">
+                <button type="submit" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-colors">
+                    Filter
+                </button>
+                <a href="{{ url('/admin/plans/preview/' . $plan->id . '/export?created_from=' . ($created_from ?? '') . '&created_to=' . ($created_to ?? '')) }}" class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-2">
+                    <i data-lucide="download" size="14"></i> Export
+                </a>
+            </form>
         </div>
 
         <div class="admin-table-container">
