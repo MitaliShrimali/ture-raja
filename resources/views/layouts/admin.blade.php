@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
@@ -67,7 +66,7 @@
                         [
                             'label' => 'ADMIN CENTRAL',
                             'items' => [
-                                ['name' => 'Global Dashboard', 'icon' => 'layout-dashboard', 'href' => '/admin/dashboard'],
+                                ['name' => 'Dashboard', 'icon' => 'layout-dashboard', 'href' => '/admin/dashboard'],
                                 ['name' => 'Admin User', 'icon' => 'user-round', 'href' => '/admin/users'],
                             ]
                         ],
@@ -203,7 +202,7 @@
                 <a href="{{ url('/logout') }}"
                     class="flex items-center gap-4 px-4 py-3.5 text-red-500 hover:bg-red-50 rounded-2xl transition-all text-sm font-black">
                     <i data-lucide="log-out" size="20"></i>
-                    <span>Exit Admin</span>
+                    <span>Logout</span>
                 </a>
             </div>
         </aside>
@@ -221,9 +220,7 @@
                     </button>
 
                     <div class="hidden sm:flex flex-col">
-                        <p class="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Platform Admin</p>
-                        <h2 class="text-xl font-black text-foreground tracking-tight">@yield('admin_title', 'Dashboard')
-                        </h2>
+                        <h2 class="text-xl font-black text-foreground tracking-tight">@yield('admin_title', 'Dashboard')</h2>
                     </div>
                 </div>
 
@@ -244,9 +241,11 @@
                             </div>
                             <div class="flex-1 space-y-1">
                                 <h4 class="text-sm font-black text-foreground">
-                                    {{ session('success') ? 'Action Successful' : 'Action Failed' }}</h4>
+                                    {{ session('success') ? 'Action Successful' : 'Action Failed' }}
+                                </h4>
                                 <p class="text-xs text-muted-text font-medium leading-relaxed">
-                                    {{ session('success') ?? session('error') }}</p>
+                                    {{ session('success') ?? session('error') }}
+                                </p>
                             </div>
                             <button @click="show = false" class="text-muted-text/40 hover:text-muted-text">
                                 <i data-lucide="x" size="16"></i>
@@ -270,18 +269,10 @@
 
                         <!-- Icons -->
                         <div class="flex items-center gap-1 md:gap-2">
-                            <a href="{{ url('/admin/notifications') }}"
-                                class="relative p-2 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
-                                <i data-lucide="bell" size="20"></i>
-                            </a>
-                            <a href="{{ url('/admin/settings') }}"
-                                class="p-2 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
-                                <i data-lucide="settings" size="20"></i>
-                            </a>
-                            <button type="button"
-                                class="p-2 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
+                            <a href="#"
+                                class="p-2 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors hidden md:block">
                                 <i data-lucide="info" size="20"></i>
-                            </button>
+                            </a>
                         </div>
 
                         <!-- User Profile Avatar -->
@@ -298,9 +289,10 @@
                                 class="w-10 h-10 rounded-full object-cover border border-gray-100 hover:ring-2 hover:ring-primary/20 transition-all">
                         </a>
                     </div>
-                    
+
                     <!-- Search Dropdown Container -->
-                    <div id="globalSearchAdminDropdown" class="absolute top-20 right-6 lg:right-10 w-64 bg-white border border-gray-200 rounded-xl shadow-lg hidden z-[100] max-h-64 overflow-y-auto">
+                    <div id="globalSearchAdminDropdown"
+                        class="absolute top-20 right-6 lg:right-10 w-64 bg-white border border-gray-200 rounded-xl shadow-lg hidden z-[100] max-h-64 overflow-y-auto">
                         <ul id="globalSearchAdminResults" class="py-2 text-xs text-gray-700 divide-y divide-gray-50">
                         </ul>
                     </div>
@@ -412,9 +404,9 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             lucide.createIcons();
-            
+
             const pages = [
                 { name: 'Dashboard', url: '{{ url("/admin/dashboard") }}' },
                 { name: 'Admin Users', url: '{{ url("/admin/users") }}' },
@@ -442,18 +434,18 @@
             const dropdown = document.getElementById('globalSearchAdminDropdown');
             const resultsContainer = document.getElementById('globalSearchAdminResults');
 
-            if(input) {
-                input.addEventListener('input', function() {
+            if (input) {
+                input.addEventListener('input', function () {
                     const val = this.value.toLowerCase();
                     resultsContainer.innerHTML = '';
-                    
+
                     if (!val) {
                         dropdown.classList.add('hidden');
                         return;
                     }
 
                     const matches = pages.filter(p => p.name.toLowerCase().includes(val));
-                    
+
                     if (matches.length > 0) {
                         matches.forEach(match => {
                             const li = document.createElement('li');
@@ -467,7 +459,7 @@
                     }
                 });
 
-                document.addEventListener('click', function(e) {
+                document.addEventListener('click', function (e) {
                     if (!input.contains(e.target) && !dropdown.contains(e.target)) {
                         dropdown.classList.add('hidden');
                     }

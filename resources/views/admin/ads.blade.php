@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Ads')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, addPosition: 'Home Hero', editAd: { id: '', campaign_name: '', position: '', image: '', link: '', status: '', subtitle: '', agent_id: '' } }">
     <div class="space-y-4">

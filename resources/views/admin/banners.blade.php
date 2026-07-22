@@ -1,4 +1,6 @@
 @extends('layouts.admin')
+
+@section('admin_title', 'Banners')
 @php use Illuminate\Support\Str; @endphp
 
 @section('content')

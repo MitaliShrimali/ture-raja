@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Paid Users')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editUser: { id: '', name: '', email: '', plan: '', amount: '', status: '' } }">
     <!-- Header -->

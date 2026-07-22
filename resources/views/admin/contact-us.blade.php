@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Contact Us')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showEditModal: false, editContact: { id: '', name: '', email: '', phone: '', subject: '', message: '', status: '' } }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">

@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'User Plans')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editPlan: { id: '', user_name: '', email: '', plan_name: '', price: '', duration: '', status: '' } }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">

@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Invoice Overview')
+
 @section('content')
 @php
     $subtotal = 0;

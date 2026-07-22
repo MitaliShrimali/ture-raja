@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Stub')
+
 @section('content')
 <div class="h-[60vh] flex flex-col items-center justify-center space-y-6 text-center">
     <div class="w-20 h-20 bg-primary/5 rounded-[24px] flex items-center justify-center text-primary">

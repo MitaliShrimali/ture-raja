@@ -127,6 +127,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/users/update', [AdminController::class, 'updateUser']);
     Route::get('/users/delete/{id}', [AdminController::class, 'deleteUser']);
     Route::get('/users/toggle/{id}', [AdminController::class, 'toggleUser']);
+    Route::post('/roles/store', [AdminController::class, 'storeRole']);
+    Route::delete('/roles/{id}', [AdminController::class, 'deleteRole']);
 
     Route::post('/agents/store', [AdminController::class, 'storeAgent']);
     Route::get('/agents/edit/{id}', [AdminController::class, 'editAgent']);

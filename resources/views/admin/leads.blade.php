@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Leads')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editLead: { id: '', name: '', email: '', phone: '', agent: '', package: '', status: '', message: '' } }">
     <!-- Header -->

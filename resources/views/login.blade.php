@@ -77,7 +77,7 @@
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email
                             Address<span class="text-primary">*</span></label>
-                        <input required type="email" name="email" placeholder="user@example.com"
+                        <input required type="email" name="email" placeholder="user@example.com" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address"
                             class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm" />
                     </div>
                     <div class="space-y-2">
@@ -89,23 +89,9 @@
                                 placeholder="Enter password"
                                 class="w-full bg-white border border-border-soft rounded-2xl py-4 px-6 pr-14 outline-none focus:border-primary/50 transition-all font-medium text-foreground placeholder:text-muted-text/40 shadow-sm" />
                             <button @click="showPassword = !showPassword" type="button"
-                                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-muted-text hover:text-primary transition-colors">
-                                <template x-if="!showPassword">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7" />
-                                        <circle cx="12" cy="12" r="3" />
-                                    </svg>
-                                </template>
-                                <template x-if="showPassword">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path
-                                            d="M9.88 9.88L2 2m17.76 17.76L22 22M2 12s3-7 10-7a9.06 9.06 0 0 1 5.01 1.51M9.1 9.1a3 3 0 0 0 3.79 3.79M12 19c-7 0-10-7-10-7a9.75 9.75 0 0 1 1.51-2.01M17.76 17.76A10.38 10.38 0 0 1 12 19c-7 0-10-7-10-7a9.75 9.75 0 0 1 1.51-2.01M22 12s-3 7-10 7a9.06 9.06 0 0 1-5.01-1.51M12 5c7 0 10 7 10 7a9.75 9.75 0 0 1-1.51 2.01" />
-                                    </svg>
-                                </template>
+                                class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-muted-text hover:text-primary transition-colors cursor-pointer" style="z-index: 10;">
+                                <span x-show="!showPassword"><i data-lucide="eye" class="w-5 h-5"></i></span>
+                                <span x-show="showPassword" style="display:none;"><i data-lucide="eye-off" class="w-5 h-5"></i></span>
                             </button>
                         </div>
                     </div>

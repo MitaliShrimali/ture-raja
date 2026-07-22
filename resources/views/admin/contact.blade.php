@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Contact')
+
 @section('content')
 <div class='space-y-6'>
     <h2 class='font-black text-foreground'>CONTACT</h2>

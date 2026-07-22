@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Dashboard')
+
 @section('content')
 <div class="space-y-10 pb-12">
     <!-- Hero Header -->
@@ -13,23 +15,24 @@
     </section>
 
     <!-- Metrics Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         @foreach([
-            ['title' => 'Total Revenue', 'value' => $data['metrics']['totalRevenue'], 'growth' => $data['metrics']['revenueGrowth'], 'icon' => 'bar-chart-3', 'color' => 'primary', 'link' => url('/admin/payments')],
-            ['title' => 'Verified Agents', 'value' => $data['metrics']['activeAgents'], 'growth' => $data['metrics']['agentGrowth'], 'icon' => 'users', 'color' => 'blue-500', 'link' => url('/admin/agents')],
-            ['title' => 'Active Packages', 'value' => $data['metrics']['activePackages'], 'growth' => $data['metrics']['packageGrowth'], 'icon' => 'package', 'color' => 'green-500', 'link' => url('/admin/packages')],
+            ['title' => 'Total Rev. / Profit', 'value' => $data['metrics']['totalRevenue'], 'growth' => 'Profit: ' . $data['metrics']['totalProfit'], 'icon' => 'bar-chart-3', 'color' => 'primary', 'link' => url('/admin/payments')],
+            ['title' => 'Verified Agents', 'value' => $data['metrics']['activeAgents'], 'growth' => $data['metrics']['agentGrowth'], 'icon' => 'users', 'color' => 'blue-500', 'link' => url('/admin/registered-agents')],
             ['title' => 'Total Subscribers', 'value' => $data['metrics']['totalSubscribers'], 'growth' => $data['metrics']['subscriberGrowth'], 'icon' => 'globe', 'color' => 'orange-500', 'link' => url('/admin/subscribers')],
+            ['title' => 'Pending Packages', 'value' => $data['metrics']['pendingPackages'], 'growth' => 'Action Req.', 'icon' => 'clock', 'color' => 'orange-500', 'link' => url('/admin/packages/pending')],
+            ['title' => 'Expired Packages', 'value' => $data['metrics']['expiredPackages'], 'growth' => 'Review', 'icon' => 'alert-circle', 'color' => 'red-500', 'link' => url('/admin/packages?status=expired')],
         ] as $metric)
-            <a href="{{ $metric['link'] }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
+            <a href="{{ $metric['link'] }}" class="block bg-white p-6 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
                 <div class="flex items-center justify-between">
                     <div class="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-{{ $metric['color'] }}">
                         <i data-lucide="{{ $metric['icon'] }}" size="18"></i>
                     </div>
-                    <span class="text-xs font-black text-green-500 bg-green-50 px-2 py-1 rounded-lg">{{ $metric['growth'] }}</span>
+                    <span class="text-[10px] font-black text-green-500 bg-green-50 px-2 py-1 rounded-lg">{{ $metric['growth'] }}</span>
                 </div>
                 <div>
-                    <p class="text-xs font-black text-muted-text uppercase tracking-widest">{{ $metric['title'] }}</p>
-                    <h3 class="text-3xl font-black font-syne text-foreground">{{ $metric['value'] }}</h3>
+                    <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">{{ $metric['title'] }}</p>
+                    <h3 class="text-2xl font-black font-syne text-foreground">{{ $metric['value'] }}</h3>
                 </div>
             </a>
         @endforeach

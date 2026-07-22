@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Package View')
+
 @section('content')
 <div class="space-y-10 pb-12">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">

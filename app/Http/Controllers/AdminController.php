@@ -12,14 +12,18 @@ class AdminController extends Controller
     public function dashboard()
     {
         // 1. Get Live Metrics
-        $totalRev = DB::table('payments')->where('status', 'Completed')->sum('amount');
-        $activeAgentsCount = DB::table('agents')->where('status', 'Active')->count();
+        $totalRev = DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount');
+        $totalProfit = $totalRev; // Assuming profit is total revenue for platform subscriptions
+        $activeAgentsCount = DB::table('agents')->count();
         $activePackagesCount = DB::table('packages')->where('status', 'Active')->count();
-        $totalSubsCount = DB::table('subscribers')->where('status', 'Subscribed')->count();
+        $totalSubsCount = DB::table('subscribers')->count();
+        $expiredPackagesCount = DB::table('packages')->whereNotNull('expiry_date')->where('expiry_date', '<', now())->count();
+        $pendingPackagesCount = DB::table('packages')->where('status', 'Pending')->count();
 
         $data = [
             'metrics' => [
                 'totalRevenue' => '₹' . number_format($totalRev, 2),
+                'totalProfit' => '₹' . number_format($totalProfit, 2),
                 'revenueGrowth' => '+12.5%',
                 'activeAgents' => number_format($activeAgentsCount),
                 'agentGrowth' => '+8.2%',
@@ -27,6 +31,8 @@ class AdminController extends Controller
                 'packageGrowth' => '+15.3%',
                 'totalSubscribers' => number_format($totalSubsCount),
                 'subscriberGrowth' => '+5.4%',
+                'pendingPackages' => number_format($pendingPackagesCount),
+                'expiredPackages' => number_format($expiredPackagesCount),
             ],
             // Dynamic activity feed populated from notifications or user activities
             'recentActivities' => DB::table('notifications')
@@ -58,9 +64,9 @@ class AdminController extends Controller
             ->limit(5)
             ->get();
 
-        // Fetch packages pending approval (status = Draft)
+        // Fetch packages pending approval (status = Pending)
         $pendingPackages = DB::table('packages')
-            ->where('status', 'Draft')
+            ->where('status', 'Pending')
             ->orderBy('id', 'desc')
             ->limit(5)
             ->get();
@@ -956,7 +962,8 @@ class AdminController extends Controller
 
     public function createAdminUser()
     {
-        return view('admin.users-create');
+        $roles = DB::table('roles')->get();
+        return view('admin.users-create', compact('roles'));
     }
 
     public function editAdminUser($id)
@@ -966,7 +973,8 @@ class AdminController extends Controller
             return redirect('/admin/users')->with('error', 'User not found!');
         }
         $user->permissions = json_decode($user->permissions ?? '{}', true) ?: [];
-        return view('admin.users-edit', compact('user'));
+        $roles = DB::table('roles')->get();
+        return view('admin.users-edit', compact('user', 'roles'));
     }
 
     // CUSTOMERS (Normal Users)
@@ -1017,6 +1025,26 @@ class AdminController extends Controller
         ]);
 
         return redirect('/admin/users')->with('success', 'Admin user created!');
+    }
+
+    public function storeRole(Request $request)
+    {
+        $request->validate(['name' => 'required|string|max:255']);
+        $name = strtoupper(trim($request->name));
+
+        $exists = DB::table('roles')->where('name', $name)->exists();
+        if ($exists) {
+            return response()->json(['success' => false, 'message' => 'Role already exists!']);
+        }
+
+        $id = DB::table('roles')->insertGetId(['name' => $name, 'created_at' => now(), 'updated_at' => now()]);
+        return response()->json(['success' => true, 'role' => ['id' => $id, 'name' => $name]]);
+    }
+
+    public function deleteRole($id)
+    {
+        DB::table('roles')->where('id', $id)->delete();
+        return response()->json(['success' => true]);
     }
 
     public function updateUser(Request $request)

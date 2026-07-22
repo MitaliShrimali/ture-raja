@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Transits')
+
 @section('content')
 <div class="space-y-8 pb-12" x-data="{
     showAddModal: false,

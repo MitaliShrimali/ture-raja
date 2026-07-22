@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Subscribers')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showAddModal: false }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">

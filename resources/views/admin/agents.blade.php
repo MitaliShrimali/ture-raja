@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Agents')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ tier: 'Premium', status: 'Active', showCustomPlanModal: false, customAgentSearch: '', customPlanTier: '', customSacHsn: '', customSaleType: 'Direct Sale' }">
     <!-- Header -->

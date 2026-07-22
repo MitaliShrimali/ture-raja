@@ -50,10 +50,8 @@
     <div class="absolute top-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-4 hidden md:block">
         <div
             class="bg-white/95 backdrop-blur-md rounded-full shadow-lg border border-gray-100 px-8 py-3.5 flex items-center justify-between">
+            <x-logo class="h-8 w-auto" />
             <div class="flex items-center gap-8">
-                <a href="{{ url('/') }}"
-                    class="text-[10px] font-black text-gray-500 hover:text-[#e85d26] uppercase tracking-widest transition-colors flex items-center gap-1.5"><i
-                        data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Dashboard</a>
                 <a href="{{ route('agent.signup') }}"
                     class="text-[10px] font-black text-gray-500 hover:text-[#e85d26] uppercase tracking-widest transition-colors flex items-center gap-1.5"><i
                         data-lucide="user-plus" class="w-3.5 h-3.5"></i> Sign Up</a>
@@ -61,10 +59,6 @@
                     class="text-[10px] font-black text-[#e85d26] uppercase tracking-widest transition-colors flex items-center gap-1.5"><i
                         data-lucide="log-in" class="w-3.5 h-3.5"></i> Sign In</a>
             </div>
-            <a href="{{ url('/contact') }}"
-                class="text-white text-[10px] font-bold uppercase tracking-widest px-6 py-2.5 rounded-full transition-colors"
-                style="background-color: #e85d26;" onmouseover="this.style.backgroundColor='#d44f1c'"
-                onmouseout="this.style.backgroundColor='#e85d26'">Contact Admin</a>
         </div>
     </div>
 
@@ -81,28 +75,7 @@
                         Enter your email and password to sign in!</p>
                 </div>
 
-                <!-- Google Sign In -->
-                <div x-show="!showForgotPassword">
-                    <button type="button"
-                        class="w-full bg-[#f4f7fe] hover:bg-[#ebf0fc] text-gray-700 rounded-2xl py-4 px-6 flex items-center justify-center gap-3 font-bold text-sm transition-colors shadow-sm">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24">
-                            <path fill="#4285F4"
-                                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-.1.85-.75 1.5l1.62 1.62c.95-.88 2.19-2.3 2.19-4.97z" />
-                            <path fill="#34A853"
-                                d="M12 24c3.24 0 5.97-1.08 7.96-2.91l-3.87-3c-1.08.72-2.47 1.16-4.09 1.16-3.15 0-5.81-2.13-6.76-5.01L1.3 15.14v3.13C3.28 22.22 7.37 24 12 24z" />
-                            <path fill="#FBBC05"
-                                d="M5.24 14.24a7.17 7.17 0 0 1 0-4.48v-3.13H1.3a12.01 12.01 0 0 0 0 10.74l3.94-3.13z" />
-                            <path fill="#EA4335"
-                                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.22 0 12 0 7.37 0 3.28 1.78 1.3 4.97l3.94 3.13c.95-2.88 3.61-5.01 6.76-5.01z" />
-                        </svg>
-                        <span>Sign in with Google</span>
-                    </button>
-                    <div class="flex items-center gap-4 py-4">
-                        <div class="flex-1 h-px bg-gray-100"></div>
-                        <span class="text-xs font-bold text-gray-300 uppercase tracking-widest">or</span>
-                        <div class="flex-1 h-px bg-gray-100"></div>
-                    </div>
-                </div>
+                <!-- Google Sign In Removed -->
 
                 <!-- Success Message for Reset Link -->
                 <div x-show="forgotEmailSent" x-transition
@@ -154,7 +127,7 @@
                         <label class="text-xs font-bold text-gray-700 pl-1">Email<span
                                 style="color: #e85d26;">*</span></label>
                         <input required type="email" name="email" value="{{ old('email', $defaultEmail) }}"
-                            placeholder="mail@youragency.com"
+                            placeholder="mail@youragency.com" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address"
                             class="w-full bg-white border border-gray-200 rounded-2xl py-4 px-6 outline-none focus:border-[#e85d26]/50 transition-all font-medium text-foreground placeholder:text-gray-400 text-sm shadow-sm" />
                     </div>
 
@@ -167,7 +140,8 @@
                                 class="w-full bg-white border border-gray-200 rounded-2xl py-4 px-6 pr-14 outline-none focus:border-[#e85d26]/50 transition-all font-medium text-foreground placeholder:text-gray-400 text-sm shadow-sm" />
                             <button @click="showPassword = !showPassword" type="button"
                                 class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center text-gray-400 hover:text-[#e85d26] transition-colors">
-                                <i :data-lucide="showPassword ? 'eye-off' : 'eye'" class="w-5 h-5"></i>
+                                <span x-show="!showPassword"><i data-lucide="eye" class="w-5 h-5"></i></span>
+                                <span x-show="showPassword" style="display:none;"><i data-lucide="eye-off" class="w-5 h-5"></i></span>
                             </button>
                         </div>
                     </div>

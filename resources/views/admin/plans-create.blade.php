@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Plans Create')
+
 @section('content')
 <div class="space-y-6 pb-12" x-data="{ 
     name: 'New Plan Tier', 

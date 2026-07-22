@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Packages')
+
 @section('content')
 @php
     $activeListings = DB::table('packages')->where('status', 'Active')->count();

@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Home Editor')
+
 @section('content')
 <div class='space-y-6'>
     <h2 class='font-black text-foreground'>HOME EDITOR</h2>

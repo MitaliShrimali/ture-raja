@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Hotels')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editHotel: { id: '', name: '', category: '', location: '', rating: '', status: '' } }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">

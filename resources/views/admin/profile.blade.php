@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Profile')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ activeTab: 'general' }">
     <div class="space-y-4">

@@ -1,6 +1,8 @@
 
 @extends('layouts.admin')
 
+@section('admin_title', 'Agent Profile')
+
 @section('content')
 <div class="space-y-10 pb-16 font-sans">
     

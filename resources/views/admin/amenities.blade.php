@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Amenities')
+
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ showAddModal: false, showEditModal: false, editItem: { id: '', name: '', icon: '', category: '', status: '' } }">
     <div class="flex items-center justify-between">

@@ -1,5 +1,7 @@
 @extends('layouts.admin')
 
+@section('admin_title', 'Packages Domestic')
+
 @section('content')
 <div class="space-y-8">
     <!-- Header -->
