@@ -32,6 +32,15 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
+                'name' => 'Main Super Admin',
+                'email' => 'superadmin@tourraja.com',
+                'password' => Hash::make('Password@123'),
+                'role' => 'SUPER ADMIN',
+                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=MainAdmin',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
                 'name' => 'Siti Wahyuni',
                 'email' => 'siti.w@tourraja.id',
                 'password' => Hash::make('password123'),

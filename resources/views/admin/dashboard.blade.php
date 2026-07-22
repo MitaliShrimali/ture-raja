@@ -18,7 +18,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
         @foreach([
             ['title' => 'Total Rev. / Profit', 'value' => $data['metrics']['totalRevenue'], 'growth' => 'Profit: ' . $data['metrics']['totalProfit'], 'icon' => 'bar-chart-3', 'color' => 'primary', 'link' => url('/admin/payments')],
-            ['title' => 'Verified Agents', 'value' => $data['metrics']['activeAgents'], 'growth' => $data['metrics']['agentGrowth'], 'icon' => 'users', 'color' => 'blue-500', 'link' => url('/admin/registered-agents')],
+            ['title' => 'Total Agents', 'value' => $data['metrics']['activeAgents'], 'growth' => $data['metrics']['agentGrowth'], 'icon' => 'users', 'color' => 'blue-500', 'link' => url('/admin/registered-agents')],
             ['title' => 'Total Subscribers', 'value' => $data['metrics']['totalSubscribers'], 'growth' => $data['metrics']['subscriberGrowth'], 'icon' => 'globe', 'color' => 'orange-500', 'link' => url('/admin/subscribers')],
             ['title' => 'Pending Packages', 'value' => $data['metrics']['pendingPackages'], 'growth' => 'Action Req.', 'icon' => 'clock', 'color' => 'orange-500', 'link' => url('/admin/packages/pending')],
             ['title' => 'Expired Packages', 'value' => $data['metrics']['expiredPackages'], 'growth' => 'Review', 'icon' => 'alert-circle', 'color' => 'red-500', 'link' => url('/admin/packages?status=expired')],

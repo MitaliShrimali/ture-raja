@@ -6,7 +6,7 @@
 <div class="space-y-10 pb-12" x-data="{ 
     showAddModal: false, 
     showEditModal: false, 
-    editTx: { id: '', user_name: '', email: '', plan_type: '', amount: '', payment_id: '', date: '', status: '', service_guaranteed: '', generate_bill: '' } 
+    editTx: { id: '', user_name: '', email: '', plan_type: '', amount: '', payment_id: '', date: '', status: '', service_guaranteed: '', generate_bill: '', gst_number: '' } 
 }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
@@ -46,7 +46,7 @@
 
     <!-- Financial Overview Metrics -->
     @php
-        $totalRevenue = \DB::table('payments')->where('status', 'Completed')->sum('amount');
+        $totalRevenue = \DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount');
         $pendingRevenue = \DB::table('payments')->where('status', 'Pending')->sum('amount');
         $availableBalance = $totalRevenue - \DB::table('payments')->where('status', 'Failed')->sum('amount');
     @endphp
@@ -65,7 +65,7 @@
                 <i data-lucide="arrow-down-left" size="32"></i>
             </div>
             <div>
-                <p class="text-[10px] font-black text-muted-text uppercase tracking-widest opacity-60">Pending Volume</p>
+                <p class="text-[10px] font-black text-muted-text uppercase tracking-widest opacity-60">Pending Payment</p>
                 <h4 class="text-3xl font-black text-foreground tracking-tight">₹{{ number_format($pendingRevenue, 2) }}</h4>
             </div>
         </div>
@@ -99,6 +99,8 @@
                         <option value="{{ $plan->name }}" {{ request('plan_type') == $plan->name ? 'selected' : '' }}>{{ strtoupper($plan->name) }}</option>
                     @endforeach
                 </select>
+                <input type="date" name="from_date" value="{{ request('from_date') }}" class="w-full md:w-32 bg-[#F5F5F5] border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20" title="From Date">
+                <input type="date" name="to_date" value="{{ request('to_date') }}" class="w-full md:w-32 bg-[#F5F5F5] border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20" title="To Date">
                 <select name="status" class="w-full md:w-32 bg-[#F5F5F5] border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20">
                     <option value="">All Status</option>
                     <option value="Completed" {{ request('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
@@ -202,7 +204,7 @@
                             <td class="py-6 px-8 text-right print:hidden">
                                 <div class="flex items-center justify-end gap-2">
                                     <button 
-                                        @click="showEditModal = true; editTx = { id: '{{ $tx->id }}', user_name: '{{ addslashes($tx->user_name) }}', email: '{{ addslashes($tx->email) }}', plan_type: '{{ $tx->plan_type }}', amount: '{{ $tx->amount }}', payment_id: '{{ $tx->payment_id }}', date: '{{ $tx->date }}', status: '{{ $tx->status }}', service_guaranteed: '{{ $tx->service_guaranteed }}', generate_bill: '{{ $tx->generate_bill ?? 0 }}' }"
+                                        @click="showEditModal = true; editTx = { id: '{{ $tx->id }}', user_name: '{{ addslashes($tx->user_name) }}', email: '{{ addslashes($tx->email) }}', plan_type: '{{ $tx->plan_type }}', amount: '{{ $tx->amount }}', payment_id: '{{ $tx->payment_id }}', date: '{{ $tx->date }}', status: '{{ $tx->status }}', service_guaranteed: '{{ $tx->service_guaranteed }}', generate_bill: '{{ $tx->generate_bill ?? 0 }}', gst_number: '{{ $tx->gst_number ?? '' }}' }"
                                         class="p-2 text-muted-text hover:text-primary transition-all"
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
@@ -316,6 +318,10 @@
                         <input required type="number" step="0.01" name="amount" placeholder="E.g. 99" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                     </div>
                 </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">GST No. (Optional)</label>
+                    <input type="text" name="gst_number" placeholder="E.g. 22AAAAA0000A1Z5" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Transaction ID</label>
@@ -407,6 +413,10 @@
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Amount Paid (INR)</label>
                         <input required type="number" step="0.01" name="amount" x-model="editTx.amount" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                     </div>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">GST No. (Optional)</label>
+                    <input type="text" name="gst_number" x-model="editTx.gst_number" placeholder="E.g. 22AAAAA0000A1Z5" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">

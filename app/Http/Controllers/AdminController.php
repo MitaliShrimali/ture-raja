@@ -250,6 +250,14 @@ class AdminController extends Controller
             });
         }
 
+        if ($request->filled('from_date')) {
+            $query->whereDate('created_at', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('created_at', '<=', $request->to_date);
+        }
+
         $packages = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
         return view('admin.packages', compact('packages', 'search'));
     }
@@ -1644,6 +1652,14 @@ class AdminController extends Controller
             $query->where('payments.status', $request->status);
         }
 
+        if ($request->filled('from_date')) {
+            $query->whereDate('payments.date', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('payments.date', '<=', $request->to_date);
+        }
+
         if ($request->filled('service_guaranteed')) {
             // Since we are using a subquery for service_guaranteed, filtering requires a whereExists or similar
             $query->whereExists(function ($q) use ($request) {
@@ -1852,6 +1868,7 @@ class AdminController extends Controller
             'date' => $request->date ?? now()->toDateString(),
             'status' => $request->status ?? 'Completed',
             'generate_bill' => $request->input('generate_bill', 1),
+            'gst_number' => $request->gst_number,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -1888,6 +1905,7 @@ class AdminController extends Controller
             'date' => $request->date,
             'status' => $request->status,
             'generate_bill' => $request->input('generate_bill', 0),
+            'gst_number' => $request->gst_number,
             'updated_at' => now(),
         ]);
 

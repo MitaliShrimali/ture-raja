@@ -359,7 +359,9 @@
                 this.show = true;
                 setTimeout(() => this.show = false, 5000);
             }
-        }" x-show="show" x-transition
+        }"
+        @notify.window="flash($event.detail.message, $event.detail.type)"
+        x-show="show" x-transition
         class="fixed bottom-6 right-6 z-[999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-premium border border-white/10 max-w-md"
         :class="type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'" style="display: none;">
         <template x-if="type === 'success'">

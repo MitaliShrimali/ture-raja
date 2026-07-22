@@ -77,6 +77,10 @@
                                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                                 </div>
                             </div>
+                            <button type="button" @click="showRoleModal = true" class="w-14 h-14 bg-[#b13c0b] hover:bg-[#8e3009] border-none rounded-2xl flex items-center justify-center transition-colors text-white shadow-sm cursor-pointer shrink-0">
+                                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Password -->
@@ -296,155 +300,6 @@
             </div>
         </div>
 
-        <!-- Permission Matrix Card -->
-        <div class="bg-white rounded-[40px] shadow-premium border border-border-soft p-10 space-y-10">
-            <div class="flex items-center gap-3 border-b border-border-soft pb-5">
-                <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
-                    <svg class="w-5 h-5" style="color: #b13c0b !important;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
-                </div>
-                <h3 class="text-lg font-black text-foreground">Permission Matrix</h3>
-            </div>
-
-            <!-- Matrix Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- GENERAL -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">General</h4>
-                    <div class="flex flex-col gap-3">
-                        @foreach(['Role List', 'Role Create', 'Role Edit', 'Role Delete'] as $item)
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="permissions[general][{{ Str::snake($item) }}]" value="1" class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- AGENTS & USERS -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">Agents & Users</h4>
-                    <div class="flex flex-col gap-3">
-                        @foreach(['Travel Agent List', 'Travel Agent Create', 'Travel Agent Edit', 'Travel Agent Leads', 'Userlist List'] as $item)
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="permissions[agents_users][{{ Str::snake($item) }}]" value="1" class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- PACKAGES -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">Packages</h4>
-                    <div class="flex flex-col gap-3">
-                        @foreach(['Package List', 'Plan List', 'Plan Create', 'Advertisement List', 'Banner List'] as $item)
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="permissions[packages][{{ Str::snake($item) }}]" value="1" class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- MANAGEMENT -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">Management</h4>
-                    <div class="flex flex-col gap-3">
-                        @foreach(['Contact Message', 'Lead Message', 'Mail Setup', 'Whatsapp Template', 'General Settings'] as $item)
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="permissions[management][{{ Str::snake($item) }}]" value="1" class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-
-            <!-- MASTERS & GEOGRAPHY -->
-            <div class="space-y-6 pt-6 border-t border-border-soft">
-                <h4 class="text-xs font-black uppercase tracking-widest" style="color: #b13c0b !important;">Masters & Geography</h4>
-                
-                <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px; width: 100%;">
-                    <!-- AMENITIES -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Amenities</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'Edit'] as $item)
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][amenities][{{ Str::lower($item) }}]" value="1" class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- HOLIDAY -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Holiday</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'Delete'] as $item)
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][holiday][{{ Str::lower($item) }}]" value="1" class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- ACTIVITY -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Activity</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Edit', 'Transit'] as $item)
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][activity][{{ Str::lower($item) }}]" value="1" class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- COUNTRY -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Country</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'State'] as $item)
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][country][{{ Str::lower($item) }}]" value="1" class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- CITY -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">City</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'Delete'] as $item)
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][city][{{ Str::lower($item) }}]" value="1" class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- THEME -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Theme</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'Duration'] as $item)
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][theme][{{ Str::lower($item) }}]" value="1" class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Sticky Footer bar -->
         <div class="p-6 bg-orange-50 rounded-[32px] border border-orange-100 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
@@ -482,9 +337,9 @@
                 <template x-for="r in roles" :key="r.id">
                     <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg">
                         <span class="text-sm font-semibold text-gray-700" x-text="r.name"></span>
-                        <button type="button" @click="deleteRole(r.id)" class="text-red-500 hover:text-red-700 cursor-pointer">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        </button>
+                        <div @click.stop.prevent="deleteRole(r.id)" class="text-red-500 hover:text-red-700 cursor-pointer p-1">
+                            <svg class="w-4 h-4 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </div>
                     </div>
                 </template>
             </div>
@@ -524,18 +379,31 @@ function adminData() {
             });
         },
         deleteRole(id) {
-            if(!confirm('Are you sure?')) return;
-            fetch('{{ url('/admin/roles') }}/' + id, {
-                method: 'DELETE',
+            const formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+
+            fetch('{{ url('/admin/roles/delete') }}/' + id, {
+                method: 'POST',
+                body: formData,
                 headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'Accept': 'application/json'
                 }
             })
-            .then(res => res.json())
+            .then(async res => {
+                if(!res.ok) throw new Error(await res.text());
+                return res.json();
+            })
             .then(data => {
                 if (data.success) {
-                    this.roles = this.roles.filter(r => r.id !== id);
+                    this.roles = this.roles.filter(r => r.id != id);
+                    window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Role successfully deleted!', type: 'success' } }));
+                } else {
+                    window.dispatchEvent(new CustomEvent('notify', { detail: { message: data.message || 'Error deleting role', type: 'error' } }));
                 }
+            })
+            .catch(err => {
+                console.error("Delete error:", err);
+                window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Failed to delete role.', type: 'error' } }));
             });
         },
         triggerFileInput() {

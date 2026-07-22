@@ -73,15 +73,24 @@
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
             <!-- Search Form -->
-            <form method="GET" action="{{ url('/admin/packages') }}" class="relative group w-full md:w-96">
-                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
-                <input 
-                    type="text" 
-                    name="search"
-                    value="{{ $search ?? '' }}"
-                    placeholder="Search packages by title or location..." 
-                    class="w-full bg-gray-50 border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
-                >
+            <form method="GET" action="{{ url('/admin/packages') }}" class="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                <div class="relative w-full md:w-64 group">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
+                    <input 
+                        type="text" 
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Search packages by title or location..." 
+                        class="w-full bg-gray-50 border-none rounded-xl py-2 pl-12 pr-4 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
+                    >
+                </div>
+                <input type="date" name="from_date" value="{{ request('from_date') }}" class="w-full md:w-32 bg-gray-50 border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10" title="From Date">
+                <input type="date" name="to_date" value="{{ request('to_date') }}" class="w-full md:w-32 bg-gray-50 border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10" title="To Date">
+                
+                <button type="submit" class="w-full md:w-auto bg-primary text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all">Filter</button>
+                @if(request()->hasAny(['search', 'from_date', 'to_date']))
+                    <a href="{{ url('/admin/packages') }}" class="w-full md:w-auto bg-gray-100 text-muted-text px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-200 transition-all text-center">Clear</a>
+                @endif
             </form>
         </div>
 

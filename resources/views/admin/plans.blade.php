@@ -22,7 +22,7 @@
     </div>
 
     <!-- Stats Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Spent Card -->
         <div class="bg-white p-6 rounded-[32px] border border-border-soft flex items-center gap-5 shadow-sm">
             <div class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-primary">
@@ -30,7 +30,7 @@
             </div>
             <div class="space-y-1">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Spent</p>
-                <h3 class="text-2xl font-black text-gray-800">$4,250.00</h3>
+                <h3 class="text-2xl font-black text-gray-800">₹4,250.00</h3>
             </div>
         </div>
 
@@ -42,6 +42,12 @@
             <div class="space-y-1">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Current Plan</p>
                 <h3 class="text-2xl font-black text-gray-800">Welcome Offer 1</h3>
+                @php
+                    $welcomePlanAgents = DB::table('agents')->whereIn('plan_id', function($query) {
+                        $query->select('id')->from('plans')->where('name', 'like', '%Welcome Offer%');
+                    })->count();
+                @endphp
+                <p class="text-xs font-semibold text-primary mt-1">{{ $welcomePlanAgents }} Agents Subscribed</p>
             </div>
         </div>
 
@@ -53,17 +59,10 @@
             <div class="space-y-1">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Next Renewal</p>
                 <h3 class="text-2xl font-black text-gray-800">Oct 24, 2024</h3>
-            </div>
-        </div>
-
-        <!-- Remaining Credits Card -->
-        <div class="bg-white p-6 rounded-[32px] border border-border-soft flex items-center gap-5 shadow-sm">
-            <div class="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500">
-                <i data-lucide="history" size="24"></i>
-            </div>
-            <div class="space-y-1">
-                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Remaining Credits</p>
-                <h3 class="text-2xl font-black text-gray-800">12 Listings</h3>
+                @php
+                    $renewingAgents = DB::table('agents')->whereNotNull('plan_expires_at')->where('plan_expires_at', '<', now()->addDays(30))->count();
+                @endphp
+                <p class="text-xs font-semibold text-gray-500 mt-1">{{ $renewingAgents }} Agents need renewal</p>
             </div>
         </div>
     </div>
@@ -117,6 +116,7 @@
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">Start Date</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest">End Date</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">No. of Package Listing</th>
+                        <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">Total Agents</th>
                         <th class="py-6 px-8 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">Action</th>
                     </tr>
                 </thead>
@@ -178,6 +178,19 @@
                             <td class="py-6 px-8 text-center">
                                 <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">
                                     {{ $plan->package_limit ?? 15 }}
+                                </span>
+                            </td>
+
+                            <!-- Total Agents -->
+                            <td class="py-6 px-8 text-center">
+                                @php
+                                    $agentCount = DB::table('agents')
+                                        ->where('plan_id', $plan->id)
+                                        ->orWhere('tier', $plan->name)
+                                        ->count();
+                                @endphp
+                                <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold">
+                                    {{ $agentCount }} Agents
                                 </span>
                             </td>
                             
