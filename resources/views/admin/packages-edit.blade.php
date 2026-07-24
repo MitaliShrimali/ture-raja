@@ -30,7 +30,7 @@
 <!-- Load Lucide for this view -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
-<div class="space-y-8 pb-12" x-data="{ 
+<div class="space-y-8 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
     step: 1,
       category: {{ json_encode($pkg->category ?? 'domestic') }},
     title: {{ json_encode($pkg->title) }},
@@ -77,10 +77,13 @@
         ];
     }, $galleryUrls))) }},
     brochureName: {{ json_encode($pkg->brochure ? basename($pkg->brochure) : '') }},
+    itineraryContent: {{ json_encode(strip_tags($pkg->editorial_itinerary ?? '') ? trim(strip_tags($pkg->editorial_itinerary)) : '') }},
     inclusions: {{ json_encode($included) }},
     exclusions: {{ json_encode($excluded) }},
     newInclusion: '',
     newExclusion: '',
+    editingInclusionIndex: null,
+    editingExclusionIndex: null,
     cities: {{ json_encode(array_values(array_filter(array_map('trim', explode(',', $pkg->location ?? ''))))) }},
     newCity: '',
     keywords: {{ json_encode($keywords) }},
@@ -120,6 +123,21 @@
     newHotelName: '',
     newHotelRoom: '',
     newHotelImage: '',
+    editingHotelIndex: null,
+    brochureUrl: {{ json_encode($pkg->brochure ? asset($pkg->brochure) : '') }},
+    previewPdf() {
+        if (this.$refs.brochureInput && this.$refs.brochureInput.files && this.$refs.brochureInput.files[0]) {
+            window.open(URL.createObjectURL(this.$refs.brochureInput.files[0]), '_blank');
+        } else if (this.brochureUrl) {
+            window.open(this.brochureUrl, '_blank');
+        }
+    },
+    clearPdf() {
+        this.brochureName = '';
+        if (this.$refs.brochureInput) this.$refs.brochureInput.value = '';
+        let existingInput = document.getElementById('existing-brochure-input');
+        if (existingInput) existingInput.value = '';
+    },
     validity_from: '',
     validity_to: '',
     toPicker: null,
@@ -140,6 +158,7 @@
         flatpickr(this.$refs.validityPicker, {
             dateFormat: 'd M Y',
             defaultDate: this.validity,
+            minDate: 'today',
             onChange: (selectedDates, dateStr) => {
                 this.validity = dateStr;
             }
@@ -441,38 +460,41 @@
                     <!-- Transit Type (group_size) -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Transit Type</label>
+                        @php
+                            $dbTransits = DB::table('transits')->where('status', 'Active')->get();
+                        @endphp
                         <select name="group_size" x-model="group_size" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                            <option value="Direct Flight">Direct Flight</option>
-                            <option value="Connecting Flight">Connecting Flight</option>
-                            <option value="Cruise Liner">Cruise Liner</option>
-                            <option value="Luxury Bus">Luxury Bus</option>
+                            @foreach($dbTransits as $t)
+                                <option value="{{ $t->name }}">{{ $t->name }}</option>
+                            @endforeach
+                            @if($dbTransits->isEmpty())
+                                <option value="Direct Flight">Direct Flight</option>
+                                <option value="Connecting Flight">Connecting Flight</option>
+                                <option value="Cruise Liner">Cruise Liner</option>
+                                <option value="Luxury Bus">Luxury Bus</option>
+                            @endif
                         </select>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Departure City -->
-                    <div class="space-y-2">
+                    <div class="space-y-2 relative">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure City</label>
-                        <input type="text" name="departure_city" value="{{ $pkg->departure_city ?? '' }}" placeholder="New Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                        <input type="text" name="departure_city" id="departureCity" value="{{ $pkg->departure_city ?? '' }}" placeholder="New Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" autocomplete="off" />
+                        <div id="departureCitySuggestions" class="absolute z-50 left-0 right-0 mt-1 bg-white border border-gray-100 rounded-2xl shadow-xl max-h-60 overflow-y-auto hidden"></div>
                     </div>
-
-
 
                     <!-- Departure State -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure State</label>
-                        <input type="text" name="departure_state" value="{{ $pkg->departure_state ?? '' }}" placeholder="Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
+                        <input type="text" name="departure_state" id="departureState" value="{{ $pkg->departure_state ?? '' }}" placeholder="Delhi" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
 
                     <!-- Departure Country -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure Country</label>
-                        <select name="departure_country" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                            <option value="India" {{ ($pkg->departure_country ?? '') === 'India' ? 'selected' : '' }}>India</option>
-                            <option value="Singapore" {{ ($pkg->departure_country ?? '') === 'Singapore' ? 'selected' : '' }}>Singapore</option>
-                            <option value="Thailand" {{ ($pkg->departure_country ?? '') === 'Thailand' ? 'selected' : '' }}>Thailand</option>
-                        </select>
+                        <input type="text" name="departure_country" id="departureCountry" value="{{ $pkg->departure_country ?? '' }}" placeholder="India" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm" />
                     </div>
                 </div>
             </div>
@@ -494,11 +516,11 @@
                         <div class="relative">
                             <i data-lucide="coins" size="16" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             <select name="currency" x-model="currency" @change="updatePrice(false)" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm appearance-none">
-                                <option value="₹">INR (₹)</option>
-                                <option value="$">USD ($)</option>
-                                <option value="€">EUR (€)</option>
-                                <option value="£">GBP (£)</option>
-                                <option value="AED">AED</option>
+                                <option value="₹" {{ ($pkg->currency ?? '') === '₹' ? 'selected' : '' }}>INR (₹)</option>
+                                <option value="$" {{ ($pkg->currency ?? '') === '$' ? 'selected' : '' }}>USD ($)</option>
+                                <option value="AED" {{ ($pkg->currency ?? '') === 'AED' ? 'selected' : '' }}>AED</option>
+                                <option value="€" {{ ($pkg->currency ?? '') === '€' ? 'selected' : '' }}>EUR (€)</option>
+                                <option value="£" {{ ($pkg->currency ?? '') === '£' ? 'selected' : '' }}>GBP (£)</option>
                             </select>
                             <i data-lucide="chevron-down" size="16" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                         </div>
@@ -539,17 +561,8 @@
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Theme Selection</label>
                             <select name="theme" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
                                 <option value="" disabled>Select Theme</option>
-                                @php
-                                    $themes = [
-                                        'Spring', 'Summer', 'Autumn', 'Winter', 'Monsoon',
-                                        'Honeymoon Special', 'Family Friendly', 'Solo Travelers',
-                                        'Group Tour', 'Adventure', 'Wildlife', 'Pilgrimage',
-                                        'Heritage', 'Luxury', 'Budget', 'Weekend Getaway',
-                                        'Eco Tourism', 'Cultural', 'Backpacking', 'Festival'
-                                    ];
-                                @endphp
                                 @foreach($themes as $theme)
-                                    <option value="{{ $theme }}" {{ (isset($pkg->theme) && $pkg->theme == $theme) ? 'selected' : '' }}>{{ $theme }}</option>
+                                    <option value="{{ $theme->name }}" {{ (isset($pkg->theme) && $pkg->theme == $theme->name) ? 'selected' : '' }}>{{ $theme->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -557,16 +570,8 @@
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Holiday Type</label>
                             <select name="holiday_type" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
                                 <option value="" disabled>Select Holiday Type</option>
-                                @php
-                                    $holidayTypes = [
-                                        'Multi City', 'Beach Resort', 'Hill Station', 'Desert Safari',
-                                        'Island Tour', 'Cruise', 'Trekking', 'Skiing',
-                                        'City Break', 'Road Trip', 'Train Journey', 'Camping',
-                                        'Farm Stay', 'Yoga & Wellness', 'Culinary Tour', 'Photography Tour'
-                                    ];
-                                @endphp
                                 @foreach($holidayTypes as $type)
-                                    <option value="{{ $type }}" {{ (isset($pkg->holiday_type) && $pkg->holiday_type == $type) ? 'selected' : '' }}>{{ $type }}</option>
+                                    <option value="{{ $type->name }}" {{ (isset($pkg->holiday_type) && $pkg->holiday_type == $type->name) ? 'selected' : '' }}>{{ $type->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -615,27 +620,53 @@
             <div class="flex flex-col md:flex-row gap-4 items-stretch">
 
                 <!-- Brochure card  ~40% -->
-                <div class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col">
+                <div x-show="!itineraryContent" class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col">
                     <div class="flex items-center gap-2">
                         <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
                             <i data-lucide="file-text" size="16" class="text-[#e85d26]"></i>
                         </div>
                         <h4 class="text-sm font-bold text-gray-800">Upload Brochure</h4>
                     </div>
-                    <div class="flex-1 w-full rounded-2xl p-5 border-2 border-dashed border-red-200 text-center cursor-pointer hover:bg-orange-50/30 transition-all flex flex-col items-center justify-center min-h-[200px]" @click="$refs.brochureInput.click()">
-                        <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mb-3">
-                            <i data-lucide="upload-cloud" class="text-[#e85d26]" size="22"></i>
-                        </div>
-                        <span class="text-sm font-bold text-gray-800" x-text="brochureName ? brochureName : 'Drop your brochure here'"></span>
-                        <span class="text-xs text-gray-400 font-medium mt-1">Or click to browse from your computer</span>
-                        <button type="button" class="mt-3 px-5 py-2 border border-gray-200 bg-white rounded-full text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all" @click.stop="$refs.brochureInput.click()">Choose File</button>
-                        <span class="text-[10px] text-gray-400 font-medium mt-2 uppercase tracking-wide">PDF FORMAT ONLY &bull; MAX 5MB</span>
+                    <div class="flex-1 w-full rounded-2xl p-5 border-2 border-dashed border-red-200 text-center cursor-pointer hover:bg-orange-50/30 transition-all flex flex-col items-center justify-center min-h-[200px]" @click="if(!brochureName) $refs.brochureInput.click()">
+                        <template x-if="!brochureName">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mb-3">
+                                    <i data-lucide="upload-cloud" class="text-primary" size="22"></i>
+                                </div>
+                                <span class="text-sm font-bold text-gray-800">Drop your brochure here</span>
+                                <span class="text-xs text-gray-400 font-medium mt-1">Or click to browse from your computer</span>
+                                <button type="button" class="mt-3 px-5 py-2 border border-gray-200 bg-white rounded-full text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all">Choose File</button>
+                                <span class="text-[10px] text-gray-400 font-medium mt-2 uppercase tracking-wide">PDF FORMAT ONLY &bull; MAX 5MB</span>
+                            </div>
+                        </template>
+                        <template x-if="brochureName">
+                            <div class="flex flex-col items-center justify-center w-full space-y-4">
+                                <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                </div>
+                                <div class="text-center px-4 w-full">
+                                    <p class="text-sm font-black text-gray-800 truncate max-w-[220px] mx-auto" x-text="brochureName"></p>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Brochure Selected</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" @click.stop="previewPdf()" class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm" title="Preview PDF">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </button>
+                                    <button type="button" @click.stop="clearPdf()" class="w-10 h-10 bg-red-50 text-red-600 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors shadow-sm" title="Delete PDF">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
                         <input type="file" name="brochure_file" x-ref="brochureInput" accept=".pdf" class="hidden" @change="brochureName = $event.target.files[0] ? $event.target.files[0].name : ''" />
+                        @if($pkg->brochure)
+                            <input type="hidden" name="existing_brochure" id="existing-brochure-input" value="{{ $pkg->brochure }}" />
+                        @endif
                     </div>
                 </div>
 
                 <!-- OR divider -->
-                <div class="flex items-center justify-center shrink-0 px-2">
+                <div x-show="!brochureName && !itineraryContent" class="flex items-center justify-center shrink-0 px-2">
                     <span class="text-xs font-black text-gray-400 uppercase tracking-widest">OR</span>
                 </div>
 
@@ -643,11 +674,17 @@
                 <div x-show="!brochureName" class="flex-1 bg-white rounded-[28px] border border-gray-100 p-6 space-y-3 shadow-sm flex flex-col">
                     <div class="flex items-center gap-2">
                         <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                            <i data-lucide="pencil" size="16" class="text-[#e85d26]"></i>
+                            <i data-lucide="pencil" size="16" class="text-primary"></i>
                         </div>
                         <h4 class="text-sm font-bold text-gray-800">Itinerary (Day-by-Day Plan)</h4>
                     </div>
-                        <textarea id="itinerary-textarea" name="editorial_itinerary" rows="9" placeholder="Explain why this tour is unique..." class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none">{{ old('editorial_itinerary', $pkg->editorial_itinerary ?? '') }}</textarea>
+                    <textarea id="itinerary-textarea" name="editorial_itinerary" rows="9" placeholder="Explain why this tour is unique..." class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none">{{ old('editorial_itinerary', $pkg->editorial_itinerary ?? '') }}</textarea>
+                    <div class="flex justify-end items-center pt-2 border-t border-gray-50">
+                        <button type="button" @click="if(tinymce.get('itinerary-textarea')) { tinymce.get('itinerary-textarea').setContent(''); window.dispatchEvent(new CustomEvent('itinerary-updated', { detail: '' })); }" class="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1.5 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            Clear All Written
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -658,7 +695,7 @@
                 <div class="lg:col-span-2 space-y-8">
 
                     <!-- Editorial Details Card -->
-                    <div class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-6 shadow-sm">
+                    <div x-show="!brochureName" class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-6 shadow-sm">
                         <h3 class="text-lg font-bold text-gray-900">Editorial Details</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -676,14 +713,31 @@
                                     <template x-for="(ht, idx) in hotels" :key="idx">
                                         <div class="bg-white rounded-xl p-3 flex items-center justify-between shadow-sm">
                                             <input type="hidden" name="hotels[]" :value="JSON.stringify(ht)">
-                                            <div class="flex items-center gap-3">
+                                            <div class="flex items-center gap-3 flex-1">
                                                 <img :src="ht.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'" class="w-11 h-11 rounded-xl object-cover" />
-                                                <div>
-                                                    <p class="text-xs font-bold text-gray-800" x-text="ht.name"></p>
-                                                    <p class="text-[10px] text-gray-400 font-medium" x-html="ht.room || 'Standard Room'"></p>
+                                                <div class="flex-1">
+                                                    <template x-if="editingHotelIndex !== idx">
+                                                        <div>
+                                                            <p class="text-xs font-bold text-gray-800 cursor-pointer hover:underline" @click="editingHotelIndex = idx" x-text="ht.name"></p>
+                                                            <p class="text-[10px] text-gray-400 font-medium cursor-pointer hover:underline" @click="editingHotelIndex = idx" x-html="ht.room || 'Standard Room'"></p>
+                                                        </div>
+                                                    </template>
+                                                    <template x-if="editingHotelIndex === idx">
+                                                        <div class="space-y-1 pr-4">
+                                                            <input type="text" x-model="ht.name" class="w-full bg-gray-50 border border-gray-100 rounded-lg py-1 px-2 text-xs outline-none focus:ring-1 focus:ring-primary/20" @keydown.enter.prevent="editingHotelIndex = null" />
+                                                            <input type="text" x-model="ht.room" class="w-full bg-gray-50 border border-gray-100 rounded-lg py-1 px-2 text-[10px] outline-none focus:ring-1 focus:ring-primary/20" @keydown.enter.prevent="editingHotelIndex = null" />
+                                                        </div>
+                                                    </template>
                                                 </div>
                                             </div>
-                                            <button type="button" @click="hotels.splice(idx, 1)" class="text-gray-300 hover:text-red-500 ml-2 text-lg leading-none">&times;</button>
+                                            <div class="flex items-center gap-1.5 shrink-0 ml-2">
+                                                <button type="button" @click="editingHotelIndex = (editingHotelIndex === idx ? null : idx)" class="text-gray-400 hover:text-blue-500 transition-colors" title="Edit">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                                </button>
+                                                <button type="button" @click="hotels.splice(idx, 1)" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </button>
+                                            </div>
                                         </div>
                                     </template>
                                     <template x-if="hotels.length === 0">
@@ -725,7 +779,6 @@
                                     <tr class="border-b border-gray-100">
                                         <th class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Location</th>
                                         <th class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Activity</th>
-                                        <th class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">Duration</th>
                                         <th class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Actions</th>
                                     </tr>
                                 </thead>
@@ -737,13 +790,11 @@
                                             </td>
                                             <td class="py-4 px-6">
                                                 <input :required="!brochureName" type="text" name="itinerary_descriptions[]" x-model="day.desc" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. Historical Guided Tour" />
-                                            </td>
-                                            <td class="py-4 px-6">
-                                                <input type="text" name="itinerary_durations[]" x-model="day.duration" class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm" placeholder="e.g. 3 Hours" />
+                                                <input type="hidden" name="itinerary_durations[]" x-model="day.duration" />
                                             </td>
                                             <td class="py-4 px-6 text-right">
-                                                <button type="button" @click="removeDay(index)" class="p-1.5 text-gray-300 hover:text-red-400 transition-all" x-show="days.length > 1" title="Remove">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+                                                <button type="button" @click="removeDay(index)" class="p-1.5 text-gray-400 hover:text-red-500 transition-all" title="Remove">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline-block"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                                 </button>
                                             </td>
                                         </tr>
@@ -765,11 +816,25 @@
                             </div>
                             <ul class="space-y-2">
                                 <template x-for="(item, i) in inclusions" :key="i">
-                                    <li class="flex items-center gap-2 text-xs font-medium text-gray-700">
+                                    <li class="flex items-center gap-2 text-xs font-medium text-gray-700 bg-white/60 p-2.5 rounded-xl border border-gray-100/50 shadow-sm w-full">
                                         <span class="w-1.5 h-1.5 rounded-full bg-[#2f9e44] shrink-0" style="background-color: #2f9e44 !important;"></span>
-                                        <span x-text="item" class="flex-1"></span>
+                                        <div class="flex-1">
+                                            <template x-if="editingInclusionIndex !== i">
+                                                <span x-text="item" class="cursor-pointer hover:underline" @click="editingInclusionIndex = i"></span>
+                                            </template>
+                                            <template x-if="editingInclusionIndex === i">
+                                                <input type="text" x-model="inclusions[i]" @keydown.enter.prevent="editingInclusionIndex = null" @blur="editingInclusionIndex = null" class="w-full bg-[#F5F5F5] border-none rounded-lg py-1 px-2 text-xs outline-none focus:ring-1 focus:ring-primary/20" x-init="$nextTick(() => $el.focus())" />
+                                            </template>
+                                        </div>
                                         <input type="hidden" name="included[]" :value="item">
-                                        <button type="button" @click="removeInclusion(i)" class="text-gray-300 hover:text-red-400 transition-all text-xs">×</button>
+                                        <div class="flex items-center gap-1.5 shrink-0 ml-2">
+                                            <button type="button" @click="editingInclusionIndex = (editingInclusionIndex === i ? null : i)" class="text-gray-400 hover:text-blue-500 transition-colors" title="Edit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                            </button>
+                                            <button type="button" @click="removeInclusion(i)" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                            </button>
+                                        </div>
                                     </li>
                                 </template>
                             </ul>
@@ -789,11 +854,25 @@
                             </div>
                             <ul class="space-y-2">
                                 <template x-for="(item, i) in exclusions" :key="i">
-                                    <li class="flex items-center gap-2 text-xs font-medium text-gray-700">
+                                    <li class="flex items-center gap-2 text-xs font-medium text-gray-700 bg-white/60 p-2.5 rounded-xl border border-gray-100/50 shadow-sm w-full">
                                         <span class="w-1.5 h-1.5 rounded-full bg-[#e03131] shrink-0" style="background-color: #e03131 !important;"></span>
-                                        <span x-text="item" class="flex-1"></span>
+                                        <div class="flex-1">
+                                            <template x-if="editingExclusionIndex !== i">
+                                                <span x-text="item" class="cursor-pointer hover:underline" @click="editingExclusionIndex = i"></span>
+                                            </template>
+                                            <template x-if="editingExclusionIndex === i">
+                                                <input type="text" x-model="exclusions[i]" @keydown.enter.prevent="editingExclusionIndex = null" @blur="editingExclusionIndex = null" class="w-full bg-[#F5F5F5] border-none rounded-lg py-1 px-2 text-xs outline-none focus:ring-1 focus:ring-primary/20" x-init="$nextTick(() => $el.focus())" />
+                                            </template>
+                                        </div>
                                         <input type="hidden" name="excluded[]" :value="item">
-                                        <button type="button" @click="removeExclusion(i)" class="text-gray-300 hover:text-red-400 transition-all text-xs">×</button>
+                                        <div class="flex items-center gap-1.5 shrink-0 ml-2">
+                                            <button type="button" @click="editingExclusionIndex = (editingExclusionIndex === i ? null : i)" class="text-gray-400 hover:text-blue-500 transition-colors" title="Edit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                            </button>
+                                            <button type="button" @click="removeExclusion(i)" class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                            </button>
+                                        </div>
                                     </li>
                                 </template>
                             </ul>
@@ -936,8 +1015,94 @@
             'removeformat | help',
             menubar: false,
             promotion: false,
-            height: 400
+            height: 400,
+            setup: function (editor) {
+                editor.on('init change keyup setcontent input', function () {
+                    window.dispatchEvent(new CustomEvent('itinerary-updated', { detail: editor.getContent({ format: 'text' }).trim() }));
+                });
+            }
         });
+
+        // Autocomplete for Departure City
+        const input = document.getElementById('departureCity');
+        const suggestionsDiv = document.getElementById('departureCitySuggestions');
+        if (input && suggestionsDiv) {
+            let debounceTimer;
+            input.addEventListener('input', () => {
+                const query = input.value.trim();
+
+                clearTimeout(debounceTimer);
+                if (!query || query.length < 3) {
+                    suggestionsDiv.innerHTML = '';
+                    suggestionsDiv.classList.add('hidden');
+                    return;
+                }
+
+                // Show loading indicator
+                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching cities...</div>';
+                suggestionsDiv.classList.remove('hidden');
+
+                debounceTimer = setTimeout(() => {
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&accept-language=en&q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        suggestionsDiv.innerHTML = '';
+                        if (data && data.length > 0) {
+                            const seen = new Set();
+                            data.forEach(item => {
+                                const address = item.address || {};
+                                
+                                // Determine city name
+                                let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
+                                
+                                if (!city && item.display_name) {
+                                    city = item.display_name.split(',')[0].trim();
+                                }
+                                
+                                const state = address.state || address.region || '';
+                                const country = address.country || '';
+
+                                if (city && country) {
+                                    const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
+                                    if (seen.has(key)) return;
+                                    seen.add(key);
+
+                                    const row = document.createElement('div');
+                                    row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
+                                    row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
+                                    row.onclick = () => {
+                                        input.value = city;
+                                        document.getElementById('departureState').value = state;
+                                        document.getElementById('departureCountry').value = country;
+                                        suggestionsDiv.classList.add('hidden');
+                                    };
+                                    suggestionsDiv.appendChild(row);
+                                }
+                            });
+
+                            if (suggestionsDiv.children.length > 0) {
+                                suggestionsDiv.classList.remove('hidden');
+                            } else {
+                                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
+                            }
+                        } else {
+                            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error fetching cities:', err);
+                        suggestionsDiv.classList.add('hidden');
+                    });
+                }, 400);
+            });
+
+            // Close suggestions dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+        }
     });
 </script>
 @endsection

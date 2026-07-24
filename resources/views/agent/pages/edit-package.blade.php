@@ -30,7 +30,7 @@
     }
 @endphp
 
-<div class="space-y-8 pb-12" x-data="{ 
+<div class="space-y-8 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
     step: 1,
       category: {{ json_encode($pkg->category ?? 'domestic') }},
     title: {{ json_encode($pkg->title) }},
@@ -77,6 +77,7 @@
         ];
     }, $galleryUrls))) }},
     brochureName: {{ json_encode($pkg->brochure ? basename($pkg->brochure) : '') }},
+    itineraryContent: {{ json_encode(strip_tags($pkg->editorial_itinerary ?? '') ? trim(strip_tags($pkg->editorial_itinerary)) : '') }},
     inclusions: {{ json_encode($included) }},
     exclusions: {{ json_encode($excluded) }},
     newInclusion: '',
@@ -634,27 +635,53 @@
             <div class="flex flex-col md:flex-row gap-4 items-stretch">
 
                 <!-- Brochure card  ~33% -->
-                <div class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col">
+                <div x-show="!itineraryContent" class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col">
                     <div class="flex items-center gap-2">
                         <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
                             <i data-lucide="file-text" size="16" class="text-primary"></i>
                         </div>
                         <h4 class="text-sm font-bold text-gray-800">Upload Brochure</h4>
                     </div>
-                    <div class="flex-1 w-full rounded-2xl p-5 border-2 border-dashed border-red-200 text-center cursor-pointer hover:bg-orange-50/30 transition-all flex flex-col items-center justify-center min-h-[200px]" @click="$refs.brochureInput.click()">
-                        <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mb-3">
-                            <i data-lucide="upload-cloud" class="text-primary" size="22"></i>
-                        </div>
-                        <span class="text-sm font-bold text-gray-800" x-text="brochureName ? brochureName : 'Drop your brochure here'"></span>
-                        <span class="text-xs text-gray-400 font-medium mt-1">Or click to browse from your computer</span>
-                        <button type="button" class="mt-3 px-5 py-2 border border-gray-200 bg-white rounded-full text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all" @click.stop="$refs.brochureInput.click()">Choose File</button>
-                        <span class="text-[10px] text-gray-400 font-medium mt-2 uppercase tracking-wide">PDF FORMAT ONLY &bull; MAX 5MB</span>
+                    <div class="flex-1 w-full rounded-2xl p-5 border-2 border-dashed border-red-200 text-center cursor-pointer hover:bg-orange-50/30 transition-all flex flex-col items-center justify-center min-h-[200px]" @click="if(!brochureName) $refs.brochureInput.click()">
+                        <template x-if="!brochureName">
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mb-3">
+                                    <i data-lucide="upload-cloud" class="text-primary" size="22"></i>
+                                </div>
+                                <span class="text-sm font-bold text-gray-800">Drop your brochure here</span>
+                                <span class="text-xs text-gray-400 font-medium mt-1">Or click to browse from your computer</span>
+                                <button type="button" class="mt-3 px-5 py-2 border border-gray-200 bg-white rounded-full text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all">Choose File</button>
+                                <span class="text-[10px] text-gray-400 font-medium mt-2 uppercase tracking-wide">PDF FORMAT ONLY &bull; MAX 5MB</span>
+                            </div>
+                        </template>
+                        <template x-if="brochureName">
+                            <div class="flex flex-col items-center justify-center w-full space-y-4">
+                                <div class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                </div>
+                                <div class="text-center px-4 w-full">
+                                    <p class="text-sm font-black text-gray-800 truncate max-w-[220px] mx-auto" x-text="brochureName"></p>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Brochure Selected</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button type="button" @click.stop="previewPdf()" class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm" title="Preview PDF">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </button>
+                                    <button type="button" @click.stop="clearPdf()" class="w-10 h-10 bg-red-50 text-red-600 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors shadow-sm" title="Delete PDF">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
                         <input type="file" name="brochure_file" x-ref="brochureInput" accept=".pdf" class="hidden" @change="brochureName = $event.target.files[0] ? $event.target.files[0].name : ''" />
+                        @if($pkg->brochure)
+                            <input type="hidden" name="existing_brochure" id="existing-brochure-input" value="{{ $pkg->brochure }}" />
+                        @endif
                     </div>
                 </div>
 
                 <!-- OR divider -->
-                <div class="flex items-center justify-center shrink-0 px-2">
+                <div x-show="!brochureName && !itineraryContent" class="flex items-center justify-center shrink-0 px-2">
                     <span class="text-xs font-black text-gray-400 uppercase tracking-widest">OR</span>
                 </div>
 
@@ -662,11 +689,17 @@
                 <div x-show="!brochureName" class="flex-1 bg-white rounded-[28px] border border-gray-100 p-6 space-y-3 shadow-sm flex flex-col">
                     <div class="flex items-center gap-2">
                         <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                            <i data-lucide="pencil" size="16" class="text-[#e85d26]"></i>
+                            <i data-lucide="pencil" size="16" class="text-primary"></i>
                         </div>
                         <h4 class="text-sm font-bold text-gray-800">Itinerary (Day-by-Day Plan)</h4>
                     </div>
-                        <textarea id="itinerary-textarea" name="editorial_itinerary" rows="9" placeholder="Explain why this tour is unique..." class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none">{{ $pkg->editorial_itinerary ?? '' }}</textarea>
+                    <textarea id="itinerary-textarea" name="editorial_itinerary" rows="9" placeholder="Explain why this tour is unique..." class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none">{{ $pkg->editorial_itinerary ?? '' }}</textarea>
+                    <div class="flex justify-end items-center pt-2 border-t border-gray-50">
+                        <button type="button" @click="if(tinymce.get('itinerary-textarea')) { tinymce.get('itinerary-textarea').setContent(''); window.dispatchEvent(new CustomEvent('itinerary-updated', { detail: '' })); }" class="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1.5 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            Clear All Written
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -677,7 +710,7 @@
                 <div class="lg:col-span-2 space-y-8">
 
                     <!-- Editorial Details Card -->
-                    <div class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-6 shadow-sm">
+                    <div x-show="!brochureName" class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-6 shadow-sm">
                         <h3 class="text-lg font-bold text-gray-900">Editorial Details</h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1058,7 +1091,12 @@
             'removeformat | help',
             menubar: false,
             promotion: false,
-            height: 400
+            height: 400,
+            setup: function (editor) {
+                editor.on('init change keyup setcontent input', function () {
+                    window.dispatchEvent(new CustomEvent('itinerary-updated', { detail: editor.getContent({ format: 'text' }).trim() }));
+                });
+            }
         });
     });
 

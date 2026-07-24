@@ -49,6 +49,15 @@
         </button>
     </div>
 
+    @if(count($selectedServices) < 3)
+        <div id="min-services-warning" class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <div class="text-xs font-bold" id="min-services-text">
+                Please select at least 3 services. You currently have only {{ count($selectedServices) }} selected.
+            </div>
+        </div>
+    @endif
+
     <!-- Services Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         @foreach($allServices as $s)
@@ -145,12 +154,51 @@
             });
         });
 
+        function updateWarningBanner() {
+            const count = document.querySelectorAll('.service-checkbox:checked').length;
+            const banner = document.getElementById('min-services-warning');
+            if (count < 3) {
+                if (!banner) {
+                    const header = document.querySelector('.max-w-6xl');
+                    const newBanner = document.createElement('div');
+                    newBanner.id = 'min-services-warning';
+                    newBanner.className = 'bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl flex items-center gap-3';
+                    newBanner.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <div class="text-xs font-bold" id="min-services-text">Please select at least 3 services. You currently have only ${count} selected.</div>
+                    `;
+                    if (header && header.children.length > 1) {
+                        header.insertBefore(newBanner, header.children[1]);
+                    }
+                } else {
+                    const textEl = document.getElementById('min-services-text');
+                    if (textEl) {
+                        textEl.textContent = `Please select at least 3 services. You currently have only ${count} selected.`;
+                    }
+                    banner.classList.remove('hidden');
+                }
+            } else {
+                if (banner) {
+                    banner.classList.add('hidden');
+                }
+            }
+        }
+
         // Handle checkbox toggles via AJAX
         document.querySelectorAll('.service-checkbox').forEach(chk => {
-            chk.addEventListener('change', () => {
+            chk.addEventListener('change', (e) => {
                 const name = chk.getAttribute('data-name');
                 const icon = chk.getAttribute('data-icon');
                 const checked = chk.checked;
+
+                // Validate minimum 3 checked
+                const checkedCount = document.querySelectorAll('.service-checkbox:checked').length;
+                if (!checked && checkedCount < 3) {
+                    chk.checked = true;
+                    showToast('You must select at least 3 services.', 'error');
+                    e.preventDefault();
+                    return;
+                }
 
                 fetch("{{ route('agent.services.toggle') }}", {
                     method: 'POST',
@@ -167,20 +215,47 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        // Flash message or subtle toast
+                        updateWarningBanner();
                     } else {
                         chk.checked = !checked;
-                        alert('Failed to update service status');
+                        updateWarningBanner();
+                        showToast('Failed to update service status', 'error');
                     }
                 })
                 .catch(err => {
                     console.error('Error toggling service:', err);
                     chk.checked = !checked;
-                    alert('Error updating service status');
+                    updateWarningBanner();
+                    showToast('Error updating service status', 'error');
                 });
             });
         });
     });
+    function showToast(message, type = 'error') {
+        const toast = document.getElementById('services-toast');
+        const toastMsg = document.getElementById('services-toast-msg');
+        const toastIcon = document.getElementById('services-toast-icon');
+
+        toastMsg.textContent = message;
+
+        // Style by type
+        toast.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border transition-all duration-500 translate-y-0 opacity-100 pointer-events-auto';
+        if (type === 'error') {
+            toast.classList.add('bg-white', 'border-red-100', 'text-red-600');
+            toastIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>`;
+        } else {
+            toast.classList.add('bg-white', 'border-green-100', 'text-green-600');
+            toastIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        }
+
+        toast.classList.remove('opacity-0', 'translate-y-8', 'pointer-events-none');
+
+        clearTimeout(toast._hideTimer);
+        toast._hideTimer = setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-8', 'pointer-events-none');
+            toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 3000);
+    }
 </script>
 @endpush
 
@@ -189,4 +264,12 @@
         color: #F0642F !important;
     }
 </style>
+<!-- In-screen Toast Notification -->
+<div id="services-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl border bg-white border-red-100 text-red-600 opacity-0 translate-y-8 pointer-events-none transition-all duration-500" style="min-width:280px;max-width:420px;">
+    <span id="services-toast-icon" class="shrink-0"></span>
+    <p id="services-toast-msg" class="text-sm font-bold flex-1"></p>
+    <button onclick="document.getElementById('services-toast').classList.add('opacity-0','translate-y-8','pointer-events-none')" class="shrink-0 text-gray-400 hover:text-gray-600 transition-colors ml-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+</div>
 @endsection
