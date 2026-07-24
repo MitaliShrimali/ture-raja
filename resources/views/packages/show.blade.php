@@ -320,29 +320,24 @@
                             }
                         @endphp
 
-                        {{-- Gallery & Details Container --}}
-                        <div class="package-gallery-details-grid">
-                            {{-- Left Column: Images Carousel --}}
-                            <div class="package-gallery-images-col relative w-full overflow-hidden rounded-sm group shadow-sm border border-gray-100" x-data="{ 
-                                     currentSlide: 0, 
-                                     interval: null,
-                                     startInterval() { 
-                                         this.interval = setInterval(() => { this.next() }, 4000) 
-                                     },
-                                     stopInterval() {
-                                         clearInterval(this.interval)
-                                     },
-                                     next() { 
-                                         this.currentSlide = (this.currentSlide === this.slides.length - 1) ? 0 : this.currentSlide + 1 
-                                     },
-                                     prev() { 
-                                         this.currentSlide = (this.currentSlide === 0) ? this.slides.length - 1 : this.currentSlide - 1 
-                                     },
-                                     init() { 
-                                         this.startInterval();
-                                     } 
-                                 }" @mouseenter="stopInterval()" @mouseleave="startInterval()">
-                                <!-- Slides Container -->
+                        {{-- Gallery & Details Container — Full-width gallery, details below --}}
+                        <div class="mb-2">
+
+                            {{-- ── Full-Width Image Carousel ────────────────────── --}}
+                            <div class="relative w-full overflow-hidden rounded-lg shadow-sm border border-gray-100 bg-black"
+                                style="height: 340px;"
+                                x-data="{
+                                    currentSlide: 0,
+                                    interval: null,
+                                    startInterval() { this.interval = setInterval(() => { this.next() }, 4000) },
+                                    stopInterval() { clearInterval(this.interval) },
+                                    next() { this.currentSlide = (this.currentSlide === this.slides.length - 1) ? 0 : this.currentSlide + 1 },
+                                    prev() { this.currentSlide = (this.currentSlide === 0) ? this.slides.length - 1 : this.currentSlide - 1 },
+                                    init() { this.startInterval(); }
+                                }"
+                                @mouseenter="stopInterval()" @mouseleave="startInterval()">
+
+                                {{-- Slides --}}
                                 <div class="flex h-full w-full transition-transform duration-700 ease-in-out"
                                     :style="`transform: translateX(-${currentSlide * 100}%)`">
                                     <template x-for="(slide, index) in slides" :key="index">
@@ -353,179 +348,135 @@
                                     </template>
                                 </div>
 
-                                <!-- Gradient overlay for controls -->
-                                <div
-                                    class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/80 to-transparent pointer-events-none">
-                                </div>
-
-                                <!-- Prev Button (Left) -->
+                                {{-- Prev Arrow --}}
                                 <button @click.stop="prev()"
-                                    class="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-black/40 hover:bg-black/60 text-white rounded-full p-3 backdrop-blur-sm transition-all pointer-events-auto flex items-center justify-center shadow-lg border border-white/20 hover:scale-110">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                    class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow transition-all border border-gray-200 hover:scale-105">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                                     </svg>
                                 </button>
 
-                                <!-- Next Button (Right) -->
+                                {{-- Next Arrow --}}
                                 <button @click.stop="next()"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-black/40 hover:bg-black/60 text-white rounded-full p-3 backdrop-blur-sm transition-all pointer-events-auto flex items-center justify-center shadow-lg border border-white/20 hover:scale-110">
-                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow transition-all border border-gray-200 hover:scale-105">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                                     </svg>
                                 </button>
 
-                                <!-- Bottom Dots -->
-                                <div class="absolute bottom-5 left-0 right-0 flex items-center justify-center z-10">
-                                    <div class="flex items-center gap-2 pointer-events-auto">
-                                        <template x-for="(slide, index) in slides" :key="index">
-                                            <button @click.stop="currentSlide = index"
-                                                class="h-2 rounded-full transition-all duration-300"
-                                                :class="currentSlide === index ? 'w-8 bg-orange-500' : 'w-2 bg-white/60 hover:bg-white'">
-                                            </button>
-                                        </template>
-                                    </div>
+                                {{-- Dot indicators --}}
+                                <div class="absolute bottom-3 left-0 right-0 flex items-center justify-center z-10 gap-1.5">
+                                    <template x-for="(slide, index) in slides" :key="index">
+                                        <button @click.stop="currentSlide = index"
+                                            class="h-1.5 rounded-full transition-all duration-300"
+                                            :class="currentSlide === index ? 'w-6 bg-orange-500' : 'w-1.5 bg-white/70 hover:bg-white'">
+                                        </button>
+                                    </template>
                                 </div>
                             </div>
 
-                            {{-- Right Column: Package Details (Name, Duration, Group Size, Type, Inquiry Now) --}}
-                            <div class="package-gallery-details-col flex flex-col py-1.5 space-y-4">
+                            {{-- ── Below-Gallery Details Row 1: Title | Rating+Duration | Price+CTA ── --}}
+                            <div class="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
 
-                                <h1 class="font-black text-gray-900 mb-1 package-detail-title">
-                                    {{ $package['title'] }}
-                                </h1>
-
-                                <div class="flex flex-wrap items-center gap-4 mb-2">
-                                    <div class="flex items-center gap-1.5">
-                                        @for($i = 0; $i < 5; $i++)
-                                            <svg width="16" height="16" viewBox="0 0 24 24"
-                                                fill="{{ $i < floor($package['rating']) ? '#f97316' : '#e5e7eb' }}"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <polygon
-                                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                            </svg>
-                                        @endfor
-                                        <span class="font-bold text-gray-800 text-sm ml-1">{{ $package['rating'] }}</span>
-                                        <span class="text-gray-500 text-sm">({{ $package['reviews'] }} reviews)</span>
-                                    </div>
+                                {{-- Title --}}
+                                <div class="flex-1 min-w-0">
+                                    <h1 class="font-black text-gray-900 leading-tight" style="font-size:22px; font-family:'Poppins',sans-serif;">
+                                        {{ $package['title'] }}
+                                    </h1>
                                 </div>
 
-                                @php
-                                    $heroTags = [];
-                                    if (!empty($package['category']))
-                                        $heroTags[] = ucfirst($package['category']);
-                                    if (!empty($package['tour_type']))
-                                        $heroTags[] = $package['tour_type'];
-                                    if (!empty($package['theme']))
-                                        $heroTags[] = $package['theme'];
-                                    if (!empty($package['holiday_type']))
-                                        $heroTags[] = $package['holiday_type'];
-                                    if (!empty($package['city']))
-                                        $heroTags[] = 'City: ' . $package['city'];
-                                    if (!empty($package['activities'])) {
-                                        foreach ((array) $package['activities'] as $act) {
-                                            $heroTags[] = $act;
-                                        }
-                                    }
-                                    if (empty($heroTags)) {
-                                        $heroTags = ['Land Package'];
-                                    }
-                                    $heroTags = array_unique($heroTags);
-                                @endphp
-                                <div class="flex flex-wrap gap-2 mb-2 mt-1">
-                                    @if(!empty($package['badge']))
-                                        <span
-                                            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 text-[11px] font-extrabold capitalize border border-orange-100 shadow-sm">
-                                            {{ $package['badge'] }}
-                                        </span>
-                                    @endif
-                                    @foreach($heroTags as $tag)
-                                        <span
-                                            class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-[11px] font-extrabold capitalize border border-blue-100 shadow-sm">
-                                            {{ $tag }}
-                                        </span>
-                                    @endforeach
+                                {{-- Rating + Duration --}}
+                                <div class="flex flex-col items-start sm:items-center gap-1 shrink-0">
+                                    <div class="flex items-center gap-1">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#e85d26" xmlns="http://www.w3.org/2000/svg">
+                                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                        </svg>
+                                        <span class="font-bold text-gray-800 text-sm">{{ $package['rating'] }}</span>
+                                        <span class="text-gray-500 text-xs">({{ $package['reviews'] }} Review)</span>
+                                    </div>
+                                    <span class="text-xs font-semibold text-gray-500">Duration : {{ $formattedDuration }}</span>
                                 </div>
 
-                                @php
-                                    $hasChef = false;
-                                    $hasManager = false;
-                                    $searchLists = [];
-                                    if (isset($package['included'])) {
-                                        $searchLists[] = is_string($package['included']) ? json_decode($package['included'], true) : $package['included'];
-                                    }
-                                    if (isset($package['amenities'])) {
-                                        $searchLists[] = is_string($package['amenities']) ? json_decode($package['amenities'], true) : $package['amenities'];
-                                    }
-                                    foreach ($searchLists as $list) {
-                                        if (is_array($list)) {
-                                            foreach ($list as $item) {
-                                                if (str_contains(strtolower($item), 'chef'))
-                                                    $hasChef = true;
-                                                if (str_contains(strtolower($item), 'manager'))
-                                                    $hasManager = true;
-                                            }
-                                        }
-                                    }
-                                @endphp
-
-                                <div class="package-meta-details-container mt-4">
-                                    <div>
-                                        <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest"
-                                            style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">DURATION
-                                        </p>
-                                        <p class="font-extrabold text-gray-800 text-base"
-                                            style="font-size: 16px; font-family: 'Poppins', sans-serif;">
-                                            {{ $formattedDuration }}</p>
+                                {{-- Price + Inquiry CTA --}}
+                                <div class="flex flex-col items-start sm:items-end gap-2 shrink-0">
+                                    @php
+                                        $displayPrice = $package['price'] ?? 0;
+                                        $currency = $package['currency'] ?? '₹';
+                                        $currencyMap = ['INR' => '₹', 'USD' => '$', 'AED' => 'AED', 'EUR' => '€', 'GBP' => '£',
+                                                        '₹' => '₹', '$' => '$', '€' => '€', '£' => '£'];
+                                        $currencySymbol = $currencyMap[$currency] ?? $currency;
+                                    @endphp
+                                    <div class="text-base font-black text-gray-900">
+                                        Price : <span style="color:#e85d26;">{{ $currencySymbol }}{{ number_format($displayPrice) }}/-</span>
                                     </div>
-                                    <div>
-                                        <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest"
-                                            style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">GROUP
-                                            SIZE</p>
-                                        <p class="font-extrabold text-gray-800 text-base uppercase"
-                                            style="font-size: 16px; font-family: 'Poppins', sans-serif;">
-                                            {{ $package['groupSize'] }}</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-[11px] font-black text-gray-400 uppercase tracking-widest"
-                                            style="font-size: 11px; margin-bottom: 0.25rem; letter-spacing: 0.1em;">THEME
-                                        </p>
-                                        <p class="font-extrabold text-gray-800 text-base uppercase"
-                                            style="font-size: 16px; font-family: 'Poppins', sans-serif;">
-                                            {{ $package['theme'] ?? 'Adventure' }}</p>
-                                    </div>
-                                </div>
-
-                                @if($hasChef || $hasManager)
-                                    <div class="bg-gray-50 border border-gray-100 rounded-xl p-4 space-y-3 mt-4">
-                                        <p class="text-[11px] font-black text-gray-500 uppercase tracking-widest"
-                                            style="font-size: 11px; letter-spacing: 0.1em;">SERVICES PROVIDED</p>
-                                        <div class="flex flex-wrap gap-2">
-                                            @if($hasChef)
-                                                <span
-                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 text-green-700 text-xs font-bold border border-green-200">
-                                                    <i data-lucide="utensils" class="w-4 h-4"></i> Private Chef Included
-                                                </span>
-                                            @endif
-                                            @if($hasManager)
-                                                <span
-                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200">
-                                                    <i data-lucide="user" class="w-4 h-4"></i> Tour Manager Included
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                @endif
-
-                                <div class="mt-auto pt-6">
                                     <a href="#contact-form"
-                                        onclick="event.preventDefault(); document.getElementById('contact-form').scrollIntoView({behavior:'smooth', block:'start'}); return false;"
-                                        style="background-color: #e85d26; display: flex; align-items: center; justify-content: center;"
-                                        class="block w-full py-3.5 text-white text-center font-black text-xs uppercase tracking-widest rounded-md hover:opacity-90 transition-opacity shadow-sm">
+                                        onclick="event.preventDefault(); document.getElementById('contact-form').scrollIntoView({behavior:'smooth',block:'start'}); return false;"
+                                        style="background-color:#e85d26;"
+                                        class="inline-flex items-center justify-center px-6 py-2.5 text-white text-xs font-black uppercase tracking-widest rounded hover:opacity-90 transition-opacity shadow-sm whitespace-nowrap">
                                         Inquiry Now
                                     </a>
                                 </div>
                             </div>
+
+                            {{-- ── Below-Gallery Row 2: Badge pills + Departure City ── --}}
+                            <div class="mt-3 flex flex-wrap items-center gap-2">
+                                {{-- Category badge --}}
+                                @if(!empty($package['category']))
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded border border-gray-300 text-gray-700 text-[11px] font-semibold bg-white">
+                                        {{ ucfirst($package['category']) }}
+                                    </span>
+                                @endif
+
+                                {{-- Transit / Tour Type --}}
+                                @if(!empty($package['tour_type']))
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded border border-gray-300 text-gray-700 text-[11px] font-semibold bg-white">
+                                        Transit wise ({{ $package['tour_type'] }})
+                                    </span>
+                                @endif
+
+                                {{-- Theme --}}
+                                @if(!empty($package['theme']))
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded border border-gray-300 text-gray-700 text-[11px] font-semibold bg-white">
+                                        Theme wise
+                                    </span>
+                                @endif
+
+                                {{-- Holiday type --}}
+                                @if(!empty($package['holiday_type']))
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded border border-gray-300 text-gray-700 text-[11px] font-semibold bg-white">
+                                        {{ ucfirst($package['holiday_type']) }}
+                                    </span>
+                                @endif
+
+                                {{-- Badge --}}
+                                @if(!empty($package['badge']))
+                                    <span class="inline-flex items-center px-3 py-1.5 rounded bg-orange-50 border border-orange-200 text-orange-600 text-[11px] font-bold">
+                                        {{ $package['badge'] }}
+                                    </span>
+                                @endif
+
+                                {{-- Departure city (Starting from Vadodara style) --}}
+                                @if(!empty($package['departure_city']))
+                                    <span class="inline-flex items-center gap-1 text-[12px] font-semibold text-gray-600 ml-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                                        </svg>
+                                        Starting from {{ $package['departure_city'] }}
+                                        @if(!empty($package['departure_state']))
+                                            , {{ $package['departure_state'] }}
+                                        @endif
+                                    </span>
+                                @elseif(!empty($package['city']))
+                                    <span class="inline-flex items-center gap-1 text-[12px] font-semibold text-gray-600 ml-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                                        </svg>
+                                        Starting from {{ $package['city'] }}
+                                    </span>
+                                @endif
+                            </div>
                         </div>
+
                     </div>
 
                     {{-- Section Navigation Tabs --}}

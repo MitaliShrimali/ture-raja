@@ -19,6 +19,73 @@ class HomeController extends Controller
             $packages = collect($this->getStaticPackages());
         }
 
+        // Fetch agents to enrich package cards with locations
+        try {
+            $agentsList = DB::table('agents')
+                ->select('id', 'name', 'city', 'state', 'logo')
+                ->get();
+            $agentsById = $agentsList->keyBy('id')->toArray();
+            $agentsByName = $agentsList->keyBy(function($item) {
+                return strtolower(trim($item->name));
+            })->toArray();
+        } catch (\Exception $e) {
+            $agentsById = [];
+            $agentsByName = [];
+        }
+
+        $packages = collect($packages)->map(function($pkg) use ($agentsById, $agentsByName) {
+            if (is_object($pkg) && method_exists($pkg, 'toArray')) {
+                $pkg = $pkg->toArray();
+            } else {
+                $pkg = (array) $pkg;
+            }
+
+            $agentData = $pkg['agent'] ?? null;
+            $agentId   = null;
+            $agentName = null;
+
+            if (is_string($agentData)) {
+                $decoded = json_decode($agentData, true);
+                if (is_array($decoded)) {
+                    $agentId   = $decoded['id']   ?? null;
+                    $agentName = $decoded['name'] ?? null;
+                } else {
+                    $agentName = $agentData;
+                }
+            } elseif (is_array($agentData)) {
+                $agentId   = $agentData['id']   ?? null;
+                $agentName = $agentData['name'] ?? null;
+            } elseif (is_object($agentData)) {
+                $agentId   = $agentData->id   ?? null;
+                $agentName = $agentData->name ?? null;
+            }
+
+            $dbAgent = null;
+            if ($agentId && isset($agentsById[$agentId])) {
+                $dbAgent = (array) $agentsById[$agentId];
+            } elseif ($agentName) {
+                $key = strtolower(trim($agentName));
+                if (isset($agentsByName[$key])) {
+                    $dbAgent = (array) $agentsByName[$key];
+                }
+            }
+
+            if ($dbAgent) {
+                if (isset($pkg['agent']) && is_string($pkg['agent'])) {
+                    $decoded = json_decode($pkg['agent'], true);
+                    $pkg['agent'] = is_array($decoded) ? $decoded : ['name' => $pkg['agent']];
+                } elseif (!isset($pkg['agent']) || !is_array($pkg['agent'])) {
+                    $pkg['agent'] = ['name' => (string)($agentName ?? '')];
+                }
+                $pkg['agent']['city']  = $dbAgent['city']  ?? '';
+                $pkg['agent']['state'] = $dbAgent['state'] ?? '';
+                if (empty($pkg['agent']['logo']) && !empty($dbAgent['logo'])) {
+                    $pkg['agent']['logo'] = $dbAgent['logo'];
+                }
+            }
+            return $pkg;
+        });
+
         return view('welcome', compact('packages'));
     }
 

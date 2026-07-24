@@ -82,10 +82,10 @@ class ListingController extends Controller
 
         $packages = collect($merged);
 
-        // Fetch all agents to check their tiers
+        // Fetch all agents to check their tiers + location for card display
         try {
             $agentsList = \Illuminate\Support\Facades\DB::table('agents')
-                ->select('id', 'name', 'service_guaranteed', 'plan_id')
+                ->select('id', 'name', 'service_guaranteed', 'plan_id', 'city', 'state', 'logo')
                 ->get();
                 
             $agentsById = $agentsList->keyBy('id')->toArray();
@@ -96,6 +96,56 @@ class ListingController extends Controller
             $agentsById = [];
             $agentsByName = [];
         }
+
+        // Enrich each package's agent field with city/state/logo from DB
+        $packages = $packages->map(function($pkg) use ($agentsById, $agentsByName) {
+            $pkg = (array) $pkg;
+            $agentData = $pkg['agent'] ?? null;
+            $agentId   = null;
+            $agentName = null;
+
+            if (is_string($agentData)) {
+                $decoded = json_decode($agentData, true);
+                if (is_array($decoded)) {
+                    $agentId   = $decoded['id']   ?? null;
+                    $agentName = $decoded['name'] ?? null;
+                } else {
+                    $agentName = $agentData;
+                }
+            } elseif (is_array($agentData)) {
+                $agentId   = $agentData['id']   ?? null;
+                $agentName = $agentData['name'] ?? null;
+            } elseif (is_object($agentData)) {
+                $agentId   = $agentData->id   ?? null;
+                $agentName = $agentData->name ?? null;
+            }
+
+            $dbAgent = null;
+            if ($agentId && isset($agentsById[$agentId])) {
+                $dbAgent = (array) $agentsById[$agentId];
+            } elseif ($agentName) {
+                $key = strtolower(trim($agentName));
+                if (isset($agentsByName[$key])) {
+                    $dbAgent = (array) $agentsByName[$key];
+                }
+            }
+
+            if ($dbAgent) {
+                // Normalise agent to array and inject location fields
+                if (is_string($pkg['agent'])) {
+                    $decoded = json_decode($pkg['agent'], true);
+                    $pkg['agent'] = is_array($decoded) ? $decoded : ['name' => $pkg['agent']];
+                } elseif (!is_array($pkg['agent'])) {
+                    $pkg['agent'] = ['name' => (string)($agentName ?? '')];
+                }
+                $pkg['agent']['city']  = $dbAgent['city']  ?? '';
+                $pkg['agent']['state'] = $dbAgent['state'] ?? '';
+                if (empty($pkg['agent']['logo']) && !empty($dbAgent['logo'])) {
+                    $pkg['agent']['logo'] = $dbAgent['logo'];
+                }
+            }
+            return $pkg;
+        });
 
         // Shuffle all packages first for randomization, then sort by tier
         $packages = $packages->shuffle()->sortByDesc(function ($p) use ($agentsById, $agentsByName) {

@@ -17,28 +17,13 @@
 
 @php
     $agentObj = null;
+    $pkgArr   = [];
     if ($pkg) {
-        $pkgArr = (array) $pkg;
+        $pkgArr   = (array) $pkg;
         $title    = $pkgArr['title']    ?? $title;
         $image    = $pkgArr['image']    ?? $image;
         $duration = $pkgArr['duration'] ?? $duration;
         $currency = $pkgArr['currency'] ?? $currency;
-        
-        // Format duration to show Nights first if present
-        if ($duration) {
-            $days = 0;
-            $nights = 0;
-            if (preg_match('/(\d+)\s*[dD]ays?/i', $duration, $m)) {
-                $days = (int)$m[1];
-            }
-            if (preg_match('/(\d+)\s*[nN]ights?/i', $duration, $m)) {
-                $nights = (int)$m[1];
-            }
-            if ($days > 0 && $nights > 0) {
-                $duration = $nights . ($nights == 1 ? ' Night' : ' Nights') . ' / ' . $days . ($days == 1 ? ' Day' : ' Days');
-            }
-        }
-
         $groupSize= $pkgArr['groupSize']?? $groupSize;
         $rating   = $pkgArr['rating']   ?? $rating;
         $reviews  = $pkgArr['reviews']  ?? $reviews;
@@ -48,140 +33,187 @@
         $slug     = $pkgArr['slug']     ?? \Illuminate\Support\Str::slug($title ?? '') ?: $slug;
         $agentObj = $pkgArr['agent']    ?? null;
     }
-    
+
+    // ── Format duration → 3N/4D ─────────────────────────────────────────
+    $formattedDuration = $duration ?? '';
+    if ($duration) {
+        $days   = 0;
+        $nights = 0;
+        if (preg_match('/(\d+)\s*[dD]ays?/i', $duration, $m)) $days   = (int)$m[1];
+        if (preg_match('/(\d+)\s*[nN]ights?/i', $duration, $m)) $nights = (int)$m[1];
+        if ($days > 0 && $nights > 0) {
+            $formattedDuration = $nights . 'N/' . $days . 'D';
+        } elseif ($days > 0) {
+            $formattedDuration = $days . 'D';
+        } elseif ($nights > 0) {
+            $formattedDuration = $nights . 'N';
+        }
+    }
+
+    // ── Tour type & category ─────────────────────────────────────────────
+    $tourTypeVal  = $pkgArr['tour_type'] ?? '';
+    $categoryVal  = $pkgArr['category']  ?? '';
+    $themeVal     = $pkgArr['theme']     ?? '';
+
+    // Icon per transit type
+    $transportIcon = 'plane';
+    $typeLower = strtolower($tourTypeVal);
+    if (str_contains($typeLower, 'bus'))       $transportIcon = 'bus';
+    elseif (str_contains($typeLower, 'train')) $transportIcon = 'train';
+    elseif (str_contains($typeLower, 'cruise') || str_contains($typeLower, 'boat')) $transportIcon = 'ship';
+    elseif (str_contains($typeLower, 'helicopter')) $transportIcon = 'plane-takeoff';
+    elseif (str_contains($typeLower, 'trek') || str_contains($typeLower, 'track'))  $transportIcon = 'footprints';
+
+    // ── Agent ─────────────────────────────────────────────────────────────
     if (is_string($agentObj)) {
         $decoded = json_decode($agentObj, true);
         if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-            $agentObj = $decoded;
-            $agentName = $agentObj['name'] ?? 'Travel Agent Name';
+            $agentObj  = $decoded;
+            $agentName = $agentObj['name'] ?? 'Travel Agent';
         } else {
             $agentName = $agentObj;
         }
     } else {
-        if (is_object($agentObj)) {
-            $agentObj = (array) $agentObj;
-        }
-        $agentName = $agentObj['name'] ?? 'Travel Agent Name';
+        if (is_object($agentObj)) $agentObj = (array) $agentObj;
+        $agentName = $agentObj['name'] ?? 'Travel Agent';
     }
 
-    $rawLogo = (is_array($agentObj) ? ($agentObj['logo'] ?? null) : null);
+    $rawLogo = is_array($agentObj) ? ($agentObj['logo'] ?? null) : null;
     if ($rawLogo && !str_starts_with($rawLogo, 'http') && !str_starts_with($rawLogo, '//')) {
         $rawLogo = asset(ltrim($rawLogo, '/'));
     }
-    $agentLogo = $rawLogo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode(str_replace(' ', '', $agentName));
+    $agentLogo = $rawLogo ?? null; // null = show initials avatar
+
+    // Agent location
+    $agentCity    = is_array($agentObj) ? ($agentObj['city']    ?? '') : '';
+    $agentState   = is_array($agentObj) ? ($agentObj['state']   ?? '') : '';
+    $agentCountry = is_array($agentObj) ? ($agentObj['country'] ?? '') : '';
+    $agentLocation = trim(implode(', ', array_filter([$agentCity, $agentState])));
+    if (!$agentLocation && $agentCountry) $agentLocation = $agentCountry;
+
+    // Initials for avatar fallback
+    $initials = strtoupper(implode('', array_map(fn($w) => $w[0] ?? '', array_slice(explode(' ', trim($agentName)), 0, 2))));
 
     $detailUrl = $slug ? url('packages/' . $slug) : '#';
 @endphp
 
-<div onclick="window.open('{{ $detailUrl }}', '_blank')" {{ $attributes->merge(['class' => 'cursor-pointer group bg-white rounded-lg overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-2 flex flex-col border border-border-soft/50 package-card-inner']) }}>
-    <!-- Image Container -->
-    <div class="relative aspect-[1.2/1] overflow-hidden m-2 rounded-md package-image-container" style="aspect-ratio: 1.2/1;">
-        <img 
-            src="{{ asset($image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800') }}" 
-            alt="{{ $title }}" 
+<div onclick="window.open('{{ $detailUrl }}', '_blank')" {{ $attributes->merge(['class' => 'cursor-pointer group bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-1 flex flex-col border border-border-soft/50 package-card-inner']) }}>
+
+    {{-- ── Image ─────────────────────────────────────────────────────── --}}
+    <div class="relative overflow-hidden m-2 rounded-xl package-image-container" style="aspect-ratio:1.25/1;">
+        <img
+            src="{{ asset($image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800') }}"
+            alt="{{ $title }}"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            style="width: 100%; height: 100%; object-fit: cover;"
         >
-        
-        <!-- Badge top-left -->
-        <div class="absolute top-4 left-4">
-            @if($badge)
-                <span class="px-4 py-1.5 rounded-full bg-white text-foreground text-[10px] font-black uppercase tracking-widest shadow-soft">
+
+        {{-- Badge top-left --}}
+        @if($badge)
+            <div class="absolute top-3 left-3">
+                <span class="px-4 py-1.5 rounded-full bg-white text-foreground text-[10px] font-black uppercase tracking-widest shadow-sm">
                     {{ $badge }}
                 </span>
-            @endif
-        </div>
+            </div>
+        @endif
 
-        <!-- Wishlist Button top-right -->
-        <button 
+        {{-- Wishlist top-right --}}
+        <button
             onclick="toggleWishlist(event, { slug: '{{ $slug }}', title: '{{ addslashes($title) }}', image: '{{ $image }}', price: '{{ $price }}', currency: '{{ $currency ?? '₹' }}' })"
             data-wishlist-slug="{{ $slug }}"
-            class="wishlist-btn absolute top-4 right-4 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all duration-300 border border-white/30"
+            class="wishlist-btn absolute top-3 right-3 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all duration-300 border border-white/30"
         >
             <i data-lucide="heart" size="16"></i>
         </button>
     </div>
 
-    <!-- Content -->
-    <div class="px-6 pt-5 pb-6 flex flex-col flex-grow space-y-4 package-content">
+    {{-- ── Content ──────────────────────────────────────────────────── --}}
+    <div class="px-5 pt-4 pb-5 flex flex-col flex-grow gap-3 package-content">
 
-        <div class="flex items-start justify-between gap-4">
-            <h3 class="font-black text-foreground leading-tight line-clamp-2 font-heading min-h-[3rem] flex-grow" style="font-size: 20px;">
+        {{-- Row 1: Title + Rating --}}
+        <div class="flex items-start justify-between gap-3">
+            <h3 class="font-black text-foreground leading-tight line-clamp-2 font-heading flex-grow" style="font-size:18px;">
                 {{ $title }}
             </h3>
-            
-            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-100 shrink-0 mt-1 shadow-sm">
-                <i data-lucide="star" class="fill-orange-400 text-orange-400" size="14"></i>
+            <div class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100 shrink-0 mt-0.5 shadow-sm">
+                <i data-lucide="star" class="fill-orange-400 text-orange-400" size="13"></i>
                 <span class="text-xs font-black text-foreground">{{ $rating }}</span>
             </div>
         </div>
-        
-        <div class="flex items-center gap-4 text-[11px] font-bold text-text-muted">
-            <div class="flex items-center gap-1.5">
-                <i data-lucide="clock" size="14" class="opacity-50"></i>
-                {{ $duration }}
-            </div>
-            <div class="flex items-center gap-1.5">
-                <i data-lucide="users" size="14" class="opacity-50"></i>
-                {{ $groupSize }}
-            </div>
-        </div>
 
-        @if($hideAgent)
-            @php
-                $categoryVal = $pkgArr['category'] ?? 'Tour';
-                $tourTypeVal = $pkgArr['tour_type'] ?? 'Land Package';
-                
-                $transportIcon = 'plane';
-                $typeLower = strtolower($tourTypeVal);
-                if (str_contains($typeLower, 'bus')) {
-                    $transportIcon = 'bus';
-                } elseif (str_contains($typeLower, 'train')) {
-                    $transportIcon = 'train';
-                } elseif (str_contains($typeLower, 'cruise') || str_contains($typeLower, 'boat')) {
-                    $transportIcon = 'ship';
-                } elseif (str_contains($typeLower, 'helicopter')) {
-                    $transportIcon = 'plane-takeoff';
-                } elseif (str_contains($typeLower, 'trek') || str_contains($typeLower, 'track')) {
-                    $transportIcon = 'footprints';
-                }
-            @endphp
-            <div class="flex flex-wrap gap-2 mt-1">
-                <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-600 text-[11px] font-extrabold capitalize border border-blue-100">
-                    <i data-lucide="globe" size="12"></i>
-                    {{ $categoryVal }}
+        {{-- Row 2: Duration (3N/4D) | Tour Type --}}
+        <div class="flex items-center gap-2 flex-wrap">
+            @if($formattedDuration)
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-50 border border-gray-200 text-[11px] font-bold text-gray-700">
+                    <i data-lucide="calendar-days" size="12" class="text-gray-500"></i>
+                    {{ $formattedDuration }}
                 </span>
-                <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-50 text-orange-600 text-[11px] font-extrabold capitalize border border-orange-100">
+            @endif
+
+            @if($tourTypeVal)
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-100 text-[11px] font-bold text-orange-600">
                     <i data-lucide="{{ $transportIcon }}" size="12"></i>
                     {{ $tourTypeVal }}
                 </span>
+            @endif
+        </div>
+
+        {{-- Row 3: Destination Type (Category) | Theme --}}
+        <div class="flex items-center gap-2 flex-wrap">
+            @if($categoryVal)
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-100 text-[11px] font-bold text-blue-600">
+                    <i data-lucide="globe" size="12"></i>
+                    {{ ucfirst($categoryVal) }}
+                </span>
+            @endif
+
+            @if($themeVal)
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-50 border border-violet-100 text-[11px] font-bold text-violet-600">
+                    <i data-lucide="users" size="12"></i>
+                    {{ $themeVal }}
+                </span>
+            @endif
+        </div>
+
+        {{-- Row 4: Agent avatar + Name + Location --}}
+        @if(!$hideAgent)
+        <div class="flex items-center gap-2.5 min-w-0">
+            {{-- Agent Avatar --}}
+            <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center overflow-hidden border-2 border-gray-100 shadow-sm"
+                 style="background: linear-gradient(135deg, #6d28d9, #4f46e5);">
+                @if($agentLogo)
+                    <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-full h-full object-cover">
+                @else
+                    <span class="text-[11px] font-black text-white">{{ $initials }}</span>
+                @endif
             </div>
-        @else
-            <div class="flex items-center justify-between mt-1">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="shield-check" size="14" class="text-green-500"></i>
-                    <span class="text-xs font-bold text-gray-700">{{ $agentName }}</span>
-                </div>
-                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 shrink-0">
-                    <img src="{{ asset($agentLogo) }}" alt="{{ $agentName }} Logo" class="w-full h-full object-cover">
-                </div>
+            {{-- Agent Name + Location --}}
+            <div class="min-w-0">
+                <p class="text-xs font-bold text-gray-800 truncate">{{ $agentName }}</p>
+                @if($agentLocation)
+                    <p class="text-[10px] text-gray-500 font-medium flex items-center gap-0.5 mt-0.5">
+                        <i data-lucide="map-pin" size="10" class="shrink-0 text-gray-400"></i>
+                        <span class="truncate">{{ $agentLocation }}</span>
+                    </p>
+                @endif
             </div>
+        </div>
         @endif
 
-        <div class="pt-4 border-t border-border-soft/50 flex items-end justify-between mt-auto package-action">
+        {{-- Row 5: Price + Search Now --}}
+        <div class="pt-3 border-t border-border-soft/50 flex items-end justify-between mt-auto package-action">
             <div class="flex flex-col">
-                <div class="flex items-center gap-1.5">
-                    <span class="text-2xl font-black text-foreground tracking-tight font-heading">{{ $currency ?? '₹' }}{{ number_format($price) }}</span>
-                    <span class="text-[10px] text-text-muted font-bold mt-1">/ person</span>
-                </div>
+                <span class="text-2xl font-black text-foreground tracking-tight font-heading">{{ $currency ?? '₹' }}{{ number_format($price) }}</span>
                 @if($oldPrice)
                     <span class="text-[11px] text-primary font-black line-through">{{ $currency ?? '₹' }}{{ number_format($oldPrice) }}</span>
                 @endif
             </div>
 
-            <a href="{{ $detailUrl }}" target="_blank" onclick="event.stopPropagation()" class="px-6 py-2.5 rounded-full bg-primary text-white text-xs font-black shadow-glow hover:bg-primary/90 hover:shadow-primary/40 transition-all duration-300 inline-block whitespace-nowrap shrink-0 text-center">
+            <a href="{{ $detailUrl }}" target="_blank" onclick="event.stopPropagation()"
+               class="px-5 py-2.5 rounded-full bg-primary text-white text-xs font-black shadow-glow hover:bg-primary/90 transition-all duration-300 inline-block whitespace-nowrap shrink-0 text-center">
                 Search Now
             </a>
         </div>
     </div>
 </div>
+
+

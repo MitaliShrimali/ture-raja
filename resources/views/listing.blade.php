@@ -225,12 +225,13 @@
             body .list-view-wrapper .package-card-inner {
                 flex-direction: row !important;
                 display: flex !important;
-                height: 220px !important;
+                height: 180px !important;
                 padding: 0.5rem !important;
+                max-width: 100% !important;
             }
 
             body .list-view-wrapper .package-image-container {
-                width: 300px !important;
+                width: 250px !important;
                 height: 100% !important;
                 margin: 0 !important;
                 aspect-ratio: auto !important;
@@ -238,42 +239,76 @@
             }
 
             body .list-view-wrapper .package-content {
-                flex-direction: row !important;
+                display: grid !important;
+                grid-template-columns: 1.7fr 1.6fr !important;
+                grid-template-rows: auto auto !important;
+                row-gap: 0.5rem !important;
+                column-gap: 1.5rem !important;
+                align-items: center !important;
                 flex-grow: 1 !important;
-                padding: 1rem 1rem 1rem 1.5rem !important;
+                padding: 0.85rem 1.5rem !important;
+            }
+
+            /* Row 1: Title (left) + Rating (right) */
+            body .list-view-wrapper .package-content > div:nth-child(1) {
+                grid-column: 1 !important;
+                grid-row: 1 !important;
                 display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 1rem !important;
+            }
+
+            /* Row 2: Duration + Tour Type (stacked, margin-bottom offsets Row 3) */
+            body .list-view-wrapper .package-content > div:nth-child(2) {
+                grid-column: 1 !important;
+                grid-row: 2 !important;
+                display: flex !important;
+                gap: 0.5rem !important;
+                margin-bottom: 2.2rem !important;
+                width: auto !important;
+            }
+
+            /* Row 3: Category + Theme (stacked directly below Row 2) */
+            body .list-view-wrapper .package-content > div:nth-child(3) {
+                grid-column: 1 !important;
+                grid-row: 2 !important;
+                display: flex !important;
+                gap: 0.5rem !important;
+                margin-top: 2.2rem !important;
+                width: auto !important;
+            }
+
+            /* Row 4: Agent Info (Top Right) */
+            body .list-view-wrapper .package-content > div:nth-child(4) {
+                grid-column: 2 !important;
+                grid-row: 1 !important;
+                border-left: 1px dashed #e5e7eb !important;
+                padding-left: 1.75rem !important;
+                height: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            /* Row 5: Action - Price (left) + Button (right) */
+            body .list-view-wrapper .package-content > div:nth-child(5) {
+                grid-column: 2 !important;
+                grid-row: 2 !important;
+                border-left: 1px dashed #e5e7eb !important;
+                padding-left: 1.75rem !important;
+                border-top: none !important;
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+                display: flex !important;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                width: 100% !important;
+                height: 100% !important;
             }
 
             body .list-view-wrapper .package-content>*+* {
                 margin-top: 0 !important;
-            }
-
-            body .list-view-wrapper .package-info {
-                flex-grow: 1 !important;
-                border-right: 1px dashed #e5e7eb !important;
-                padding-right: 1.5rem !important;
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: center !important;
-            }
-
-            body .list-view-wrapper .package-action {
-                width: 200px !important;
-                flex-shrink: 0 !important;
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
-                padding-left: 1.5rem !important;
-                border-top: none !important;
-                margin-top: 0 !important;
-                padding-top: 0 !important;
-                gap: 1rem !important;
-            }
-
-            body .list-view-wrapper .package-action>div {
-                align-items: center !important;
-                text-align: center !important;
             }
         }
 
