@@ -30,31 +30,55 @@
                         </div>
                         <div>
                             <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">PHONE *</label>
+                            <div class="flex gap-2 items-center">
+                                <div class="relative w-28 shrink-0">
+                                    <select class="phone-country-code w-full px-3 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
+                                        <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                        <option value="+1" data-len="10">🇺🇸 +1</option>
+                                        <option value="+44" data-len="10">🇬🇧 +44</option>
+                                        <option value="+62" data-len="11">🇮🇩 +62</option>
+                                        <option value="+65" data-len="8">🇸🇬 +65</option>
+                                        <option value="+971" data-len="9">🇦🇪 +971</option>
+                                        <option value="+61" data-len="9">🇦🇺 +61</option>
+                                        <option value="+66" data-len="9">🇹🇭 +66</option>
+                                        <option value="+60" data-len="10">🇲🇾 +60</option>
+                                    </select>
+                                </div>
+                                <div class="relative flex-grow">
+                                    <input type="tel" required placeholder="Phone Number *"
+                                        class="phone-number-val w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                    <i class="fas fa-phone-alt absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                </div>
+                            </div>
+                            <input type="hidden" class="phone-full-val" name="phone" value="{{ old('phone', $branch ? $branch->phone : '') }}">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="relative">
+                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">CITY (SEARCH) *</label>
                             <div class="relative">
-                                <i class="fas fa-phone-alt absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
-                                <input type="text" name="phone" value="{{ old('phone', $branch ? $branch->phone : '') }}" required placeholder="+62 812 3456 789" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                <i class="fas fa-map-marker-alt absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                <input type="text" id="branchCity" name="location" value="{{ old('location', $branch ? $branch->location : '') }}" required placeholder="Search City (e.g. Ahmedabad)" autocomplete="off" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                            </div>
+                            <div id="citySuggestions" class="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto bg-white rounded-2xl border border-gray-100 shadow-xl hidden custom-scroll"></div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">STATE *</label>
+                            <div class="relative">
+                                <i class="fas fa-map-pin absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                <input type="text" id="branchState" name="state" value="{{ old('state', $branch ? $branch->state : '') }}" required placeholder="State" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
-                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">LOCATION *</label>
+                            <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">COUNTRY *</label>
                             <div class="relative">
-                                <i class="fas fa-map-marker-alt absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
-                                <select name="location" required class="w-full pl-12 pr-10 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
-                                    <option value="">Select Location</option>
-                                    <option value="Ahmedabad, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Ahmedabad, Gujarat' ? 'selected' : '' }}>Ahmedabad, Gujarat</option>
-                                    <option value="Rajkot, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Rajkot, Gujarat' ? 'selected' : '' }}>Rajkot, Gujarat</option>
-                                    <option value="Surat, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Surat, Gujarat' ? 'selected' : '' }}>Surat, Gujarat</option>
-                                    <option value="Baroda, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Baroda, Gujarat' ? 'selected' : '' }}>Baroda, Gujarat</option>
-                                    <option value="Morbi, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Morbi, Gujarat' ? 'selected' : '' }}>Morbi, Gujarat</option>
-                                    <option value="Amreli, Gujarat" {{ old('location', $branch ? $branch->location : '') == 'Amreli, Gujarat' ? 'selected' : '' }}>Amreli, Gujarat</option>
-                                    <option value="Mumbai, Maharashtra" {{ old('location', $branch ? $branch->location : '') == 'Mumbai, Maharashtra' ? 'selected' : '' }}>Mumbai, Maharashtra</option>
-                                    <option value="Uluwatu, Bali" {{ old('location', $branch ? $branch->location : '') == 'Uluwatu, Bali' ? 'selected' : '' }}>Uluwatu, Bali</option>
-                                    <option value="Seminyak, Bali" {{ old('location', $branch ? $branch->location : '') == 'Seminyak, Bali' ? 'selected' : '' }}>Seminyak, Bali</option>
-                                </select>
-                                <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                                <i class="fas fa-globe absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
+                                <input type="text" id="branchCountry" name="country" value="{{ old('country', $branch ? $branch->country : '') }}" required placeholder="Country" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                             </div>
                         </div>
 
@@ -112,20 +136,93 @@
                     </ul>
                 </div>
 
-                <!-- Bulk Import Box -->
-                <div class="bg-orange-800 p-8 rounded-[48px] shadow-2xl shadow-orange-200 relative overflow-hidden group">
-                    <!-- Abstract circles (simulated with CSS circles) -->
-                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-orange-700/50 rounded-full"></div>
-                    <div class="absolute -right-5 -bottom-5 w-20 h-20 bg-orange-600/30 rounded-full"></div>
-                    
-                    <h4 class="text-white font-bold text-lg leading-tight mb-4 relative z-10">Need to import bulk locations?</h4>
-                    <p class="text-orange-100/70 text-[10px] font-medium leading-relaxed mb-8 relative z-10">Download our CSV template to add multiple branches at once.</p>
-                    <button class="w-full py-4 bg-orange-700/50 text-white rounded-[20px] text-[10px] font-bold flex items-center justify-center border border-orange-600/50 hover:bg-orange-700 transition-colors relative z-10">
-                        <i class="fas fa-file-download mr-3"></i> Download Template
-                    </button>
-                </div>
             </div>
         </div>
 
-        <!-- Footer -->
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const input = document.getElementById('branchCity');
+        const suggestionsDiv = document.getElementById('citySuggestions');
+        let debounceTimer;
+
+        if (input && suggestionsDiv) {
+            input.addEventListener('input', () => {
+                const query = input.value.trim();
+
+                clearTimeout(debounceTimer);
+                if (!query || query.length < 3) {
+                    suggestionsDiv.innerHTML = '';
+                    suggestionsDiv.classList.add('hidden');
+                    return;
+                }
+
+                // Show loading indicator
+                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching cities...</div>';
+                suggestionsDiv.classList.remove('hidden');
+
+                debounceTimer = setTimeout(() => {
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&accept-language=en&q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        suggestionsDiv.innerHTML = '';
+                        if (data && data.length > 0) {
+                            const seen = new Set();
+                            data.forEach(item => {
+                                const address = item.address || {};
+                                
+                                // Determine city name
+                                let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
+                                
+                                if (!city && item.display_name) {
+                                    city = item.display_name.split(',')[0].trim();
+                                }
+                                
+                                const state = address.state || address.region || '';
+                                const country = address.country || '';
+
+                                if (city && country) {
+                                    const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
+                                    if (seen.has(key)) return;
+                                    seen.add(key);
+
+                                    const row = document.createElement('div');
+                                    row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
+                                    row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
+                                    row.onclick = () => {
+                                        input.value = city;
+                                        document.getElementById('branchState').value = state;
+                                        document.getElementById('branchCountry').value = country;
+                                        suggestionsDiv.classList.add('hidden');
+                                    };
+                                    suggestionsDiv.appendChild(row);
+                                }
+                            });
+
+                            if (suggestionsDiv.children.length > 0) {
+                                suggestionsDiv.classList.remove('hidden');
+                            } else {
+                                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
+                            }
+                        } else {
+                            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Error fetching cities:', err);
+                        suggestionsDiv.classList.add('hidden');
+                    });
+                }, 400);
+            });
+
+            // Close suggestions dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+        }
+    });
+</script>
+@endpush
 @endsection

@@ -165,9 +165,26 @@
               <div class="pf-row-left">
                 <span class="pf-lbl">Phone number</span>
                 <span class="pf-val" x-show="!open">{{ $displayPhone ?: '—' }}</span>
-                <input x-show="open" x-ref="fi" type="text" name="phone"
-                       value="{{ $displayPhone }}" placeholder="+91 99999 00000"
-                       class="pf-inp">
+                <div x-show="open" class="flex gap-2 items-center w-full max-w-[280px]">
+                    <div class="relative w-28 shrink-0">
+                        <select class="phone-country-code w-full border border-gray-300 rounded-md py-1.5 px-2 outline-none text-xs font-semibold">
+                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                            <option value="+62" data-len="11">🇮🇩 +62</option>
+                            <option value="+65" data-len="8">🇸🇬 +65</option>
+                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                            <option value="+66" data-len="9">🇹🇭 +66</option>
+                            <option value="+60" data-len="10">🇲🇾 +60</option>
+                        </select>
+                    </div>
+                    <div class="relative flex-grow">
+                        <input x-ref="fi" type="tel" placeholder="Phone *"
+                            class="phone-number-val w-full border border-gray-300 rounded-md py-1.5 px-3 outline-none text-xs font-medium">
+                    </div>
+                </div>
+                <input type="hidden" class="phone-full-val" name="phone" value="{{ $displayPhone }}">
               </div>
               <button type="button" class="pf-edit"
                       @click="open=!open;if(open)$nextTick(()=>$refs.fi.focus())">

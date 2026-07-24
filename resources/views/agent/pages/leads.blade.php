@@ -37,7 +37,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        @foreach($leads as $index => $l)
+                        @forelse($leads as $index => $l)
                         @php
                             $status = $l->status ?? 'New';
                             $color = 'bg-gray-500';
@@ -64,12 +64,7 @@
                         <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap" id="lead-row-{{ $l->id }}">
                             <td class="py-4 pl-4 text-xs font-bold text-gray-800">{{ $srl }}</td>
                             <td class="py-4">
-                                <div class="flex items-center">
-                                    <img src="https://i.pravatar.cc/100?u={{ $l->id }}" class="w-10 h-10 rounded-xl object-cover mr-3 border border-gray-100">
-                                    <div>
-                                        <p class="text-[10px] font-bold text-gray-800 lead-name">{{ $l->name }}</p>
-                                    </div>
-                                </div>
+                                <p class="text-[10px] font-bold text-gray-800 lead-name">{{ $l->name }}</p>
                             </td>
                             <td class="py-4 text-[10px] font-bold text-primary lead-loc">{{ $l->package ?? 'Website Inquiry' }}</td>
                             <td class="py-4">
@@ -93,7 +88,17 @@
                                 </div>
                             </td>
                         </tr>
-                        @endforeach
+                        @empty
+                        <tr>
+                            <td colspan="8" class="py-16 text-center">
+                                <div class="flex flex-col items-center gap-3 text-gray-300">
+                                    <i class="fas fa-inbox text-5xl"></i>
+                                    <p class="text-sm font-bold text-gray-400">No leads yet</p>
+                                    <p class="text-xs text-gray-300">Inquiry requests from travelers on your package pages will appear here.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -163,12 +168,9 @@
         <p class="text-[10px] text-gray-400 font-medium mb-8">Comprehensive information for the selected lead.</p>
         
         <div class="space-y-6">
-            <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-2xl">
-                <img id="viewLeadImg" src="" class="w-16 h-16 rounded-2xl object-cover border-2 border-white shadow-sm">
-                <div>
-                    <h4 id="viewLeadName" class="text-lg font-bold text-gray-800"></h4>
-                    <p id="viewLeadLoc" class="text-xs text-gray-400"></p>
-                </div>
+            <div class="p-4 bg-gray-50 rounded-2xl">
+                <h4 id="viewLeadName" class="text-lg font-bold text-gray-800"></h4>
+                <p id="viewLeadLoc" class="text-xs text-gray-400 mt-1"></p>
             </div>
             
             <div class="grid grid-cols-1 gap-4">

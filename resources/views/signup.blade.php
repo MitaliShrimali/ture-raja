@@ -245,7 +245,7 @@
 
                 <!-- Submit -->
                 <button type="submit"
-                    class="btn-signup w-full text-white rounded-xl py-3.5 font-bold text-sm uppercase tracking-widest shadow-lg mt-1">
+                    class="cursor-pointer btn-signup w-full text-white rounded-xl py-3.5 font-bold text-sm uppercase tracking-widest shadow-lg mt-1">
                     Sign Up
                 </button>
 

@@ -310,7 +310,7 @@
         <div class="container-custom relative z-10 text-center flex flex-col items-center">
             <div class="flex items-center gap-3">
                 <h1 class="agent-hero-title">{{ $agent->name }}</h1>
-                @if($agent->service_guaranteed)
+                @if(!empty($agent->service_guaranteed))
                     <i data-lucide="check-circle" class="text-blue-500 w-10 h-10 mt-2" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));" title="Trusted Agent"></i>
                 @endif
             </div>

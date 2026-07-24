@@ -106,41 +106,43 @@ class AgentController extends Controller
     {
         $agentId = session('agent_id');
         $agent = DB::table('agents')->where('id', $agentId)->first();
-        
-        $packagesCount = 0;
-        if ($agent) {
-            $allPackages = DB::table('packages')->select('agent')->get();
-            $packagesCount = $allPackages->filter(function ($pkg) use ($agentId, $agent) {
-                if (!$pkg->agent) return false;
-                $agentData = json_decode($pkg->agent, true);
-                if (!$agentData) return false;
-                return (isset($agentData['id']) && $agentData['id'] == $agentId)
-                    || (isset($agentData['name']) && $agentData['name'] === $agent->name);
-            })->count();
-        }
 
-        $isNew = ($packagesCount === 0);
+        // Fetch all packages and filter to this agent's packages
+        $allPackages = DB::table('packages')->select('id', 'agent', 'status')->get();
+        $agentPackages = $allPackages->filter(function ($pkg) use ($agentId, $agent) {
+            if (!$pkg->agent) return false;
+            $agentData = json_decode($pkg->agent, true);
+            if (!$agentData) return false;
+            return (isset($agentData['id']) && $agentData['id'] == $agentId)
+                || ($agent && isset($agentData['name']) && $agentData['name'] === $agent->name);
+        });
+
+        // Real dynamic counts
+        $totalPackages   = $agentPackages->count();
+        $activePackages  = $agentPackages->where('status', 'Active')->count();
+        $pendingPackages = $agentPackages->where('status', 'Pending')->count();
+        $expiredPackages = $agentPackages->where('status', 'Inactive')->count();
+
+        // Real leads count for this agent
+        $totalLeads = DB::table('leads')->where('agent_id', $agentId)->count();
+
+        // Real reviews count
+        $profileReviews = DB::table('agent_feedback')->where('agent_id', $agentId)->count();
 
         return view('agent.pages.dashboard', [
-            'page_title' => 'Dashboard',
+            'page_title'      => 'Dashboard',
             'page_breadcrumb' => 'Pages / Dashboard',
-            'agent' => $agent,
-            'isNew' => $isNew,
-            'totalPackages' => $isNew ? 0 : 200,
-            'activePackages' => $isNew ? 0 : 20,
-            'pendingPackages' => $isNew ? 0 : 2,
-            'expiredPackages' => $isNew ? 0 : 0,
-            'totalLeads' => $isNew ? 0 : 682,
-            'profilePackages' => $isNew ? 0 : 28,
-            'profileLeads' => $isNew ? 0 : 643,
-            'profileReviews' => $isNew ? 0 : 76,
-            'recentLeads' => $isNew ? [] : [
-                ['name' => 'Chakra Soft UI Version', 'icon' => 'fab fa-xbox text-purple-500', 'budget' => '$14,000', 'prog' => '60%', 'color' => 'bg-primary'],
-                ['name' => 'Add Progress Track', 'icon' => 'fas fa-chart-line text-blue-500', 'budget' => '$3,000', 'prog' => '10%', 'color' => 'bg-blue-500'],
-                ['name' => 'Fix Platform Errors', 'icon' => 'fas fa-exclamation-triangle text-red-500', 'budget' => 'Not set', 'prog' => '100%', 'color' => 'bg-green-500'],
-                ['name' => 'Launch our Mobile App', 'icon' => 'fab fa-spotify text-green-500', 'budget' => '$32,000', 'prog' => '100%', 'color' => 'bg-green-500'],
-            ],
-            'chartData' => $isNew ? [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] : [40, 70, 55, 65, 50, 90, 60, 80, 45, 75, 55, 65]
+            'agent'           => $agent,
+            'totalPackages'   => $totalPackages,
+            'activePackages'  => $activePackages,
+            'pendingPackages' => $pendingPackages,
+            'expiredPackages' => $expiredPackages,
+            'totalLeads'      => $totalLeads,
+            'profilePackages' => $totalPackages,
+            'profileLeads'    => $totalLeads,
+            'profileReviews'  => $profileReviews,
+            'recentLeads'     => [],
+            'chartData'       => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]);
     }
 
@@ -187,6 +189,8 @@ class AgentController extends Controller
             'agency_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'location' => 'required|string',
+            'state' => 'required|string',
+            'country' => 'required|string',
             'address' => 'required|string',
             'status' => 'required|string|in:Online,Offline'
         ]);
@@ -196,6 +200,8 @@ class AgentController extends Controller
             'agency_name' => $request->agency_name,
             'phone' => $request->phone,
             'location' => $request->location,
+            'state' => $request->state,
+            'country' => $request->country,
             'address' => $request->address,
             'status' => $request->status,
             'created_at' => now(),
@@ -216,6 +222,8 @@ class AgentController extends Controller
             'agency_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'location' => 'required|string',
+            'state' => 'required|string',
+            'country' => 'required|string',
             'address' => 'required|string',
             'status' => 'required|string|in:Online,Offline'
         ]);
@@ -224,6 +232,8 @@ class AgentController extends Controller
             'agency_name' => $request->agency_name,
             'phone' => $request->phone,
             'location' => $request->location,
+            'state' => $request->state,
+            'country' => $request->country,
             'address' => $request->address,
             'status' => $request->status,
             'updated_at' => now()
@@ -1060,9 +1070,14 @@ class AgentController extends Controller
         $agentId   = session('agent_id');
         $agentName = session('agent_name', '');
 
-        $hotels = DB::table('hotels')->orderBy('id', 'desc')->get();
-        $agents = DB::table('agents')->orderBy('name', 'asc')->get();
-        
+        // Only show hotels that belong to THIS agent
+        $hotels = DB::table('hotels')
+            ->leftJoin('packages', 'hotels.package_id', '=', 'packages.id')
+            ->where('hotels.agent_id', $agentId)
+            ->select('hotels.*', 'packages.title as package_title')
+            ->orderBy('hotels.id', 'desc')
+            ->get();
+
         $hotelCategories = DB::table('hotel_categories')->orderBy('id', 'asc')->get();
 
         $allPackages = DB::table('packages')->select('id', 'title', 'agent')->orderBy('created_at', 'desc')->get();
@@ -1078,7 +1093,6 @@ class AgentController extends Controller
             'page_title'      => 'Hotels',
             'page_breadcrumb' => 'Pages / Hotels',
             'hotels'          => $hotels,
-            'agents'          => $agents,
             'hotelCategories' => $hotelCategories,
             'packages'        => $packages,
         ]);
@@ -1086,14 +1100,20 @@ class AgentController extends Controller
     
     public function storeHotel(\Illuminate\Http\Request $request)
     {
-        $request->validate(['name' => 'required', 'location' => 'required']);
-        
+        $request->validate(['name' => 'required', 'location' => 'required', 'category' => 'required']);
+
+        $agentId = session('agent_id');
+
         $hotelId = DB::table('hotels')->insertGetId([
-            'name' => $request->name,
-            'category' => $request->category ?? 'Luxury Resort',
-            'location' => $request->location,
-            'rating' => 5,
-            'status' => $request->status ?? 'Published',
+            'agent_id'   => $agentId,
+            'package_id' => $request->package_id ?: null,
+            'name'       => $request->name,
+            'category'   => $request->category,
+            'location'   => $request->location,
+            'state'      => $request->state,
+            'country'    => $request->country,
+            'rating'     => 5,
+            'status'     => $request->status ?? 'Published',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -1107,16 +1127,41 @@ class AgentController extends Controller
 
     public function updateHotel(\Illuminate\Http\Request $request)
     {
-        $request->validate(['id' => 'required', 'name' => 'required']);
-        
-        DB::table('hotels')->where('id', $request->id)->update([
-            'name' => $request->name,
-            'category' => $request->category,
-            'location' => $request->location,
-            'status' => $request->status ?? 'Published',
-            'updated_at' => now(),
-        ]);
+        $request->validate(['id' => 'required', 'name' => 'required', 'category' => 'required']);
 
+        $agentId = session('agent_id');
+
+        $oldHotel = DB::table('hotels')
+            ->where('id', $request->id)
+            ->where('agent_id', $agentId)
+            ->first();
+
+        if (!$oldHotel) {
+            return redirect()->back()->with('error', 'Hotel not found.');
+        }
+
+        // 1. Update the hotels database record
+        DB::table('hotels')
+            ->where('id', $request->id)
+            ->where('agent_id', $agentId)
+            ->update([
+                'name'       => $request->name,
+                'category'   => $request->category,
+                'location'   => $request->location,
+                'state'      => $request->state,
+                'country'    => $request->country,
+                'package_id' => $request->package_id ?: null,
+                'status'     => $request->status ?? 'Published',
+                'updated_at' => now(),
+            ]);
+
+        // 2. Synchronize with Packages JSON
+        // If it was linked to an old package, clean it up
+        if ($oldHotel->package_id) {
+            $this->removeHotelFromPackage($oldHotel->package_id, $oldHotel->name);
+        }
+
+        // Add to new package if selected
         if ($request->filled('package_id')) {
             $this->addHotelToPackage($request->package_id, $request->name, $request->category);
         }
@@ -1126,8 +1171,41 @@ class AgentController extends Controller
 
     public function deleteHotel($id)
     {
-        DB::table('hotels')->where('id', $id)->delete();
+        $agentId = session('agent_id');
+
+        $hotel = DB::table('hotels')
+            ->where('id', $id)
+            ->where('agent_id', $agentId)
+            ->first();
+
+        if ($hotel) {
+            if ($hotel->package_id) {
+                $this->removeHotelFromPackage($hotel->package_id, $hotel->name);
+            }
+
+            DB::table('hotels')
+                ->where('id', $id)
+                ->delete();
+        }
+
         return redirect()->back()->with('success', 'Hotel deleted successfully!');
+    }
+
+    private function removeHotelFromPackage($packageId, $hotelName)
+    {
+        $package = DB::table('packages')->where('id', $packageId)->first();
+        if ($package) {
+            $hotels = json_decode($package->hotels, true) ?? [];
+            $newHotels = [];
+            foreach ($hotels as $h) {
+                if ($h['name'] !== $hotelName) {
+                    $newHotels[] = $h;
+                }
+            }
+            DB::table('packages')->where('id', $packageId)->update([
+                'hotels' => json_encode($newHotels)
+            ]);
+        }
     }
 
     private function addHotelToPackage($packageId, $hotelName, $hotelCategory)
@@ -1373,10 +1451,93 @@ class AgentController extends Controller
 
     public function services()
     {
+        $agentId = session('agent_id');
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        
         return view('agent.pages.services', [
             'page_title' => 'Services',
-            'page_breadcrumb' => 'Pages / Services'
+            'page_breadcrumb' => 'Pages / Services',
+            'agent' => $agent
         ]);
+    }
+
+    public function toggleAgentService(Request $request)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $name = $request->input('name');
+        $icon = $request->input('icon');
+        $checked = filter_var($request->input('checked'), FILTER_VALIDATE_BOOLEAN);
+
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        $services = json_decode($agent->services ?? '[]', true) ?: [];
+
+        if ($checked) {
+            // Check if already exists
+            $exists = false;
+            foreach ($services as $s) {
+                if ($s['name'] === $name) {
+                    $exists = true;
+                    break;
+                }
+            }
+            if (!$exists) {
+                $services[] = ['name' => $name, 'icon' => $icon];
+            }
+        } else {
+            // Remove
+            $services = array_filter($services, function ($s) use ($name) {
+                return $s['name'] !== $name;
+            });
+            $services = array_values($services); // reindex
+        }
+
+        DB::table('agents')->where('id', $agentId)->update([
+            'services' => json_encode($services),
+            'updated_at' => now()
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    public function addAgentService(Request $request)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please log in.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'icon' => 'required|string|max:100'
+        ]);
+
+        $name = $request->input('name');
+        $icon = $request->input('icon');
+
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        $services = json_decode($agent->services ?? '[]', true) ?: [];
+
+        $exists = false;
+        foreach ($services as $s) {
+            if (strtolower($s['name']) === strtolower($name)) {
+                $exists = true;
+                break;
+            }
+        }
+
+        if (!$exists) {
+            $services[] = ['name' => $name, 'icon' => $icon];
+            DB::table('agents')->where('id', $agentId)->update([
+                'services' => json_encode($services),
+                'updated_at' => now()
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Service added successfully!');
     }
 
     public function settings()

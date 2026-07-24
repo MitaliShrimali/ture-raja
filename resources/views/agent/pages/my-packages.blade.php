@@ -31,6 +31,15 @@
 <!-- Packages Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6" id="packagesGrid">
 
+    <!-- Create New Card (always shown FIRST) -->
+    <a href="{{ route('agent.packages.create') }}" class="bg-gray-100/50 rounded-[32px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-8 text-center hover:bg-gray-100 transition-colors cursor-pointer group min-h-[300px]">
+        <div class="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-400 mb-4 group-hover:bg-white group-hover:border-[#e85d26] group-hover:text-[#e85d26] transition-all">
+            <i class="fas fa-plus"></i>
+        </div>
+        <p class="text-sm font-bold text-gray-400 group-hover:text-gray-800 transition-colors">Create a New Package</p>
+        <p class="text-[10px] text-gray-300 mt-1 font-medium">Fill in details and submit for review</p>
+    </a>
+
     @forelse($packages as $pkg)
     @php
         $isActive = $pkg->status === 'Active';
@@ -90,24 +99,11 @@
         </div>
     </div>
     @empty
-    <!-- Empty state: only show the create card -->
+    {{-- No packages yet — create card is already shown first --}}
     @endforelse
 
-    <!-- Create New Card (always shown) -->
-    <a href="{{ route('agent.packages.create') }}" class="bg-gray-100/50 rounded-[32px] border-2 border-dashed border-gray-200 flex flex-col items-center justify-center p-8 text-center hover:bg-gray-100 transition-colors cursor-pointer group min-h-[300px]">
-        <div class="w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center text-gray-400 mb-4 group-hover:bg-white group-hover:border-[#e85d26] group-hover:text-[#e85d26] transition-all">
-            <i class="fas fa-plus"></i>
-        </div>
-        <p class="text-sm font-bold text-gray-400 group-hover:text-gray-800 transition-colors">Create a New Package</p>
-        <p class="text-[10px] text-gray-300 mt-1 font-medium">Fill in details and submit for review</p>
-    </a>
 </div>
 
-@if($packages->isEmpty())
-<div class="text-center py-8">
-    <p class="text-gray-400 text-sm font-medium">You haven't created any packages yet. Click <strong>Create Package</strong> to get started!</p>
-</div>
-@endif
 
 <script>
     function filterPackages() {

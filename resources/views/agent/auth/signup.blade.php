@@ -221,8 +221,28 @@
                 <!-- Phone -->
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Mobile Number*</label>
-                    <input type="tel" name="phone" value="{{ old('phone') }}" required placeholder="+91 98765 43210"
-                        class="input-field" />
+                    <div class="flex gap-2 items-center">
+                        <div class="relative w-28 shrink-0">
+                            <select class="phone-country-code w-full border-none rounded-xl py-3.5 px-3 outline-none text-gray-700 text-xs font-medium"
+                                style="background-color: #f3f4f6;">
+                                <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                <option value="+1" data-len="10">🇺🇸 +1</option>
+                                <option value="+44" data-len="10">🇬🇧 +44</option>
+                                <option value="+62" data-len="11">🇮🇩 +62</option>
+                                <option value="+65" data-len="8">🇸🇬 +65</option>
+                                <option value="+971" data-len="9">🇦🇪 +971</option>
+                                <option value="+61" data-len="9">🇦🇺 +61</option>
+                                <option value="+66" data-len="9">🇹🇭 +66</option>
+                                <option value="+60" data-len="10">🇲🇾 +60</option>
+                            </select>
+                        </div>
+                        <div class="relative flex-grow">
+                            <input type="tel" required placeholder="Mobile Number *"
+                                class="phone-number-val w-full border-none rounded-xl py-3.5 px-4 outline-none text-gray-700 text-xs font-medium"
+                                style="background-color: #f3f4f6;">
+                        </div>
+                    </div>
+                    <input type="hidden" class="phone-full-val" name="phone" value="{{ old('phone') }}">
                 </div>
 
                 <!-- Password -->
@@ -264,7 +284,7 @@
 
                 <!-- Submit -->
                 <button type="submit"
-                    class="btn-signup w-full text-white rounded-xl py-3.5 font-bold text-sm uppercase tracking-widest shadow-lg mt-1">
+                    class="cursor-pointer btn-signup w-full text-white rounded-xl py-3.5 font-bold text-sm uppercase tracking-widest shadow-lg mt-1">
                     Create Agent Account
                 </button>
 
@@ -302,6 +322,48 @@
     <script>
         window.onpageshow = function (e) { if (e.persisted) window.location.reload(); };
         lucide.createIcons();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.querySelector('.phone-country-code');
+            if (select) {
+                const parent = select.closest('.flex') || select.parentElement;
+                const input = parent.querySelector('.phone-number-val');
+                const hidden = parent.querySelector('.phone-full-val');
+
+                if (hidden && hidden.value) {
+                    const val = hidden.value;
+                    const options = Array.from(select.options);
+                    options.sort((a, b) => b.value.length - a.value.length);
+                    for (let opt of options) {
+                        if (val.startsWith(opt.value)) {
+                            select.value = opt.value;
+                            input.value = val.substring(opt.value.length);
+                            break;
+                        }
+                    }
+                }
+
+                function validatePhone() {
+                    const code = select.value;
+                    const length = parseInt(select.options[select.selectedIndex].getAttribute('data-len') || '10');
+                    let val = input.value.replace(/\D/g, '');
+                    if (val.length > length) {
+                        val = val.substring(0, length);
+                    }
+                    input.value = val;
+                    if (val.length > 0 && val.length !== length) {
+                        input.setCustomValidity(`Phone number must be exactly ${length} digits.`);
+                    } else {
+                        input.setCustomValidity('');
+                    }
+                    hidden.value = val ? (code + val) : '';
+                }
+
+                select.addEventListener('change', validatePhone);
+                input.addEventListener('input', validatePhone);
+                validatePhone();
+            }
+        });
     </script>
 </body>
 

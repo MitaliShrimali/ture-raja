@@ -927,14 +927,23 @@
 
                             <!-- Expertise Tags -->
                             <div class="pt-5 border-t border-gray-100">
-                                <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Specialized In</h4>
+                                <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Services</h4>
                                 <div class="flex flex-wrap gap-2">
                                     @php
-                                        $services = ['Flight Booking', 'Visa', 'International Tours', 'Domestic Escapes'];
+                                        $agentServices = ($dbAgent && $dbAgent->services) ? json_decode($dbAgent->services, true) : [];
+                                        if (empty($agentServices)) {
+                                            $agentServices = [
+                                                ['name' => 'Flight Booking', 'icon' => 'fas fa-plane'],
+                                                ['name' => 'Visa', 'icon' => 'fas fa-passport'],
+                                                ['name' => 'International Tours', 'icon' => 'fas fa-globe'],
+                                                ['name' => 'Domestic Escapes', 'icon' => 'fas fa-map-marked-alt']
+                                            ];
+                                        }
                                     @endphp
-                                    @foreach($services as $service)
+                                    @foreach($agentServices as $service)
                                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-100 text-gray-600 rounded-lg text-[11px] font-bold hover:bg-gray-100 transition-colors">
-                                            {{ $service }}
+                                            <i class="{{ $service['icon'] ?? 'fas fa-check' }} text-[#e85d26] text-[10px]"></i>
+                                            {{ $service['name'] }}
                                         </span>
                                     @endforeach
                                 </div>
@@ -968,8 +977,8 @@
                         <form action="{{ route('contact.submit') }}" method="POST" class="space-y-3">
                             @csrf
                             @php
-                                $agentIdForForm = $agentData->id ?? null;
-                                $agentNameForForm = $agentData->name ?? 'Tour Raja';
+                                $agentIdForForm = $agentId ?? null;
+                                $agentNameForForm = $agentName ?? 'Tour Raja';
                             @endphp
                             <input type="hidden" name="agent_id" value="{{ $agentIdForForm }}">
                             <input type="hidden" name="subject" value="Inquiry for {{ $package['title'] }}">
@@ -979,8 +988,26 @@
                                 class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
                             <input type="email" name="email" required placeholder="Enter your email"
                                 class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
-                            <input type="tel" name="phone" required placeholder="Enter your phone number"
-                                class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                            <div class="flex gap-2 items-center">
+                                <div class="relative w-28 shrink-0">
+                                    <select class="phone-country-code w-full px-3 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                                        <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                        <option value="+1" data-len="10">🇺🇸 +1</option>
+                                        <option value="+44" data-len="10">🇬🇧 +44</option>
+                                        <option value="+62" data-len="11">🇮🇩 +62</option>
+                                        <option value="+65" data-len="8">🇸🇬 +65</option>
+                                        <option value="+971" data-len="9">🇦🇪 +971</option>
+                                        <option value="+61" data-len="9">🇦🇺 +61</option>
+                                        <option value="+66" data-len="9">🇹🇭 +66</option>
+                                        <option value="+60" data-len="10">🇲🇾 +60</option>
+                                    </select>
+                                </div>
+                                <div class="relative flex-grow">
+                                    <input type="tel" required placeholder="Phone Number *"
+                                        class="phone-number-val w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                                </div>
+                            </div>
+                            <input type="hidden" class="phone-full-val" name="phone">
                             <textarea name="message" required rows="3" placeholder="Go ahead, we are listening..."
                                 class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400 resize-none"></textarea>
                             <button type="submit"
@@ -1149,8 +1176,26 @@
                         </div>
                         <div class="space-y-1.5">
                             <label class="text-xs font-bold uppercase tracking-widest text-gray-500">Phone</label>
-                            <input type="text" name="traveler_phone" required
-                                class="w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                            <div class="flex gap-2 items-center">
+                                <div class="relative w-28 shrink-0">
+                                    <select class="phone-country-code w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-2 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-xs font-bold">
+                                        <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                        <option value="+1" data-len="10">🇺🇸 +1</option>
+                                        <option value="+44" data-len="10">🇬🇧 +44</option>
+                                        <option value="+62" data-len="11">🇮🇩 +62</option>
+                                        <option value="+65" data-len="8">🇸🇬 +65</option>
+                                        <option value="+971" data-len="9">🇦🇪 +971</option>
+                                        <option value="+61" data-len="9">🇦🇺 +61</option>
+                                        <option value="+66" data-len="9">🇹🇭 +66</option>
+                                        <option value="+60" data-len="10">🇲🇾 +60</option>
+                                    </select>
+                                </div>
+                                <div class="relative flex-grow">
+                                    <input type="tel" required placeholder="Phone *"
+                                        class="phone-number-val w-full bg-gray-50 border border-gray-200 rounded-md py-3 px-4 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                                </div>
+                            </div>
+                            <input type="hidden" class="phone-full-val" name="traveler_phone">
                         </div>
                     </div>
 

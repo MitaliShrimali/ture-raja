@@ -144,7 +144,7 @@
                     </div>
                     
                     <div class="pt-4">
-                        <button type="submit" :disabled="loading" class="w-full text-white rounded-lg py-3.5 font-bold text-base shadow-sm transition-colors hover:opacity-90 disabled:opacity-70 flex items-center justify-center gap-2" style="background-color: #E8460A;">
+                        <button type="submit" :disabled="loading" class="cursor-pointer w-full text-white rounded-lg py-3.5 font-bold text-base shadow-sm transition-colors hover:opacity-90 disabled:opacity-70 flex items-center justify-center gap-2" style="background-color: #E8460A;">
                             <span x-show="!loading" x-text="showForgotPassword ? 'Send Reset Link' : 'Login'"></span>
                             <span x-show="loading" x-text="showForgotPassword ? 'Sending...' : 'Logging in...'"></span>
                         </button>

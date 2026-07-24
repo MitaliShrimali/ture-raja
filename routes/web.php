@@ -44,12 +44,14 @@ Route::post('/wishlist/toggle', [UserController::class, 'toggleWishlist'])->name
 Route::get('/wishlist/remove/{packageId}', [UserController::class, 'removeWishlist'])->name('wishlist.remove');
 
 // User profile & dashboard
-Route::get('/profile', [UserController::class, 'profile'])->name('profile');
-Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
-Route::post('/profile/password', [UserController::class, 'changePassword'])->name('profile.password');
-Route::get('/profile/cancel-booking/{id}', [UserController::class, 'cancelBooking'])->name('booking.cancel');
-Route::get('/profile/notification/read/{id}', [UserController::class, 'markNotificationRead'])->name('notification.read');
-Route::post('/profile/review', [UserController::class, 'submitReview'])->name('review.submit');
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/password', [UserController::class, 'changePassword'])->name('profile.password');
+    Route::get('/profile/cancel-booking/{id}', [UserController::class, 'cancelBooking'])->name('booking.cancel');
+    Route::get('/profile/notification/read/{id}', [UserController::class, 'markNotificationRead'])->name('notification.read');
+    Route::post('/profile/review', [UserController::class, 'submitReview'])->name('review.submit');
+});
 
 // ─── LOGIN & SIGNUP ROUTES ─────────────────────────────────────────────────────────────
 
@@ -69,46 +71,47 @@ Route::prefix('admin')->group(function () {
     Route::get('/signup', function () {
         return view('admin.signup', ['type' => 'admin']);
     });
-    Route::get('/dashboard', [AdminController::class, 'dashboard']);
-    Route::get('/packages/approve/{id}', [AdminController::class, 'approvePackage'])->name('admin.package.approve');
-    Route::get('/packages/decline/{id}', [AdminController::class, 'declinePackage'])->name('admin.package.decline');
-    Route::get('/packages/pending', [AdminController::class, 'pendingPackages'])->name('admin.packages.pending');
-    Route::get('/packages/view/{id}', [AdminController::class, 'viewPackage'])->name('admin.packages.view');
-    
-    // Inventory & Stays
-    Route::get('/packages', [AdminController::class, 'packages'])->name('admin.packages');
-    Route::get('/packages/international', [AdminController::class, 'internationalPackages']);
-    Route::get('/packages/domestic', [AdminController::class, 'domesticPackages']);
-    Route::get('/packages/create', [AdminController::class, 'createPackage']);
-    Route::get('/hotels', [AdminController::class, 'hotels']);
-
-    // Legacy redirects for old paths (keep for backward compat)
-    Route::get('/amenities', fn() => redirect('/admin/settings/preferences/amenities'));
-    Route::get('/holiday-types', fn() => redirect('/admin/settings/preferences/holiday-types'));
-    Route::get('/activities', fn() => redirect('/admin/settings/preferences/activities'));
-    Route::get('/transits', fn() => redirect('/admin/settings/preferences/transits'));
-    Route::get('/durations', fn() => redirect('/admin/settings/preferences/durations'));
-
-
     Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('admin.login.submit');
-    Route::get('/users', [AdminController::class, 'users']);
-    Route::get('/users/create', [AdminController::class, 'createAdminUser']);
-    Route::get('/users/edit/{id}', [AdminController::class, 'editAdminUser']);
-    Route::get('/customers', [AdminController::class, 'customers']);
-    Route::get('/customers/delete/{id}', [AdminController::class, 'deleteCustomer']);
-    Route::get('/agents', [AdminController::class, 'agents']);
-    Route::get('/agents/profile/{id}', [AdminController::class, 'agentProfile']);
-    Route::get('/registered-agents', [AdminController::class, 'registeredAgents']);
-    Route::get('/leads', [AdminController::class, 'leads']);
-    Route::get('/careers', [AdminController::class, 'careers']);
-    Route::get('/careers/delete/{id}', [AdminController::class, 'deleteCareer']);
 
-    // Subscription Oversight
-    Route::get('/paid-users', [AdminController::class, 'paidUsers']);
-    Route::get('/paid-users/create', [AdminController::class, 'createPaidUser']);
-    Route::get('/payments', [AdminController::class, 'payments']);
-    Route::get('/ads', [AdminController::class, 'ads']);
-    Route::get('/plans', [AdminController::class, 'plans']);
+    Route::middleware('auth')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard']);
+        Route::get('/packages/approve/{id}', [AdminController::class, 'approvePackage'])->name('admin.package.approve');
+        Route::get('/packages/decline/{id}', [AdminController::class, 'declinePackage'])->name('admin.package.decline');
+        Route::get('/packages/pending', [AdminController::class, 'pendingPackages'])->name('admin.packages.pending');
+        Route::get('/packages/view/{id}', [AdminController::class, 'viewPackage'])->name('admin.packages.view');
+        
+        // Inventory & Stays
+        Route::get('/packages', [AdminController::class, 'packages'])->name('admin.packages');
+        Route::get('/packages/international', [AdminController::class, 'internationalPackages']);
+        Route::get('/packages/domestic', [AdminController::class, 'domesticPackages']);
+        Route::get('/packages/create', [AdminController::class, 'createPackage']);
+        Route::get('/hotels', [AdminController::class, 'hotels']);
+
+        // Legacy redirects for old paths (keep for backward compat)
+        Route::get('/amenities', fn() => redirect('/admin/settings/preferences/amenities'));
+        Route::get('/holiday-types', fn() => redirect('/admin/settings/preferences/holiday-types'));
+        Route::get('/activities', fn() => redirect('/admin/settings/preferences/activities'));
+        Route::get('/transits', fn() => redirect('/admin/settings/preferences/transits'));
+        Route::get('/durations', fn() => redirect('/admin/settings/preferences/durations'));
+
+        Route::get('/users', [AdminController::class, 'users']);
+        Route::get('/users/create', [AdminController::class, 'createAdminUser']);
+        Route::get('/users/edit/{id}', [AdminController::class, 'editAdminUser']);
+        Route::get('/customers', [AdminController::class, 'customers']);
+        Route::get('/customers/delete/{id}', [AdminController::class, 'deleteCustomer']);
+        Route::get('/agents', [AdminController::class, 'agents']);
+        Route::get('/agents/profile/{id}', [AdminController::class, 'agentProfile']);
+        Route::get('/registered-agents', [AdminController::class, 'registeredAgents']);
+        Route::get('/leads', [AdminController::class, 'leads']);
+        Route::get('/careers', [AdminController::class, 'careers']);
+        Route::get('/careers/delete/{id}', [AdminController::class, 'deleteCareer']);
+
+        // Subscription Oversight
+        Route::get('/paid-users', [AdminController::class, 'paidUsers']);
+        Route::get('/paid-users/create', [AdminController::class, 'createPaidUser']);
+        Route::get('/payments', [AdminController::class, 'payments']);
+        Route::get('/ads', [AdminController::class, 'ads']);
+        Route::get('/plans', [AdminController::class, 'plans']);
 
     // Platform Settings
     Route::get('/home-editor', [AdminController::class, 'homeEditor']);
@@ -318,11 +321,12 @@ Route::prefix('admin')->group(function () {
     Route::post('/profile/update', [AdminController::class, 'updateProfile']);
 
     // Offer Stickers
-    Route::get('/offer-stickers', [AdminController::class, 'offerStickers']);
-    Route::post('/offer-stickers/store', [AdminController::class, 'storeOfferSticker']);
-    Route::post('/offer-stickers/update', [AdminController::class, 'updateOfferSticker']);
-    Route::get('/offer-stickers/delete/{id}', [AdminController::class, 'deleteOfferSticker']);
-    Route::get('/offer-stickers/toggle/{id}', [AdminController::class, 'toggleOfferSticker']);
+        Route::get('/offer-stickers', [AdminController::class, 'offerStickers']);
+        Route::post('/offer-stickers/store', [AdminController::class, 'storeOfferSticker']);
+        Route::post('/offer-stickers/update', [AdminController::class, 'updateOfferSticker']);
+        Route::get('/offer-stickers/delete/{id}', [AdminController::class, 'deleteOfferSticker']);
+        Route::get('/offer-stickers/toggle/{id}', [AdminController::class, 'toggleOfferSticker']);
+    });
 });
 
 // ─── AGENT ROUTES ────────────────────────────────────────────────────────────
@@ -335,54 +339,58 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/logout',  [AgentController::class, 'logout'])->name('logout');
 
     // --- Protected agent pages ---
-    Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
-    Route::get('/about', [AgentController::class, 'about'])->name('about');
-    Route::get('/add-branch', [AgentController::class, 'addBranch'])->name('add-branch');
-    Route::get('/edit-branch/{id}', [AgentController::class, 'editBranch'])->name('edit-branch');
-    Route::get('/add-hotel', [AgentController::class, 'addHotel'])->name('add-hotel');
-    Route::post('/branch/store', [AgentController::class, 'storeBranch'])->name('branch.store');
-    Route::post('/branch/update/{id}', [AgentController::class, 'updateBranch'])->name('branch.update');
-    Route::get('/branch/delete/{id}', [AgentController::class, 'deleteBranch'])->name('branch.delete');
-    Route::get('/branch', [AgentController::class, 'branch'])->name('branch');
-    Route::get('/edit-images', [AgentController::class, 'editImages'])->name('edit-images');
-    Route::get('/edit-itinerary', [AgentController::class, 'editItinerary'])->name('edit-itinerary');
-    Route::get('/packages/create', [AgentController::class, 'createPackage'])->name('packages.create');
-    Route::get('/packages/edit/{id}', [AgentController::class, 'editPackage'])->name('packages.edit');
-    Route::post('/packages/store', [AgentController::class, 'storePackage'])->name('packages.store');
-    Route::post('/packages/update', [AgentController::class, 'updatePackage'])->name('packages.update');
-    Route::get('/packages/toggle/{id}', [AgentController::class, 'togglePackage'])->name('packages.toggle');
-    Route::get('/feedback', [AgentController::class, 'feedback'])->name('feedback');
-    Route::post('/feedback/store', [AgentController::class, 'storeFeedback'])->name('feedback.store');
-    Route::post('/feedback/update/{id}', [AgentController::class, 'updateFeedback'])->name('feedback.update');
-    Route::get('/feedback/delete/{id}', [AgentController::class, 'deleteFeedback'])->name('feedback.delete');
-    Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
-    Route::get('/api/gallery', [AgentController::class, 'apiGallery'])->name('api.gallery');
-    Route::post('/gallery/upload', [AgentController::class, 'uploadMedia'])->name('gallery.upload');
-    Route::post('/gallery/create-folder', [AgentController::class, 'createFolder'])->name('gallery.create-folder');
-    Route::post('/gallery/move', [AgentController::class, 'moveMedia'])->name('gallery.move');
-    Route::post('/gallery/delete', [AgentController::class, 'deleteMedia'])->name('gallery.delete');
-    Route::get('/hotels', [AgentController::class, 'hotels'])->name('hotels');
-    Route::post('/hotels/store', [AgentController::class, 'storeHotel'])->name('hotels.store');
-    Route::post('/hotels/update', [AgentController::class, 'updateHotel'])->name('hotels.update');
-    Route::post('/hotels/delete/{id}', [AgentController::class, 'deleteHotel'])->name('hotels.delete');
-    Route::get('/invoice', [AgentController::class, 'invoice'])->name('invoice');
-    Route::get('/invoice/{id}/download', [AgentController::class, 'downloadInvoice'])->name('invoice.download');
-    Route::get('/leads', [AgentController::class, 'leads'])->name('leads');
-    Route::post('/leads/update', [AgentController::class, 'updateLead'])->name('leads.update');
-    Route::post('/leads/delete/{id}', [AgentController::class, 'deleteLead'])->name('leads.delete');
-    Route::get('/contact', [AgentController::class, 'agentContact'])->name('contact');
-    Route::post('/contact/update', [AgentController::class, 'updateContact'])->name('contact.update');
-    Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
-    Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
-    Route::get('/payment', [AgentController::class, 'payment'])->name('payment');
-    Route::get('/checkout', [AgentController::class, 'checkout'])->name('checkout');
-    Route::post('/checkout/process', [AgentController::class, 'processCheckout'])->name('checkout.process');
-    Route::post('/payment', [AgentController::class, 'upgradePlan']);
-    Route::post('/payment/upgrade', [AgentController::class, 'upgradePlan'])->name('payment.upgrade');
-    Route::get('/profile', function() { return redirect()->route('agent.settings'); })->name('profile');
-    Route::get('/services', [AgentController::class, 'services'])->name('services');
-    Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
-    Route::post('/settings/update', [AgentController::class, 'updateSettings'])->name('settings.update');
+    Route::middleware('agent.auth')->group(function () {
+        Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
+        Route::get('/about', [AgentController::class, 'about'])->name('about');
+        Route::get('/add-branch', [AgentController::class, 'addBranch'])->name('add-branch');
+        Route::get('/edit-branch/{id}', [AgentController::class, 'editBranch'])->name('edit-branch');
+        Route::get('/add-hotel', [AgentController::class, 'addHotel'])->name('add-hotel');
+        Route::post('/branch/store', [AgentController::class, 'storeBranch'])->name('branch.store');
+        Route::post('/branch/update/{id}', [AgentController::class, 'updateBranch'])->name('branch.update');
+        Route::get('/branch/delete/{id}', [AgentController::class, 'deleteBranch'])->name('branch.delete');
+        Route::get('/branch', [AgentController::class, 'branch'])->name('branch');
+        Route::get('/edit-images', [AgentController::class, 'editImages'])->name('edit-images');
+        Route::get('/edit-itinerary', [AgentController::class, 'editItinerary'])->name('edit-itinerary');
+        Route::get('/packages/create', [AgentController::class, 'createPackage'])->name('packages.create');
+        Route::get('/packages/edit/{id}', [AgentController::class, 'editPackage'])->name('packages.edit');
+        Route::post('/packages/store', [AgentController::class, 'storePackage'])->name('packages.store');
+        Route::post('/packages/update', [AgentController::class, 'updatePackage'])->name('packages.update');
+        Route::get('/packages/toggle/{id}', [AgentController::class, 'togglePackage'])->name('packages.toggle');
+        Route::get('/feedback', [AgentController::class, 'feedback'])->name('feedback');
+        Route::post('/feedback/store', [AgentController::class, 'storeFeedback'])->name('feedback.store');
+        Route::post('/feedback/update/{id}', [AgentController::class, 'updateFeedback'])->name('feedback.update');
+        Route::get('/feedback/delete/{id}', [AgentController::class, 'deleteFeedback'])->name('feedback.delete');
+        Route::get('/gallery', [AgentController::class, 'gallery'])->name('gallery');
+        Route::get('/api/gallery', [AgentController::class, 'apiGallery'])->name('api.gallery');
+        Route::post('/gallery/upload', [AgentController::class, 'uploadMedia'])->name('gallery.upload');
+        Route::post('/gallery/create-folder', [AgentController::class, 'createFolder'])->name('gallery.create-folder');
+        Route::post('/gallery/move', [AgentController::class, 'moveMedia'])->name('gallery.move');
+        Route::post('/gallery/delete', [AgentController::class, 'deleteMedia'])->name('gallery.delete');
+        Route::get('/hotels', [AgentController::class, 'hotels'])->name('hotels');
+        Route::post('/hotels/store', [AgentController::class, 'storeHotel'])->name('hotels.store');
+        Route::post('/hotels/update', [AgentController::class, 'updateHotel'])->name('hotels.update');
+        Route::post('/hotels/delete/{id}', [AgentController::class, 'deleteHotel'])->name('hotels.delete');
+        Route::get('/invoice', [AgentController::class, 'invoice'])->name('invoice');
+        Route::get('/invoice/{id}/download', [AgentController::class, 'downloadInvoice'])->name('invoice.download');
+        Route::get('/leads', [AgentController::class, 'leads'])->name('leads');
+        Route::post('/leads/update', [AgentController::class, 'updateLead'])->name('leads.update');
+        Route::post('/leads/delete/{id}', [AgentController::class, 'deleteLead'])->name('leads.delete');
+        Route::get('/contact', function() { return redirect()->route('agent.leads'); })->name('contact');
+        Route::post('/contact/update', [AgentController::class, 'updateContact'])->name('contact.update');
+        Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
+        Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
+        Route::get('/payment', [AgentController::class, 'payment'])->name('payment');
+        Route::get('/checkout', [AgentController::class, 'checkout'])->name('checkout');
+        Route::post('/checkout/process', [AgentController::class, 'processCheckout'])->name('checkout.process');
+        Route::post('/payment', [AgentController::class, 'upgradePlan']);
+        Route::post('/payment/upgrade', [AgentController::class, 'upgradePlan'])->name('payment.upgrade');
+        Route::get('/profile', function() { return redirect()->route('agent.settings'); })->name('profile');
+        Route::get('/services', [AgentController::class, 'services'])->name('services');
+        Route::post('/services/toggle', [AgentController::class, 'toggleAgentService'])->name('services.toggle');
+        Route::post('/services/add', [AgentController::class, 'addAgentService'])->name('services.add');
+        Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
+        Route::post('/settings/update', [AgentController::class, 'updateSettings'])->name('settings.update');
+    });
 });
 
 Route::get('/tour/{slug}', function($slug) {

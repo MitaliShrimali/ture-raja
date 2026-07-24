@@ -99,7 +99,7 @@
                                 <p class="text-[10px] text-muted-text font-semibold uppercase">Enable automated SLA</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="service_guaranteed" value="1" class="sr-only peer" {{ $agent->service_guaranteed ? 'checked' : '' }}>
+                                <input type="checkbox" name="service_guaranteed" value="1" class="sr-only peer" {{ !empty($agent->service_guaranteed) ? 'checked' : '' }}>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -111,7 +111,7 @@
                                 <p class="text-[10px] text-muted-text font-semibold uppercase">Enable billing & invoices</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="generate_bill" value="1" class="sr-only peer" {{ $agent->generate_bill ? 'checked' : '' }}>
+                                <input type="checkbox" name="generate_bill" value="1" class="sr-only peer" {{ !empty($agent->generate_bill) ? 'checked' : '' }}>
                                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -137,11 +137,49 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Mobile Number</label>
-                                <input required type="text" name="phone" value="{{ $agent->phone }}" placeholder="+91 00000 00000" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <div class="flex gap-2 items-center">
+                                    <div class="relative w-28 shrink-0">
+                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-3 outline-none text-xs font-medium">
+                                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                                            <option value="+62" data-len="11">🇮🇩 +62</option>
+                                            <option value="+65" data-len="8">🇸🇬 +65</option>
+                                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                                            <option value="+66" data-len="9">🇹🇭 +66</option>
+                                            <option value="+60" data-len="10">🇲🇾 +60</option>
+                                        </select>
+                                    </div>
+                                    <div class="relative flex-grow">
+                                        <input type="tel" required placeholder="Mobile Number *"
+                                            class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                    </div>
+                                </div>
+                                <input type="hidden" class="phone-full-val" name="phone" value="{{ $agent->phone }}">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Phone Number</label>
-                                <input type="text" name="landline" value="{{ $agent->landline }}" placeholder="+1 (555) 123-4567" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <div class="flex gap-2 items-center">
+                                    <div class="relative w-28 shrink-0">
+                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-3 outline-none text-xs font-medium">
+                                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                                            <option value="+62" data-len="11">🇮🇩 +62</option>
+                                            <option value="+65" data-len="8">🇸🇬 +65</option>
+                                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                                            <option value="+66" data-len="9">🇹🇭 +66</option>
+                                            <option value="+60" data-len="10">🇲🇾 +60</option>
+                                        </select>
+                                    </div>
+                                    <div class="relative flex-grow">
+                                        <input type="tel" placeholder="Phone Number *"
+                                            class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                    </div>
+                                </div>
+                                <input type="hidden" class="phone-full-val" name="landline" value="{{ $agent->landline }}">
                             </div>
                         </div>
 

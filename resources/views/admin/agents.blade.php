@@ -128,11 +128,49 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Mobile Number</label>
-                                <input required type="text" name="phone" placeholder="+1 (555) 000-0000" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <div class="flex gap-2 items-center">
+                                    <div class="relative w-28 shrink-0">
+                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-3 outline-none text-xs font-medium">
+                                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                                            <option value="+62" data-len="11">🇮🇩 +62</option>
+                                            <option value="+65" data-len="8">🇸🇬 +65</option>
+                                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                                            <option value="+66" data-len="9">🇹🇭 +66</option>
+                                            <option value="+60" data-len="10">🇲🇾 +60</option>
+                                        </select>
+                                    </div>
+                                    <div class="relative flex-grow">
+                                        <input type="tel" required placeholder="Mobile Number *"
+                                            class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                    </div>
+                                </div>
+                                <input type="hidden" class="phone-full-val" name="phone">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Phone Number</label>
-                                <input type="text" name="landline" placeholder="+1 (555) 123-4567" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <div class="flex gap-2 items-center">
+                                    <div class="relative w-28 shrink-0">
+                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-3 outline-none text-xs font-medium">
+                                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                                            <option value="+62" data-len="11">🇮🇩 +62</option>
+                                            <option value="+65" data-len="8">🇸🇬 +65</option>
+                                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                                            <option value="+66" data-len="9">🇹🇭 +66</option>
+                                            <option value="+60" data-len="10">🇲🇾 +60</option>
+                                        </select>
+                                    </div>
+                                    <div class="relative flex-grow">
+                                        <input type="tel" placeholder="Phone Number *"
+                                            class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                    </div>
+                                </div>
+                                <input type="hidden" class="phone-full-val" name="landline">
                             </div>
                         </div>
 

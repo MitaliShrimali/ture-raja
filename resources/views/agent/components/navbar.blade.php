@@ -36,9 +36,7 @@
                 <a href="{{ route('agent.notifications') }}" class="relative p-1.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
                     <i class="fas fa-bell text-sm"></i>
                 </a>
-                <a href="{{ route('agent.settings') }}" class="p-1.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
-                    <i class="fas fa-cog text-sm"></i>
-                </a>
+
                 <a href="{{ route('agent.about') }}" class="p-1.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
                     <i class="fas fa-info-circle text-sm"></i>
                 </a>

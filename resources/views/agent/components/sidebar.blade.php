@@ -40,13 +40,6 @@
                 <span class="text-xs">Lead</span>
             </a>
 
-            <a href="{{ route('agent.contact') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.contact') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
-                <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.contact') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
-                    <i class="fas fa-envelope text-xs"></i>
-                </div>
-                <span class="text-xs">Contact</span>
-            </a>
-
             <a href="{{ route('agent.invoice') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.invoice') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
                 <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.invoice') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
                     <i class="fas fa-file-invoice-dollar text-xs"></i>
@@ -58,7 +51,7 @@
                 <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.payment') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
                     <i class="fas fa-credit-card text-xs"></i>
                 </div>
-                <span class="text-xs">Payment</span>
+                <span class="text-xs">Billing</span>
             </a>
 
             <a href="{{ route('agent.branch') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.branch') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
@@ -82,22 +75,20 @@
                 <span class="text-xs">Feedbacks</span>
             </a>
 
-            <a href="{{ route('agent.about') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.about') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
-                <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.about') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
-                    <i class="fas fa-info-circle text-xs"></i>
-                </div>
-                <span class="text-xs">About TourRaja</span>
-            </a>
-
-            <p class="text-[9px] font-bold text-gray-400 uppercase px-2 mt-4 mb-2 tracking-wider">Account Related</p>
-
-
-
             <a href="{{ route('agent.services') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.services') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
                 <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.services') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
                     <i class="fas fa-tools text-xs"></i>
                 </div>
                 <span class="text-xs">Service</span>
+            </a>
+
+            <p class="text-[9px] font-bold text-gray-400 uppercase px-2 mt-4 mb-2 tracking-wider">Account Related</p>
+
+            <a href="{{ route('agent.about') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.about') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
+                <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.about') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
+                    <i class="fas fa-info-circle text-xs"></i>
+                </div>
+                <span class="text-xs">About TourRaja</span>
             </a>
 
             <a href="{{ route('agent.settings') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.settings') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">

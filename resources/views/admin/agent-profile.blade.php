@@ -9,14 +9,14 @@
     <!-- Top Header Profile Section -->
     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div class="space-y-3">
-            @if($agent->service_guaranteed)
+            @if(!empty($agent->service_guaranteed))
             <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#FFF2EB] text-[#D35400] text-[10px] font-black uppercase tracking-wider rounded-full border border-[#FDEBD0]">
                 <i data-lucide="check-circle" size="14"></i> Trusted Agent
             </span>
             @endif
             <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight uppercase flex items-center gap-2">
                 {{ $agent->name }}
-                @if($agent->service_guaranteed)
+                @if(!empty($agent->service_guaranteed))
                     <i data-lucide="check-circle" class="text-blue-500" size="28" title="Trusted Agent"></i>
                 @endif
             </h1>
@@ -226,7 +226,7 @@
                     </div>
                     <div class="flex justify-between pb-3">
                         <span class="text-sm font-bold text-slate-500">Service Guaranteed</span>
-                        <span class="text-sm font-black text-slate-900">{{ $agent->service_guaranteed ? 'Yes (Verified)' : 'No' }}</span>
+                        <span class="text-sm font-black text-slate-900">{{ !empty($agent->service_guaranteed) ? 'Yes (Verified)' : 'No' }}</span>
                     </div>
                 </div>
             @else
@@ -236,7 +236,7 @@
                 <div class="mt-6 space-y-4">
                     <div class="flex justify-between border-b border-slate-100 pb-3">
                         <span class="text-sm font-bold text-slate-500">Service Guaranteed</span>
-                        <span class="text-sm font-black text-slate-900">{{ $agent->service_guaranteed ? 'Yes (Verified)' : 'No' }}</span>
+                        <span class="text-sm font-black text-slate-900">{{ !empty($agent->service_guaranteed) ? 'Yes (Verified)' : 'No' }}</span>
                     </div>
                 </div>
             @endif

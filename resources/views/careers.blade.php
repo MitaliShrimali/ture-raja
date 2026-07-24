@@ -297,7 +297,26 @@
                             </div>
                             <div>
                                 <label class="form-label">Phone Number <span class="text-red-500">*</span></label>
-                                <input type="tel" name="phone" required placeholder="Phone Number" class="form-input">
+                                <div class="flex gap-2 items-center">
+                                    <div class="relative w-28 shrink-0">
+                                        <select class="phone-country-code w-full px-3 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                                            <option value="+62" data-len="11">🇮🇩 +62</option>
+                                            <option value="+65" data-len="8">🇸🇬 +65</option>
+                                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                                            <option value="+66" data-len="9">🇹🇭 +66</option>
+                                            <option value="+60" data-len="10">🇲🇾 +60</option>
+                                        </select>
+                                    </div>
+                                    <div class="relative flex-grow">
+                                        <input type="tel" required placeholder="Phone *"
+                                            class="phone-number-val w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                                    </div>
+                                </div>
+                                <input type="hidden" class="phone-full-val" name="phone">
                             </div>
                         </div>
 

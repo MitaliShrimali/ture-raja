@@ -173,6 +173,69 @@
             lucide.createIcons();
         });
     </script>
+    <!-- Country Code Selector & Validator Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            function initPhoneFields() {
+                document.querySelectorAll('.phone-country-code').forEach(select => {
+                    if (select.dataset.phoneInitialized) return;
+                    select.dataset.phoneInitialized = "true";
+
+                    const parent = select.closest('.flex') || select.parentElement;
+                    const input = parent.querySelector('.phone-number-val');
+                    const hidden = parent.querySelector('.phone-full-val');
+
+                    // If hidden field has an initial value, pre-populate select & input
+                    if (hidden && hidden.value) {
+                        const val = hidden.value;
+                        const options = Array.from(select.options);
+                        // Sort options by code length descending to match longest code first
+                        options.sort((a, b) => b.value.length - a.value.length);
+                        for (let opt of options) {
+                            if (val.startsWith(opt.value)) {
+                                select.value = opt.value;
+                                input.value = val.substring(opt.value.length);
+                                break;
+                            }
+                        }
+                    }
+
+                    function validatePhone() {
+                        const code = select.value;
+                        const length = parseInt(select.options[select.selectedIndex].getAttribute('data-len') || '10');
+                        let val = input.value.replace(/\D/g, ''); // Remove non-digits
+                        
+                        // Limit maximum characters
+                        if (val.length > length) {
+                            val = val.substring(0, length);
+                        }
+                        input.value = val;
+                        
+                        // Validation check
+                        if (val.length > 0 && val.length !== length) {
+                            input.setCustomValidity(`Phone number must be exactly ${length} digits.`);
+                        } else {
+                            input.setCustomValidity('');
+                        }
+                        
+                        hidden.value = val ? (code + val) : '';
+                    }
+
+                    select.addEventListener('change', validatePhone);
+                    input.addEventListener('input', validatePhone);
+                    
+                    // Initial check
+                    validatePhone();
+                });
+            }
+
+            initPhoneFields();
+            // Re-run for dynamically loaded/inserted fields (e.g. modals, ajax)
+            const observer = new MutationObserver(initPhoneFields);
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
+
     @stack('scripts')
 </body>
 </html>

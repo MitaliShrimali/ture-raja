@@ -120,7 +120,26 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Phone</label>
-                    <input required type="text" name="customer_phone" value="{{ $invoiceData['customer_phone'] }}" class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#D35400]/20 transition-all font-medium text-foreground shadow-sm" />
+                    <div class="flex gap-2 items-center">
+                        <div class="relative w-28 shrink-0">
+                            <select class="phone-country-code w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-3 outline-none text-xs font-medium focus:ring-2 focus:ring-[#D35400]/20">
+                                <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                <option value="+1" data-len="10">🇺🇸 +1</option>
+                                <option value="+44" data-len="10">🇬🇧 +44</option>
+                                <option value="+62" data-len="11">🇮🇩 +62</option>
+                                <option value="+65" data-len="8">🇸🇬 +65</option>
+                                <option value="+971" data-len="9">🇦🇪 +971</option>
+                                <option value="+61" data-len="9">🇦🇺 +61</option>
+                                <option value="+66" data-len="9">🇹🇭 +66</option>
+                                <option value="+60" data-len="10">🇲🇾 +60</option>
+                            </select>
+                        </div>
+                        <div class="relative flex-grow">
+                            <input type="tel" required placeholder="Phone *"
+                                class="phone-number-val w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#D35400]/20 transition-all font-medium text-foreground shadow-sm">
+                        </div>
+                    </div>
+                    <input type="hidden" class="phone-full-val" name="customer_phone" value="{{ $invoiceData['customer_phone'] }}">
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Email</label>

@@ -52,13 +52,32 @@
                             onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'"
                             onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
                     </div>
-                    <div class="mb-3 sm:mb-5">
-                        <input type="tel" name="phone" required placeholder="Enter your phone number"
-                            class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400"
-                            style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;"
-                            onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'"
-                            onblur="this.style.boxShadow='inset 0 0 0 1px transparent'" />
+                    <div class="mb-3 sm:mb-5 flex gap-2 items-center">
+                        <div class="relative w-28 shrink-0">
+                            <select class="phone-country-code w-full border-none rounded-md py-3 sm:py-4 px-3 outline-none text-gray-700 text-[11px] sm:text-[15px] font-medium"
+                                style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;"
+                                onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'"
+                                onblur="this.style.boxShadow='inset 0 0 0 1px transparent'">
+                                <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                <option value="+1" data-len="10">🇺🇸 +1</option>
+                                <option value="+44" data-len="10">🇬🇧 +44</option>
+                                <option value="+62" data-len="11">🇮🇩 +62</option>
+                                <option value="+65" data-len="8">🇸🇬 +65</option>
+                                <option value="+971" data-len="9">🇦🇪 +971</option>
+                                <option value="+61" data-len="9">🇦🇺 +61</option>
+                                <option value="+66" data-len="9">🇹🇭 +66</option>
+                                <option value="+60" data-len="10">🇲🇾 +60</option>
+                            </select>
+                        </div>
+                        <div class="relative flex-grow">
+                            <input type="tel" required placeholder="Phone *"
+                                class="phone-number-val w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400"
+                                style="background-color: #f0f4f5; box-shadow: inset 0 0 0 1px transparent;"
+                                onfocus="this.style.boxShadow='inset 0 0 0 2px #2b6d64'"
+                                onblur="this.style.boxShadow='inset 0 0 0 1px transparent'">
+                        </div>
                     </div>
+                    <input type="hidden" class="phone-full-val" name="phone">
                     <div class="mb-4 sm:mb-6">
                         <textarea name="message" rows="4" required placeholder="Go ahead, we are listening.."
                             class="w-full border-none rounded-md py-3 sm:py-4 px-3 sm:px-5 outline-none transition-all text-gray-700 text-[11px] sm:text-[15px] font-medium placeholder-gray-400 resize-none"

@@ -5,54 +5,54 @@
 @section('content')
 <!-- Stats Cards Grid -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-            <!-- Card 1 -->
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
+            <!-- Card 1: Total Packages -->
+            <a href="{{ route('agent.my-packages') }}" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-orange-200 hover:bg-orange-50/30 transition-all duration-200 group">
                 <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Total Packages</p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-orange-500 transition-colors">Total Packages</p>
                     <div class="flex items-baseline space-x-2">
                         <span class="text-2xl font-bold text-gray-800">{{ $totalPackages }}</span>
                     </div>
                 </div>
-                <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100">
+                <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100 group-hover:scale-110 transition-transform">
                     <i class="fas fa-box"></i>
                 </div>
-            </div>
-            <!-- Card 2 -->
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
+            </a>
+            <!-- Card 2: Active Packages -->
+            <a href="{{ route('agent.my-packages') }}" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-green-200 hover:bg-green-50/30 transition-all duration-200 group">
                 <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Active Packages</p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-green-600 transition-colors">Active Packages</p>
                     <div class="flex items-baseline space-x-2">
                         <span class="text-2xl font-bold text-gray-800">{{ $activePackages }}</span>
                     </div>
                 </div>
-                <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100">
+                <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100 group-hover:scale-110 transition-transform">
                     <i class="fas fa-check-circle"></i>
                 </div>
-            </div>
-            <!-- Card 3 -->
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
+            </a>
+            <!-- Card 3: Pending Packages -->
+            <a href="{{ route('agent.my-packages') }}" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-yellow-200 hover:bg-yellow-50/30 transition-all duration-200 group">
                 <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Pending Packages</p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-yellow-600 transition-colors">Pending Packages</p>
                     <div class="flex items-baseline space-x-2">
                         <span class="text-2xl font-bold text-gray-800">{{ $pendingPackages }}</span>
                     </div>
                 </div>
-                <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100">
+                <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100 group-hover:scale-110 transition-transform">
                     <i class="fas fa-clock"></i>
                 </div>
-            </div>
-            <!-- Card 4 -->
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between">
+            </a>
+            <!-- Card 4: Expired Packages -->
+            <a href="{{ route('agent.my-packages') }}" class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md hover:border-red-200 hover:bg-red-50/30 transition-all duration-200 group">
                 <div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Expired Packages</p>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1 group-hover:text-red-500 transition-colors">Expired Packages</p>
                     <div class="flex items-baseline space-x-2">
                         <span class="text-2xl font-bold text-gray-800">{{ $expiredPackages }}</span>
                     </div>
                 </div>
-                <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100">
+                <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-100 group-hover:scale-110 transition-transform">
                     <i class="fas fa-times-circle"></i>
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Middle Section: Chart & Profiles -->

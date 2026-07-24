@@ -107,7 +107,7 @@
                         <a href="#" class="text-xs font-bold text-primary hover:underline">Forgot password?</a>
                     </div>
                     <button type="submit"
-                        class="w-full bg-[#E8460A] hover:bg-primary-hover text-white rounded-2xl py-5 font-black text-sm uppercase tracking-widest shadow-xl transition-all transform hover:-translate-y-1">Sign
+                        class="cursor-pointer w-full bg-[#E8460A] hover:bg-primary-hover text-white rounded-2xl py-5 font-black text-sm uppercase tracking-widest shadow-xl transition-all transform hover:-translate-y-1">Sign
                         In</button>
                     <p class="text-xs font-bold text-muted-text text-center mt-6">Don't have an account? <a
                             href="{{ url('/signup') }}" class="text-primary hover:underline">Sign Up</a></p>

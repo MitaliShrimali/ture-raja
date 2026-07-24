@@ -59,11 +59,49 @@
                                             </div>
                                             <div>
                                                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PRIMARY MOBILE</label>
-                                                <input type="text" name="phone" value="{{ $agent->phone ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                <div class="flex gap-2 items-center">
+                                                    <div class="relative w-28 shrink-0">
+                                                        <select class="phone-country-code w-full px-3 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
+                                                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                                                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                                                            <option value="+62" data-len="11">🇮🇩 +62</option>
+                                                            <option value="+65" data-len="8">🇸🇬 +65</option>
+                                                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                                                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                                                            <option value="+66" data-len="9">🇹🇭 +66</option>
+                                                            <option value="+60" data-len="10">🇲🇾 +60</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="relative flex-grow">
+                                                        <input type="tel" required placeholder="Primary Mobile *"
+                                                            class="phone-number-val w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" class="phone-full-val" name="phone" value="{{ $agent->phone ?? '' }}">
                                             </div>
                                             <div>
                                                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SECONDARY MOBILE</label>
-                                                <input type="text" name="landline" value="{{ $agent->landline ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                <div class="flex gap-2 items-center">
+                                                    <div class="relative w-28 shrink-0">
+                                                        <select class="phone-country-code w-full px-3 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
+                                                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                                            <option value="+1" data-len="10">🇺🇸 +1</option>
+                                                            <option value="+44" data-len="10">🇬🇧 +44</option>
+                                                            <option value="+62" data-len="11">🇮🇩 +62</option>
+                                                            <option value="+65" data-len="8">🇸🇬 +65</option>
+                                                            <option value="+971" data-len="9">🇦🇪 +971</option>
+                                                            <option value="+61" data-len="9">🇦🇺 +61</option>
+                                                            <option value="+66" data-len="9">🇹🇭 +66</option>
+                                                            <option value="+60" data-len="10">🇲🇾 +60</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="relative flex-grow">
+                                                        <input type="tel" placeholder="Secondary Mobile *"
+                                                            class="phone-number-val w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" class="phone-full-val" name="landline" value="{{ $agent->landline ?? '' }}">
                                             </div>
                                             <div class="md:col-span-2">
                                                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICIAL EMAIL ADDRESS</label>

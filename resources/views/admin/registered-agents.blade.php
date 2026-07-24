@@ -89,7 +89,7 @@
                             <td class="py-6 px-8">
                                 <a href="{{ url('/admin/agents/profile/' . $agent->id) }}" class="text-sm font-black text-primary hover:text-primary-hover transition-colors leading-tight flex items-center gap-1.5 whitespace-nowrap">
                                     <span class="truncate max-w-[150px]">{{ $agent->name }}</span>
-                                    @if($agent->service_guaranteed)
+                                    @if(!empty($agent->service_guaranteed))
                                         <i data-lucide="check-circle" class="text-blue-500 shrink-0" size="16" title="Trusted Agent"></i>
                                     @endif
                                 </a>
@@ -107,7 +107,7 @@
                             
                             <!-- Guaranteed -->
                             <td class="py-6 px-8">
-                                @if($agent->service_guaranteed)
+                                @if(!empty($agent->service_guaranteed))
                                     <span class="px-3 py-1 rounded-full bg-green-50 text-green-500 text-[10px] font-black uppercase tracking-wider">
                                         Yes
                                     </span>

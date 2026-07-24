@@ -40,9 +40,13 @@
                     <tbody class="divide-y divide-gray-50">
                         @foreach($branches as $index => $b)
                         @php
-                            $parts = explode(',', $b->location);
-                            $city = trim($parts[0] ?? '');
-                            $state = trim($parts[1] ?? '');
+                            $city = $b->location;
+                            $state = $b->state;
+                            if (empty($state) && strpos($b->location, ',') !== false) {
+                                $parts = explode(',', $b->location);
+                                $city = trim($parts[0] ?? '');
+                                $state = trim($parts[1] ?? '');
+                            }
                             $srl = 100 + $index + 1;
                         @endphp
                         <tr class="group hover:bg-gray-50/50 transition-colors whitespace-nowrap" id="branch-row-{{ $b->id }}">
@@ -52,7 +56,7 @@
                                     <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=100&auto=format&fit=crop" class="w-10 h-10 rounded-xl object-cover mr-3 border border-gray-100">
                                     <div>
                                         <p class="text-[10px] font-bold text-gray-800">{{ $b->agency_name }}</p>
-                                        <p class="text-[8px] text-gray-400 font-medium">{{ $b->location }}</p>
+                                        <p class="text-[8px] text-gray-400 font-medium">{{ $city }}{{ $state ? ', ' . $state : '' }}{{ $b->country ? ', ' . $b->country : '' }}</p>
                                     </div>
                                 </div>
                             </td>

@@ -161,7 +161,7 @@
                     </div>
 
                     <button type="submit"
-                        class="w-full text-white rounded-2xl py-4 font-bold text-sm shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
+                        class="cursor-pointer w-full text-white rounded-2xl py-4 font-bold text-sm shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
                         style="background-color: #e85d26; box-shadow: 0 10px 20px rgba(232, 93, 38, 0.2);"
                         onmouseover="this.style.backgroundColor='#d44f1c'"
                         onmouseout="this.style.backgroundColor='#e85d26'">
