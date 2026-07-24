@@ -1559,12 +1559,21 @@ class AgentController extends Controller
             'name' => $request->input('name'),
             'agency_name' => $request->input('name'),
             'phone' => $request->input('phone'),
+            'secondary_phone' => $request->input('secondary_phone'),
             'landline' => $request->input('landline'),
             'email' => $request->input('email'),
             'address' => $request->input('address'),
             'state' => $request->input('state'),
             'city' => $request->input('city'),
+            'country' => $request->input('country'),
             'pincode' => $request->input('pincode'),
+            'website' => $request->input('website'),
+            'about' => $request->input('about'),
+            'facebook' => $request->input('facebook'),
+            'twitter' => $request->input('twitter'),
+            'linkedin' => $request->input('linkedin'),
+            'instagram' => $request->input('instagram'),
+            'since' => $request->input('since'),
             'updated_at' => now()
         ];
 

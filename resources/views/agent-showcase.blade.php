@@ -343,7 +343,20 @@
                             <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
                             <a href="tel:{{ $agent->phone }}">{{ $agent->phone }}</a>
                         </div>
-                        <!-- Social links far-right (on larger screens) -->
+                        <!-- Secondary Phone -->
+                        <div class="agent-info-item">
+                            @if(!empty($agent->secondary_phone))
+                                <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
+                                <a href="tel:{{ $agent->secondary_phone }}">{{ $agent->secondary_phone }} (Secondary)</a>
+                            @endif
+                        </div>
+                        <!-- Landline -->
+                        <div class="agent-info-item">
+                            @if(!empty($agent->landline))
+                                <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
+                                <a href="tel:{{ $agent->landline }}">{{ $agent->landline }} (Landline)</a>
+                            @endif
+                        </div>
                         <div class="hidden lg:block"></div>
 
                         <!-- Email -->
@@ -351,13 +364,30 @@
                             <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                             <a href="mailto:{{ $agent->email }}">{{ $agent->email }}</a>
                         </div>
-                        <!-- Empty slot to balance grid -->
-                        <div class="hidden lg:block"></div>
+                        <!-- Social Integration Links with Icons -->
+                        <div class="agent-info-item flex gap-3 items-center">
+                            @if(!empty($agent->facebook))
+                                <a href="{{ $agent->facebook }}" target="_blank" class="text-blue-600 hover:opacity-80 transition-opacity"><i class="fab fa-facebook-f text-sm"></i></a>
+                            @endif
+                            @if(!empty($agent->twitter))
+                                <a href="{{ $agent->twitter }}" target="_blank" class="text-cyan-500 hover:opacity-80 transition-opacity"><i class="fab fa-twitter text-sm"></i></a>
+                            @endif
+                            @if(!empty($agent->linkedin))
+                                <a href="{{ $agent->linkedin }}" target="_blank" class="text-blue-800 hover:opacity-80 transition-opacity"><i class="fab fa-linkedin-in text-sm"></i></a>
+                            @endif
+                            @if(!empty($agent->instagram))
+                                <a href="{{ $agent->instagram }}" target="_blank" class="text-pink-500 hover:opacity-80 transition-opacity"><i class="fab fa-instagram text-sm"></i></a>
+                            @endif
+                        </div>
 
                         <!-- Website -->
                         <div class="agent-info-item">
                             <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                            <a href="https://www.{{ strtolower(str_replace(' ', '', $agent->name)) }}.com" target="_blank">www.{{ strtolower(str_replace(' ', '', $agent->name)) }}.com</a>
+                            @if(!empty($agent->website))
+                                <a href="{{ $agent->website }}" target="_blank">{{ preg_replace('(^https?://)', '', $agent->website) }}</a>
+                            @else
+                                <a href="https://www.{{ strtolower(str_replace(' ', '', $agent->name)) }}.com" target="_blank">www.{{ strtolower(str_replace(' ', '', $agent->name)) }}.com</a>
+                            @endif
                         </div>
                         <!-- Empty slot to balance grid -->
                         <div class="hidden lg:block"></div>

@@ -845,11 +845,18 @@
 
                         $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentId);
                     @endphp
+                    <!-- FontAwesome CDN for social media icons -->
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
                     <div class="relative bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
                         <!-- Header / Cover -->
-                        <div class="absolute inset-x-0 top-0 w-full z-0" style="height: 8rem; background-color: #e85d26 !important;">
+                        <div class="absolute inset-x-0 top-0 w-full z-0 flex items-start justify-start p-4 pt-4 overflow-hidden pl-28 text-left" style="height: 8rem; background-color: #e85d26 !important;">
                             <!-- Subtle Pattern Overlay -->
                             <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
+                            @if(!empty($dbAgent->about))
+                                <p class="text-white text-xs font-medium leading-relaxed relative z-10 w-full drop-shadow-sm line-clamp-3">
+                                    {{ $dbAgent->about }}
+                                </p>
+                            @endif
                         </div>
                         
                         <div class="relative z-10 pt-20 px-6 pb-6">
@@ -868,16 +875,25 @@
                                 
                                 <div class="flex items-center gap-1.5 bg-gray-100/80 backdrop-blur-md px-3 py-1.5 rounded-full mb-2 border border-gray-200/50">
                                     <span class="text-yellow-500 text-sm leading-none">★</span>
-                                    <span class="text-xs font-black text-gray-700">4.9/5</span>
+                                    <span class="text-xs font-black text-gray-700">4.9</span>
                                 </div>
                             </div>
 
-                            <!-- Name & Location -->
-                            <div class="mb-6">
-                                <h3 class="font-black text-gray-900 text-2xl tracking-tight mb-1">{{ $agentName }}</h3>
-                                <div class="text-sm font-medium text-gray-500 flex items-center gap-1.5">
-                                    <i data-lucide="map-pin" class="w-4 h-4 text-gray-400"></i> {{ $agentRegion }}
+                            <!-- Name, Since & Location Stacked -->
+                            <div class="mb-6 space-y-2">
+                                <h3 class="font-black text-gray-900 text-2xl tracking-tight leading-none">{{ $agentName }}</h3>
+                                
+                                @if(!empty($dbAgent->since))
+                                <div class="flex items-center gap-1.5 text-xs font-black text-[#e85d26] uppercase tracking-wider">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Since {{ $dbAgent->since }}
                                 </div>
+                                @endif
+                                
+                                @if(!empty($agentRegion))
+                                <div class="text-xs font-semibold text-gray-500 flex items-start gap-1.5 leading-relaxed">
+                                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-gray-400 shrink-0 mt-0.5"></i> <span>{{ $agentRegion }}</span>
+                                </div>
+                                @endif
                             </div>
 
                             <!-- Quick Contact -->
@@ -894,6 +910,36 @@
                                     </div>
                                     <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover/phone:translate-x-1 transition-transform"></i>
                                 </a>
+
+                                @if(!empty($dbAgent->secondary_phone))
+                                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $dbAgent->secondary_phone) }}" class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all group/secphone border border-transparent hover:border-gray-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-600 group-hover/secphone:text-blue-500 transition-colors">
+                                            <i data-lucide="phone-forwarded" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Secondary Mobile</div>
+                                            <div class="text-sm font-bold text-gray-900">{{ $dbAgent->secondary_phone }}</div>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover/secphone:translate-x-1 transition-transform"></i>
+                                </a>
+                                @endif
+
+                                @if(!empty($dbAgent->landline))
+                                <a href="tel:{{ preg_replace('/[^0-9+]/', '', $dbAgent->landline) }}" class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all group/landline border border-transparent hover:border-gray-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-600 group-hover/landline:text-indigo-500 transition-colors">
+                                            <i data-lucide="phone" class="w-4 h-4"></i>
+                                        </div>
+                                        <div>
+                                            <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Landline</div>
+                                            <div class="text-sm font-bold text-gray-900">{{ $dbAgent->landline }}</div>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover/landline:translate-x-1 transition-transform"></i>
+                                </a>
+                                @endif
                                 
                                 <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all group/mail border border-transparent hover:border-gray-200">
                                     <div class="flex items-center gap-3">
@@ -907,6 +953,21 @@
                                     </div>
                                     <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover/mail:translate-x-1 transition-transform"></i>
                                 </a>
+
+                                @if(!empty($dbAgent->website))
+                                <a href="{{ $dbAgent->website }}" target="_blank" class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all group/web border border-transparent hover:border-gray-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-600 group-hover/web:text-green-600 transition-colors">
+                                            <i data-lucide="globe" class="w-4 h-4"></i>
+                                        </div>
+                                        <div class="overflow-hidden">
+                                            <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Website</div>
+                                            <div class="text-sm font-bold text-gray-900 truncate">{{ preg_replace('(^https?://)', '', $dbAgent->website) }}</div>
+                                        </div>
+                                    </div>
+                                    <i data-lucide="external-link" class="w-4 h-4 text-gray-300 group-hover/web:translate-x-1 transition-transform"></i>
+                                </a>
+                                @endif
                             </div>
 
                             <!-- Action Grid -->
@@ -924,6 +985,32 @@
                                     Profile
                                 </a>
                             </div>
+
+                            <!-- Social Integration Icons Only -->
+                            @if(!empty($dbAgent->facebook) || !empty($dbAgent->twitter) || !empty($dbAgent->linkedin) || !empty($dbAgent->instagram))
+                            <div class="flex items-center justify-center gap-4 mb-6 pt-4 border-t border-gray-50">
+                                @if(!empty($dbAgent->facebook))
+                                    <a href="{{ $dbAgent->facebook }}" target="_blank" class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Facebook">
+                                        <i class="fab fa-facebook-f text-sm"></i>
+                                    </a>
+                                @endif
+                                @if(!empty($dbAgent->twitter))
+                                    <a href="{{ $dbAgent->twitter }}" target="_blank" class="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-500 hover:bg-cyan-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Twitter (X)">
+                                        <i class="fab fa-twitter text-sm"></i>
+                                    </a>
+                                @endif
+                                @if(!empty($dbAgent->linkedin))
+                                    <a href="{{ $dbAgent->linkedin }}" target="_blank" class="w-9 h-9 rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-800 hover:text-white flex items-center justify-center transition-all shadow-sm" title="LinkedIn">
+                                        <i class="fab fa-linkedin-in text-sm"></i>
+                                    </a>
+                                @endif
+                                @if(!empty($dbAgent->instagram))
+                                    <a href="{{ $dbAgent->instagram }}" target="_blank" class="w-9 h-9 rounded-xl bg-pink-50 text-pink-500 hover:bg-pink-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Instagram">
+                                        <i class="fab fa-instagram text-sm"></i>
+                                    </a>
+                                @endif
+                            </div>
+                            @endif
 
                             <!-- Expertise Tags -->
                             <div class="pt-5 border-t border-gray-100">

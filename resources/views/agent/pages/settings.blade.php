@@ -58,7 +58,7 @@
                                                 <input type="text" name="since" value="{{ $agent->since ?? '2026' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PRIMARY MOBILE</label>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PRIMARY MOBILE *</label>
                                                 <div class="flex gap-2 items-center">
                                                     <div class="relative w-28 shrink-0">
                                                         <select class="phone-country-code w-full px-3 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
@@ -77,8 +77,8 @@
                                                         <input type="tel" required placeholder="Primary Mobile *"
                                                             class="phone-number-val w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                     </div>
+                                                    <input type="hidden" class="phone-full-val" name="phone" value="{{ $agent->phone ?? '' }}">
                                                 </div>
-                                                <input type="hidden" class="phone-full-val" name="phone" value="{{ $agent->phone ?? '' }}">
                                             </div>
                                             <div>
                                                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SECONDARY MOBILE</label>
@@ -97,15 +97,27 @@
                                                         </select>
                                                     </div>
                                                     <div class="relative flex-grow">
-                                                        <input type="tel" placeholder="Secondary Mobile *"
+                                                        <input type="tel" placeholder="Secondary Mobile"
                                                             class="phone-number-val w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                     </div>
+                                                    <input type="hidden" class="phone-full-val" name="secondary_phone" value="{{ $agent->secondary_phone ?? '' }}">
                                                 </div>
-                                                <input type="hidden" class="phone-full-val" name="landline" value="{{ $agent->landline ?? '' }}">
                                             </div>
-                                            <div class="md:col-span-2">
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">LANDLINE NUMBER</label>
+                                                <input type="text" name="landline" value="{{ $agent->landline ?? '' }}" placeholder="e.g. +91-79-12345678" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div>
                                                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICIAL EMAIL ADDRESS</label>
                                                 <input type="email" name="email" value="{{ $agent->email ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">WEBSITE URL</label>
+                                                <input type="url" name="website" value="{{ $agent->website ?? '' }}" placeholder="e.g. https://www.youragency.com" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div class="md:col-span-2">
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">ABOUT TRAVEL AGENT (Max 160 characters - Fits in Orange Header)</label>
+                                                <textarea name="about" rows="3" maxlength="160" placeholder="Describe your agency in 3-4 sentences..." class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ $agent->about ?? '' }}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -123,24 +135,23 @@
                                                 <input type="text" name="address" value="{{ $agent->address ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                <div>
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COUNTRY</label>
-                                                    <select name="country" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium appearance-none">
-                                                        <option value="India" {{ ($agent->country ?? 'India') === 'India' ? 'selected' : '' }}>India</option>
-                                                    </select>
+                                                <div class="relative">
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">CITY (SEARCH) *</label>
+                                                    <input type="text" id="settingsCity" name="city" value="{{ $agent->city ?? '' }}" required placeholder="Search city" autocomplete="off" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    <div id="citySuggestions" class="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto bg-white rounded-2xl border border-gray-100 shadow-xl hidden custom-scroll"></div>
                                                 </div>
                                                 <div>
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">STATE</label>
-                                                    <input type="text" name="state" value="{{ $agent->state ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">STATE *</label>
+                                                    <input type="text" id="settingsState" name="state" value="{{ $agent->state ?? '' }}" required placeholder="State" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                 </div>
                                                 <div>
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">CITY</label>
-                                                    <input type="text" name="city" value="{{ $agent->city ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COUNTRY *</label>
+                                                    <input type="text" id="settingsCountry" name="country" value="{{ $agent->country ?? '' }}" required placeholder="Country" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                 </div>
                                             </div>
                                             <div class="w-1/3">
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PINCODE</label>
-                                                <input type="text" name="pincode" value="{{ $agent->pincode ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PINCODE *</label>
+                                                <input type="text" name="pincode" value="{{ $agent->pincode ?? '' }}" required pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                         </div>
                                     </div>
@@ -167,7 +178,7 @@
                                         </div>
                                         <div class="p-6 pt-10 text-center">
                                             <h4 class="text-xs font-bold text-gray-800 mb-1">Agency Branding</h4>
-                                            <p class="text-[8px] text-gray-400 font-medium mb-4">Click logo icon above or button below to upload your company logo.</p>
+                                            <p class="text-[8px] text-gray-400 font-medium mb-4">Click logo icon above or button below to upload your company logo (Max 2MB).</p>
                                             <button type="button" onclick="document.getElementById('logo_file').click()" class="w-full py-2.5 bg-white border border-gray-100 rounded-xl text-[9px] font-bold text-orange-800 uppercase tracking-widest hover:bg-gray-50">Upload Logo</button>
                                         </div>
                                     </div>
@@ -191,28 +202,31 @@
                                     <!-- Social Integration -->
                                     <div class="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
                                         <h4 class="text-xs font-bold text-gray-800 mb-6 tracking-tight">Social Integration</h4>
-                                        <div class="space-y-3.5">
-                                            @php
-                                                $socials = [
-                                                    ['name' => 'Facebook Profile', 'icon' => 'fab fa-facebook-f', 'color' => 'text-blue-600'],
-                                                    ['name' => 'Twitter (X)', 'icon' => 'fab fa-twitter', 'color' => 'text-cyan-500'],
-                                                    ['name' => 'LinkedIn Company', 'icon' => 'fab fa-linkedin-in', 'color' => 'text-blue-800'],
-                                                    ['name' => 'Google+ Profile', 'icon' => 'fab fa-google-plus-g', 'color' => 'text-red-500'],
-                                                    ['name' => 'Instagram Feed', 'icon' => 'fab fa-instagram', 'color' => 'text-pink-500'],
-                                                    ['name' => 'Skype ID', 'icon' => 'fab fa-skype', 'color' => 'text-cyan-400'],
-                                                ];
-                                            @endphp
-                                            @foreach($socials as $soc)
-                                            <div class="flex items-center justify-between group cursor-pointer">
-                                                <div class="flex items-center">
-                                                    <div class="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center mr-3 group-hover:bg-white group-hover:shadow-lg transition-all">
-                                                        <i class="{{ $soc['icon'] }} {{ $soc['color'] }} text-[10px]"></i>
-                                                    </div>
-                                                    <span class="text-[9px] text-gray-400 font-medium">{{ $soc['name'] }}</span>
-                                                </div>
-                                                <i class="fas fa-link text-[7px] text-gray-200 group-hover:text-primary transition-colors"></i>
+                                        <div class="space-y-4">
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
+                                                    <i class="fab fa-facebook-f text-blue-600"></i> Facebook Profile
+                                                </label>
+                                                <input type="url" name="facebook" value="{{ $agent->facebook ?? '' }}" placeholder="https://facebook.com/yourpage" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border-none text-[10px] font-medium text-gray-800 focus:ring-2 focus:ring-primary/20">
                                             </div>
-                                            @endforeach
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
+                                                    <i class="fab fa-twitter text-cyan-500"></i> Twitter (X)
+                                                </label>
+                                                <input type="url" name="twitter" value="{{ $agent->twitter ?? '' }}" placeholder="https://twitter.com/yourhandle" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border-none text-[10px] font-medium text-gray-800 focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
+                                                    <i class="fab fa-linkedin-in text-blue-800"></i> LinkedIn Company
+                                                </label>
+                                                <input type="url" name="linkedin" value="{{ $agent->linkedin ?? '' }}" placeholder="https://linkedin.com/company/yourcompany" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border-none text-[10px] font-medium text-gray-800 focus:ring-2 focus:ring-primary/20">
+                                            </div>
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
+                                                    <i class="fab fa-instagram text-pink-500"></i> Instagram Feed
+                                                </label>
+                                                <input type="url" name="instagram" value="{{ $agent->instagram ?? '' }}" placeholder="https://instagram.com/yourprofile" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border-none text-[10px] font-medium text-gray-800 focus:ring-2 focus:ring-primary/20">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -389,5 +403,105 @@ function confirmDeleteAccount() {
         }
     });
 }
+
+// Logo upload size limit validation (2MB)
+document.addEventListener('DOMContentLoaded', () => {
+    const logoInput = document.getElementById('logo_file');
+    if (logoInput) {
+        logoInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const fileSize = this.files[0].size / 1024 / 1024; // in MB
+                if (fileSize > 2) {
+                    Swal.fire({
+                        title: 'File Too Large',
+                        text: 'Your logo file must be less than 2MB. Your file is ' + fileSize.toFixed(2) + 'MB.',
+                        icon: 'warning',
+                        confirmButtonColor: '#F0642F',
+                        borderRadius: '2rem'
+                    });
+                    this.value = ''; // Reset input
+                }
+            }
+        });
+    }
+
+    // Nominatim autocomplete for city, state, country in Settings
+    const cityInput = document.getElementById('settingsCity');
+    const suggestionsDiv = document.getElementById('citySuggestions');
+    let debounceTimer;
+
+    if (cityInput && suggestionsDiv) {
+        cityInput.addEventListener('input', () => {
+            const query = cityInput.value.trim();
+
+            clearTimeout(debounceTimer);
+            if (!query || query.length < 3) {
+                suggestionsDiv.innerHTML = '';
+                suggestionsDiv.classList.add('hidden');
+                return;
+            }
+
+            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching...</div>';
+            suggestionsDiv.classList.remove('hidden');
+
+            debounceTimer = setTimeout(() => {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&accept-language=en&q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    suggestionsDiv.innerHTML = '';
+                    if (data && data.length > 0) {
+                        const seen = new Set();
+                        data.forEach(item => {
+                            const address = item.address || {};
+                            
+                            let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
+                            if (!city && item.display_name) {
+                                city = item.display_name.split(',')[0].trim();
+                            }
+                            
+                            const state = address.state || address.region || '';
+                            const country = address.country || '';
+
+                            if (city && country) {
+                                const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
+                                if (seen.has(key)) return;
+                                seen.add(key);
+
+                                const row = document.createElement('div');
+                                row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
+                                row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
+                                row.onclick = () => {
+                                    cityInput.value = city;
+                                    document.getElementById('settingsState').value = state;
+                                    document.getElementById('settingsCountry').value = country;
+                                    suggestionsDiv.classList.add('hidden');
+                                };
+                                suggestionsDiv.appendChild(row);
+                            }
+                        });
+
+                        if (suggestionsDiv.children.length > 0) {
+                            suggestionsDiv.classList.remove('hidden');
+                        } else {
+                            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
+                        }
+                    } else {
+                        suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching cities:', err);
+                    suggestionsDiv.classList.add('hidden');
+                });
+            }, 400);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!cityInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                suggestionsDiv.classList.add('hidden');
+            }
+        });
+    }
+});
 </script>
 @endsection
