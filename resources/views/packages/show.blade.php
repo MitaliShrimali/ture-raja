@@ -847,6 +847,34 @@
                     @endphp
                     <!-- FontAwesome CDN for social media icons -->
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+                    <style>
+                        .pkg-social-btn {
+                            width: 36px !important;
+                            height: 36px !important;
+                            border-radius: 50% !important;
+                            display: flex !important;
+                            align-items: center !important;
+                            justify-content: center !important;
+                            transition: all 0.3s ease !important;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+                        }
+                        
+                        .pkg-social-btn.fb { background: #eff6ff !important; color: #1877f2 !important; }
+                        .pkg-social-btn.twitter { background: #ecfeff !important; color: #1da1f2 !important; }
+                        .pkg-social-btn.linkedin { background: #eff6ff !important; color: #0077b5 !important; }
+                        .pkg-social-btn.insta { background: #fff5f5 !important; color: #e1306c !important; }
+
+                        .pkg-social-btn:hover {
+                            color: #ffffff !important;
+                            transform: translateY(-2px) !important;
+                            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+                        }
+
+                        .pkg-social-btn.fb:hover { background: #1877f2 !important; }
+                        .pkg-social-btn.twitter:hover { background: #1da1f2 !important; }
+                        .pkg-social-btn.linkedin:hover { background: #0077b5 !important; }
+                        .pkg-social-btn.insta:hover { background: #e1306c !important; }
+                    </style>
                     <div class="relative bg-white rounded-[2rem] border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden group">
                         <!-- Header / Cover -->
                         <div class="absolute inset-x-0 top-0 w-full z-0 flex items-start justify-start p-4 pt-4 overflow-hidden pl-28 text-left" style="height: 8rem; background-color: #e85d26 !important;">
@@ -990,22 +1018,22 @@
                             @if(!empty($dbAgent->facebook) || !empty($dbAgent->twitter) || !empty($dbAgent->linkedin) || !empty($dbAgent->instagram))
                             <div class="flex items-center justify-center gap-4 mb-6 pt-4 border-t border-gray-50">
                                 @if(!empty($dbAgent->facebook))
-                                    <a href="{{ $dbAgent->facebook }}" target="_blank" class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Facebook">
+                                    <a href="{{ $dbAgent->facebook }}" target="_blank" class="pkg-social-btn fb" title="Facebook">
                                         <i class="fab fa-facebook-f text-sm"></i>
                                     </a>
                                 @endif
                                 @if(!empty($dbAgent->twitter))
-                                    <a href="{{ $dbAgent->twitter }}" target="_blank" class="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-500 hover:bg-cyan-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Twitter (X)">
+                                    <a href="{{ $dbAgent->twitter }}" target="_blank" class="pkg-social-btn twitter" title="Twitter (X)">
                                         <i class="fab fa-twitter text-sm"></i>
                                     </a>
                                 @endif
                                 @if(!empty($dbAgent->linkedin))
-                                    <a href="{{ $dbAgent->linkedin }}" target="_blank" class="w-9 h-9 rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-800 hover:text-white flex items-center justify-center transition-all shadow-sm" title="LinkedIn">
+                                    <a href="{{ $dbAgent->linkedin }}" target="_blank" class="pkg-social-btn linkedin" title="LinkedIn">
                                         <i class="fab fa-linkedin-in text-sm"></i>
                                     </a>
                                 @endif
                                 @if(!empty($dbAgent->instagram))
-                                    <a href="{{ $dbAgent->instagram }}" target="_blank" class="w-9 h-9 rounded-xl bg-pink-50 text-pink-500 hover:bg-pink-500 hover:text-white flex items-center justify-center transition-all shadow-sm" title="Instagram">
+                                    <a href="{{ $dbAgent->instagram }}" target="_blank" class="pkg-social-btn insta" title="Instagram">
                                         <i class="fab fa-instagram text-sm"></i>
                                     </a>
                                 @endif

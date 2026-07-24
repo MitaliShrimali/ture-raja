@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+    <!-- FontAwesome CDN for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom styling to match the reference design perfectly -->
     <style>
         .agent-hero {
@@ -12,9 +14,10 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 80px; /* offset navbar */
+            margin-top: 80px;
+            /* offset navbar */
         }
-        
+
         .agent-hero-title {
             color: #ffffff;
             font-size: 3.5rem;
@@ -42,7 +45,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: -120px; /* overlap hero */
+            margin-top: -120px;
+            /* overlap hero */
             position: relative;
             z-index: 20;
         }
@@ -86,7 +90,8 @@
         }
 
         .agent-info-icon {
-            color: #3b82f6; /* premium sky blue matching typical details */
+            color: #3b82f6;
+            /* premium sky blue matching typical details */
             flex-shrink: 0;
         }
 
@@ -103,29 +108,42 @@
         }
 
         .agent-social-btn {
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             background: #f3f4f6;
-            color: #4b5563;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
+
+        .agent-social-btn.fb { color: #1877f2 !important; }
+        .agent-social-btn.twitter { color: #1da1f2 !important; }
+        .agent-social-btn.linkedin { color: #0077b5 !important; }
+        .agent-social-btn.insta { color: #e1306c !important; }
 
         .agent-social-btn:hover {
-            background: #3b82f6;
-            color: #ffffff;
-            transform: translateY(-2px);
-        }
-
-        .agent-social-btn.insta:hover {
-            background: #e1306c;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            color: #ffffff !important;
         }
 
         .agent-social-btn.fb:hover {
-            background: #1877f2;
+            background: #1877f2 !important;
+        }
+
+        .agent-social-btn.twitter:hover {
+            background: #1da1f2 !important;
+        }
+
+        .agent-social-btn.linkedin:hover {
+            background: #0077b5 !important;
+        }
+
+        .agent-social-btn.insta:hover {
+            background: #e1306c !important;
         }
 
         /* Package Cards Grid styling precisely matching picture */
@@ -311,7 +329,8 @@
             <div class="flex items-center gap-3">
                 <h1 class="agent-hero-title">{{ $agent->name }}</h1>
                 @if(!empty($agent->service_guaranteed))
-                    <i data-lucide="check-circle" class="text-blue-500 w-10 h-10 mt-2" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));" title="Trusted Agent"></i>
+                    <i data-lucide="check-circle" class="text-blue-500 w-10 h-10 mt-2"
+                        style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));" title="Trusted Agent"></i>
                 @endif
             </div>
         </div>
@@ -324,96 +343,132 @@
                 <!-- White Logo Card overlapping hero -->
                 <div class="agent-logo-container">
                     @php
-                        $agentLogoSeed = urlencode($agent->name);
-                        $agentLogoUrl = 'https://api.dicebear.com/7.x/initials/svg?seed=' . $agentLogoSeed;
-                        
-                        // Special matching logo for Miths Holidays
-                        if (strtolower($agent->name) === 'miths holidays') {
-                            $agentLogoUrl = 'https://api.dicebear.com/7.x/initials/svg?seed=MH';
+                        $rawLogo = $agent->logo ?? null;
+                        if ($rawLogo && !str_starts_with($rawLogo, 'http') && !str_starts_with($rawLogo, '//')) {
+                            $rawLogo = asset(ltrim($rawLogo, '/'));
                         }
+                        $agentLogoUrl = $rawLogo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agent->name);
                     @endphp
-                    <img src="{{ asset($agentLogoUrl) }}" alt="{{ $agent->name }}" class="agent-logo-img">
+                    <img src="{{ $agentLogoUrl }}" alt="{{ $agent->name }}" class="agent-logo-img">
                 </div>
 
                 <!-- Info Grid -->
                 <div class="flex-1 space-y-4 w-full">
                     <div class="agent-info-grid w-full">
-                        <!-- Phone -->
-                        <div class="agent-info-item">
-                            <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
-                            <a href="tel:{{ $agent->phone }}">{{ $agent->phone }}</a>
-                        </div>
-                        <!-- Secondary Phone -->
-                        <div class="agent-info-item">
+                        <!-- Phone Numbers (Primary & Secondary beside each other) -->
+                        <div
+                            class="agent-info-item md:col-span-2 lg:col-span-1 flex flex-wrap gap-x-4 gap-y-1 items-center">
+                            <div class="flex items-center gap-3">
+                                <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z" />
+                                </svg>
+                                <a href="tel:{{ $agent->phone }}">{{ $agent->phone }}</a>
+                            </div>
                             @if(!empty($agent->secondary_phone))
-                                <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
-                                <a href="tel:{{ $agent->secondary_phone }}">{{ $agent->secondary_phone }} (Secondary)</a>
+                                <div class="flex items-center gap-3 border-l border-gray-200 pl-4">
+                                    <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor"
+                                        stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path
+                                            d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z" />
+                                    </svg>
+                                    <a href="tel:{{ $agent->secondary_phone }}">{{ $agent->secondary_phone }} (Secondary)</a>
+                                </div>
                             @endif
                         </div>
                         <!-- Landline -->
                         <div class="agent-info-item">
                             @if(!empty($agent->landline))
-                                <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z"/></svg>
+                                <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.79a16 16 0 0 0 6 6l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.73 16z" />
+                                </svg>
                                 <a href="tel:{{ $agent->landline }}">{{ $agent->landline }} (Landline)</a>
                             @endif
                         </div>
-                        <div class="hidden lg:block"></div>
 
                         <!-- Email -->
                         <div class="agent-info-item">
-                            <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <polyline points="22,6 12,13 2,6" />
+                            </svg>
                             <a href="mailto:{{ $agent->email }}">{{ $agent->email }}</a>
-                        </div>
-                        <!-- Social Integration Links with Icons -->
-                        <div class="agent-info-item flex gap-3 items-center">
-                            @if(!empty($agent->facebook))
-                                <a href="{{ $agent->facebook }}" target="_blank" class="text-blue-600 hover:opacity-80 transition-opacity"><i class="fab fa-facebook-f text-sm"></i></a>
-                            @endif
-                            @if(!empty($agent->twitter))
-                                <a href="{{ $agent->twitter }}" target="_blank" class="text-cyan-500 hover:opacity-80 transition-opacity"><i class="fab fa-twitter text-sm"></i></a>
-                            @endif
-                            @if(!empty($agent->linkedin))
-                                <a href="{{ $agent->linkedin }}" target="_blank" class="text-blue-800 hover:opacity-80 transition-opacity"><i class="fab fa-linkedin-in text-sm"></i></a>
-                            @endif
-                            @if(!empty($agent->instagram))
-                                <a href="{{ $agent->instagram }}" target="_blank" class="text-pink-500 hover:opacity-80 transition-opacity"><i class="fab fa-instagram text-sm"></i></a>
-                            @endif
                         </div>
 
                         <!-- Website -->
                         <div class="agent-info-item">
-                            <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            <svg class="agent-info-icon" width="18" height="18" fill="none" stroke="currentColor"
+                                stroke-width="2.5" viewBox="0 0 24 24">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="2" y1="12" x2="22" y2="12" />
+                                <path
+                                    d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                            </svg>
                             @if(!empty($agent->website))
-                                <a href="{{ $agent->website }}" target="_blank">{{ preg_replace('(^https?://)', '', $agent->website) }}</a>
+                                <a href="{{ $agent->website }}"
+                                    target="_blank">{{ preg_replace('(^https?://)', '', $agent->website) }}</a>
                             @else
-                                <a href="https://www.{{ strtolower(str_replace(' ', '', $agent->name)) }}.com" target="_blank">www.{{ strtolower(str_replace(' ', '', $agent->name)) }}.com</a>
+                                <a href="https://www.{{ strtolower(str_replace(' ', '', $agent->name)) }}.com"
+                                    target="_blank">www.{{ strtolower(str_replace(' ', '', $agent->name)) }}.com</a>
                             @endif
                         </div>
-                        <!-- Empty slot to balance grid -->
-                        <div class="hidden lg:block"></div>
 
                         <!-- Google Reviews -->
                         <div class="agent-info-item">
-                            <svg class="agent-info-icon text-yellow-500" width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                            <span>Google Reviews <span class="font-black ml-1 text-gray-800">4.5</span></span>
+                            <svg class="agent-info-icon text-yellow-500" width="18" height="18" fill="currentColor"
+                                viewBox="0 0 24 24">
+                                <polygon
+                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                            </svg>
+                            <span>Google Reviews <span class="font-black ml-1 text-gray-800">4.9</span></span>
                         </div>
                         <!-- Empty slot to balance grid -->
                         <div class="hidden lg:block"></div>
 
                         <!-- Address -->
                         <div class="agent-info-item lg:col-span-2">
-                            <svg class="agent-info-icon text-red-500" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                            <span>{{ $agent->region }}</span>
+                            <svg class="agent-info-icon text-red-500" width="18" height="18" fill="none"
+                                stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                            <span>
+                                @php
+                                    $fullAddr = $agent->address ?? $agent->region ?? '';
+                                    $cityState = [];
+                                    if (!empty($agent->city))
+                                        $cityState[] = $agent->city;
+                                    if (!empty($agent->state))
+                                        $cityState[] = $agent->state;
+                                    if (!empty($agent->country))
+                                        $cityState[] = $agent->country;
+                                    if (!empty($cityState)) {
+                                        $fullAddr .= ' - ' . implode(', ', $cityState);
+                                    }
+                                @endphp
+                                {{ $fullAddr }}
+                            </span>
                         </div>
 
                         <!-- Inline Branches Locations -->
                         @if(isset($branches) && count($branches) > 0)
                             <div class="agent-info-item lg:col-span-2 mt-1 flex flex-wrap gap-2 items-center">
-                                <svg class="agent-info-icon text-orange-500" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                                <svg class="agent-info-icon text-orange-500" width="18" height="18" fill="none"
+                                    stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
                                 <span class="font-bold text-gray-700 text-[13px] mr-1">Branches:</span>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($branches as $b)
-                                        <span class="px-2.5 py-1 bg-orange-100 text-orange-800 rounded-lg text-[10px] font-bold" title="{{ $b->address }} ({{ $b->phone }})">
+                                        <span class="px-2.5 py-1 bg-orange-100 text-orange-800 rounded-lg text-[10px] font-bold"
+                                            title="{{ $b->address }} ({{ $b->phone }})">
                                             {{ $b->location }}
                                         </span>
                                     @endforeach
@@ -423,14 +478,17 @@
 
                         <!-- Branches -->
                         @if(isset($branches) && count($branches) > 0)
-                            <div class="agent-info-item lg:col-span-2 mt-4 pt-4 border-t border-gray-100 flex flex-col items-start gap-2">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Location & Presence</span>
+                            <div
+                                class="agent-info-item lg:col-span-2 mt-4 pt-4 border-t border-gray-100 flex flex-col items-start gap-2">
+                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Branches</span>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-2">
                                     @foreach($branches as $b)
-                                        <div class="p-4 rounded-2xl bg-gray-50/70 border border-gray-100/50 flex flex-col gap-1 w-full">
+                                        <div
+                                            class="p-4 rounded-2xl bg-gray-50/70 border border-gray-100/50 flex flex-col gap-1 w-full">
                                             <div class="flex items-center justify-between">
                                                 <span class="text-[11px] font-bold text-gray-800">{{ $b->agency_name }}</span>
-                                                <span class="px-2 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider {{ $b->status == 'Online' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                                                <span
+                                                    class="px-2 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider {{ $b->status == 'Online' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                                                     {{ $b->status }}
                                                 </span>
                                             </div>
@@ -451,13 +509,28 @@
                 </div>
 
                 <!-- Far-Right Social Media Buttons precisely matching image -->
-                <div class="agent-social-links shrink-0 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-none border-gray-100">
-                    <a href="#" class="agent-social-btn insta" title="Instagram">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                    </a>
-                    <a href="#" class="agent-social-btn fb" title="Facebook">
-                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-                    </a>
+                <div
+                    class="agent-social-links shrink-0 w-full lg:w-auto pt-4 lg:pt-0 border-t lg:border-none border-gray-100 flex gap-2.5 items-center">
+                    @if(!empty($agent->facebook))
+                        <a href="{{ $agent->facebook }}" target="_blank" class="agent-social-btn fb" title="Facebook">
+                            <i class="fab fa-facebook-f text-sm"></i>
+                        </a>
+                    @endif
+                    @if(!empty($agent->twitter))
+                        <a href="{{ $agent->twitter }}" target="_blank" class="agent-social-btn twitter" title="Twitter">
+                            <i class="fab fa-twitter text-sm"></i>
+                        </a>
+                    @endif
+                    @if(!empty($agent->linkedin))
+                        <a href="{{ $agent->linkedin }}" target="_blank" class="agent-social-btn linkedin" title="LinkedIn">
+                            <i class="fab fa-linkedin-in text-sm"></i>
+                        </a>
+                    @endif
+                    @if(!empty($agent->instagram))
+                        <a href="{{ $agent->instagram }}" target="_blank" class="agent-social-btn insta" title="Instagram">
+                            <i class="fab fa-instagram text-sm"></i>
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -470,7 +543,7 @@
                 @php $adIndex = 0; @endphp
                 @forelse($packages as $index => $pkg)
                     <x-package-card :pkg="$pkg" :hideAgent="true" />
-                    
+
                     {{-- 6-3-3 Pattern (6, 3, 3, 6, 3, 3...) for Ads --}}
                     @php
                         $showAd = false;
@@ -486,10 +559,13 @@
                             $adIndex++;
                         @endphp
                         @if(!empty($inlineAd->image))
-                            <div class="col-span-full w-full rounded-2xl overflow-hidden shadow-sm relative group transition-all" style="display: flex; justify-content: center; align-items: center; background: transparent;">
+                            <div class="col-span-full w-full rounded-2xl overflow-hidden shadow-sm relative group transition-all"
+                                style="display: flex; justify-content: center; align-items: center; background: transparent;">
                                 <a href="{{ route('ad.click', $inlineAd->id) }}" target="_blank" class="block w-full relative">
-                                    <img src="{{ asset($inlineAd->image) }}" alt="{{ $inlineAd->campaign_name }}" class="w-full h-auto object-contain rounded-2xl">
-                                    <span class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[10px] tracking-widest px-2 py-1 rounded-md backdrop-blur-xs">AD</span>
+                                    <img src="{{ asset($inlineAd->image) }}" alt="{{ $inlineAd->campaign_name }}"
+                                        class="w-full h-auto object-contain rounded-2xl">
+                                    <span
+                                        class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[10px] tracking-widest px-2 py-1 rounded-md backdrop-blur-xs">AD</span>
                                 </a>
                             </div>
                         @endif
@@ -497,7 +573,8 @@
 
                 @empty
                     <div class="col-span-full py-16 text-center">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                        <div
+                            class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
                             <i data-lucide="package-x" size="28"></i>
                         </div>
                         <h4 class="text-lg font-black text-gray-800">No Packages Found</h4>
