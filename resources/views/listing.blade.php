@@ -1,6 +1,126 @@
 @extends('layouts.app')
 
 @section('content')
+    @php
+        // Fetch transit music for the active tour_type filter
+        $activeTourType = request('tour_type');
+        $transitMusic = null;
+        if ($activeTourType) {
+            try {
+                $transitMusic = DB::table('transit_music')
+                    ->where('transit_name', $activeTourType)
+                    ->where('status', 'Active')
+                    ->first();
+            } catch (\Exception $e) {
+                $transitMusic = null;
+            }
+        }
+    @endphp
+
+    {{-- Transit Music Player — same floating icon style as home page hero --}}
+    @if($transitMusic)
+    <audio id="transitBgMusic" src="{{ asset($transitMusic->music_file) }}" loop></audio>
+
+    {{-- Floating circular button: bottom-right, raised to avoid overlap with scroll-up arrow --}}
+    <div class="fixed z-[300] select-none" style="bottom: 90px; right: 20px;">
+
+        <button type="button" onclick="toggleTransitSound()" id="transitSoundToggle"
+            class="w-8 h-8 rounded-full bg-[#e85d26] hover:bg-orange-600 flex items-center justify-center text-white transition-all shadow-md focus:outline-none"
+            style="box-shadow: 0 0 10px rgba(232, 93, 38, 0.4);"
+            title="{{ $transitMusic->music_name }} — {{ $activeTourType }}">
+            {{-- Music On Icon --}}
+            <svg id="transitMusicOnIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="w-4 h-4 text-white">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+            {{-- Music Off Icon (hidden by default) --}}
+            <svg id="transitMusicOffIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                class="w-4 h-4 text-white hidden">
+                <line x1="2" y1="2" x2="22" y2="22"></line>
+                <path d="M9 13V5l12-2v9"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        function updateTransitSoundState(isPlaying) {
+            const toggle = document.getElementById('transitSoundToggle');
+            const onIcon = document.getElementById('transitMusicOnIcon');
+            const offIcon = document.getElementById('transitMusicOffIcon');
+            if (!toggle) return;
+            if (isPlaying) {
+                toggle.style.backgroundColor = '#e85d26';
+                if (onIcon) onIcon.classList.remove('hidden');
+                if (offIcon) offIcon.classList.add('hidden');
+            } else {
+                toggle.style.backgroundColor = '#4b5563';
+                if (onIcon) onIcon.classList.add('hidden');
+                if (offIcon) offIcon.classList.remove('hidden');
+            }
+        }
+
+        function toggleTransitSound() {
+            const audio = document.getElementById('transitBgMusic');
+            if (!audio) return;
+            if (audio.paused) {
+                audio.play().then(() => {
+                    updateTransitSoundState(true);
+                    sessionStorage.setItem('transitMusicState', 'enabled');
+                }).catch(e => console.log('Audio play failed:', e));
+            } else {
+                audio.pause();
+                updateTransitSoundState(false);
+                sessionStorage.setItem('transitMusicState', 'disabled');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const audio = document.getElementById('transitBgMusic');
+            if (!audio) return;
+            audio.volume = 0.5;
+
+            const state = sessionStorage.getItem('transitMusicState');
+
+            if (state === 'disabled') {
+                audio.pause();
+                updateTransitSoundState(false);
+            } else if (state === 'enabled') {
+                audio.play().then(() => {
+                    updateTransitSoundState(true);
+                }).catch(() => {
+                    updateTransitSoundState(false);
+                });
+            } else {
+                // First visit — try autoplay, fallback to first click
+                const startPlay = () => {
+                    if (sessionStorage.getItem('transitMusicState') === 'disabled') return;
+                    audio.play()
+                        .then(() => {
+                            updateTransitSoundState(true);
+                            document.removeEventListener('click', startPlay);
+                            document.removeEventListener('keydown', startPlay);
+                            if (!sessionStorage.getItem('transitMusicState')) {
+                                sessionStorage.setItem('transitMusicState', 'played');
+                            }
+                        })
+                        .catch(e => {
+                            console.log('Autoplay blocked, waiting for interaction...', e);
+                        });
+                };
+                startPlay();
+                document.addEventListener('click', startPlay);
+                document.addEventListener('keydown', startPlay);
+            }
+        });
+    </script>
+    @endif
+
     <style>
         /* MOBILE LIST VIEW FIXES */
         @media (max-width: 767px) {

@@ -41,6 +41,109 @@
         </form>
     </div>
 
+    <!-- Transit-Type Background Music Section -->
+    <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden p-8 mb-8" x-data="{ showAddMusicModal: false }">
+        <div class="flex items-center justify-between mb-6">
+            <div class="space-y-1">
+                <h3 class="text-xl font-black text-foreground">Tour Type Background Music</h3>
+                <p class="text-xs text-muted-text font-medium">Add specific background music for each tour/transit type. Plays automatically when visitors explore that transit on the Discover page.</p>
+            </div>
+            <button @click="showAddMusicModal = true" class="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-primary/20 flex items-center gap-2">
+                <i data-lucide="plus" size="16"></i> Add Music
+            </button>
+        </div>
+
+        @if(session('success'))
+            <div class="mb-4 px-5 py-3 bg-green-50 border border-green-200 text-green-700 rounded-2xl text-sm font-bold">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <!-- Transit Music List -->
+        @if($transitMusics->count() > 0)
+            <div class="space-y-3">
+                @foreach($transitMusics as $tm)
+                    <div class="flex items-center gap-4 p-4 bg-gray-50/50 rounded-2xl border border-gray-100 group">
+                        <div class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                            <i data-lucide="music" size="18" class="text-primary"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-sm font-black text-foreground">{{ $tm->transit_name }}</span>
+                                <span class="px-2 py-0.5 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">Transit</span>
+                            </div>
+                            <p class="text-xs text-muted-text font-medium mt-0.5 truncate">🎵 {{ $tm->music_name }}</p>
+                        </div>
+                        <audio controls class="h-8 w-40 hidden sm:block" style="max-width:180px;">
+                            <source src="{{ asset($tm->music_file) }}" type="audio/mpeg">
+                        </audio>
+                        <a href="{{ url('/admin/home-editor/transit-music/delete/' . $tm->id) }}"
+                           onclick="return confirm('Delete this transit music?')"
+                           class="p-2 text-muted-text hover:text-red-500 hover:bg-red-50 rounded-xl transition-all shrink-0">
+                            <i data-lucide="trash-2" size="16"></i>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div class="py-8 text-center text-sm text-muted-text font-medium bg-gray-50/40 rounded-2xl border border-dashed border-gray-200">
+                <i data-lucide="music-off" size="28" class="mx-auto mb-2 text-gray-300"></i>
+                <p>No transit music added yet. Click <strong>+ Add Music</strong> to get started.</p>
+            </div>
+        @endif
+
+        <!-- Add Transit Music Modal -->
+        <template x-teleport="body">
+            <div
+                x-show="showAddMusicModal"
+                class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100"
+                x-transition:leave-end="opacity-0 scale-95"
+                style="display: none;"
+            >
+                <div @click.away="showAddMusicModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-md w-full">
+                    <div class="flex items-center justify-between border-b border-border-soft p-6 md:p-8">
+                        <div class="space-y-1">
+                            <h3 class="text-xl font-black text-foreground">Add Transit Music</h3>
+                            <p class="text-xs text-muted-text font-medium">Select a tour type and upload its background music.</p>
+                        </div>
+                        <button type="button" @click="showAddMusicModal = false" class="p-2 text-muted-text hover:text-primary transition-colors">
+                            <i data-lucide="x" size="20"></i>
+                        </button>
+                    </div>
+                    <form action="{{ url('/admin/home-editor/transit-music/store') }}" method="POST" enctype="multipart/form-data" class="p-6 md:p-8 space-y-5">
+                        @csrf
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Tour Type <span class="text-primary">*</span></label>
+                            <select name="transit_name" required class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                                <option value="">— Select Tour Type —</option>
+                                @foreach($transits as $t)
+                                    <option value="{{ $t->name }}">{{ $t->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Music Name <span class="text-primary">*</span></label>
+                            <input type="text" name="music_name" required placeholder="e.g. Train Journey Ambiance" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Upload .mp3 File <span class="text-primary">*</span></label>
+                            <input type="file" name="music_file" accept=".mp3,audio/mpeg" required class="block w-full text-sm text-muted-text file:mr-4 file:py-3 file:px-6 file:rounded-2xl file:border-0 file:text-xs file:font-black file:uppercase file:tracking-widest file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all cursor-pointer">
+                        </div>
+                        <div class="flex items-center justify-end gap-4 pt-4 border-t border-border-soft">
+                            <button type="button" @click="showAddMusicModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                            <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Music</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </template>
+    </div>
+
     <!-- Banner List -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="overflow-x-auto">

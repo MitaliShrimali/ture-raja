@@ -2247,7 +2247,9 @@ class AdminController extends Controller
     public function homeEditor(Request $request)
     {
         $banners = DB::table('banners')->orderBy('id', 'desc')->paginate(5);
-        return view('admin.banners', compact('banners'));
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $transitMusics = DB::table('transit_music')->orderBy('id', 'desc')->get();
+        return view('admin.banners', compact('banners', 'transits', 'transitMusics'));
     }
 
     public function storeBanner(Request $request)
@@ -2330,6 +2332,46 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('error', 'Failed to upload music.');
+    }
+
+    public function storeTransitMusic(Request $request)
+    {
+        $request->validate([
+            'transit_name' => 'required|string',
+            'music_name'   => 'required|string',
+            'music_file'   => 'required|file|mimes:mp3,mpeg,mpga|max:20480',
+        ]);
+
+        $file = $request->file('music_file');
+        $filename = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '_', $file->getClientOriginalName());
+        $file->move(public_path('uploads/transit_music'), $filename);
+
+        // Remove existing entry for same transit (only one music per transit)
+        DB::table('transit_music')->where('transit_name', $request->transit_name)->delete();
+
+        DB::table('transit_music')->insert([
+            'transit_name' => $request->transit_name,
+            'music_name'   => $request->music_name,
+            'music_file'   => '/uploads/transit_music/' . $filename,
+            'status'       => 'Active',
+            'created_at'   => now(),
+            'updated_at'   => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Transit music added for ' . $request->transit_name . '!');
+    }
+
+    public function deleteTransitMusic($id)
+    {
+        $music = DB::table('transit_music')->where('id', $id)->first();
+        if ($music) {
+            $fullPath = public_path($music->music_file);
+            if (file_exists($fullPath)) {
+                @unlink($fullPath);
+            }
+            DB::table('transit_music')->where('id', $id)->delete();
+        }
+        return redirect()->back()->with('success', 'Transit music deleted!');
     }
 
     // NOTIFICATIONS

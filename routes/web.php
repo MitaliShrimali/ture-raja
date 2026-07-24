@@ -294,6 +294,8 @@ Route::prefix('admin')->group(function () {
     Route::post('/home-editor/upload-music', [AdminController::class, 'uploadMusic']);
     Route::get('/home-editor/delete/{id}', [AdminController::class, 'deleteBanner']);
     Route::get('/home-editor/toggle/{id}', [AdminController::class, 'toggleBanner']);
+    Route::post('/home-editor/transit-music/store', [AdminController::class, 'storeTransitMusic'])->name('admin.transit-music.store');
+    Route::get('/home-editor/transit-music/delete/{id}', [AdminController::class, 'deleteTransitMusic'])->name('admin.transit-music.delete');
 
     Route::post('/notifications/store', [AdminController::class, 'storeNotification']);
     Route::get('/notifications/delete/{id}', [AdminController::class, 'deleteNotification']);
