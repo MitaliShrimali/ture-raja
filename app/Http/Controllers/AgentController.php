@@ -93,7 +93,15 @@ class AgentController extends Controller
 
         $id = DB::table('agents')->insertGetId($data);
 
-        return redirect()->route('agent.login')->with('success', 'Agent account created successfully! Please login to continue.');
+        // Auto-login the new agent
+        session([
+            'agent_id' => $id,
+            'agent_name' => $request->name,
+            'agent_agency_name' => $request->agency_name ?? $request->name,
+            'agent_email' => $request->email
+        ]);
+
+        return redirect()->route('agent.settings')->with('success', 'Account created successfully! Please complete your profile first (at least 80% completion required).');
     }
 
     public function logout()
@@ -1582,12 +1590,45 @@ class AgentController extends Controller
             mkdir(public_path('uploads/agents'), 0775, true);
         }
 
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+
+        if ($request->input('delete_logo') == '1') {
+            if ($agent && $agent->logo && file_exists(public_path($agent->logo))) {
+                @unlink(public_path($agent->logo));
+            }
+            $data['logo'] = null;
+        }
+
+        if ($request->input('delete_card') == '1') {
+            if ($agent && $agent->business_card && file_exists(public_path($agent->business_card))) {
+                @unlink(public_path($agent->business_card));
+            }
+            $data['business_card'] = null;
+        }
+
         if ($request->hasFile('logo_file')) {
             $file = $request->file('logo_file');
             if ($file->isValid()) {
+                // Delete old logo
+                if ($agent && $agent->logo && file_exists(public_path($agent->logo))) {
+                    @unlink(public_path($agent->logo));
+                }
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/agents'), $fileName);
                 $data['logo'] = '/uploads/agents/' . $fileName;
+            }
+        }
+
+        if ($request->hasFile('business_card_file')) {
+            $file = $request->file('business_card_file');
+            if ($file->isValid()) {
+                // Delete old card
+                if ($agent && $agent->business_card && file_exists(public_path($agent->business_card))) {
+                    @unlink(public_path($agent->business_card));
+                }
+                $fileName = time() . '_card_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/agents'), $fileName);
+                $data['business_card'] = '/uploads/agents/' . $fileName;
             }
         }
 

@@ -14,6 +14,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         // Register custom agent session-based auth middleware
         $middleware->alias([
             'agent.auth' => \App\Http\Middleware\AgentAuthenticate::class,
+            'agent.profile_complete' => \App\Http\Middleware\CheckAgentProfileCompletion::class,
         ]);
 
         // For any remaining routes still using the built-in 'auth' middleware,

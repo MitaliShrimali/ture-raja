@@ -348,7 +348,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/logout',  [AgentController::class, 'logout'])->name('logout');
 
     // --- Protected agent pages ---
-    Route::middleware('agent.auth')->group(function () {
+    Route::middleware(['agent.auth', 'agent.profile_complete'])->group(function () {
         Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
         Route::get('/about', [AgentController::class, 'about'])->name('about');
         Route::get('/add-branch', [AgentController::class, 'addBranch'])->name('add-branch');

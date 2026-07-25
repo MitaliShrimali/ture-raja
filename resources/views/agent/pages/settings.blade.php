@@ -8,6 +8,36 @@
 @endphp
 
         <div class="max-w-6xl mx-auto">
+            <!-- Profile Completion status Bar -->
+            @if(isset($profileCompletionPercentage))
+                <div class="bg-white rounded-[2rem] border border-gray-100 p-6 mb-8 shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div>
+                            <h3 class="text-sm font-black text-gray-800 tracking-tight flex items-center gap-2">
+                                <i class="fas fa-user-shield text-primary"></i> Profile Completion status
+                            </h3>
+                            <p id="progress-status-desc" class="text-xs text-gray-400 font-medium mt-1">
+                                @if($profileCompletionPercentage < 80)
+                                    <span class="text-red-500 font-bold"><i class="fas fa-exclamation-triangle"></i> Locked:</span> Please complete at least 80% of your details to unlock full access.
+                                @else
+                                    <span class="text-green-500 font-bold"><i class="fas fa-check-circle"></i> Unlocked:</span> Your profile is complete and all agent features are unlocked!
+                                @endif
+                            </p>
+                        </div>
+                        <div class="flex-grow max-w-md w-full">
+                            <div class="flex items-center justify-between text-xs font-bold text-gray-600 mb-2">
+                                <span>Verification Progress</span>
+                                <span id="progress-percentage-text" class="{{ $profileCompletionPercentage < 80 ? 'text-red-500' : 'text-green-500' }}">{{ $profileCompletionPercentage }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                <div id="progress-bar-fill" class="h-full transition-all duration-500 rounded-full {{ $profileCompletionPercentage < 80 ? 'bg-red-500' : 'bg-green-500' }}"
+                                     style="width: {{ $profileCompletionPercentage }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <!-- Settings Navigation -->
                 <div class="lg:col-span-3">
@@ -160,26 +190,74 @@
                                     <div class="flex justify-end pt-4">
                                         <button type="submit" class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-orange-100 transition-all">Save Profile Settings</button>
                                     </div>
+
+                                    <!-- Business Card Card -->
+                                    <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 mt-8 relative overflow-hidden group">
+                                        <div class="absolute top-0 left-0 w-full h-1 bg-orange-800"></div>
+                                        <div class="flex items-center justify-between mb-6">
+                                            <div class="flex items-center">
+                                                <div class="w-1.5 h-6 bg-orange-800 rounded-full mr-4"></div>
+                                                <h4 class="text-lg font-bold text-gray-800 tracking-tight">Business Card</h4>
+                                            </div>
+                                            <!-- Success Badge Preview Icon -->
+                                            <div id="card_success_badge" class="{{ ($agent && $agent->business_card) ? '' : 'hidden' }} flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 rounded-full text-[10px] font-bold border border-green-100">
+                                                <i class="fas fa-check-circle"></i> Card Uploaded
+                                            </div>
+                                        </div>
+                                        <p class="text-[10px] text-gray-400 font-medium mb-6 -mt-3">Upload a single image containing both front and back of your business card (Max 2MB). Note: Front and back must be in one single image.</p>
+                                        
+                                        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                                            <div class="md:col-span-8">
+                                                <div class="w-full aspect-[1.58/1] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-orange-50/20 transition-all relative" onclick="document.getElementById('business_card_file').click()">
+                                                    @if($agent && $agent->business_card)
+                                                        <img id="card_preview" src="{{ asset($agent->business_card) }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        <img id="card_preview" class="hidden w-full h-full object-cover">
+                                                        <div id="card_placeholder" class="text-center p-4">
+                                                            <i class="fas fa-id-card text-2xl text-gray-300 mb-2"></i>
+                                                            <span class="text-[10px] font-bold text-gray-400 block">Click to upload business card</span>
+                                                            <span class="text-[8px] text-red-500 font-bold block mt-1">Note: Front & back must be in a single image</span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="md:col-span-4 space-y-3">
+                                                <button type="button" onclick="document.getElementById('business_card_file').click()" class="w-full py-3 bg-primary hover:bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm transition-all">
+                                                    <i class="fas fa-upload mr-1"></i> Upload Card
+                                                </button>
+                                                <button type="button" id="delete_card_btn" onclick="deleteCard()" class="{{ ($agent && $agent->business_card) ? '' : 'hidden' }} w-full py-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                                                    <i class="fas fa-trash-alt mr-1"></i> Delete Card
+                                                </button>
+                                                <input type="file" name="business_card_file" id="business_card_file" class="hidden" accept="image/*" onchange="previewCard(this)">
+                                                <input type="hidden" name="delete_card" id="delete_card" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <!-- Right Side: Branding, Tax, Social -->
                                 <div class="lg:col-span-4 space-y-8">
                                     <!-- Agency Branding -->
-                                    <div class="bg-white p-2 rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+                                    <div class="bg-white p-2 rounded-[32px] shadow-sm border border-gray-100 overflow-hidden relative group">
                                         <div class="bg-orange-100 h-28 rounded-t-[30px] relative">
-                                            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-14 h-14 bg-orange-800 rounded-xl flex items-center justify-center text-white shadow-xl overflow-hidden cursor-pointer" onclick="document.getElementById('logo_file').click()">
-                                                @if($agent && $agent->logo)
-                                                    <img src="{{ asset($agent->logo) }}" class="w-full h-full object-cover">
-                                                @else
-                                                    <i class="fas fa-camera-retro text-lg"></i>
-                                                @endif
+                                            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-20 h-20 bg-orange-800 rounded-xl flex items-center justify-center text-white shadow-xl overflow-hidden cursor-pointer border-4 border-white" onclick="document.getElementById('logo_file').click()">
+                                                <img id="logo_preview" src="{{ ($agent && $agent->logo) ? asset($agent->logo) : '' }}" class="{{ ($agent && $agent->logo) ? '' : 'hidden' }} w-full h-full object-cover">
+                                                <div id="logo_placeholder" class="{{ ($agent && $agent->logo) ? 'hidden' : '' }} text-center">
+                                                    <i class="fas fa-camera-retro text-xl"></i>
+                                                </div>
                                             </div>
-                                            <input type="file" name="logo_file" id="logo_file" class="hidden" accept="image/*">
+                                            <input type="file" name="logo_file" id="logo_file" class="hidden" accept="image/*" onchange="previewLogo(this)">
                                         </div>
-                                        <div class="p-6 pt-10 text-center">
+                                        <div class="p-6 pt-10 text-center space-y-3">
                                             <h4 class="text-xs font-bold text-gray-800 mb-1">Agency Branding</h4>
-                                            <p class="text-[8px] text-gray-400 font-medium mb-4">Click logo icon above or button below to upload your company logo (Max 2MB).</p>
-                                            <button type="button" onclick="document.getElementById('logo_file').click()" class="w-full py-2.5 bg-white border border-gray-100 rounded-xl text-[9px] font-bold text-orange-800 uppercase tracking-widest hover:bg-gray-50">Upload Logo</button>
+                                            <p class="text-[8px] text-gray-400 font-medium mb-4">Click logo circle above or button below to upload your company logo (Max 2MB).</p>
+                                            <div class="flex items-center gap-2">
+                                                <button type="button" onclick="document.getElementById('logo_file').click()" class="flex-grow py-2 bg-white border border-gray-100 rounded-xl text-[9px] font-bold text-orange-800 uppercase tracking-widest hover:bg-gray-50">Upload Logo</button>
+                                                <button type="button" id="delete_logo_btn" onclick="deleteLogo()" class="{{ ($agent && $agent->logo) ? '' : 'hidden' }} px-3 py-2 bg-red-50 border border-red-100 rounded-xl text-red-500 hover:bg-red-100 transition-all">
+                                                    <i class="fas fa-trash-alt text-xs"></i>
+                                                </button>
+                                            </div>
+                                            <input type="hidden" name="delete_logo" id="delete_logo" value="0">
                                         </div>
                                     </div>
 
@@ -503,5 +581,195 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Client-side Live Progress calculation
+function calculateLiveProgress() {
+    const fields = [
+        { selector: 'input[name="name"]' },
+        { selector: 'input[name="phone"]' },
+        { selector: 'input[name="email"]' },
+        { selector: 'input[name="address"]' },
+        { selector: 'input[name="city"]' },
+        { selector: 'input[name="state"]' },
+        { selector: 'input[name="country"]' },
+        { selector: 'input[name="pincode"]' },
+        { selector: 'textarea[name="about"]' }
+    ];
+
+    let filled = 0;
+    const totalFields = 11; // 9 text fields + logo + business card
+
+    // Check text/input fields
+    fields.forEach(f => {
+        const el = document.querySelector(f.selector);
+        if (el && el.value.trim() !== '') {
+            filled++;
+        }
+    });
+
+    // Check Logo
+    const logoInput = document.getElementById('logo_file');
+    const hasExistingLogo = {{ ($agent && $agent->logo) ? 'true' : 'false' }};
+    const deleteLogoVal = document.getElementById('delete_logo') ? document.getElementById('delete_logo').value : '0';
+    if (deleteLogoVal !== '1' && ((logoInput && logoInput.files && logoInput.files.length > 0) || hasExistingLogo)) {
+        filled++;
+    }
+
+    // Check Business Card
+    const cardInput = document.getElementById('business_card_file');
+    const hasExistingCard = {{ ($agent && $agent->business_card) ? 'true' : 'false' }};
+    const deleteCardVal = document.getElementById('delete_card') ? document.getElementById('delete_card').value : '0';
+    if (deleteCardVal !== '1' && ((cardInput && cardInput.files && cardInput.files.length > 0) || hasExistingCard)) {
+        filled++;
+    }
+
+    const percentage = Math.round((filled / totalFields) * 100);
+
+    // Update UI elements
+    const progressTexts = document.querySelectorAll('#progress-percentage-text, [x-text*="profileCompletionPercentage"]');
+    const progressBars = document.querySelectorAll('#progress-bar-fill, [style*="profileCompletionPercentage"]');
+    const progressStatusDesc = document.getElementById('progress-status-desc');
+
+    progressTexts.forEach(el => el.innerText = percentage + '%');
+    progressBars.forEach(el => {
+        el.style.width = percentage + '%';
+        if (percentage < 80) {
+            el.classList.remove('bg-green-500');
+            el.classList.add('bg-red-500');
+        } else {
+            el.classList.remove('bg-red-500');
+            el.classList.add('bg-green-500');
+        }
+    });
+    
+    if (progressStatusDesc) {
+        if (percentage < 80) {
+            progressStatusDesc.innerHTML = '<span class="text-red-500 font-bold"><i class="fas fa-exclamation-triangle"></i> Locked:</span> Please complete at least 80% of your details to unlock full access.';
+        } else {
+            progressStatusDesc.innerHTML = '<span class="text-green-500 font-bold"><i class="fas fa-check-circle"></i> Unlocked:</span> Your profile is complete and all agent features are unlocked!';
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Attach change/input listeners to all form fields
+    const form = document.querySelector('form[action*="settings/update"]');
+    if (form) {
+        form.querySelectorAll('input, textarea, select').forEach(el => {
+            el.addEventListener('input', calculateLiveProgress);
+            el.addEventListener('change', calculateLiveProgress);
+        });
+    }
+    // Initial run
+    calculateLiveProgress();
+});
+
+// Client-side Logo Image preview helper
+function previewLogo(input) {
+    if (input.files && input.files[0]) {
+        const fileSize = input.files[0].size / 1024 / 1024; // in MB
+        if (fileSize > 2) {
+            Swal.fire({
+                title: 'File Too Large',
+                text: 'Your logo file must be less than 2MB. Your file is ' + fileSize.toFixed(2) + 'MB.',
+                icon: 'warning',
+                confirmButtonColor: '#F0642F',
+                borderRadius: '2rem'
+            });
+            input.value = ''; // Reset input
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('logo_preview');
+            const placeholder = document.getElementById('logo_placeholder');
+            const deleteBtn = document.getElementById('delete_logo_btn');
+            const deleteInput = document.getElementById('delete_logo');
+            if (preview) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            if (placeholder) placeholder.classList.add('hidden');
+            if (deleteBtn) deleteBtn.classList.remove('hidden');
+            if (deleteInput) deleteInput.value = '0';
+            calculateLiveProgress();
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Client-side Logo Delete handler
+function deleteLogo() {
+    const preview = document.getElementById('logo_preview');
+    const placeholder = document.getElementById('logo_placeholder');
+    const deleteBtn = document.getElementById('delete_logo_btn');
+    const deleteInput = document.getElementById('delete_logo');
+    const fileInput = document.getElementById('logo_file');
+    
+    if (preview) preview.classList.add('hidden');
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (deleteBtn) deleteBtn.classList.add('hidden');
+    if (deleteInput) deleteInput.value = '1';
+    if (fileInput) fileInput.value = '';
+    
+    calculateLiveProgress();
+}
+
+// Client-side Business Card Image preview helper
+function previewCard(input) {
+    if (input.files && input.files[0]) {
+        const fileSize = input.files[0].size / 1024 / 1024; // in MB
+        if (fileSize > 2) {
+            Swal.fire({
+                title: 'File Too Large',
+                text: 'Your business card file must be less than 2MB. Your file is ' + fileSize.toFixed(2) + 'MB.',
+                icon: 'warning',
+                confirmButtonColor: '#F0642F',
+                borderRadius: '2rem'
+            });
+            input.value = ''; // Reset input
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('card_preview');
+            const placeholder = document.getElementById('card_placeholder');
+            const badge = document.getElementById('card_success_badge');
+            const deleteBtn = document.getElementById('delete_card_btn');
+            const deleteInput = document.getElementById('delete_card');
+            
+            if (preview) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            if (placeholder) placeholder.classList.add('hidden');
+            if (badge) badge.classList.remove('hidden');
+            if (deleteBtn) deleteBtn.classList.remove('hidden');
+            if (deleteInput) deleteInput.value = '0';
+            
+            calculateLiveProgress();
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Client-side Business Card Delete handler
+function deleteCard() {
+    const preview = document.getElementById('card_preview');
+    const placeholder = document.getElementById('card_placeholder');
+    const badge = document.getElementById('card_success_badge');
+    const deleteBtn = document.getElementById('delete_card_btn');
+    const deleteInput = document.getElementById('delete_card');
+    const fileInput = document.getElementById('business_card_file');
+    
+    if (preview) preview.classList.add('hidden');
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (badge) badge.classList.add('hidden');
+    if (deleteBtn) deleteBtn.classList.add('hidden');
+    if (deleteInput) deleteInput.value = '1';
+    if (fileInput) fileInput.value = '';
+    
+    calculateLiveProgress();
+}
 </script>
 @endsection
