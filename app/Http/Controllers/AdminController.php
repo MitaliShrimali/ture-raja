@@ -489,210 +489,217 @@ class AdminController extends Controller
 
     public function updatePackage(Request $request)
     {
-        $request->validate(['id' => 'required', 'title' => 'required', 'price' => 'required|numeric']);
+        try {
+            $request->validate(['id' => 'required', 'title' => 'required', 'price' => 'required|numeric']);
 
-        // Get original package to keep old gallery/brochure/etc if no new ones uploaded
-        $oldPkg = DB::table('packages')->where('id', $request->id)->first();
+            // Get original package to keep old gallery/brochure/etc if no new ones uploaded
+            $oldPkg = DB::table('packages')->where('id', $request->id)->first();
 
-        // Main Image Upload
-        $imageUrl = $request->image;
-        if (empty($imageUrl) && $oldPkg) {
-            $imageUrl = $oldPkg->image;
-        }
-
-        if ($request->hasFile('image_file')) {
-            $file = $request->file('image_file');
-            if (!$file->isValid()) {
-                return redirect()->back()->withErrors(['image_file' => 'The uploaded main image file is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+            // Main Image Upload
+            $imageUrl = $request->image;
+            if (empty($imageUrl) && $oldPkg) {
+                $imageUrl = $oldPkg->image;
             }
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/packages'), $fileName);
-            $imageUrl = 'uploads/packages/' . $fileName;
-        }
 
-        // Gallery Images Upload
-        $galleryUrls = [];
-        if ($request->hasFile('gallery_files')) {
-            foreach ($request->file('gallery_files') as $file) {
+            if ($request->hasFile('image_file')) {
+                $file = $request->file('image_file');
                 if (!$file->isValid()) {
-                    return redirect()->back()->withErrors(['gallery_files' => 'One of the uploaded gallery files is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+                    return redirect()->back()->withErrors(['image_file' => 'The uploaded main image file is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
                 }
-                $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
-                $file->move(public_path('uploads/packages/gallery'), $fileName);
-                $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/packages'), $fileName);
+                $imageUrl = 'uploads/packages/' . $fileName;
             }
-        } else {
-            if ($oldPkg && $oldPkg->gallery) {
-                $galleryUrls = json_decode($oldPkg->gallery, true) ?: [];
-            }
-        }
 
-        // Brochure Upload
-        $brochureUrl = $oldPkg ? $oldPkg->brochure : null;
-        if ($request->hasFile('brochure_file')) {
-            $file = $request->file('brochure_file');
-            if (!$file->isValid()) {
-                return redirect()->back()->withErrors(['brochure_file' => 'The uploaded brochure PDF file is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
-            }
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/packages/brochures'), $fileName);
-            $brochureUrl = 'uploads/packages/brochures/' . $fileName;
-        }
-
-        // Inclusions & Exclusions parsing
-        $included = [];
-        if ($request->has('included')) {
-            if (is_array($request->included)) {
-                $included = array_values(array_filter(array_map('trim', $request->included)));
+            // Gallery Images Upload
+            $galleryUrls = [];
+            if ($request->hasFile('gallery_files')) {
+                foreach ($request->file('gallery_files') as $file) {
+                    if (!$file->isValid()) {
+                        return redirect()->back()->withErrors(['gallery_files' => 'One of the uploaded gallery files is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+                    }
+                    $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
+                    $file->move(public_path('uploads/packages/gallery'), $fileName);
+                    $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
+                }
             } else {
-                $included = array_values(array_filter(array_map('trim', explode("\n", $request->included))));
-            }
-        }
-        $excluded = [];
-        if ($request->has('excluded')) {
-            if (is_array($request->excluded)) {
-                $excluded = array_values(array_filter(array_map('trim', $request->excluded)));
-            } else {
-                $excluded = array_values(array_filter(array_map('trim', explode("\n", $request->excluded))));
-            }
-        }
-
-        // New fields parsing
-        $hotels = [];
-        if ($request->has('hotels')) {
-            foreach ($request->hotels as $hotelJson) {
-                $hotelData = json_decode($hotelJson, true);
-                if ($hotelData)
-                    $hotels[] = $hotelData;
-            }
-        } else {
-            $hotels = $oldPkg && isset($oldPkg->hotels) ? json_decode($oldPkg->hotels, true) ?: [] : [];
-        }
-
-        $keywords = [];
-        if ($request->has('keywords') && !empty($request->keywords)) {
-            $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
-        } else {
-            $keywords = $oldPkg && isset($oldPkg->keywords) ? json_decode($oldPkg->keywords, true) ?: [] : [];
-        }
-
-        $amenities = $request->has('amenities') ? $request->input('amenities', []) : ($oldPkg && isset($oldPkg->amenities) ? json_decode($oldPkg->amenities, true) ?: [] : []);
-        $transfers = $request->has('transfers') ? $request->input('transfers', []) : ($oldPkg && isset($oldPkg->transfers) ? json_decode($oldPkg->transfers, true) ?: [] : []);
-        $meals = $request->has('meals') ? $request->input('meals', []) : ($oldPkg && isset($oldPkg->meals) ? json_decode($oldPkg->meals, true) ?: [] : []);
-
-        $expiry_date = $oldPkg ? $oldPkg->expiry_date : null;
-        if (!empty($request->validity) && strpos($request->validity, ' to ') !== false) {
-            $parts = explode(' to ', $request->validity);
-            if (isset($parts[1])) {
-                $expiry_date = date('Y-m-d', strtotime($parts[1]));
-            }
-        } elseif (!empty($request->validity)) {
-            $expiry_date = date('Y-m-d', strtotime($request->validity));
-        }
-
-        // Sightseeing List parsing
-        $sightseeing_list = [];
-        if ($request->has('sightseeing_list')) {
-            if (is_array($request->sightseeing_list)) {
-                $sightseeing_list = array_values(array_filter(array_map('trim', $request->sightseeing_list)));
-            } else {
-                $sightseeing_list = array_values(array_filter(array_map('trim', explode("\n", $request->sightseeing_list))));
-            }
-        }
-
-
-        // Itinerary Days parsing
-        $itinerary = [];
-        if ($request->has('itinerary_titles')) {
-            foreach ($request->itinerary_titles as $i => $dayTitle) {
-                $dayDesc = $request->itinerary_descriptions[$i] ?? '';
-                $dayDur = $request->itinerary_durations[$i] ?? '';
-                if (!empty($dayTitle)) {
-                    $itinerary[] = [
-                        'title' => $dayTitle,
-                        'desc' => $dayDesc,
-                        'duration' => $dayDur
-                    ];
+                if ($oldPkg && $oldPkg->gallery) {
+                    $galleryUrls = json_decode($oldPkg->gallery, true) ?: [];
                 }
             }
-        }
 
-        if ($request->has('agent')) {
-            $agentName = $request->agent;
-            $agentDb = DB::table('agents')->where('name', $agentName)->first();
-            if ($agentDb) {
-                $agentJson = json_encode([
-                    'id' => $agentDb->id,
-                    'logo' => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->agency_name ?? $agentDb->name),
-                    'name' => $agentDb->agency_name ?? $agentDb->name,
-                    'phone' => $agentDb->phone ?? '',
-                    'whatsapp' => $agentDb->phone ?? '',
-                    'email' => $agentDb->email ?? ''
-                ]);
+            // Brochure Upload
+            $brochureUrl = $oldPkg ? $oldPkg->brochure : null;
+            if ($request->hasFile('brochure_file')) {
+                $file = $request->file('brochure_file');
+                if (!$file->isValid()) {
+                    return redirect()->back()->withErrors(['brochure_file' => 'The uploaded brochure PDF file is invalid or too large. Max size allowed by PHP config is ' . ini_get('upload_max_filesize')])->withInput();
+                }
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/packages/brochures'), $fileName);
+                $brochureUrl = 'uploads/packages/brochures/' . $fileName;
+            }
+
+            // Inclusions & Exclusions parsing
+            $included = [];
+            if ($request->has('included')) {
+                if (is_array($request->included)) {
+                    $included = array_values(array_filter(array_map('trim', $request->included)));
+                } else {
+                    $included = array_values(array_filter(array_map('trim', explode("\n", $request->included))));
+                }
+            }
+            $excluded = [];
+            if ($request->has('excluded')) {
+                if (is_array($request->excluded)) {
+                    $excluded = array_values(array_filter(array_map('trim', $request->excluded)));
+                } else {
+                    $excluded = array_values(array_filter(array_map('trim', explode("\n", $request->excluded))));
+                }
+            }
+
+            // New fields parsing
+            $hotels = [];
+            if ($request->has('hotels')) {
+                foreach ($request->hotels as $hotelJson) {
+                    $hotelData = json_decode($hotelJson, true);
+                    if ($hotelData)
+                        $hotels[] = $hotelData;
+                }
             } else {
-                $agentJson = json_encode([
+                $hotels = $oldPkg && isset($oldPkg->hotels) ? json_decode($oldPkg->hotels, true) ?: [] : [];
+            }
+
+            $keywords = [];
+            if ($request->has('keywords') && !empty($request->keywords)) {
+                $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+            } else {
+                $keywords = $oldPkg && isset($oldPkg->keywords) ? json_decode($oldPkg->keywords, true) ?: [] : [];
+            }
+
+            $amenities = $request->has('amenities') ? $request->input('amenities', []) : ($oldPkg && isset($oldPkg->amenities) ? json_decode($oldPkg->amenities, true) ?: [] : []);
+            $transfers = $request->has('transfers') ? $request->input('transfers', []) : ($oldPkg && isset($oldPkg->transfers) ? json_decode($oldPkg->transfers, true) ?: [] : []);
+            $meals = $request->has('meals') ? $request->input('meals', []) : ($oldPkg && isset($oldPkg->meals) ? json_decode($oldPkg->meals, true) ?: [] : []);
+
+            $expiry_date = $oldPkg ? $oldPkg->expiry_date : null;
+            if (!empty($request->validity) && strpos($request->validity, ' to ') !== false) {
+                $parts = explode(' to ', $request->validity);
+                if (isset($parts[1])) {
+                    $expiry_date = date('Y-m-d', strtotime($parts[1]));
+                }
+            } elseif (!empty($request->validity)) {
+                $expiry_date = date('Y-m-d', strtotime($request->validity));
+            }
+
+            // Sightseeing List parsing
+            $sightseeing_list = [];
+            if ($request->has('sightseeing_list')) {
+                if (is_array($request->sightseeing_list)) {
+                    $sightseeing_list = array_values(array_filter(array_map('trim', $request->sightseeing_list)));
+                } else {
+                    $sightseeing_list = array_values(array_filter(array_map('trim', explode("\n", $request->sightseeing_list))));
+                }
+            }
+
+            // Itinerary Days parsing
+            $itinerary = [];
+            if ($request->has('itinerary_titles')) {
+                foreach ($request->itinerary_titles as $i => $dayTitle) {
+                    $dayDesc = $request->itinerary_descriptions[$i] ?? '';
+                    $dayDur = $request->itinerary_durations[$i] ?? '';
+                    if (!empty($dayTitle)) {
+                        $itinerary[] = [
+                            'title' => $dayTitle,
+                            'desc' => $dayDesc,
+                            'duration' => $dayDur
+                        ];
+                    }
+                }
+            }
+
+            if ($request->has('agent')) {
+                $agentName = $request->agent;
+                $agentDb = DB::table('agents')->where('name', $agentName)->first();
+                if ($agentDb) {
+                    $agentJson = json_encode([
+                        'id' => $agentDb->id,
+                        'logo' => $agentDb->logo ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentDb->agency_name ?? $agentDb->name),
+                        'name' => $agentDb->agency_name ?? $agentDb->name,
+                        'phone' => $agentDb->phone ?? '',
+                        'whatsapp' => $agentDb->phone ?? '',
+                        'email' => $agentDb->email ?? ''
+                    ]);
+                } else {
+                    $agentJson = json_encode([
+                        'id' => null,
+                        'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName),
+                        'name' => $agentName,
+                        'phone' => '',
+                        'whatsapp' => '',
+                        'email' => ''
+                    ]);
+                }
+            } else {
+                $agentJson = $oldPkg->agent ?? json_encode([
                     'id' => null,
-                    'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName),
-                    'name' => $agentName,
+                    'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=Miths+Holidays',
+                    'name' => 'Miths Holidays',
                     'phone' => '',
                     'whatsapp' => '',
                     'email' => ''
                 ]);
             }
-        } else {
-            $agentJson = $oldPkg->agent ?? json_encode([
-                'id' => null,
-                'logo' => 'https://api.dicebear.com/7.x/initials/svg?seed=Miths+Holidays',
-                'name' => 'Miths Holidays',
-                'phone' => '',
-                'whatsapp' => '',
-                'email' => ''
+
+            DB::table('packages')->where('id', $request->id)->update([
+                'title' => $request->title,
+                'departure_city' => $request->departure_city ?? null,
+                'departure_state' => $request->departure_state ?? null,
+                'departure_country' => $request->departure_country ?? null,
+                'terms' => $request->terms ?? null,
+                'sightseeing_list' => json_encode($sightseeing_list),
+                'currency' => $request->currency ?? '₹',
+                'location' => $request->location ?? $oldPkg->location ?? 'Global',
+                'price' => $request->price,
+                'old_price' => $request->old_price,
+                'rating' => $request->rating ?? 4.8,
+                'reviews' => $request->reviews ?? 10,
+                'duration' => $request->duration ?? $oldPkg->duration ?? '3 Days',
+                'group_size' => $request->group_size ?? '4-6 guest',
+                'image' => $imageUrl,
+                'category' => $request->category ?? 'domestic',
+                'categories_list' => is_array($request->categories_list) ? json_encode($request->categories_list) : null,
+                'theme' => $request->theme ?? '',
+                'holiday_type' => $request->holiday_type ?? '',
+                'badge' => $request->badge ?? '',
+                'status' => $request->status ?? 'Active',
+                'stock' => $request->stock ?? '10 Left',
+                'validity' => $request->validity ?? '',
+                'expiry_date' => $expiry_date,
+                'sightseeing' => $request->sightseeing ?? '',
+                'agent' => $agentJson,
+                'gallery' => json_encode($galleryUrls),
+                'brochure' => $brochureUrl,
+                'included' => json_encode($included),
+                'excluded' => json_encode($excluded),
+                'hotels' => json_encode($hotels),
+                'keywords' => json_encode($keywords),
+                'amenities' => json_encode($amenities),
+                'transfers' => json_encode($transfers),
+                'meals' => json_encode($meals),
+                'itinerary' => json_encode($itinerary),
+                'editorial_itinerary' => $request->editorial_itinerary ?? null,
+                'updated_at' => now(),
+            ]);
+
+            return redirect('/admin/packages')->with('success', 'Package updated successfully!');
+        } catch (\Throwable $e) {
+            dd([
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
             ]);
         }
-
-        DB::table('packages')->where('id', $request->id)->update([
-            'title' => $request->title,
-            'departure_city' => $request->departure_city ?? null,
-            'departure_state' => $request->departure_state ?? null,
-            'departure_country' => $request->departure_country ?? null,
-            'terms' => $request->terms ?? null,
-            'sightseeing_list' => json_encode($sightseeing_list),
-            'currency' => $request->currency ?? '₹',
-
-            'location' => $request->location,
-            'price' => $request->price,
-            'old_price' => $request->old_price,
-            'rating' => $request->rating ?? 4.8,
-            'reviews' => $request->reviews ?? 10,
-            'duration' => $request->duration,
-            'group_size' => $request->group_size ?? '4-6 guest',
-            'image' => $imageUrl,
-            'category' => $request->category ?? 'domestic',
-            'categories_list' => is_array($request->categories_list) ? json_encode($request->categories_list) : null,
-            'theme' => $request->theme ?? '',
-            'holiday_type' => $request->holiday_type ?? '',
-            'badge' => $request->badge ?? '',
-            'status' => $request->status ?? 'Active',
-            'stock' => $request->stock ?? '10 Left',
-            'validity' => $request->validity ?? '',
-            'expiry_date' => $expiry_date,
-            'sightseeing' => $request->sightseeing ?? '',
-            'agent' => $agentJson,
-            'gallery' => json_encode($galleryUrls),
-            'brochure' => $brochureUrl,
-            'included' => json_encode($included),
-            'excluded' => json_encode($excluded),
-            'hotels' => json_encode($hotels),
-            'keywords' => json_encode($keywords),
-            'amenities' => json_encode($amenities),
-            'transfers' => json_encode($transfers),
-            'meals' => json_encode($meals),
-            'itinerary' => json_encode($itinerary),
-            'editorial_itinerary' => $request->editorial_itinerary ?? null,
-            'updated_at' => now(),
-        ]);
-
-        return redirect('/admin/packages')->with('success', 'Package updated successfully!');
     }
 
     public function deletePackage($id)

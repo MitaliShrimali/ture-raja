@@ -480,6 +480,7 @@
                     </div>
 
                     {{-- Section Navigation Tabs --}}
+                    @if(empty($package['brochure']))
                     <div class="relative flex items-center mb-6 group bg-[#F8F9FA]">
                         <!-- Left Arrow -->
                         <button type="button"
@@ -540,6 +541,7 @@
                             </svg>
                         </button>
                     </div>
+                    @endif
 
                     @if(!empty($package['brochure']))
                         {{-- Document / Brochure PDF Preview Section --}}
@@ -584,12 +586,11 @@
 
 
 
+                    @if(empty($package['brochure']))
                     {{-- Tour Overview & Editorial --}}
                     <div id="overview" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6">
                         <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
                         <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
-
-
 
                         <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Tour Highlights</h3>
                         <ul class="space-y-2">
@@ -605,11 +606,9 @@
                         </ul>
                     </div>
 
-
-
                     {{-- Inclusions & Exclusions --}}
                     @if(count($package['included'] ?? []) > 0 || count($package['excluded'] ?? []) > 0)
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 mt-6">
                             @if(count($package['included'] ?? []) > 0)
                                 <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
                                     <div class="flex items-center gap-2 mb-5">
@@ -689,14 +688,11 @@
                     @if(!empty($package['terms']))
                         <div id="terms" class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
                             <div class="flex items-center gap-3 mb-6">
-                                <!-- <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm shrink-0"> -->
-                                <!-- <i data-lucide="file-text" size="20" class="text-gray-600"></i> -->
-                                <!-- </div> -->
                                 <h2 class="font-black text-gray-900 section-heading !mb-0 text-xl pb-2">Terms & Conditions</h2>
                             </div>
                             <div class="text-sm text-gray-600 leading-relaxed mt-4">
                                 {!! nl2br(e($package['terms'])) !!}
-                            </div>
+                             </div>
                         </div>
                     @endif
 
@@ -755,6 +751,7 @@
                             @endforeach
                         </div>
                     </div>
+                    @endif
 
                 </div>{{-- end left col --}}
 
