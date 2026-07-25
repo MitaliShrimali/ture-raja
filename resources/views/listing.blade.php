@@ -611,25 +611,27 @@
                 </div>
 
                 <!-- Suggested Packages Section -->
-                @if(isset($suggestedPackages) && $suggestedPackages->count() > 0)
-                    <div class="mt-16 border-t border-gray-100 pt-12">
-                        <div class="flex flex-col gap-2 mb-8">
-                            <div class="flex items-center gap-3">
-                                <h3 class="text-2xl md:text-3xl font-black text-foreground">Suggested Packages</h3>
-                                <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Premium & Guaranteed</span>
-                            </div>
-                            <p class="text-gray-500 text-sm">We couldn't find many exact matches, so here are some highly recommended tours you might love.</p>
-                        </div>
-                        
-                        <div :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'">
-                            @foreach($suggestedPackages as $pkg)
-                                <div :class="viewStyle === 'list' ? 'list-view-wrapper' : ''">
-                                    <x-package-card :pkg="$pkg" />
+                <div id="suggested-packages-section">
+                    @if(isset($suggestedPackages) && $suggestedPackages->count() > 0)
+                        <div class="mt-16 border-t border-gray-100 pt-12">
+                            <div class="flex flex-col gap-2 mb-8">
+                                <div class="flex items-center gap-3">
+                                    <h3 class="text-2xl md:text-3xl font-black text-foreground">Suggested Packages</h3>
+                                    <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Premium & Guaranteed</span>
                                 </div>
-                            @endforeach
+                                <p class="text-gray-500 text-sm">We couldn't find many exact matches, so here are some highly recommended tours you might love.</p>
+                            </div>
+                            
+                            <div :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'">
+                                @foreach($suggestedPackages as $pkg)
+                                    <div :class="viewStyle === 'list' ? 'list-view-wrapper' : ''">
+                                        <x-package-card :pkg="$pkg" />
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                @endif
+                    @endif
+                </div>
                 
                 <!-- Modal placeholder (moved to root for relative viewport alignment) -->
         </form>
@@ -689,6 +691,11 @@
                             const newLoadMore = doc.getElementById('load-more-section');
                             const oldLoadMore = document.getElementById('load-more-section');
                             if (newLoadMore && oldLoadMore) oldLoadMore.innerHTML = newLoadMore.innerHTML;
+
+                            // Swap suggested packages
+                            const newSuggested = doc.getElementById('suggested-packages-section');
+                            const oldSuggested = document.getElementById('suggested-packages-section');
+                            if (newSuggested && oldSuggested) oldSuggested.innerHTML = newSuggested.innerHTML;
 
                             // Re-render Lucide icons for new cards!
                             if (window.lucide) window.lucide.createIcons();

@@ -965,11 +965,44 @@ class ListingController extends Controller
         $suggestedPackages = collect();
         if ($packages->count() <= 3) {
             $existingIds = $packages->pluck('id')->toArray();
-            // Since $allPackages is already sorted by tier (premium/boosted/guaranteed first),
-            // we just take the top 6 that aren't already in the results.
-            $suggestedPackages = $allPackages->filter(function($p) use ($existingIds) {
-                return !in_array(((array)$p)['id'] ?? null, $existingIds);
-            })->take(6)->values();
+            
+            $paidPackages = $allPackages->filter(function($p) use ($existingIds, $agentsById, $agentsByName) {
+                $pkg = (array) $p;
+                if (in_array($pkg['id'] ?? null, $existingIds)) return false;
+                
+                $agentId = null;
+                $agentName = null;
+                $agentData = $pkg['agent'] ?? null;
+                if (is_string($agentData)) {
+                    $decoded = json_decode($agentData, true);
+                    if (is_array($decoded)) {
+                        $agentId = $decoded['id'] ?? null;
+                        $agentName = $decoded['name'] ?? null;
+                    }
+                } elseif (is_array($agentData)) {
+                    $agentId = $agentData['id'] ?? null;
+                    $agentName = $agentData['name'] ?? null;
+                }
+                
+                $agentInfo = null;
+                if ($agentId && isset($agentsById[$agentId])) {
+                    $agentInfo = $agentsById[$agentId];
+                } elseif ($agentName) {
+                    $key = strtolower(trim($agentName));
+                    if (isset($agentsByName[$key])) {
+                        $agentInfo = $agentsByName[$key];
+                    }
+                }
+                return $agentInfo && (!empty($agentInfo->plan_id) && $agentInfo->plan_id > 1);
+            });
+
+            if ($paidPackages->count() > 0) {
+                $suggestedPackages = $paidPackages->shuffle()->take(6)->values();
+            } else {
+                $suggestedPackages = $allPackages->filter(function($p) use ($existingIds) {
+                    return !in_array(((array)$p)['id'] ?? null, $existingIds);
+                })->shuffle()->take(6)->values();
+            }
         }
 
         if ($agent) {
