@@ -361,6 +361,12 @@
 
                 select.addEventListener('change', validatePhone);
                 input.addEventListener('input', validatePhone);
+                
+                const form = select.closest('form');
+                if (form) {
+                    form.addEventListener('submit', validatePhone);
+                }
+
                 validatePhone();
             }
         });
