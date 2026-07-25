@@ -14,7 +14,7 @@
                 <p class="text-muted-text font-medium">Manage your prospective travelers and track conversion performance.</p>
             </div>
             <div class="flex items-center gap-3">
-                <a href="{{ url('/admin/reports/leads/download') }}" class="flex items-center gap-2 px-6 py-3 bg-white border border-border-soft rounded-2xl text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-50 transition-all">
+                <a href="{{ url('/admin/reports/leads/download?' . http_build_query(request()->query())) }}" class="flex items-center gap-2 px-6 py-3 bg-white border border-border-soft rounded-2xl text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-50 transition-all">
                     <i data-lucide="download" size="16"></i> Export List
                 </a>
             </div>
@@ -26,6 +26,7 @@
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
             <!-- Search & Filter Form -->
             <form method="GET" action="{{ url('/admin/leads') }}" class="flex flex-col md:flex-row items-center gap-4 w-full">
+                <!-- Search -->
                 <div class="relative group flex-1 w-full">
                     <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
                     <input 
@@ -36,12 +37,38 @@
                         class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
                     >
                 </div>
-                
-                <div class="w-full md:w-64 relative">
-                    <div class="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
-                        <i data-lucide="filter" size="18"></i>
+
+                <!-- Date Range Filters -->
+                <div class="flex items-center gap-2 w-full md:w-auto my-2 md:my-0">
+                    <div class="relative w-full sm:w-auto">
+                        <span class="absolute left-3 -top-2 bg-white px-1.5 text-[8px] font-black text-muted-text tracking-wider">FROM</span>
+                        <input 
+                            type="date" 
+                            name="from_date" 
+                            value="{{ request('from_date') }}"
+                            onchange="this.form.submit()"
+                            class="bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-3 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-bold text-xs text-foreground cursor-pointer"
+                        >
                     </div>
-                    <select name="type" onchange="this.form.submit()" class="w-full bg-white border border-gray-200 rounded-2xl py-4 pl-12 pr-10 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-bold text-sm text-foreground appearance-none cursor-pointer hover:border-primary/50 shadow-sm">
+                    <span class="text-xs font-bold text-muted-text">to</span>
+                    <div class="relative w-full sm:w-auto">
+                        <span class="absolute left-3 -top-2 bg-white px-1.5 text-[8px] font-black text-muted-text tracking-wider">TO</span>
+                        <input 
+                            type="date" 
+                            name="to_date" 
+                            value="{{ request('to_date') }}"
+                            onchange="this.form.submit()"
+                            class="bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-3 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-bold text-xs text-foreground cursor-pointer"
+                        >
+                    </div>
+                </div>
+                
+                <!-- Package Type -->
+                <div class="w-full md:w-48 relative">
+                    <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
+                        <i data-lucide="filter" size="16"></i>
+                    </div>
+                    <select name="type" onchange="this.form.submit()" class="w-full bg-white border border-gray-200 rounded-xl py-3.5 pl-10 pr-8 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-bold text-xs text-foreground appearance-none cursor-pointer hover:border-primary/50 shadow-sm">
                         <option value="">All Package Types</option>
                         <option value="Flight" {{ request('type') == 'Flight' ? 'selected' : '' }}>Flight Packages</option>
                         <option value="Train" {{ request('type') == 'Train' ? 'selected' : '' }}>Train Packages</option>
@@ -50,8 +77,8 @@
                         <option value="Land" {{ request('type') == 'Land' ? 'selected' : '' }}>Land / Customize</option>
                         <option value="Other" {{ request('type') == 'Other' ? 'selected' : '' }}>Other Types</option>
                     </select>
-                    <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-text">
-                        <i data-lucide="chevron-down" size="18"></i>
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-text">
+                        <i data-lucide="chevron-down" size="16"></i>
                     </div>
                 </div>
             </form>
@@ -65,6 +92,7 @@
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">TRAVELER NAME</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">AGENT / PACKAGE</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">MESSAGE</th>
+                        <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">INQUIRY DATE</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">STATUS</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">ACTIONS</th>
                     </tr>
@@ -108,6 +136,9 @@
                                     <span class="text-[10px] text-muted-text opacity-40">—</span>
                                 @endif
                             </td>
+                            <td class="py-6 px-10 text-xs font-bold text-muted-text">
+                                {{ $lead->created_at ? \Carbon\Carbon::parse($lead->created_at)->format('d M Y, h:i A') : 'N/A' }}
+                            </td>
                             <td class="py-6 px-10 text-center">
                                 <span class="px-3 py-1 rounded-full 
                                     {{ $lead->status === 'Booked' ? 'bg-green-50 text-green-500' : 
@@ -138,7 +169,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-12 text-center text-sm font-bold text-muted-text">No travelers or leads logged.</td>
+                            <td colspan="7" class="py-12 text-center text-sm font-bold text-muted-text">No travelers or leads logged.</td>
                         </tr>
                     @endforelse
                 </tbody>

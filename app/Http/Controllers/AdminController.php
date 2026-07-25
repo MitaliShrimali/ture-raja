@@ -1389,6 +1389,8 @@ class AdminController extends Controller
 
         $search = $request->input('search');
         $type = $request->input('type');
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
         $query = DB::table('leads');
 
         if ($search) {
@@ -1412,12 +1414,20 @@ class AdminController extends Controller
             }
         }
 
+        if ($from_date) {
+            $query->whereDate('created_at', '>=', $from_date);
+        }
+
+        if ($to_date) {
+            $query->whereDate('created_at', '<=', $to_date);
+        }
+
         $leads = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
 
         // Fetch all agents to pass for name to ID mapping
         $agents = DB::table('agents')->get();
 
-        return view('admin.leads', compact('leads', 'search', 'agents'));
+        return view('admin.leads', compact('leads', 'search', 'type', 'agents', 'from_date', 'to_date'));
     }
 
     public function storeLead(Request $request)
@@ -2503,8 +2513,20 @@ class AdminController extends Controller
     // CONTACT US
     public function contact(Request $request)
     {
-        $contacts = DB::table('contacts')->orderBy('id', 'desc')->paginate(5);
-        return view('admin.contact-us', compact('contacts'));
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+        
+        $query = DB::table('contacts');
+        
+        if ($from_date) {
+            $query->whereDate('created_at', '>=', $from_date);
+        }
+        if ($to_date) {
+            $query->whereDate('created_at', '<=', $to_date);
+        }
+        
+        $contacts = $query->orderBy('id', 'desc')->paginate(5)->withQueryString();
+        return view('admin.contact-us', compact('contacts', 'from_date', 'to_date'));
     }
 
     public function storeContact(Request $request)
@@ -2702,7 +2724,19 @@ class AdminController extends Controller
 
     public function downloadInquiryReport(Request $request)
     {
-        $contacts = DB::table('contacts')->orderBy('id', 'desc')->get();
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+
+        $query = DB::table('contacts');
+
+        if ($from_date) {
+            $query->whereDate('created_at', '>=', $from_date);
+        }
+        if ($to_date) {
+            $query->whereDate('created_at', '<=', $to_date);
+        }
+
+        $contacts = $query->orderBy('id', 'desc')->get();
         $filename = "inquiry_report_" . date('Y-m-d') . ".csv";
 
         $headers = [
@@ -2739,7 +2773,43 @@ class AdminController extends Controller
 
     public function downloadLeadsReport(Request $request)
     {
-        $leads = DB::table('leads')->orderBy('id', 'desc')->get();
+        $search = $request->input('search');
+        $type = $request->input('type');
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+
+        $query = DB::table('leads');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('agent', 'like', "%{$search}%")
+                    ->orWhere('package', 'like', "%{$search}%");
+            });
+        }
+
+        if ($type) {
+            if ($type === 'Other') {
+                $query->where('package', 'not like', "%Flight%")
+                    ->where('package', 'not like', "%Train%")
+                    ->where('package', 'not like', "%Bus%")
+                    ->where('package', 'not like', "%Cruise%")
+                    ->where('package', 'not like', "%Land%");
+            } else {
+                $query->where('package', 'like', "%{$type}%");
+            }
+        }
+
+        if ($from_date) {
+            $query->whereDate('created_at', '>=', $from_date);
+        }
+
+        if ($to_date) {
+            $query->whereDate('created_at', '<=', $to_date);
+        }
+
+        $leads = $query->orderBy('id', 'desc')->get();
         $filename = "leads_report_" . date('Y-m-d') . ".csv";
 
         $headers = [

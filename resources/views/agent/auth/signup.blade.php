@@ -326,9 +326,10 @@
         document.addEventListener('DOMContentLoaded', () => {
             const select = document.querySelector('.phone-country-code');
             if (select) {
-                const parent = select.closest('.flex') || select.parentElement;
-                const input = parent.querySelector('.phone-number-val');
-                const hidden = parent.querySelector('.phone-full-val');
+                const flexContainer = select.closest('.flex') || select.parentElement;
+                const input = flexContainer.querySelector('.phone-number-val');
+                const wrapper = flexContainer.parentElement;
+                const hidden = wrapper.querySelector('.phone-full-val');
 
                 if (hidden && hidden.value) {
                     const val = hidden.value;

@@ -9,15 +9,40 @@
             <h2 class="font-black text-foreground tracking-tight">Contact Inquiries</h2>
             <p class="text-muted-text font-medium">Manage traveler queries and support tickets efficiently.</p>
         </div>
-        <a href="{{ url('/admin/reports/inquiries/download') }}" class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">
+        <a href="{{ url('/admin/reports/inquiries/download?' . http_build_query(request()->query())) }}" class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">
             <i data-lucide="download" size="20"></i> Download Inquiry Report
         </a>
     </div>
 
     <!-- Inquiries Table -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
-        <div class="p-8 border-b border-border-soft flex items-center justify-between">
-            <h3 class="text-xl font-black">Recent Inquiries</h3>
+        <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <h3 class="text-xl font-black shrink-0">Recent Inquiries</h3>
+            
+            <!-- Date Filter Form -->
+            <form method="GET" action="{{ url('/admin/contact') }}" class="flex items-center gap-2 w-full md:w-auto justify-end">
+                <div class="relative w-full sm:w-auto">
+                    <span class="absolute left-3 -top-2 bg-white px-1.5 text-[8px] font-black text-muted-text tracking-wider">FROM</span>
+                    <input 
+                        type="date" 
+                        name="from_date" 
+                        value="{{ request('from_date') }}"
+                        onchange="this.form.submit()"
+                        class="bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-3 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-bold text-xs text-foreground cursor-pointer"
+                    >
+                </div>
+                <span class="text-xs font-bold text-muted-text">to</span>
+                <div class="relative w-full sm:w-auto">
+                    <span class="absolute left-3 -top-2 bg-white px-1.5 text-[8px] font-black text-muted-text tracking-wider">TO</span>
+                    <input 
+                        type="date" 
+                        name="to_date" 
+                        value="{{ request('to_date') }}"
+                        onchange="this.form.submit()"
+                        class="bg-gray-50 border border-gray-100 rounded-xl py-2.5 px-3 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-bold text-xs text-foreground cursor-pointer"
+                    >
+                </div>
+            </form>
         </div>
 
         <div class="admin-table-container">
