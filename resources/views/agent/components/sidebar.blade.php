@@ -98,7 +98,7 @@
                 <span class="text-xs">Settings</span>
             </a>
 
-            <a href="{{ route('agent.login') }}" class="flex items-center px-2.5 py-1.5 rounded-xl text-gray-500 hover:text-red-500 hover:bg-red-50 transition-all group">
+            <a href="{{ route('agent.logout') }}" class="flex items-center px-2.5 py-1.5 rounded-xl text-gray-500 hover:text-red-500 hover:bg-red-50 transition-all group">
                 <div class="w-6 h-6 flex items-center justify-center mr-2">
                     <i class="fas fa-sign-out-alt text-xs"></i>
                 </div>
