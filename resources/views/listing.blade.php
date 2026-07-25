@@ -328,10 +328,31 @@
 
     <style>
         @media (min-width: 1024px) {
+            /* Disable page-level scrolling on desktop */
+            html, body {
+                height: 100vh !important;
+                overflow: hidden !important;
+            }
+
+            /* Container takes exact remaining height below the header */
+            .container-custom.pt-8.pb-16 {
+                height: calc(100vh - 90px) !important;
+                overflow: hidden !important;
+                padding-top: 1.5rem !important;
+                padding-bottom: 1.5rem !important;
+            }
+
+            #filter-form {
+                height: 100% !important;
+                overflow: hidden !important;
+                align-items: stretch !important;
+            }
+
+            /* Sticky / Fixed Sidebar on Left */
             .desktop-sidebar-reset {
-                position: sticky !important;
-                top: 90px !important;
-                height: calc(100vh - 100px) !important;
+                position: relative !important;
+                top: 0 !important;
+                height: 100% !important;
                 overflow-y: auto !important;
                 background: transparent !important;
                 background-image: none !important;
@@ -340,6 +361,19 @@
                 transform: none !important;
                 z-index: 10 !important;
                 width: 25% !important;
+                flex-shrink: 0 !important;
+                scrollbar-width: none; /* Hide scrollbar for sidebar */
+            }
+            .desktop-sidebar-reset::-webkit-scrollbar {
+                display: none;
+            }
+
+            /* Scrollable Packages Grid on Right */
+            #filter-form > .flex-1 {
+                height: 100% !important;
+                overflow-y: auto !important;
+                padding-right: 0.75rem !important;
+                padding-bottom: 4rem !important;
             }
         }
     </style>
