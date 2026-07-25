@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin Dashboard - Tour Raja</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
@@ -647,6 +648,7 @@
             observer.observe(document.body, { childList: true, subtree: true });
         });
     </script>
+    <x-admin-support-chatbot />
 </body>
 
 </html>

@@ -236,6 +236,8 @@
         });
     </script>
 
+    <x-agent-support-chatbot />
+
     @stack('scripts')
 </body>
 </html>

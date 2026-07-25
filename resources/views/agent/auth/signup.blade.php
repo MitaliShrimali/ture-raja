@@ -365,6 +365,8 @@
             }
         });
     </script>
+    <!-- Agent Support Chatbot -->
+    <x-agent-support-chatbot />
 </body>
 
 </html>

@@ -2868,7 +2868,28 @@ class AdminController extends Controller
     public function careers()
     {
         $applications = \App\Models\CareerApplication::orderBy('id', 'desc')->get();
-        return view('admin.careers', compact('applications'));
+        $positions = \App\Models\OpenPosition::with('department')->orderBy('id', 'desc')->get();
+        $departments = \App\Models\JobDepartment::orderBy('name', 'asc')->get();
+        $locations = \App\Models\JobLocation::orderBy('name', 'asc')->get();
+        
+        $formSetting = DB::table('settings')->where('key', 'career_form_enabled')->first();
+        $careerFormEnabled = $formSetting ? (bool) $formSetting->value : true;
+
+        $titleSetting = DB::table('settings')->where('key', 'career_form_title')->first();
+        $careerFormTitle = $titleSetting ? $titleSetting->value : 'Application Form';
+
+        $fieldsSetting = DB::table('settings')->where('key', 'career_form_fields')->first();
+        $careerFormFields = $fieldsSetting ? json_decode($fieldsSetting->value, true) : [
+            'middle_name', 'phone', 'gender', 'education', 'notice_period', 'current_ctc', 'expected_ctc', 'relevant_exp'
+        ];
+
+        $customFieldsSetting = DB::table('settings')->where('key', 'career_custom_fields')->first();
+        $careerCustomFields = $customFieldsSetting ? json_decode($customFieldsSetting->value, true) : [];
+
+        return view('admin.careers', compact(
+            'applications', 'positions', 'departments', 'locations', 
+            'careerFormEnabled', 'careerFormTitle', 'careerFormFields', 'careerCustomFields'
+        ));
     }
 
     public function deleteCareer($id)
@@ -2883,6 +2904,139 @@ class AdminController extends Controller
         $application->delete();
 
         return redirect()->back()->with('success', 'Career application deleted successfully.');
+    }
+
+    public function storePosition(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'department_id' => 'required|integer',
+            'locations' => 'required|array',
+            'experience' => 'required|string',
+            'job_type' => 'required|string',
+            'salary' => 'nullable|string',
+            'status' => 'required|string'
+        ]);
+
+        \App\Models\OpenPosition::updateOrCreate(
+            ['id' => $request->input('id')],
+            [
+                'title' => $request->title,
+                'department_id' => $request->department_id,
+                'locations' => $request->locations,
+                'experience' => $request->experience,
+                'job_type' => $request->job_type,
+                'salary' => $request->salary,
+                'status' => $request->status,
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Job position saved successfully.');
+    }
+
+    public function deletePosition($id)
+    {
+        \App\Models\OpenPosition::findOrFail($id)->delete();
+        return redirect()->back()->with('success', 'Job position deleted successfully.');
+    }
+
+    public function updateCareerSettings(Request $request)
+    {
+        $enabled = $request->has('career_form_enabled') ? '1' : '0';
+        DB::table('settings')->updateOrInsert(
+            ['key' => 'career_form_enabled'],
+            ['value' => $enabled, 'updated_at' => now()]
+        );
+
+        if ($request->has('career_form_title')) {
+            DB::table('settings')->updateOrInsert(
+                ['key' => 'career_form_title'],
+                ['value' => $request->input('career_form_title'), 'updated_at' => now()]
+            );
+        }
+
+        if ($request->has('career_form_fields')) {
+            DB::table('settings')->updateOrInsert(
+                ['key' => 'career_form_fields'],
+                ['value' => json_encode($request->input('career_form_fields')), 'updated_at' => now()]
+            );
+        } else {
+            DB::table('settings')->updateOrInsert(
+                ['key' => 'career_form_fields'],
+                ['value' => json_encode([]), 'updated_at' => now()]
+            );
+        }
+
+        if ($request->has('career_custom_fields')) {
+            DB::table('settings')->updateOrInsert(
+                ['key' => 'career_custom_fields'],
+                ['value' => json_encode($request->input('career_custom_fields')), 'updated_at' => now()]
+            );
+        } else {
+            DB::table('settings')->updateOrInsert(
+                ['key' => 'career_custom_fields'],
+                ['value' => json_encode([]), 'updated_at' => now()]
+            );
+        }
+
+        return redirect()->back()->with('success', 'Career form settings saved successfully.');
+    }
+
+    public function storeDepartment(Request $request)
+    {
+        $request->validate(['name' => 'required|string|unique:job_departments,name']);
+        $dept = \App\Models\JobDepartment::create(['name' => $request->name]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'id' => $dept->id, 'name' => $dept->name]);
+        }
+        return redirect()->back()->with('success', 'Department added successfully.');
+    }
+
+    public function storeLocation(Request $request)
+    {
+        $request->validate(['name' => 'required|string|unique:job_locations,name']);
+        $loc = \App\Models\JobLocation::create(['name' => $request->name]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json(['success' => true, 'id' => $loc->id, 'name' => $loc->name]);
+        }
+        return redirect()->back()->with('success', 'Location added successfully.');
+    }
+
+    public function deleteDepartment($id)
+    {
+        try {
+            $dept = \App\Models\JobDepartment::findOrFail($id);
+            \App\Models\OpenPosition::where('department_id', $id)->delete();
+            $dept->delete();
+            if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['success' => true]);
+            }
+            return redirect('/admin/careers')->with('success', 'Department deleted successfully.');
+        } catch (\Exception $e) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            }
+            return redirect('/admin/careers')->with('error', 'Could not delete department: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteLocation($id)
+    {
+        try {
+            $loc = \App\Models\JobLocation::findOrFail($id);
+            $loc->delete();
+            if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json(['success' => true]);
+            }
+            return redirect('/admin/careers')->with('success', 'Location deleted successfully.');
+        } catch (\Exception $e) {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            }
+            return redirect('/admin/careers')->with('error', 'Could not delete location: ' . $e->getMessage());
+        }
     }
 
     // ─── TRANSITS ─────────────────────────────────────────────────────────────

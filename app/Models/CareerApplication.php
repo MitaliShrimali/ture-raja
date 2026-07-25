@@ -22,6 +22,11 @@ class CareerApplication extends Model
         'total_exp',
         'relevant_exp',
         'current_ctc',
-        'expected_ctc'
+        'expected_ctc',
+        'custom_fields'
+    ];
+
+    protected $casts = [
+        'custom_fields' => 'array'
     ];
 }

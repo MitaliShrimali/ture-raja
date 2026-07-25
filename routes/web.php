@@ -17,7 +17,7 @@ Route::get('/discover', [ListingController::class, 'index'])->name('discover');
 
 // Static pages (keep original behaviour)
 Route::get('/about', function () { return view('about'); });
-Route::get('/career', function () { return view('careers'); })->name('career');
+Route::get('/career', [UserController::class, 'careers'])->name('career');
 Route::post('/career/submit', [UserController::class, 'submitCareer'])->name('career.submit');
 Route::get('/contact', function () { return view('contact'); });
 Route::get('/privacy-policy', function () { return view('privacy-policy'); });
@@ -105,6 +105,13 @@ Route::prefix('admin')->group(function () {
         Route::get('/leads', [AdminController::class, 'leads']);
         Route::get('/careers', [AdminController::class, 'careers']);
         Route::get('/careers/delete/{id}', [AdminController::class, 'deleteCareer']);
+        Route::post('/careers/positions/store', [AdminController::class, 'storePosition'])->name('admin.careers.positions.store');
+        Route::get('/careers/positions/delete/{id}', [AdminController::class, 'deletePosition'])->name('admin.careers.positions.delete');
+        Route::post('/careers/settings/update', [AdminController::class, 'updateCareerSettings'])->name('admin.careers.settings.update');
+        Route::post('/careers/departments/store', [AdminController::class, 'storeDepartment'])->name('admin.careers.departments.store');
+        Route::post('/careers/locations/store', [AdminController::class, 'storeLocation'])->name('admin.careers.locations.store');
+        Route::match(['GET','POST','DELETE'], '/careers/departments/delete/{id}', [AdminController::class, 'deleteDepartment'])->name('admin.careers.departments.delete');
+        Route::match(['GET','POST','DELETE'], '/careers/locations/delete/{id}', [AdminController::class, 'deleteLocation'])->name('admin.careers.locations.delete');
 
         // Subscription Oversight
         Route::get('/paid-users', [AdminController::class, 'paidUsers']);

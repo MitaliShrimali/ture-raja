@@ -61,6 +61,9 @@
     <!-- Custom JS -->
     <script src="{{ asset('agent/assets/js/main.js') }}"></script>
     <script src="{{ asset('agent/assets/js/validation.js') }}"></script>
+    <!-- Agent Support Chatbot -->
+    <x-agent-support-chatbot />
+
     @stack('scripts')
 </body>
 </html>

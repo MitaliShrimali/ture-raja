@@ -220,11 +220,8 @@
         </div>
     </div>
 
-    <!-- Chatbot Bubble -->
-    <button
-        class="fixed bottom-8 right-8 w-16 h-16 bg-[#0052FF] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform z-50 shadow-blue-500/30">
-        <i data-lucide="message-circle" class="w-7 h-7"></i>
-    </button>
+    <!-- Agent Support Chatbot -->
+    <x-agent-support-chatbot />
 
     <script>
         lucide.createIcons();

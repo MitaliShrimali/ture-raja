@@ -734,27 +734,69 @@ class UserController extends Controller
             ->with('success', 'Logged out successfully.');
     }
 
+    // ─── CAREERS FRONTEND ───────────────────────────────────────────────
+    public function careers()
+    {
+        $positions = \App\Models\OpenPosition::with('department')
+            ->where('status', 'Active')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $departments = \App\Models\JobDepartment::whereHas('positions', function($q) {
+            $q->where('status', 'Active');
+        })->orderBy('name', 'asc')->get();
+
+        $locations = \App\Models\JobLocation::orderBy('name', 'asc')->get();
+
+        $formSetting = DB::table('settings')->where('key', 'career_form_enabled')->first();
+        $careerFormEnabled = $formSetting ? (bool) $formSetting->value : true;
+
+        $titleSetting = DB::table('settings')->where('key', 'career_form_title')->first();
+        $careerFormTitle = $titleSetting ? $titleSetting->value : 'Application Form';
+
+        $fieldsSetting = DB::table('settings')->where('key', 'career_form_fields')->first();
+        $careerFormFields = $fieldsSetting ? json_decode($fieldsSetting->value, true) : [
+            'middle_name', 'phone', 'gender', 'education', 'notice_period', 'current_ctc', 'expected_ctc', 'relevant_exp'
+        ];
+
+        $customFieldsSetting = DB::table('settings')->where('key', 'career_custom_fields')->first();
+        $careerCustomFields = $customFieldsSetting ? json_decode($customFieldsSetting->value, true) : [];
+
+        return view('careers', compact(
+            'positions', 'departments', 'locations', 
+            'careerFormEnabled', 'careerFormTitle', 'careerFormFields', 'careerCustomFields'
+        ));
+    }
+
     // ─── CAREER FORM SUBMISSION ─────────────────────────────────────────
     public function submitCareer(Request $request)
     {
-        $request->validate([
+        $fieldsSetting = DB::table('settings')->where('key', 'career_form_fields')->first();
+        $enabledFields = $fieldsSetting ? json_decode($fieldsSetting->value, true) : [
+            'middle_name', 'phone', 'gender', 'education', 'notice_period', 'current_ctc', 'expected_ctc', 'relevant_exp'
+        ];
+
+        $rules = [
             'role'           => 'required|string',
             'resume'         => 'required|file|mimes:pdf,doc,docx|max:5120',
             'first_name'     => 'required|string',
-            'middle_name'    => 'nullable|string',
             'last_name'      => 'required|string',
             'email'          => 'required|email',
             'phone'          => 'required|string',
             'location'       => 'required|string',
             'location_other' => 'nullable|string',
-            'notice_period'  => 'required|string',
-            'gender'         => 'required|string',
-            'education'      => 'required|string',
             'total_exp'      => 'required|string',
-            'relevant_exp'   => 'nullable|string',
-            'current_ctc'    => 'nullable|string',
-            'expected_ctc'   => 'required|string',
-        ]);
+        ];
+
+        if (in_array('middle_name', $enabledFields)) $rules['middle_name'] = 'nullable|string';
+        if (in_array('gender', $enabledFields)) $rules['gender'] = 'required|string';
+        if (in_array('education', $enabledFields)) $rules['education'] = 'required|string';
+        if (in_array('notice_period', $enabledFields)) $rules['notice_period'] = 'required|string';
+        if (in_array('relevant_exp', $enabledFields)) $rules['relevant_exp'] = 'nullable|string';
+        if (in_array('current_ctc', $enabledFields)) $rules['current_ctc'] = 'nullable|string';
+        if (in_array('expected_ctc', $enabledFields)) $rules['expected_ctc'] = 'required|string';
+
+        $request->validate($rules);
 
         try {
             $resumePath = '';
@@ -767,19 +809,20 @@ class UserController extends Controller
                 'role'           => $request->role,
                 'resume_path'    => $resumePath,
                 'first_name'     => $request->first_name,
-                'middle_name'    => $request->middle_name,
+                'middle_name'    => in_array('middle_name', $enabledFields) ? $request->middle_name : null,
                 'last_name'      => $request->last_name,
                 'email'          => $request->email,
                 'phone'          => $request->phone,
                 'location'       => $request->location,
                 'location_other' => $request->location_other,
-                'notice_period'  => $request->notice_period,
-                'gender'         => $request->gender,
-                'education'      => $request->education,
+                'notice_period'  => in_array('notice_period', $enabledFields) ? $request->notice_period : 'N/A',
+                'gender'         => in_array('gender', $enabledFields) ? $request->gender : 'N/A',
+                'education'      => in_array('education', $enabledFields) ? $request->education : 'N/A',
                 'total_exp'      => $request->total_exp,
-                'relevant_exp'   => $request->relevant_exp,
-                'current_ctc'    => $request->current_ctc,
-                'expected_ctc'   => $request->expected_ctc,
+                'relevant_exp'   => in_array('relevant_exp', $enabledFields) ? $request->relevant_exp : null,
+                'current_ctc'    => in_array('current_ctc', $enabledFields) ? $request->current_ctc : null,
+                'expected_ctc'   => in_array('expected_ctc', $enabledFields) ? $request->expected_ctc : 'N/A',
+                'custom_fields'  => $request->input('custom_fields') // automatically cast to json
             ]);
 
             return redirect()->back()->with('success', 'Your application has been submitted successfully! We will review your profile and get back to you soon. ✅');
