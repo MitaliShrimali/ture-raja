@@ -217,7 +217,7 @@
             this.isGalleryModalOpen = false;
         },
         fetchGallery(folderId = null) {
-            let url = '/agent/api/gallery';
+            let url = '{{ route('agent.api.gallery') }}';
             if (folderId) url += '?folder=' + folderId;
             url += (url.includes('?') ? '&' : '?') + '_t=' + new Date().getTime();
 
@@ -231,16 +231,20 @@
                 });
         },
         selectGalleryImage(image) {
+            const baseUrl = '{{ asset('') }}';
+            const targetPath = '/' + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path);
+            const fullUrl = baseUrl + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path);
+            
             if (this.galleryModalType === 'main') {
-                this.previewUrl = '/' + image.file_path;
+                this.previewUrl = fullUrl;
                 const input = document.getElementById('image_url');
-                if (input) input.value = '/' + image.file_path;
+                if (input) input.value = targetPath;
             } else {
                 this.galleryPreviews.push({
-                    url: '/' + image.file_path,
+                    url: fullUrl,
                     name: image.name,
                     is_gallery: true,
-                    path: '/' + image.file_path
+                    path: targetPath
                 });
             }
             this.closeGalleryModal();
@@ -1326,7 +1330,7 @@
                         <template x-for="img in galleryImages" :key="img.id">
                             <div class="group cursor-pointer relative aspect-square rounded-2xl overflow-hidden border border-gray-100 hover:border-primary transition-all"
                                 @click="selectGalleryImage(img)">
-                                <img :src="'/' + img.file_path" class="w-full h-full object-cover" />
+                                <img :src="'{{ asset('') }}' + img.file_path" class="w-full h-full object-cover" />
                                 <div
                                     class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                     <span
