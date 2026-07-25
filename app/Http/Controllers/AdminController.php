@@ -2396,7 +2396,8 @@ class AdminController extends Controller
     {
         $notifications = DB::table('notifications')->orderBy('id', 'desc')->paginate(5);
         $agents = DB::table('agents')->where('status', 'Active')->orderBy('name', 'asc')->get();
-        return view('admin.notifications', compact('notifications', 'agents'));
+        $roles = DB::table('roles')->orderBy('name', 'asc')->get();
+        return view('admin.notifications', compact('notifications', 'agents', 'roles'));
     }
 
     public function storeNotification(Request $request)
@@ -2405,14 +2406,15 @@ class AdminController extends Controller
 
         $targetAudience = $request->target_audience ?? 'all_users';
         $agentId = $request->agent_id ?? null;
+        $adminRole = $request->admin_role ?? null;
 
         DB::table('notifications')->insert([
             'title' => $request->title,
-
             'message' => $request->message,
             'type' => $request->type ?? 'Info',
             'target_audience' => $targetAudience,
             'agent_id' => $targetAudience === 'specific_agent' ? $agentId : null,
+            'admin_role' => $targetAudience === 'specific_admin_role' ? $adminRole : null,
             'sent_at' => now(),
             'created_at' => now(),
             'updated_at' => now(),
@@ -2426,7 +2428,6 @@ class AdminController extends Controller
                     DB::table('user_notifications')->insert([
                         'user_id' => $user->id,
                         'title' => $request->title,
-
                         'message' => $request->message,
                         'type' => $request->type ?? 'Info',
                         'is_read' => false,
@@ -2435,8 +2436,65 @@ class AdminController extends Controller
                     ]);
                 }
             }
+            // If target is all admins, broadcast to all admins
+            if ($targetAudience === 'all_admins') {
+                $users = DB::table('users')->get();
+                foreach ($users as $u) {
+                    DB::table('user_notifications')->insert([
+                        'user_id' => $u->id,
+                        'title' => $request->title,
+                        'message' => $request->message,
+                        'type' => $request->type ?? 'Info',
+                        'is_read' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+            // If target is specific admin role, broadcast only to that role
+            if ($targetAudience === 'specific_admin_role' && $adminRole) {
+                $users = DB::table('users')->where('role', $adminRole)->get();
+                foreach ($users as $u) {
+                    DB::table('user_notifications')->insert([
+                        'user_id' => $u->id,
+                        'title' => $request->title,
+                        'message' => $request->message,
+                        'type' => $request->type ?? 'Info',
+                        'is_read' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+            // If target is all agents, broadcast to all agents
+            if ($targetAudience === 'all_agents') {
+                $agents = DB::table('agents')->get();
+                foreach ($agents as $agent) {
+                    DB::table('agent_notifications')->insert([
+                        'agent_id' => $agent->id,
+                        'title' => $request->title,
+                        'message' => $request->message,
+                        'type' => $request->type ?? 'Info',
+                        'is_read' => false,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            }
+            // If target is specific agent, broadcast only to that agent
+            if ($targetAudience === 'specific_agent' && $agentId) {
+                DB::table('agent_notifications')->insert([
+                    'agent_id' => $agentId,
+                    'title' => $request->title,
+                    'message' => $request->message,
+                    'type' => $request->type ?? 'Info',
+                    'is_read' => false,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
         } catch (\Exception $e) {
-            // Silently ignore DB errors
+            \Log::error('Notification broadcast failed: ' . $e->getMessage());
         }
 
         $successMsg = 'Global system notification sent and delivered to all users! 📣';
@@ -2444,6 +2502,10 @@ class AdminController extends Controller
             $successMsg = 'Notification sent successfully to the selected agent! 📣';
         } elseif ($targetAudience === 'all_agents') {
             $successMsg = 'Notification sent successfully to all agents! 📣';
+        } elseif ($targetAudience === 'all_admins') {
+            $successMsg = 'Notification sent successfully to all admins! 📣';
+        } elseif ($targetAudience === 'specific_admin_role') {
+            $successMsg = "Notification sent successfully to all users with role '{$adminRole}'! 📣";
         }
 
         return redirect()->back()->with('success', $successMsg);
@@ -3908,6 +3970,203 @@ class AdminController extends Controller
             );
         }
         return redirect()->back()->with('success', 'Mail settings updated successfully!');
+    }
+
+    public function sendTestEmail(Request $request)
+    {
+        $request->validate([
+            'test_email' => 'required|email',
+            'mail_driver' => 'required',
+            'mail_host' => 'nullable',
+            'mail_port' => 'nullable',
+            'mail_encryption' => 'nullable',
+            'mail_username' => 'nullable',
+            'mail_password' => 'nullable',
+            'mail_from_name' => 'required',
+            'mail_from_address' => 'required|email',
+        ]);
+
+        $toEmail = $request->input('test_email');
+        $driver = $request->input('mail_driver');
+        $host = $request->input('mail_host') ?? 'smtp.gmail.com';
+        $port = $request->input('mail_port') ?? '587';
+        $encryption = $request->input('mail_encryption') ?? 'tls';
+        $username = $request->input('mail_username');
+        $password = $request->input('mail_password');
+        $fromAddress = $request->input('mail_from_address');
+        $fromName = $request->input('mail_from_name');
+
+        config([
+            'mail.default' => $driver,
+            'mail.mailers.smtp.transport' => $driver === 'none' ? 'smtp' : $driver,
+            'mail.mailers.smtp.host' => $host,
+            'mail.mailers.smtp.port' => $port,
+            'mail.mailers.smtp.encryption' => $encryption === 'none' ? null : $encryption,
+            'mail.mailers.smtp.username' => $username,
+            'mail.mailers.smtp.password' => $password,
+            'mail.from.address' => $fromAddress,
+            'mail.from.name' => $fromName,
+        ]);
+
+        try {
+            $body = '<h3>SMTP Settings Test Connection</h3><p>Hello! If you are reading this email, your SMTP configuration settings on <strong>Tour Raja</strong> are correct and working perfectly!</p>';
+            $subject = 'Test Connection: Tour Raja SMTP Setup';
+
+            \Illuminate\Support\Facades\Mail::mailer($driver)->html($body, function ($message) use ($toEmail, $subject) {
+                $message->to($toEmail)->subject($subject);
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Test email sent successfully to ' . $toEmail
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Mail configuration failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function packageReminder(Request $request)
+    {
+        // Fetch packages expiring within 30 days, or already expired
+        $packages = DB::table('packages')
+            ->whereNotNull('expiry_date')
+            ->where('expiry_date', '<=', now()->addDays(30))
+            ->orderBy('expiry_date', 'asc')
+            ->get();
+
+        // Attach agent details dynamically
+        foreach ($packages as $pkg) {
+            $agentEmail = '';
+            $agentName = '';
+            $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
+            if ($agentData && isset($agentData['id'])) {
+                $agentDb = DB::table('agents')->where('id', $agentData['id'])->first();
+                if ($agentDb) {
+                    $agentEmail = $agentDb->email;
+                    $agentName = $agentDb->name;
+                }
+            }
+            if (!$agentEmail && $agentData) {
+                $agentName = $agentData['name'] ?? 'Unknown Agent';
+                $agentDb = DB::table('agents')->where('name', $agentName)->first();
+                if ($agentDb) {
+                    $agentEmail = $agentDb->email;
+                }
+            }
+            $pkg->agent_email = $agentEmail ?: 'no-email@agent.com';
+            $pkg->agent_name = $agentName ?: 'Unknown Agent';
+        }
+
+        return view('admin.package-reminder', compact('packages'));
+    }
+
+    private function sendEmailNotification($toEmail, $subject, $body)
+    {
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        
+        $driver = $settings['mail_driver'] ?? 'smtp';
+        $host = $settings['mail_host'] ?? 'smtp.gmail.com';
+        $port = $settings['mail_port'] ?? '587';
+        $encryption = $settings['mail_encryption'] ?? 'tls';
+        $username = $settings['mail_username'] ?? null;
+        $password = $settings['mail_password'] ?? null;
+        $fromAddress = $settings['mail_from_address'] ?? 'noreply@tourraja.com';
+        $fromName = $settings['mail_from_name'] ?? 'Tour Raja';
+
+        config([
+            'mail.default' => $driver,
+            'mail.mailers.smtp.transport' => $driver === 'none' ? 'smtp' : $driver,
+            'mail.mailers.smtp.host' => $host,
+            'mail.mailers.smtp.port' => $port,
+            'mail.mailers.smtp.encryption' => $encryption === 'none' ? null : $encryption,
+            'mail.mailers.smtp.username' => $username,
+            'mail.mailers.smtp.password' => $password,
+            'mail.from.address' => $fromAddress,
+            'mail.from.name' => $fromName,
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\Mail::mailer($driver)->html($body, function ($message) use ($toEmail, $subject) {
+                $message->to($toEmail)->subject($subject);
+            });
+            return true;
+        } catch (\Exception $e) {
+            \Log::error('Mail sending failed: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function sendPackageReminder(Request $request)
+    {
+        $request->validate([
+            'subject' => 'required|string',
+            'body' => 'required|string',
+            'type' => 'required|in:all,individual',
+        ]);
+
+        $subject = $request->input('subject');
+        $bodyTemplate = $request->input('body');
+        $type = $request->input('type');
+
+        if ($type === 'individual') {
+            $packageId = $request->input('package_id');
+            $packages = DB::table('packages')->where('id', $packageId)->get();
+        } else {
+            $packages = DB::table('packages')
+                ->whereNotNull('expiry_date')
+                ->where('expiry_date', '<=', now()->addDays(30))
+                ->get();
+        }
+
+        $sentCount = 0;
+        $failedCount = 0;
+
+        foreach ($packages as $pkg) {
+            $agentEmail = '';
+            $agentName = '';
+            $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
+            if ($agentData && isset($agentData['id'])) {
+                $agentDb = DB::table('agents')->where('id', $agentData['id'])->first();
+                if ($agentDb) {
+                    $agentEmail = $agentDb->email;
+                    $agentName = $agentDb->name;
+                }
+            }
+            if (!$agentEmail && $agentData) {
+                $agentName = $agentData['name'] ?? 'Unknown Agent';
+                $agentDb = DB::table('agents')->where('name', $agentName)->first();
+                if ($agentDb) {
+                    $agentEmail = $agentDb->email;
+                }
+            }
+
+            if (!$agentEmail) {
+                $failedCount++;
+                continue;
+            }
+
+            $personalBody = str_replace(
+                ['{AGENT_NAME}', '{PACKAGE_TITLE}', '{EXPIRY_DATE}'],
+                [$agentName ?: 'Agent', $pkg->title, \Carbon\Carbon::parse($pkg->expiry_date)->format('M d, Y')],
+                $bodyTemplate
+            );
+
+            $success = $this->sendEmailNotification($agentEmail, $subject, $personalBody);
+            if ($success) {
+                $sentCount++;
+            } else {
+                $failedCount++;
+            }
+        }
+
+        if ($failedCount > 0) {
+            return redirect()->back()->with('success', "Reminders sent successfully to {$sentCount} agents. Failed for {$failedCount} agents (check SMTP settings).");
+        }
+
+        return redirect()->back()->with('success', "All {$sentCount} package expiry reminders sent successfully!");
     }
 
     // ─── PAYMENT SETUP ─────────────────────────────────────────────────────────

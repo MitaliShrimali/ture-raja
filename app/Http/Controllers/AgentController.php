@@ -1404,9 +1404,29 @@ class AgentController extends Controller
 
     public function notifications()
     {
+        $agentId = session('agent_id');
+        $notifications = DB::table('agent_notifications')
+            ->where('agent_id', $agentId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('agent.pages.notifications', [
             'page_title' => 'Notifications',
-            'page_breadcrumb' => 'Pages / Notifications'
+            'page_breadcrumb' => 'Pages / Notifications',
+            'notifications' => $notifications
+        ]);
+    }
+
+    public function markNotificationsRead()
+    {
+        $agentId = session('agent_id');
+        DB::table('agent_notifications')
+            ->where('agent_id', $agentId)
+            ->update(['is_read' => true, 'updated_at' => now()]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All notifications marked as read!'
         ]);
     }
 

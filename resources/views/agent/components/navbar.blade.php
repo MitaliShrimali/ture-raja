@@ -31,10 +31,21 @@
             
             <!-- Global Search Dropdown (Absolute to navbar, relative to body via script positioning or we can make the parent container relative) -->
 
-            <!-- Icons -->
+             <!-- Icons -->
             <div class="flex items-center gap-1 md:gap-1.5">
+                @php
+                    $unreadNotificationsCount = \DB::table('agent_notifications')
+                        ->where('agent_id', session('agent_id'))
+                        ->where('is_read', false)
+                        ->count();
+                @endphp
                 <a href="{{ route('agent.notifications') }}" class="relative p-1.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">
                     <i class="fas fa-bell text-sm"></i>
+                    @if($unreadNotificationsCount > 0)
+                        <span class="absolute top-0.5 right-0.5 w-4 h-4 bg-red-500 text-white text-[8px] font-black rounded-full flex items-center justify-center translate-x-1 -translate-y-1">
+                            {{ $unreadNotificationsCount }}
+                        </span>
+                    @endif
                 </a>
 
                 <a href="{{ route('agent.about') }}" class="p-1.5 text-gray-400 hover:text-primary hover:bg-gray-50 rounded-full transition-colors">

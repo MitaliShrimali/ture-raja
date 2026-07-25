@@ -25,71 +25,53 @@
                         <p class="text-[11px] text-gray-400 font-medium mt-1">Stay updated with your agency's activity and performance.</p>
                     </div>
                     <div class="flex space-x-3">
-                        <button class="bg-gray-50 text-gray-800 px-4 py-2 rounded-xl text-[10px] font-bold flex items-center hover:bg-gray-100"><i class="fas fa-check-double mr-2"></i> Mark all as read</button>
-                        <button class="bg-gray-50 text-gray-800 px-4 py-2 rounded-xl text-[10px] font-bold flex items-center hover:bg-gray-100"><i class="fas fa-filter mr-2"></i> Filter</button>
+                        <button onclick="markAllAsRead()" class="bg-gray-50 text-gray-800 px-4 py-2 rounded-xl text-[10px] font-bold flex items-center hover:bg-gray-100"><i class="fas fa-check-double mr-2"></i> Mark all as read</button>
                     </div>
                 </div>
 
                 <div class="space-y-4">
-                    <!-- Notification 1 -->
-                    <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 border-orange-400 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all group relative">
-                        <div class="w-10 h-10 bg-orange-100 text-orange-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-star text-xs"></i></div>
-                        <div class="ml-6 flex-grow">
-                            <div class="flex items-center justify-between mb-1">
-                                <h4 class="text-sm font-bold text-gray-800">New Inquiry: Luxury Bali Escape</h4>
-                                <span class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">2 MINS AGO</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 font-medium leading-relaxed max-w-xl">A high-value customer just sent an inquiry for the 14-day 'Uluwatu Sunset' premium package. Priority status assigned.</p>
-                            <div class="flex space-x-3 mt-4">
-                                <button class="bg-orange-800 text-white px-5 py-1.5 rounded-lg text-[9px] font-bold">Respond Now</button>
-                                <button class="bg-white border border-gray-100 px-5 py-1.5 rounded-lg text-[9px] font-bold text-gray-500">Details</button>
-                            </div>
-                        </div>
-                        <div class="absolute right-6 top-1/2 -translate-y-1/2 w-2 h-2 bg-orange-500 rounded-full"></div>
-                    </div>
+                    @forelse($notifications as $notif)
+                        @php
+                            $borderColor = 'border-orange-400';
+                            $bgColor = 'bg-orange-100';
+                            $textColor = 'text-orange-500';
+                            $icon = 'fas fa-info-circle';
 
-                    <!-- Notification 2 -->
-                    <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 border-green-400 bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all group relative">
-                        <div class="w-10 h-10 bg-green-100 text-green-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-check text-xs"></i></div>
-                        <div class="ml-6 flex-grow">
-                            <div class="flex items-center justify-between mb-1">
-                                <h4 class="text-sm font-bold text-gray-800">Booking Confirmed: Rahul Sharma</h4>
-                                <span class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">45 MINS AGO</span>
+                            if ($notif->type === 'Alert') {
+                                $borderColor = 'border-red-400';
+                                $bgColor = 'bg-red-100';
+                                $textColor = 'text-red-500';
+                                $icon = 'fas fa-exclamation-triangle';
+                            } elseif ($notif->type === 'Warning') {
+                                $borderColor = 'border-yellow-400';
+                                $bgColor = 'bg-yellow-100';
+                                $textColor = 'text-yellow-500';
+                                $icon = 'fas fa-bell';
+                            }
+                        @endphp
+                        <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 {{ $borderColor }} {{ $notif->is_read ? 'bg-white shadow-sm' : 'bg-gray-50/50 hover:bg-white hover:shadow-xl hover:shadow-gray-200/50' }} transition-all group relative">
+                            <div class="w-10 h-10 {{ $bgColor }} {{ $textColor }} rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="{{ $icon }} text-xs"></i>
                             </div>
-                            <p class="text-[10px] text-gray-400 font-medium leading-relaxed max-w-xl">Payment of $2,450 received successfully for the 'Tokyo Neon Nights' spring tour. Voucher issued.</p>
-                            <div class="mt-3">
-                                <span class="bg-green-50 text-green-600 px-3 py-1 rounded-md text-[8px] font-bold border border-green-100 flex items-center w-fit"><i class="fas fa-ticket-alt mr-2"></i> TRX-99201-B</span>
+                            <div class="ml-6 flex-grow">
+                                <div class="flex items-center justify-between mb-1">
+                                    <h4 class="text-sm font-bold text-gray-800">{{ $notif->title }}</h4>
+                                    <span class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">
+                                        {{ \Carbon\Carbon::parse($notif->created_at)->diffForHumans() }}
+                                    </span>
+                                </div>
+                                <p class="text-[10px] text-gray-400 font-medium leading-relaxed max-w-xl">{{ $notif->message }}</p>
                             </div>
+                            @if(!$notif->is_read)
+                                <div class="unread-dot absolute right-6 top-1/2 -translate-y-1/2 w-2 h-2 bg-orange-500 rounded-full"></div>
+                            @endif
                         </div>
-                        <div class="absolute right-6 top-1/2 -translate-y-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
-                    </div>
-
-                    <!-- Notification 3 -->
-                    <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 border-blue-400 bg-white shadow-sm transition-all group relative">
-                        <div class="w-10 h-10 bg-blue-100 text-blue-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-check-circle text-xs"></i></div>
-                        <div class="ml-6 flex-grow">
-                            <div class="flex items-center justify-between mb-1">
-                                <h4 class="text-sm font-bold text-gray-800">Verified Status Update</h4>
-                                <span class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">3 HOURS AGO</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 font-medium leading-relaxed max-w-xl">Congratulations, your agency profile is now fully verified. You now have access to premium B2B inventory.</p>
+                    @empty
+                        <div class="py-12 text-center">
+                            <i class="fas fa-bell-slash text-gray-200 text-4xl mb-4"></i>
+                            <p class="text-xs font-bold text-gray-400">No notifications found.</p>
                         </div>
-                        <div class="absolute right-6 top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-100 rounded-full"></div>
-                    </div>
-
-                    <!-- Notification 4 -->
-                    <div class="notification-item flex items-start p-6 rounded-[32px] border-l-4 border-yellow-400 bg-white shadow-sm transition-all group relative">
-                        <div class="w-10 h-10 bg-yellow-100 text-yellow-500 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fas fa-chart-line text-xs"></i></div>
-                        <div class="ml-6 flex-grow">
-                            <div class="flex items-center justify-between mb-1">
-                                <h4 class="text-sm font-bold text-gray-800">Package Performance Alert</h4>
-                                <span class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">5 HOURS AGO</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400 font-medium leading-relaxed max-w-xl">Your 'Goa Beach Bliss' package has seen a 20% increase in views this week. Consider running a flash sale to boost conversions.</p>
-                            <button class="bg-gray-800 text-white px-5 py-1.5 rounded-lg text-[9px] font-bold mt-4">View Analytics</button>
-                        </div>
-                        <div class="absolute right-6 top-1/2 -translate-y-1/2 w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
 
@@ -142,6 +124,31 @@
                     } else {
                         item.style.display = "none";
                     }
+                });
+            }
+
+            function markAllAsRead() {
+                fetch('{{ route("agent.notifications.mark-read") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        toastr.success(data.message);
+                        // Remove unread indicators and clear badge in navbar
+                        document.querySelectorAll('.unread-dot').forEach(el => el.remove());
+                        const navbarBadge = document.querySelector('.relative .absolute.bg-red-500');
+                        if (navbarBadge) navbarBadge.remove();
+                        // Optional: reload the page to refresh container classes
+                        setTimeout(() => location.reload(), 800);
+                    }
+                })
+                .catch(error => {
+                    toastr.error('Failed to mark notifications as read.');
                 });
             }
         </script>

@@ -147,12 +147,14 @@
                         <option value="Warning">Warning Notice</option>
                     </select>
                 </div>
-                <div class="space-y-2">
+                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Audience</label>
                     <select name="target_audience" x-model="targetAudience" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                         <option value="all_users">All Users</option>
                         <option value="all_agents">All Agents</option>
                         <option value="specific_agent">Specific Agent</option>
+                        <option value="all_admins">All Admins</option>
+                        <option value="specific_admin_role">Specific Admin Role</option>
                     </select>
                 </div>
                 <div class="space-y-2" x-show="targetAudience === 'specific_agent'" style="display: none;">
@@ -161,6 +163,15 @@
                         <option value="">Select an agent...</option>
                         @foreach($agents as $agent)
                             <option value="{{ $agent->id }}">{{ $agent->name }} ({{ $agent->email }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="space-y-2" x-show="targetAudience === 'specific_admin_role'" style="display: none;">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Select Admin Role</label>
+                    <select name="admin_role" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" :required="targetAudience === 'specific_admin_role'">
+                        <option value="">Select a role...</option>
+                        @foreach($roles as $role)
+                            <option value="{{ $role->name }}">{{ $role->name }}</option>
                         @endforeach
                     </select>
                 </div>

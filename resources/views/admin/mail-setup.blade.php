@@ -15,13 +15,13 @@
                 Configure your SMTP server settings to enable automated email notifications for bookings, user verifications, and system alerts.
             </p>
         </div>
-        <button type="button" class="border border-[#b13c0b] text-[#b13c0b] hover:bg-[#b13c0b]/5 px-5 py-3 rounded-2xl font-black text-xs transition-all flex items-center gap-2 uppercase tracking-wider">
+        <button type="button" onclick="triggerTestEmail()" class="border border-[#b13c0b] text-[#b13c0b] hover:bg-[#b13c0b]/5 px-5 py-3 rounded-2xl font-black text-xs transition-all flex items-center gap-2 uppercase tracking-wider">
             <i data-lucide="send" class="w-4 h-4"></i> Test Email
         </button>
     </div>
 
     {{-- Main Form Container --}}
-    <form action="{{ url('/admin/settings/mail-setup/update') }}" method="POST" class="space-y-8">
+    <form id="mail-setup-form" action="{{ url('/admin/settings/mail-setup/update') }}" method="POST" class="space-y-8">
         @csrf
         
         {{-- Two-Column Form Layout --}}
@@ -210,4 +210,60 @@
     </div>
 
 </div>
+
+<script>
+function triggerTestEmail() {
+    Swal.fire({
+        title: 'Test Email Connection',
+        text: 'Enter the email address where you want to receive the test message:',
+        input: 'email',
+        inputPlaceholder: 'recipient@example.com',
+        showCancelButton: true,
+        confirmButtonText: 'Send Test Email',
+        confirmButtonColor: '#b13c0b',
+        cancelButtonColor: '#6b7280',
+        showLoaderOnConfirm: true,
+        preConfirm: (email) => {
+            if (!email) {
+                Swal.showValidationMessage('Please enter a valid email address');
+                return false;
+            }
+            
+            const form = document.getElementById('mail-setup-form');
+            const formData = new FormData(form);
+            formData.append('test_email', email);
+
+            return fetch('{{ route("settings.mail-setup.test") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {
+                        throw new Error(err.message || 'Failed to connect/authenticate with SMTP settings.');
+                    });
+                }
+                return response.json();
+            })
+            .catch(error => {
+                Swal.showValidationMessage(`Test failed: ${error.message}`);
+            });
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed && result.value && result.value.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Sent!',
+                text: result.value.message,
+                confirmButtonColor: '#b13c0b'
+            });
+        }
+    });
+}
+</script>
 @endsection

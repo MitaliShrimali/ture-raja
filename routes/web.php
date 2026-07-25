@@ -173,12 +173,15 @@ Route::prefix('admin')->group(function () {
         Route::get('/preferences', [AdminController::class, 'preferences']);
         Route::get('/mail-setup', [AdminController::class, 'mailSetup']);
         Route::post('/mail-setup/update', [AdminController::class, 'updateMailSetup']);
+        Route::post('/mail-setup/test', [AdminController::class, 'sendTestEmail'])->name('settings.mail-setup.test');
         Route::get('/payment-setup', [AdminController::class, 'paymentSetup']);
         Route::post('/payment-setup/update', [AdminController::class, 'updatePaymentSetup']);
         Route::get('/whatsapp-template', [AdminController::class, 'whatsappTemplate']);
         Route::post('/whatsapp-template/update', [AdminController::class, 'updateWhatsappTemplate']);
         Route::get('/email-template', [AdminController::class, 'emailTemplate']);
         Route::post('/email-template/update', [AdminController::class, 'updateEmailTemplate']);
+        Route::get('/package-reminder', [AdminController::class, 'packageReminder'])->name('settings.package-reminder');
+        Route::post('/send-reminder', [AdminController::class, 'sendPackageReminder'])->name('settings.send-reminder');
 
         // Redirects from old settings prefix directly to nested preferences prefix
         Route::get('/amenities', fn() => redirect('/admin/settings/preferences/amenities'));
@@ -388,6 +391,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
         Route::post('/contact/update', [AgentController::class, 'updateContact'])->name('contact.update');
         Route::get('/my-packages', [AgentController::class, 'myPackages'])->name('my-packages');
         Route::get('/notifications', [AgentController::class, 'notifications'])->name('notifications');
+        Route::post('/notifications/mark-read', [AgentController::class, 'markNotificationsRead'])->name('notifications.mark-read');
         Route::get('/payment', [AgentController::class, 'payment'])->name('payment');
         Route::get('/checkout', [AgentController::class, 'checkout'])->name('checkout');
         Route::post('/checkout/process', [AgentController::class, 'processCheckout'])->name('checkout.process');
