@@ -713,7 +713,34 @@ Route::get('/packages/{slug}', function ($slug) {
             ];
         }
 
-        return view('packages.show', ['package' => $package]);
+        $agentPackages = [];
+        $agentId = null;
+        $agentName = null;
+        if ($dbPkg->agent) {
+            $parsedAgent = is_string($dbPkg->agent) ? json_decode($dbPkg->agent, true) : $dbPkg->agent;
+            if (is_array($parsedAgent)) {
+                $agentId = $parsedAgent['id'] ?? null;
+                $agentName = $parsedAgent['name'] ?? null;
+            }
+        }
+
+        if ($agentId || $agentName) {
+            $agentPackages = \App\Models\Package::where('status', 'Active')
+                ->where('id', '!=', $dbPkg->id)
+                ->get()
+                ->filter(function($p) use ($agentId, $agentName) {
+                    $pAgent = is_string($p->agent) ? json_decode($p->agent, true) : $p->agent;
+                    if (!is_array($pAgent)) return false;
+                    if ($agentId && isset($pAgent['id']) && $pAgent['id'] == $agentId) return true;
+                    if ($agentName && isset($pAgent['name']) && strtolower(trim($pAgent['name'])) == strtolower(trim($agentName))) return true;
+                    return false;
+                })
+                ->take(8)
+                ->values()
+                ->toArray();
+        }
+
+        return view('packages.show', ['package' => $package, 'agentPackages' => $agentPackages]);
     }
 
     if (!isset($allPackages[$slug])) {

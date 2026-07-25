@@ -250,7 +250,7 @@
         x-data='{ showBookingModal: false, slides: @json($gallerySlides), sections: @json($navSections) }'>
         {{-- Breadcrumb --}}
         <div>
-            <div class="container-custom py-2">
+            <div class="container-custom py-2 flex items-center justify-between">
                 <nav class="flex items-center gap-2 text-xs font-semibold text-gray-500">
                     <a href="{{ url('/') }}" class="hover:text-orange-500 transition-colors">Home</a>
                     <span>/</span>
@@ -258,6 +258,55 @@
                     <span>/</span>
                     <span class="text-gray-800">{{ $package['title'] }}</span>
                 </nav>
+
+                {{-- Share Section --}}
+                <div class="relative" x-data="{ open: false, copied: false, shareData: { title: '{{ addslashes($package['title']) }}', text: 'Check out this awesome tour package: {{ addslashes($package['title']) }}', url: window.location.href } }">
+                    <!-- Share Button -->
+                    <button @click="if (navigator.share) { navigator.share(shareData).catch(err => console.log(err)) } else { open = !open }" 
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl text-xs font-black uppercase tracking-widest text-gray-700 hover:text-primary transition-all duration-300 shadow-sm focus:ring-2 focus:ring-primary/20">
+                        <i data-lucide="share-2" class="w-4 h-4"></i> Share Package
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div x-show="open" @click.away="open = false" 
+                        x-transition:enter="transition ease-out duration-150"
+                        x-transition:enter-start="opacity-0 scale-95 translate-y-1"
+                        x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 scale-95 translate-y-1"
+                        style="display: none;"
+                        class="absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 p-2 space-y-1">
+                        
+                        <!-- Copy Link Option -->
+                        <button @click="navigator.clipboard.writeText(window.location.href); copied = true; setTimeout(() => copied = false, 2000)"
+                            class="w-full flex items-center justify-between text-left px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-primary transition-all">
+                            <span class="flex items-center gap-2">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                <span x-text="copied ? 'Link Copied!' : 'Copy Link'"></span>
+                            </span>
+                            <span x-show="copied" class="text-[9px] font-black text-green-600 bg-green-50 px-1.5 py-0.5 rounded">DONE</span>
+                        </button>
+
+                        <!-- WhatsApp Option -->
+                        <a :href="'https://api.whatsapp.com/send?text=' + encodeURIComponent(shareData.text + ' ' + shareData.url)" target="_blank"
+                            class="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-primary transition-all">
+                            <i class="fa-brands fa-whatsapp text-green-600 text-sm"></i> WhatsApp
+                        </a>
+
+                        <!-- Facebook Option -->
+                        <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareData.url)" target="_blank"
+                            class="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-primary transition-all">
+                            <i class="fa-brands fa-facebook text-blue-600 text-sm"></i> Facebook
+                        </a>
+
+                        <!-- Twitter Option -->
+                        <a :href="'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareData.text) + '&url=' + encodeURIComponent(shareData.url)" target="_blank"
+                            class="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold text-gray-700 hover:bg-gray-50 hover:text-primary transition-all">
+                            <i class="fa-brands fa-x-twitter text-black text-sm"></i> Twitter / X
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1205,6 +1254,45 @@
                 }
             </style>
         </section>
+
+        @if(!empty($agentPackages) && count($agentPackages) > 0)
+        <!-- Agent Packages Suggestions Section -->
+        <section class="py-12 lg:py-16 bg-gray-50 border-t border-b border-gray-100">
+            <div class="container-custom">
+                <div class="flex items-center justify-between mb-6 md:mb-8">
+                    <div class="space-y-1">
+                        <h2 class="text-xl md:text-2xl font-black text-foreground tracking-tight font-heading"
+                            style="font-family: 'Poppins', sans-serif;">More Packages from {{ $agentName }}</h2>
+                        <p class="text-text-muted text-xs font-semibold">Other handcrafted itineraries by this agent</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="document.getElementById('agent-pkg-slider').scrollBy({left: -280, behavior: 'smooth'})"
+                            class="w-9 h-9 rounded-full bg-white border border-gray-200 shadow-sm flex items-center justify-center text-foreground hover:bg-primary hover:text-white hover:border-primary transition-all duration-300">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button onclick="document.getElementById('agent-pkg-slider').scrollBy({left: 280, behavior: 'smooth'})"
+                            class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white shadow-glow hover:scale-105 transition-all duration-300">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="relative w-full">
+                    <div id="agent-pkg-slider" class="flex overflow-x-auto gap-4 pb-4 hide-scrollbar scroll-smooth w-full snap-x snap-mandatory">
+                        @foreach($agentPackages as $agentPkg)
+                            <div style="width: 320px; flex-shrink: 0;" class="snap-start">
+                                <x-package-card :pkg="$agentPkg" />
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
 
         {{-- Booking Modal (Alpine JS wrapper needed at root of page) --}}
         <div x-show="showBookingModal" style="display: none;"
