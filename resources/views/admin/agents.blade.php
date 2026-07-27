@@ -125,9 +125,9 @@
                             <input required type="text" name="name" placeholder="Ascent Global Ventures" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Mobile Number</label>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Primary Mobile *</label>
                                 <div class="flex gap-2 items-center">
                                     <div class="relative w-28 shrink-0">
                                         <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-3 outline-none text-xs font-medium">
@@ -143,14 +143,14 @@
                                         </select>
                                     </div>
                                     <div class="relative flex-grow">
-                                        <input type="tel" required placeholder="Mobile Number *"
+                                        <input type="tel" required placeholder="Primary Mobile *"
                                             class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                                     </div>
                                     <input type="hidden" class="phone-full-val" name="phone">
                                 </div>
                             </div>
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Phone Number</label>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Secondary Mobile</label>
                                 <div class="flex gap-2 items-center">
                                     <div class="relative w-28 shrink-0">
                                         <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-3 outline-none text-xs font-medium">
@@ -166,11 +166,15 @@
                                         </select>
                                     </div>
                                     <div class="relative flex-grow">
-                                        <input type="tel" placeholder="Phone Number *"
+                                        <input type="tel" placeholder="Secondary Mobile"
                                             class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                                     </div>
-                                    <input type="hidden" class="phone-full-val" name="landline">
+                                    <input type="hidden" class="phone-full-val" name="secondary_phone">
                                 </div>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Landline Number</label>
+                                <input type="text" name="landline" placeholder="e.g. +91-79-12345678" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                         </div>
 
