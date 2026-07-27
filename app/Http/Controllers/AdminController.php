@@ -34,17 +34,22 @@ class AdminController extends Controller
                 'pendingPackages' => number_format($pendingPackagesCount),
                 'expiredPackages' => number_format($expiredPackagesCount),
             ],
-            // Dynamic activity feed populated from notifications or user activities
-            'recentActivities' => DB::table('notifications')
-                ->orderBy('sent_at', 'desc')
-                ->limit(3)
+            // Dynamic activity feed populated from database activity logs
+            'recentActivities' => DB::table('activity_logs')
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
                 ->get()
-                ->map(function ($notif) {
+                ->map(function ($log) {
+                    $status = 'completed';
+                    $actLower = strtolower($log->activity);
+                    if (str_contains($actLower, 'pending') || str_contains($actLower, 'fail') || str_contains($actLower, 'alert')) {
+                        $status = 'pending';
+                    }
                     return [
-                        'user' => 'System Alert',
-                        'action' => $notif->title . ': ' . $notif->message,
-                        'status' => $notif->type === 'Alert' ? 'pending' : 'completed',
-                        'time' => strtoupper(human_timing(strtotime($notif->sent_at)) . ' ago')
+                        'user' => $log->user_name,
+                        'action' => $log->activity . ' (' . $log->details . ')',
+                        'status' => $status,
+                        'time' => strtoupper(\Carbon\Carbon::parse($log->created_at)->diffForHumans())
                     ];
                 })->toArray()
         ];
@@ -1173,7 +1178,13 @@ class AdminController extends Controller
         }
 
         $plan_id = null;
-        if ($request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
+        if ($request->filled('tier')) {
+            $planRecord = DB::table('plans')->where('name', $request->tier)->first();
+            if ($planRecord) {
+                $plan_id = $planRecord->id;
+            }
+        }
+        if (!$plan_id && $request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
             $planRecord = DB::table('plans')->where('name', $request->custom_plan_tier)->first();
             if ($planRecord) {
                 $plan_id = $planRecord->id;
@@ -1195,9 +1206,9 @@ class AdminController extends Controller
             'facebook' => $request->facebook,
             'twitter' => $request->twitter,
             'linkedin' => $request->linkedin,
-            'google_plus' => $request->google_plus,
+            'google_plus' => null,
             'instagram' => $request->instagram,
-            'skype' => $request->skype,
+            'skype' => null,
             'website' => $request->website,
             'region' => $request->region ?? 'Asia Pacific',
             'tier' => $request->tier ?? 'Premium',
@@ -1285,7 +1296,13 @@ class AdminController extends Controller
         }
 
         $plan_id = null;
-        if ($request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
+        if ($request->filled('tier')) {
+            $planRecord = DB::table('plans')->where('name', $request->tier)->first();
+            if ($planRecord) {
+                $plan_id = $planRecord->id;
+            }
+        }
+        if (!$plan_id && $request->tier === 'Customise' && $request->filled('custom_plan_tier')) {
             $planRecord = DB::table('plans')->where('name', $request->custom_plan_tier)->first();
             if ($planRecord) {
                 $plan_id = $planRecord->id;
@@ -1307,13 +1324,13 @@ class AdminController extends Controller
             'facebook' => $request->facebook,
             'twitter' => $request->twitter,
             'linkedin' => $request->linkedin,
-            'google_plus' => $request->google_plus,
+            'google_plus' => null,
             'instagram' => $request->instagram,
-            'skype' => $request->skype,
+            'skype' => null,
             'website' => $request->website,
             'region' => $request->region ?? 'Asia Pacific',
             'tier' => $request->tier ?? 'Premium',
-            'plan_id' => ($request->tier === 'Customise' && $plan_id) ? $plan_id : DB::raw('plan_id'),
+            'plan_id' => $plan_id,
             'status' => $request->status ?? 'Active',
             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
             'generate_bill' => $request->has('generate_bill') ? true : false,

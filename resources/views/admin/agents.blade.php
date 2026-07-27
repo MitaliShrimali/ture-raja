@@ -146,8 +146,8 @@
                                         <input type="tel" required placeholder="Mobile Number *"
                                             class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                                     </div>
+                                    <input type="hidden" class="phone-full-val" name="phone">
                                 </div>
-                                <input type="hidden" class="phone-full-val" name="phone">
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Phone Number</label>
@@ -169,8 +169,8 @@
                                         <input type="tel" placeholder="Phone Number *"
                                             class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                                     </div>
+                                    <input type="hidden" class="phone-full-val" name="landline">
                                 </div>
-                                <input type="hidden" class="phone-full-val" name="landline">
                             </div>
                         </div>
 
@@ -260,24 +260,9 @@
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="globe" class="w-4 h-4"></i>
-                                </div>
-                                <input type="text" name="google_plus" placeholder="Google Plus" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="relative flex items-center">
-                                <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="instagram" class="w-4 h-4"></i>
                                 </div>
                                 <input type="text" name="instagram" placeholder="Instagram URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
-                            </div>
-                            <div class="relative flex items-center">
-                                <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="message-square" class="w-4 h-4"></i>
-                                </div>
-                                <input type="text" name="skype" placeholder="Skype ID" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                         </div>
 
@@ -297,18 +282,12 @@
                 <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6">
                     <h3 class="text-lg font-black text-gray-800 pl-1">Tier Selection</h3>
                     <div class="space-y-3">
-                        <button type="button" @click="tier = 'Standard'" :class="tier === 'Standard' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-200 bg-white'" class="w-full p-4 rounded-2xl text-left border transition-all flex flex-col">
-                            <span class="text-sm font-black transition-colors" :class="tier === 'Standard' ? 'text-primary' : 'text-gray-800'">Standard</span>
-                            <span class="text-[10px] text-muted-text font-semibold">Up to 50 bookings/mo</span>
-                        </button>
-                        <button type="button" @click="tier = 'Premium'" :class="tier === 'Premium' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-200 bg-white'" class="w-full p-4 rounded-2xl text-left border transition-all flex flex-col">
-                            <span class="text-sm font-black transition-colors" :class="tier === 'Premium' ? 'text-primary' : 'text-gray-800'">Premium</span>
-                            <span class="text-[10px] text-muted-text font-semibold">Unlimited bookings & VIP support</span>
-                        </button>
-                        <button type="button" @click="tier = 'Enterprise'" :class="tier === 'Enterprise' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-200 bg-white'" class="w-full p-4 rounded-2xl text-left border transition-all flex flex-col">
-                            <span class="text-sm font-black transition-colors" :class="tier === 'Enterprise' ? 'text-primary' : 'text-gray-800'">Enterprise</span>
-                            <span class="text-[10px] text-muted-text font-semibold">Custom white-label solutions</span>
-                        </button>
+                        @foreach($plans as $plan)
+                            <button type="button" @click="tier = '{{ $plan->name }}'" :class="tier === '{{ $plan->name }}' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-200 bg-white'" class="w-full p-4 rounded-2xl text-left border transition-all flex flex-col">
+                                <span class="text-sm font-black transition-colors" :class="tier === '{{ $plan->name }}' ? 'text-primary' : 'text-gray-800'">{{ $plan->name }}</span>
+                                <span class="text-[10px] text-muted-text font-semibold">{{ $plan->description }}</span>
+                            </button>
+                        @endforeach
                         <button type="button" @click="tier = 'Customise'; showCustomPlanModal = true" :class="tier === 'Customise' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-200 bg-white'" class="w-full p-4 rounded-2xl text-left border transition-all flex flex-col">
                             <span class="text-sm font-black transition-colors" :class="tier === 'Customise' ? 'text-primary' : 'text-gray-800'">Customise</span>
                             <span class="text-[10px] text-muted-text font-semibold">Custom package</span>

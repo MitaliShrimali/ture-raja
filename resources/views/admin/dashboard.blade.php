@@ -144,8 +144,8 @@
                 @endforeach
             </div>
 
-            <a href="{{ url('/admin/reports') }}" class="w-full py-4 rounded-2xl bg-gray-50 text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
-                View All Reports <i data-lucide="external-link" size="14"></i>
+            <a href="{{ url('/admin/settings/activity-logs') }}" class="w-full py-4 rounded-2xl bg-gray-50 text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+                View All Activity Logs <i data-lucide="external-link" size="14"></i>
             </a>
         </div>
     </div>
