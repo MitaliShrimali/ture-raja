@@ -558,11 +558,7 @@
                                     <i data-lucide="binoculars" class="w-4 h-4"></i> Sightseeing
                                 </a>
                             @endif
-                            <button type="button"
-                                @click="$dispatch('open-gallery', { slides: slides, title: '{{ addslashes($package['title']) }}' })"
-                                class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                <i data-lucide="image" class="w-4 h-4"></i> Gallery
-                            </button>
+
                             @if(!empty($package['hotels']))
                                 <a href="#hotels"
                                     class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
