@@ -4,18 +4,51 @@
 ])
 
 <style>
+    .range-slider-input {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        background: transparent !important;
+        outline: none !important;
+        border: none !important;
+        pointer-events: none !important;
+        height: 16px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+    }
+    .range-slider-input::-webkit-slider-runnable-track {
+        background: transparent !important;
+        border: none !important;
+        height: 16px;
+    }
+    .range-slider-input::-moz-range-track {
+        background: transparent !important;
+        border: none !important;
+        height: 16px;
+    }
     .range-slider-input::-webkit-slider-thumb {
         pointer-events: auto !important;
         width: 16px;
         height: 16px;
-        -webkit-appearance: none;
-        appearance: none;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        background-color: white !important;
+        border: 3px solid #e85d26 !important;
+        border-radius: 9999px !important;
+        cursor: pointer !important;
+        position: relative;
+        z-index: 50;
     }
     .range-slider-input::-moz-range-thumb {
         pointer-events: auto !important;
         width: 16px;
         height: 16px;
-        appearance: none;
+        appearance: none !important;
+        background-color: white !important;
+        border: 3px solid #e85d26 !important;
+        border-radius: 9999px !important;
+        cursor: pointer !important;
+        position: relative;
+        z-index: 50;
     }
     .activity-checkbox-input:checked + .activity-checkbox-btn {
         background-color: rgba(232, 93, 38, 0.08) !important;
@@ -388,28 +421,26 @@
         <div x-data="rangeSlider({{ request('min_nights', 0) }}, {{ request('max_nights', 365) }}, 0, 365)" class="pt-6">
             <h3 class="font-bold text-gray-900 mb-5  tracking-wide" style="font-size: 20px;">Duration (Nights)</h3>
             
-            <div class="px-2 mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
+            <div class="mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <!-- Track Highlight -->
                 <div class="absolute h-full bg-primary rounded-full" :style="'left: ' + minPercent + '%; right: ' + (100 - maxPercent) + '%'"></div>
                 
                 <!-- Min Thumb -->
-                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
-                <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + minPercent + '%'" style="z-index: 2;"></div>
+                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1" @input="updateMin()" @change="triggerSubmit()" class="absolute left-0 w-full cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
                 
                 <!-- Max Thumb -->
-                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
-                <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + maxPercent + '%'" style="z-index: 2;"></div>
+                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1" @input="updateMax()" @change="triggerSubmit()" class="absolute left-0 w-full cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
             </div>
             
             <div class="flex items-center justify-between gap-3">
                 <div class="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all overflow-hidden">
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide mr-2 shrink-0">Night</span>
-                    <input type="number" name="min_nights" x-model="min" @change="document.getElementById('duration_custom').checked = true; updateMin(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
+                    <input type="number" name="min_nights" x-model="min" @change="updateMin(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
                 </div>
                 <span class="text-gray-400 text-[10px] font-bold uppercase shrink-0">To</span>
                 <div class="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all overflow-hidden">
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide mr-2 shrink-0">Night</span>
-                    <input type="number" name="max_nights" x-model="max" @change="document.getElementById('duration_custom').checked = true; updateMax(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
+                    <input type="number" name="max_nights" x-model="max" @change="updateMax(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
                 </div>
             </div>
 
@@ -422,12 +453,10 @@
             <h3 class="font-bold text-gray-900 mb-5 tracking-wide" style="font-size: 20px;">Price</h3>
             
             <!-- Price Slider -->
-            <div class="px-2 mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
+            <div class="mt-4 mb-6 relative h-1.5 bg-gray-200 rounded-full">
                 <div class="absolute h-full bg-primary rounded-full" :style="'left: ' + minPercent + '%; right: ' + (100 - maxPercent) + '%'"></div>
-                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1000" @input="updateMin()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
-                <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + minPercent + '%'" style="z-index: 2;"></div>
-                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1000" @input="updateMax()" @change="triggerSubmit()" class="absolute w-full h-1.5 opacity-0 cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
-                <div class="absolute w-4 h-4 bg-white border-[3px] border-primary rounded-full top-1/2 -translate-y-1/2 -ml-2 pointer-events-none" :style="'left: ' + maxPercent + '%'" style="z-index: 2;"></div>
+                <input type="range" x-model="min" :min="minLimit" :max="maxLimit" step="1000" @input="updateMin()" @change="triggerSubmit()" class="absolute left-0 w-full cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 5 : 3)">
+                <input type="range" x-model="max" :min="minLimit" :max="maxLimit" step="1000" @input="updateMax()" @change="triggerSubmit()" class="absolute left-0 w-full cursor-pointer pointer-events-none range-slider-input" :style="'z-index: ' + (minPercent >= 95 ? 3 : 4)">
             </div>
             
             <div class="flex items-center justify-between gap-3 mb-5">

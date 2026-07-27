@@ -19,106 +19,106 @@
 
     {{-- Transit Music Player — same floating icon style as home page hero --}}
     @if($transitMusic)
-    <audio id="transitBgMusic" src="{{ asset($transitMusic->music_file) }}" loop></audio>
+        <audio id="transitBgMusic" src="{{ asset($transitMusic->music_file) }}" loop></audio>
 
-    {{-- Floating circular button: bottom-right, raised to avoid overlap with scroll-up arrow --}}
-    <div class="fixed z-[300] select-none" style="bottom: 90px; right: 20px;">
+        {{-- Floating circular button: bottom-right, raised to avoid overlap with scroll-up arrow --}}
+        <div class="fixed z-[300] select-none" style="bottom: 90px; right: 20px;">
 
-        <button type="button" onclick="toggleTransitSound()" id="transitSoundToggle"
-            class="w-8 h-8 rounded-full bg-[#e85d26] hover:bg-orange-600 flex items-center justify-center text-white transition-all shadow-md focus:outline-none"
-            style="box-shadow: 0 0 10px rgba(232, 93, 38, 0.4);"
-            title="{{ $transitMusic->music_name }} — {{ $activeTourType }}">
-            {{-- Music On Icon --}}
-            <svg id="transitMusicOnIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                class="w-4 h-4 text-white">
-                <path d="M9 18V5l12-2v13"></path>
-                <circle cx="6" cy="18" r="3"></circle>
-                <circle cx="18" cy="16" r="3"></circle>
-            </svg>
-            {{-- Music Off Icon (hidden by default) --}}
-            <svg id="transitMusicOffIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                class="w-4 h-4 text-white hidden">
-                <line x1="2" y1="2" x2="22" y2="22"></line>
-                <path d="M9 13V5l12-2v9"></path>
-                <circle cx="6" cy="18" r="3"></circle>
-                <circle cx="18" cy="16" r="3"></circle>
-            </svg>
-        </button>
-    </div>
+            <button type="button" onclick="toggleTransitSound()" id="transitSoundToggle"
+                class="w-8 h-8 rounded-full bg-[#e85d26] hover:bg-orange-600 flex items-center justify-center text-white transition-all shadow-md focus:outline-none"
+                style="box-shadow: 0 0 10px rgba(232, 93, 38, 0.4);"
+                title="{{ $transitMusic->music_name }} — {{ $activeTourType }}">
+                {{-- Music On Icon --}}
+                <svg id="transitMusicOnIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="w-4 h-4 text-white">
+                    <path d="M9 18V5l12-2v13"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+                {{-- Music Off Icon (hidden by default) --}}
+                <svg id="transitMusicOffIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="w-4 h-4 text-white hidden">
+                    <line x1="2" y1="2" x2="22" y2="22"></line>
+                    <path d="M9 13V5l12-2v9"></path>
+                    <circle cx="6" cy="18" r="3"></circle>
+                    <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+            </button>
+        </div>
 
-    <script>
-        function updateTransitSoundState(isPlaying) {
-            const toggle = document.getElementById('transitSoundToggle');
-            const onIcon = document.getElementById('transitMusicOnIcon');
-            const offIcon = document.getElementById('transitMusicOffIcon');
-            if (!toggle) return;
-            if (isPlaying) {
-                toggle.style.backgroundColor = '#e85d26';
-                if (onIcon) onIcon.classList.remove('hidden');
-                if (offIcon) offIcon.classList.add('hidden');
-            } else {
-                toggle.style.backgroundColor = '#4b5563';
-                if (onIcon) onIcon.classList.add('hidden');
-                if (offIcon) offIcon.classList.remove('hidden');
+        <script>
+            function updateTransitSoundState(isPlaying) {
+                const toggle = document.getElementById('transitSoundToggle');
+                const onIcon = document.getElementById('transitMusicOnIcon');
+                const offIcon = document.getElementById('transitMusicOffIcon');
+                if (!toggle) return;
+                if (isPlaying) {
+                    toggle.style.backgroundColor = '#e85d26';
+                    if (onIcon) onIcon.classList.remove('hidden');
+                    if (offIcon) offIcon.classList.add('hidden');
+                } else {
+                    toggle.style.backgroundColor = '#4b5563';
+                    if (onIcon) onIcon.classList.add('hidden');
+                    if (offIcon) offIcon.classList.remove('hidden');
+                }
             }
-        }
 
-        function toggleTransitSound() {
-            const audio = document.getElementById('transitBgMusic');
-            if (!audio) return;
-            if (audio.paused) {
-                audio.play().then(() => {
-                    updateTransitSoundState(true);
-                    sessionStorage.setItem('transitMusicState', 'enabled');
-                }).catch(e => console.log('Audio play failed:', e));
-            } else {
-                audio.pause();
-                updateTransitSoundState(false);
-                sessionStorage.setItem('transitMusicState', 'disabled');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const audio = document.getElementById('transitBgMusic');
-            if (!audio) return;
-            audio.volume = 0.5;
-
-            const state = sessionStorage.getItem('transitMusicState');
-
-            if (state === 'disabled') {
-                audio.pause();
-                updateTransitSoundState(false);
-            } else if (state === 'enabled') {
-                audio.play().then(() => {
-                    updateTransitSoundState(true);
-                }).catch(() => {
+            function toggleTransitSound() {
+                const audio = document.getElementById('transitBgMusic');
+                if (!audio) return;
+                if (audio.paused) {
+                    audio.play().then(() => {
+                        updateTransitSoundState(true);
+                        sessionStorage.setItem('transitMusicState', 'enabled');
+                    }).catch(e => console.log('Audio play failed:', e));
+                } else {
+                    audio.pause();
                     updateTransitSoundState(false);
-                });
-            } else {
-                // First visit — try autoplay, fallback to first click
-                const startPlay = () => {
-                    if (sessionStorage.getItem('transitMusicState') === 'disabled') return;
-                    audio.play()
-                        .then(() => {
-                            updateTransitSoundState(true);
-                            document.removeEventListener('click', startPlay);
-                            document.removeEventListener('keydown', startPlay);
-                            if (!sessionStorage.getItem('transitMusicState')) {
-                                sessionStorage.setItem('transitMusicState', 'played');
-                            }
-                        })
-                        .catch(e => {
-                            console.log('Autoplay blocked, waiting for interaction...', e);
-                        });
-                };
-                startPlay();
-                document.addEventListener('click', startPlay);
-                document.addEventListener('keydown', startPlay);
+                    sessionStorage.setItem('transitMusicState', 'disabled');
+                }
             }
-        });
-    </script>
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const audio = document.getElementById('transitBgMusic');
+                if (!audio) return;
+                audio.volume = 0.5;
+
+                const state = sessionStorage.getItem('transitMusicState');
+
+                if (state === 'disabled') {
+                    audio.pause();
+                    updateTransitSoundState(false);
+                } else if (state === 'enabled') {
+                    audio.play().then(() => {
+                        updateTransitSoundState(true);
+                    }).catch(() => {
+                        updateTransitSoundState(false);
+                    });
+                } else {
+                    // First visit — try autoplay, fallback to first click
+                    const startPlay = () => {
+                        if (sessionStorage.getItem('transitMusicState') === 'disabled') return;
+                        audio.play()
+                            .then(() => {
+                                updateTransitSoundState(true);
+                                document.removeEventListener('click', startPlay);
+                                document.removeEventListener('keydown', startPlay);
+                                if (!sessionStorage.getItem('transitMusicState')) {
+                                    sessionStorage.setItem('transitMusicState', 'played');
+                                }
+                            })
+                            .catch(e => {
+                                console.log('Autoplay blocked, waiting for interaction...', e);
+                            });
+                    };
+                    startPlay();
+                    document.addEventListener('click', startPlay);
+                    document.addEventListener('keydown', startPlay);
+                }
+            });
+        </script>
     @endif
 
     <style>
@@ -240,8 +240,8 @@
 
             body .list-view-wrapper .package-content {
                 display: grid !important;
-                grid-template-columns: 1.7fr 1.6fr !important;
-                grid-template-rows: auto auto !important;
+                grid-template-columns: 2.1fr 1.2fr !important;
+                grid-template-rows: auto auto auto !important;
                 row-gap: 0.5rem !important;
                 column-gap: 1.5rem !important;
                 align-items: center !important;
@@ -250,7 +250,7 @@
             }
 
             /* Row 1: Title (left) + Rating (right) */
-            body .list-view-wrapper .package-content > div:nth-child(1) {
+            body .list-view-wrapper .package-content>div:nth-child(1) {
                 grid-column: 1 !important;
                 grid-row: 1 !important;
                 display: flex !important;
@@ -259,30 +259,30 @@
                 gap: 1rem !important;
             }
 
-            /* Row 2: Duration + Tour Type (stacked, margin-bottom offsets Row 3) */
-            body .list-view-wrapper .package-content > div:nth-child(2) {
+            /* Row 2: Duration + Tour Type */
+            body .list-view-wrapper .package-content>div:nth-child(2) {
                 grid-column: 1 !important;
                 grid-row: 2 !important;
                 display: flex !important;
                 gap: 0.5rem !important;
-                margin-bottom: 2.2rem !important;
+                margin-bottom: 0 !important;
                 width: auto !important;
             }
 
-            /* Row 3: Category + Theme (stacked directly below Row 2) */
-            body .list-view-wrapper .package-content > div:nth-child(3) {
+            /* Row 3: Category + Theme */
+            body .list-view-wrapper .package-content>div:nth-child(3) {
                 grid-column: 1 !important;
-                grid-row: 2 !important;
+                grid-row: 3 !important;
                 display: flex !important;
                 gap: 0.5rem !important;
-                margin-top: 2.2rem !important;
+                margin-top: 0 !important;
                 width: auto !important;
             }
 
-            /* Row 4: Agent Info (Top Right) */
-            body .list-view-wrapper .package-content > div:nth-child(4) {
+            /* Row 4: Agent Info (Top Right spanning row 1 & 2) */
+            body .list-view-wrapper .package-content>div:nth-child(4) {
                 grid-column: 2 !important;
-                grid-row: 1 !important;
+                grid-row: 1 / span 2 !important;
                 border-left: 1px dashed #e5e7eb !important;
                 padding-left: 1.75rem !important;
                 height: 100% !important;
@@ -291,9 +291,9 @@
             }
 
             /* Row 5: Action - Price (left) + Button (right) */
-            body .list-view-wrapper .package-content > div:nth-child(5) {
+            body .list-view-wrapper .package-content>div:nth-child(5) {
                 grid-column: 2 !important;
-                grid-row: 2 !important;
+                grid-row: 3 !important;
                 border-left: 1px dashed #e5e7eb !important;
                 padding-left: 1.75rem !important;
                 border-top: none !important;
@@ -305,6 +305,11 @@
                 justify-content: space-between !important;
                 width: 100% !important;
                 height: 100% !important;
+                gap: 0.75rem !important;
+            }
+
+            body .list-view-wrapper .package-content>div:nth-child(5) span.text-2xl {
+                font-size: 1.15rem !important;
             }
 
             body .list-view-wrapper .package-content>*+* {
@@ -328,8 +333,10 @@
 
     <style>
         @media (min-width: 1024px) {
+
             /* Disable page-level scrolling on desktop */
-            html, body {
+            html,
+            body {
                 height: 100vh !important;
                 overflow: hidden !important;
             }
@@ -362,14 +369,16 @@
                 z-index: 10 !important;
                 width: 25% !important;
                 flex-shrink: 0 !important;
-                scrollbar-width: none; /* Hide scrollbar for sidebar */
+                scrollbar-width: none;
+                /* Hide scrollbar for sidebar */
             }
+
             .desktop-sidebar-reset::-webkit-scrollbar {
                 display: none;
             }
 
             /* Scrollable Packages Grid on Right */
-            #filter-form > .flex-1 {
+            #filter-form>.flex-1 {
                 height: 100% !important;
                 overflow-y: auto !important;
                 padding-right: 0.75rem !important;
@@ -382,7 +391,8 @@
         x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tourraja_view_style') || 'grid'" }}, mobileFiltersOpen: false, stateModalOpen: false, expandedStates: {} }"
         x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
 
-        <form id="filter-form" action="{{ url('/listing') }}" method="GET" class="flex flex-col lg:flex-row gap-12 w-full items-start">
+        <form id="filter-form" action="{{ url('/listing') }}" method="GET"
+            class="flex flex-col lg:flex-row gap-12 w-full items-start">
             <!-- Sidebar Wrapper (Responsive: Slide-over Drawer on Mobile, Sticky Column on Desktop) -->
             <div :class="mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
                 class="desktop-sidebar-reset fixed inset-y-0 left-0 w-[85vw] sm:w-[400px] lg:w-1/4 lg:sticky lg:top-[90px] lg:max-h-[calc(100vh-100px)] bg-white lg:bg-transparent z-50 lg:z-0 shadow-2xl lg:shadow-none p-6 lg:p-0 transition-transform duration-300 overflow-y-auto shrink-0">
@@ -496,7 +506,8 @@
                         size="18"></i>
                 </div>
                 <!-- Top Bar -->
-                <div class="bg-white rounded-lg py-3 px-5 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
+                <div
+                    class="bg-white rounded-lg py-3 px-5 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
                     <div class="text-center md:text-left flex items-center flex-wrap gap-3">
                         <!-- Dropdown Pill replacing 'Packages' text -->
                         <button type="button" @click="stateModalOpen = true"
@@ -592,7 +603,8 @@
 
                     @empty
                         <div class="col-span-full py-20 text-center space-y-4">
-                            <h4 class="text-2xl font-bold text-gray-800">No packages found {{ request('search') ? "for '" . e(request('search')) . "'" : '' }}</h4>
+                            <h4 class="text-2xl font-bold text-gray-800">No packages found
+                                {{ request('search') ? "for '" . e(request('search')) . "'" : '' }}</h4>
                             <p class="text-gray-500">We couldn't find any packages matching your exact search.</p>
                         </div>
                     @endforelse
@@ -617,12 +629,15 @@
                             <div class="flex flex-col gap-2 mb-8">
                                 <div class="flex items-center gap-3">
                                     <h3 class="text-2xl md:text-3xl font-black text-foreground">Suggested Packages</h3>
-                                    <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Premium & Guaranteed</span>
+                                    <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">Premium &
+                                        Guaranteed</span>
                                 </div>
-                                <p class="text-gray-500 text-sm">We couldn't find many exact matches, so here are some highly recommended tours you might love.</p>
+                                <p class="text-gray-500 text-sm">We couldn't find many exact matches, so here are some highly
+                                    recommended tours you might love.</p>
                             </div>
-                            
-                            <div :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'">
+
+                            <div
+                                :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'">
                                 @foreach($suggestedPackages as $pkg)
                                     <div :class="viewStyle === 'list' ? 'list-view-wrapper' : ''">
                                         <x-package-card :pkg="$pkg" />
@@ -632,7 +647,7 @@
                         </div>
                     @endif
                 </div>
-                
+
                 <!-- Modal placeholder (moved to root for relative viewport alignment) -->
         </form>
     </div>
@@ -697,17 +712,17 @@
                             const oldSuggested = document.getElementById('suggested-packages-section');
                             if (newSuggested && oldSuggested) oldSuggested.innerHTML = newSuggested.innerHTML;
 
-                             // Re-render Lucide icons for new cards!
-                             if (window.lucide) window.lucide.createIcons();
+                            // Re-render Lucide icons for new cards!
+                            if (window.lucide) window.lucide.createIcons();
 
-                             // Swap individual filter counts dynamically without losing input states
-                             doc.querySelectorAll('[data-filter-count]').forEach(newEl => {
-                                 const key = newEl.getAttribute('data-filter-count');
-                                 const oldEl = document.querySelector(`[data-filter-count="${key}"]`);
-                                 if (oldEl) {
-                                     oldEl.textContent = newEl.textContent;
-                                 }
-                             });
+                            // Swap individual filter counts dynamically without losing input states
+                            doc.querySelectorAll('[data-filter-count]').forEach(newEl => {
+                                const key = newEl.getAttribute('data-filter-count');
+                                const oldEl = document.querySelector(`[data-filter-count="${key}"]`);
+                                if (oldEl) {
+                                    oldEl.textContent = newEl.textContent;
+                                }
+                            });
 
                             // Update URL query params without reloading the page
                             history.pushState(null, '', `${window.location.pathname}?${params.toString()}`);
@@ -799,10 +814,10 @@
                     <i data-lucide="x" size="20"></i>
                 </button>
             </div>
-            
+
             <!-- Search Bar -->
             <div class="relative shrink-0 pb-2 border-b border-gray-100">
-                <input type="text" x-model="stateSearch" placeholder="Search state..." 
+                <input type="text" x-model="stateSearch" placeholder="Search state..."
                     class="w-full bg-gray-50 border border-gray-100 rounded-xl py-2 pl-10 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                 <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
             </div>
@@ -812,7 +827,7 @@
                 @foreach($locationCatalog as $country => $states)
                     @php
                         $countryCities = [];
-                        foreach($states as $st => $cits) {
+                        foreach ($states as $st => $cits) {
                             $countryCities = array_merge($countryCities, array_keys($cits));
                         }
                         $countrySearchStr = strtolower($country . ' ' . implode(' ', array_keys($states)) . ' ' . implode(' ', $countryCities));
@@ -826,7 +841,8 @@
                                     $stateSlug = \Illuminate\Support\Str::slug($country . '-' . $state);
                                     $stateSearchStr = strtolower($country . ' ' . $state . ' ' . implode(' ', array_keys($cities)));
                                 @endphp
-                                <div class="border border-gray-100 rounded-lg overflow-hidden bg-gray-50/30" x-show="'{{ $stateSearchStr }}'.includes(stateSearch.toLowerCase())">
+                                <div class="border border-gray-100 rounded-lg overflow-hidden bg-gray-50/30"
+                                    x-show="'{{ $stateSearchStr }}'.includes(stateSearch.toLowerCase())">
                                     <!-- State Header -->
                                     <div @click="expandedStates['{{ $stateSlug }}'] = !expandedStates['{{ $stateSlug }}']"
                                         class="flex items-center justify-between px-2 py-1.5 bg-gray-50/50 hover:bg-gray-50 cursor-pointer select-none transition-colors">
@@ -845,7 +861,8 @@
                                                 <input type="checkbox" name="selected_cities[]" form="filter-form"
                                                     value="{{ strtolower($city) }}" {{ in_array(strtolower($city), request('selected_cities', [])) ? 'checked' : '' }}
                                                     class="w-3.5 h-3.5 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                                                <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">
+                                                <span
+                                                    class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">
                                                     {{ $city }} <span class="text-[10px] text-gray-400">({{ $count }})</span>
                                                 </span>
                                             </label>
@@ -861,10 +878,10 @@
             <!-- Footer -->
             <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 shrink-0">
                 <button type="button" @click="
-                                    document.querySelectorAll('input[name=\'selected_cities[]\']').forEach(cb => cb.checked = false);
-                                    stateModalOpen = false;
-                                    document.getElementById('filter-form').dispatchEvent(new Event('submit'));
-                                "
+                                        document.querySelectorAll('input[name=\'selected_cities[]\']').forEach(cb => cb.checked = false);
+                                        stateModalOpen = false;
+                                        document.getElementById('filter-form').dispatchEvent(new Event('submit'));
+                                    "
                     class="px-5 py-2.5 hover:bg-gray-50 rounded-xl text-xs font-black text-primary uppercase tracking-widest transition-all">
                     Clear
                 </button>
