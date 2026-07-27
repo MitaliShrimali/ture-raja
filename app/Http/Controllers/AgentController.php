@@ -80,7 +80,7 @@ class AgentController extends Controller
             'status'      => 1,
             'pending'     => 1,
             'approved'    => 0,
-            'plan_id'     => 1, // Default Basic plan
+            'plan_id'     => DB::table('plans')->where('price', 0)->value('id') ?? 5, // Dynamic free plan
             'plan_status' => 'Active',
             'created_at'  => now(),
             'updated_at'  => now(),
@@ -321,7 +321,8 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         if ($agentId) {
             $agent = DB::table('agents')->where('id', $agentId)->first();
-            $plan = DB::table('plans')->where('id', $agent->plan_id ?? 1)->first();
+            $freePlanId = DB::table('plans')->where('price', 0)->value('id') ?? 5;
+            $plan = DB::table('plans')->where('id', $agent->plan_id ?? $freePlanId)->first();
             $limit = $plan ? $plan->package_limit : 1;
             
             $allPackages = DB::table('packages')->select('agent')->get();
@@ -557,7 +558,8 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         if ($agentId) {
             $agent = DB::table('agents')->where('id', $agentId)->first();
-            $plan = DB::table('plans')->where('id', $agent->plan_id ?? 1)->first();
+            $freePlanId = DB::table('plans')->where('price', 0)->value('id') ?? 5;
+            $plan = DB::table('plans')->where('id', $agent->plan_id ?? $freePlanId)->first();
             $limit = $plan ? $plan->package_limit : 1;
             
             $allPackages = DB::table('packages')->select('agent')->get();
@@ -1436,10 +1438,11 @@ class AgentController extends Controller
         $agent = DB::table('agents')->where('id', $agentId)->first();
         
         $activePlan = null;
+        $freePlanId = DB::table('plans')->where('price', 0)->value('id') ?? 5;
         if ($agent && $agent->plan_id) {
             $activePlan = DB::table('plans')->where('id', $agent->plan_id)->first();
         } else {
-            $activePlan = DB::table('plans')->where('id', 1)->first(); // Fallback to Basic
+            $activePlan = DB::table('plans')->where('id', $freePlanId)->first(); // Fallback to Basic
         }
 
         $plans = DB::table('plans')->where('status', 'Active')->orderBy('price', 'asc')->get();

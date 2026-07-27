@@ -326,20 +326,18 @@
                 </div>
                 
                 <div class="flex-grow mb-6 space-y-3">
+                    @php
+                        $featuresList = json_decode($plan->features, true) ?? [];
+                        if (empty($featuresList) && !empty($plan->features)) {
+                            $featuresList = array_filter(array_map('trim', explode("\n", $plan->features)));
+                        }
+                    @endphp
+                    @foreach($featuresList as $feature)
                     <div class="flex items-start">
-                        <i class="fas fa-check-circle text-green-500 mt-0.5 mr-2"></i>
-                        <span class="text-sm text-gray-600 font-medium">{{ $plan->features }}</span>
+                        <i class="fas fa-check-circle text-green-500 mt-0.5 mr-2 shrink-0"></i>
+                        <span class="text-sm text-gray-600 font-medium">{{ $feature }}</span>
                     </div>
-                    <div class="flex items-start">
-                        <i class="fas fa-check-circle text-green-500 mt-0.5 mr-2"></i>
-                        <span class="text-sm text-gray-600 font-medium">{{ $plan->package_limit >= 9999 ? 'Unlimited' : $plan->package_limit }} Package Limit</span>
-                    </div>
-                    @if($plan->name != 'Basic')
-                    <div class="flex items-start">
-                        <i class="fas fa-check-circle text-green-500 mt-0.5 mr-2"></i>
-                        <span class="text-sm text-gray-600 font-medium">Priority Support</span>
-                    </div>
-                    @endif
+                    @endforeach
                 </div>
                 
                 @if($activePlan && $activePlan->id == $plan->id)

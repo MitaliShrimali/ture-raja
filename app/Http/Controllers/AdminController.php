@@ -2090,13 +2090,20 @@ class AdminController extends Controller
             'package_limit' => 'required|integer'
         ]);
 
+        $features = [];
+        if ($request->filled('features')) {
+            $features = array_filter(array_map('trim', explode("\n", $request->features)));
+        } else {
+            $features = [$request->package_limit . ' package listings'];
+        }
+
         DB::table('plans')->insert([
             'name' => $request->name,
             'price' => $request->price,
             'package_limit' => $request->package_limit,
             'duration' => $request->duration ?? '1 Month',
             'description' => $request->description,
-            'features' => json_encode([$request->package_limit . ' package listings']),
+            'features' => json_encode(array_values($features)),
             'status' => $request->has('status') ? 'Active' : 'Inactive',
             'created_at' => now(),
             'updated_at' => now(),
@@ -2123,13 +2130,20 @@ class AdminController extends Controller
             'package_limit' => 'required|integer'
         ]);
 
+        $features = [];
+        if ($request->filled('features')) {
+            $features = array_filter(array_map('trim', explode("\n", $request->features)));
+        } else {
+            $features = [$request->package_limit . ' package listings'];
+        }
+
         DB::table('plans')->where('id', $request->id)->update([
             'name' => $request->name,
             'price' => $request->price,
             'package_limit' => $request->package_limit,
             'duration' => $request->duration,
             'description' => $request->description,
-            'features' => json_encode([$request->package_limit . ' package listings']),
+            'features' => json_encode(array_values($features)),
             'status' => $request->has('status') ? 'Active' : 'Inactive',
             'updated_at' => now(),
         ]);

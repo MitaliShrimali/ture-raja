@@ -129,6 +129,31 @@
         </div>
     </div>
 
+    <!-- Included Features Section -->
+    <div class="bg-white rounded-[32px] border border-border-soft p-8 shadow-sm space-y-4">
+        <h3 class="text-lg font-black text-gray-800">What's Included</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @php
+                $featuresList = json_decode($plan->features, true);
+                if (!is_array($featuresList)) {
+                    if (!empty($plan->features)) {
+                        $featuresList = array_filter(array_map('trim', explode("\n", $plan->features)));
+                    } else {
+                        $featuresList = [];
+                    }
+                }
+            @endphp
+            @forelse($featuresList as $feature)
+                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <span class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold shrink-0">✓</span>
+                    <span class="text-xs font-bold text-gray-700">{{ $feature }}</span>
+                </div>
+            @empty
+                <p class="text-xs text-muted-text font-bold">No custom features included.</p>
+            @endforelse
+        </div>
+    </div>
+
     <!-- Subscribed Agents Table Section -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">

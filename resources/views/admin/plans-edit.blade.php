@@ -3,11 +3,23 @@
 @section('admin_title', 'Plans Edit')
 
 @section('content')
+@php
+    $featuresArray = json_decode($plan->features, true);
+    if (!is_array($featuresArray)) {
+        if (!empty($plan->features)) {
+            $featuresArray = [$plan->features];
+        } else {
+            $featuresArray = [];
+        }
+    }
+    $featuresString = implode("\n", $featuresArray);
+@endphp
 <div class="space-y-6 pb-12" x-data="{ 
-    name: '{{ addslashes($plan->name) }}', 
+    name: {{ json_encode($plan->name) }}, 
     price: '{{ $plan->price }}', 
     package_limit: '{{ $plan->package_limit ?? 15 }}', 
-    description: '{{ addslashes($plan->description ?? 'Specialized subscription tier for travel agents.') }}',
+    description: {{ json_encode($plan->description ?? 'Specialized subscription tier for travel agents.') }},
+    features: {{ json_encode($featuresString) }},
     status: '{{ $plan->status ?? 'Active' }}'
 }">
     <!-- Breadcrumb & Header -->
@@ -61,7 +73,7 @@
                 <!-- Name -->
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Plan Name<span class="text-primary">*</span></label>
-                    <input required type="text" name="name" x-model="name" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
+                    <input required type="text" name="name" x-model="name" value="{{ $plan->name }}" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -70,8 +82,9 @@
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Number of Packages<span class="text-primary">*</span></label>
                         <div class="relative">
                             <i data-lucide="package" size="18" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input required type="number" name="package_limit" x-model="package_limit" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
+                            <input required type="number" name="package_limit" x-model="package_limit" value="{{ $plan->package_limit ?? 15 }}" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
                         </div>
+                        <p class="text-[10px] text-muted-text font-medium mt-1">Maximum number of package listings this plan can upload/publish.</p>
                     </div>
 
                     <!-- Price -->
@@ -79,15 +92,21 @@
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Price (INR)<span class="text-primary">*</span></label>
                         <div class="relative">
                             <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">₹</span>
-                            <input required type="number" step="0.01" name="price" x-model="price" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
+                            <input required type="number" step="0.01" name="price" x-model="price" value="{{ $plan->price }}" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
                         </div>
                     </div>
+                </div>
+
+                <!-- What's Included / Features -->
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">What's Included (One feature per line)</label>
+                    <textarea name="features" x-model="features" rows="4" placeholder="15 package listings&#10;15 Package Limit&#10;Priority Support" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground resize-none">{{ $featuresString }}</textarea>
                 </div>
 
                 <!-- Internal Description -->
                 <div class="space-y-2">
                     <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Internal Description</label>
-                    <textarea name="description" x-model="description" rows="4" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground resize-none"></textarea>
+                    <textarea name="description" x-model="description" rows="4" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground resize-none">{{ $plan->description ?? 'Specialized subscription tier for travel agents.' }}</textarea>
                 </div>
 
                 <div class="space-y-2">
@@ -118,6 +137,16 @@
                     <div class="space-y-1">
                         <h4 class="text-lg font-black text-gray-800 uppercase tracking-tight" x-text="name"></h4>
                         <p class="text-xs text-muted-text font-medium leading-relaxed" x-text="description"></p>
+                    </div>
+
+                    <!-- Features Live List -->
+                    <div class="border-t border-gray-100 pt-4 space-y-2">
+                        <template x-for="feature in features.split('\n').filter(f => f.trim() !== '')">
+                            <div class="flex items-start gap-2">
+                                <span class="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-[10px] font-bold shrink-0">✓</span>
+                                <span class="text-xs text-gray-600 font-semibold" x-text="feature"></span>
+                            </div>
+                        </template>
                     </div>
                     
                     <div class="border-t border-gray-100 pt-4 space-y-3">
