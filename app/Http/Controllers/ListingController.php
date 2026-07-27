@@ -243,9 +243,14 @@ class ListingController extends Controller
                 }
             }
 
+            $paidPlanIds = [];
+            try {
+                $paidPlanIds = \Illuminate\Support\Facades\DB::table('plans')->where('price', '>', 0)->pluck('id')->toArray();
+            } catch (\Exception $e) {}
+
             if ($agentInfo) {
                 // 2: Paid plan
-                if (!empty($agentInfo->plan_id) && $agentInfo->plan_id > 1) {
+                if (!empty($agentInfo->plan_id) && in_array($agentInfo->plan_id, $paidPlanIds)) {
                     $tier = max($tier, 3);
                 }
                 // 1: Verified / Service Guaranteed (Top priority)
@@ -1021,7 +1026,12 @@ class ListingController extends Controller
         if ($packages->count() <= 3) {
             $existingIds = $packages->pluck('id')->toArray();
             
-            $paidPackages = $allPackages->filter(function($p) use ($existingIds, $agentsById, $agentsByName) {
+            $paidPlanIds = [];
+            try {
+                $paidPlanIds = \Illuminate\Support\Facades\DB::table('plans')->where('price', '>', 0)->pluck('id')->toArray();
+            } catch (\Exception $e) {}
+
+            $paidPackages = $allPackages->filter(function($p) use ($existingIds, $agentsById, $agentsByName, $paidPlanIds) {
                 $pkg = (array) $p;
                 if (in_array($pkg['id'] ?? null, $existingIds)) return false;
                 
@@ -1048,7 +1058,7 @@ class ListingController extends Controller
                         $agentInfo = $agentsByName[$key];
                     }
                 }
-                return $agentInfo && (!empty($agentInfo->plan_id) && $agentInfo->plan_id > 1);
+                return $agentInfo && (!empty($agentInfo->plan_id) && in_array($agentInfo->plan_id, $paidPlanIds));
             });
 
             if ($paidPackages->count() > 0) {

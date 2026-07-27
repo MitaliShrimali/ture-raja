@@ -112,9 +112,14 @@ class UserController extends Controller
                 }
             }
 
+            $paidPlanIds = [];
+            try {
+                $paidPlanIds = \Illuminate\Support\Facades\DB::table('plans')->where('price', '>', 0)->pluck('id')->toArray();
+            } catch (\Exception $e) {}
+
             if ($agentInfo) {
                 // 2: Paid plan
-                if (!empty($agentInfo->plan_id) && $agentInfo->plan_id > 1) {
+                if (!empty($agentInfo->plan_id) && in_array($agentInfo->plan_id, $paidPlanIds)) {
                     $tier = max($tier, 3);
                 }
                 // 1: Verified / Service Guaranteed (Top priority)
