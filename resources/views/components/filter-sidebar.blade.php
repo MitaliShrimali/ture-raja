@@ -1,5 +1,6 @@
 @props([
     'searchTerm' => '',
+    'filterCounts' => [],
 ])
 
 <style>
@@ -197,13 +198,13 @@
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="private_chef" value="1" {{ request('private_chef') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
                     <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
-                        <i data-lucide="utensils" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Private Chef Included ({{ $filterCounts['services']['private_chef'] ?? 0 }})
+                        <i data-lucide="utensils" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Private Chef Included (<span data-filter-count="services.private_chef">{{ $filterCounts['services']['private_chef'] ?? 0 }}</span>)
                     </span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="tour_manager" value="1" {{ request('tour_manager') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
                     <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
-                        <i data-lucide="user" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Tour Manager Included ({{ $filterCounts['services']['tour_manager'] ?? 0 }})
+                        <i data-lucide="user" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Tour Manager Included (<span data-filter-count="services.tour_manager">{{ $filterCounts['services']['tour_manager'] ?? 0 }}</span>)
                     </span>
                 </label>
             </div>
@@ -216,22 +217,45 @@
             @php
                 $allTourTypes = DB::table('transits')->where('status', 'Active')->pluck('name')->toArray();
                 if (empty($allTourTypes)) {
-                    $allTourTypes = ['Land/Customised Packages', 'Flight Package', 'Train Package', 'Bus Package', 'Bullet Packages', 'Cruise Package', 'Tracking Package', 'Helicopter Package'];
+                    $allTourTypes = ['Land/Customised Packages', 'Bullet Packages', 'Flight Packages', 'Train Packages', 'Bus Packages', 'Cruise Packages', 'Tracking Packages', 'Helicopter Packages'];
                 }
-                $sortOrder = [
-                    'Land/Customised Packages' => 1,
-                    'Flight Package' => 2,
-                    'Train Package' => 3,
-                    'Bus Package' => 4,
-                    'Bullet Packages' => 5,
-                    'Cruise Package' => 6,
-                    'Tracking Package' => 7,
-                    'Helicopter Package' => 8,
-                ];
-                usort($allTourTypes, function($a, $b) use ($sortOrder) {
-                    $orderA = $sortOrder[$a] ?? 999;
-                    $orderB = $sortOrder[$b] ?? 999;
-                    return $orderA <=> $orderB;
+                usort($allTourTypes, function($a, $b) {
+                    $nameA = strtolower(trim($a));
+                    $nameB = strtolower(trim($b));
+                    $orderMap = [
+                        'land' => 1,
+                        'bullet' => 2,
+                        'flight' => 3,
+                        'train' => 4,
+                        'bus' => 5,
+                        'cruise' => 6,
+                        'tracking' => 7,
+                        'helicopter' => 8,
+                    ];
+                    
+                    $normA = $nameA;
+                    if (str_contains($nameA, 'land') || str_contains($nameA, 'custom')) $normA = 'land';
+                    elseif (str_contains($nameA, 'bullet') || str_contains($nameA, 'bike')) $normA = 'bullet';
+                    elseif (str_contains($nameA, 'flight') || str_contains($nameA, 'air')) $normA = 'flight';
+                    elseif (str_contains($nameA, 'train') || str_contains($nameA, 'rail')) $normA = 'train';
+                    elseif (str_contains($nameA, 'bus') || str_contains($nameA, 'coach')) $normA = 'bus';
+                    elseif (str_contains($nameA, 'cruise') || str_contains($nameA, 'ship') || str_contains($nameA, 'boat')) $normA = 'cruise';
+                    elseif (str_contains($nameA, 'track') || str_contains($nameA, 'hike') || str_contains($nameA, 'trek')) $normA = 'tracking';
+                    elseif (str_contains($nameA, 'helicopter') || str_contains($nameA, 'sky')) $normA = 'helicopter';
+
+                    $normB = $nameB;
+                    if (str_contains($nameB, 'land') || str_contains($nameB, 'custom')) $normB = 'land';
+                    elseif (str_contains($nameB, 'bullet') || str_contains($nameB, 'bike')) $normB = 'bullet';
+                    elseif (str_contains($nameB, 'flight') || str_contains($nameB, 'air')) $normB = 'flight';
+                    elseif (str_contains($nameB, 'train') || str_contains($nameB, 'rail')) $normB = 'train';
+                    elseif (str_contains($nameB, 'bus') || str_contains($nameB, 'coach')) $normB = 'bus';
+                    elseif (str_contains($nameB, 'cruise') || str_contains($nameB, 'ship') || str_contains($nameB, 'boat')) $normB = 'cruise';
+                    elseif (str_contains($nameB, 'track') || str_contains($nameB, 'hike') || str_contains($nameB, 'trek')) $normB = 'tracking';
+                    elseif (str_contains($nameB, 'helicopter') || str_contains($nameB, 'sky')) $normB = 'helicopter';
+
+                    $orderValA = $orderMap[$normA] ?? 999;
+                    $orderValB = $orderMap[$normB] ?? 999;
+                    return $orderValA <=> $orderValB;
                 });
                 $visibleTypes = array_slice($allTourTypes, 0, 5);
                 $hiddenTypes = array_slice($allTourTypes, 5);
@@ -241,7 +265,7 @@
                 @foreach($visibleTypes as $type)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="tour_type[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }} ({{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }})</span>
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ rtrim(strtolower($type), 's') }}">{{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
                 
@@ -249,7 +273,7 @@
                     @foreach($hiddenTypes as $type)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="tour_type[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }} ({{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }})</span>
+                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ rtrim(strtolower($type), 's') }}">{{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }}</span>)</span>
                         </label>
                     @endforeach
                 </div>
@@ -270,11 +294,11 @@
             <div class="space-y-2">
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="category[]" value="domestic" {{ in_array('domestic', $selectedDestTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Domestic ({{ $filterCounts['destination_type']['domestic'] ?? 0 }})</span>
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Domestic (<span data-filter-count="destination_type.domestic">{{ $filterCounts['destination_type']['domestic'] ?? 0 }}</span>)</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="category[]" value="international" {{ in_array('international', $selectedDestTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">International ({{ $filterCounts['destination_type']['international'] ?? 0 }})</span>
+                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">International (<span data-filter-count="destination_type.international">{{ $filterCounts['destination_type']['international'] ?? 0 }}</span>)</span>
                 </label>
             </div>
             <hr class="mt-5 border-gray-100">
@@ -313,7 +337,7 @@
                 @foreach($visibleCategories as $category)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="categories[]" value="{{ $category }}" {{ in_array($category, $selectedCategories) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }} ({{ $filterCounts['category'][strtolower($category)] ?? 0 }})</span>
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }} (<span data-filter-count="category.{{ strtolower($category) }}">{{ $filterCounts['category'][strtolower($category)] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
                 
@@ -322,7 +346,7 @@
                     @foreach($hiddenCategories as $category)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="categories[]" value="{{ $category }}" {{ in_array($category, $selectedCategories) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }} ({{ $filterCounts['category'][strtolower($category)] ?? 0 }})</span>
+                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }} (<span data-filter-count="category.{{ strtolower($category) }}">{{ $filterCounts['category'][strtolower($category)] ?? 0 }}</span>)</span>
                         </label>
                     @endforeach
                 </div>
@@ -354,7 +378,7 @@
                 @foreach($holidayTypesOptions as $label => $val)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="holiday_type[]" value="{{ $val }}" {{ in_array($val, $selectedHolidayTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $label }} ({{ $filterCounts['holiday_type'][$val] ?? 0 }})</span>
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $label }} (<span data-filter-count="holiday_type.{{ $val }}">{{ $filterCounts['holiday_type'][$val] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
             </div>
@@ -482,7 +506,7 @@
                 @foreach($visibleThemes as $theme)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="theme[]" value="{{ $theme }}" {{ in_array($theme, $selectedThemes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }} ({{ $filterCounts['theme'][strtolower($theme)] ?? 0 }})</span>
+                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }} (<span data-filter-count="theme.{{ strtolower($theme) }}">{{ $filterCounts['theme'][strtolower($theme)] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
                 
@@ -490,7 +514,7 @@
                     @foreach($hiddenThemes as $theme)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="theme[]" value="{{ $theme }}" {{ in_array($theme, $selectedThemes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }} ({{ $filterCounts['theme'][strtolower($theme)] ?? 0 }})</span>
+                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }} (<span data-filter-count="theme.{{ strtolower($theme) }}">{{ $filterCounts['theme'][strtolower($theme)] ?? 0 }}</span>)</span>
                         </label>
                     @endforeach
                 </div>

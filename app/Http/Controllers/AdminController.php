@@ -2264,7 +2264,30 @@ class AdminController extends Controller
     public function homeEditor(Request $request)
     {
         $banners = DB::table('banners')->orderBy('id', 'desc')->paginate(5);
-        $transits = DB::table('transits')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $dbTransits = DB::table('transits')->where('status', 'Active')->get();
+        $transits = $dbTransits->sortBy(function($t) {
+            $name = strtolower(trim($t->name));
+            $orderMap = [
+                'land' => 1,
+                'bullet' => 2,
+                'flight' => 3,
+                'train' => 4,
+                'bus' => 5,
+                'cruise' => 6,
+                'tracking' => 7,
+                'helicopter' => 8,
+            ];
+            $norm = $name;
+            if (str_contains($name, 'land') || str_contains($name, 'custom')) $norm = 'land';
+            elseif (str_contains($name, 'bullet') || str_contains($name, 'bike')) $norm = 'bullet';
+            elseif (str_contains($name, 'flight') || str_contains($name, 'air')) $norm = 'flight';
+            elseif (str_contains($name, 'train') || str_contains($name, 'rail')) $norm = 'train';
+            elseif (str_contains($name, 'bus') || str_contains($name, 'coach')) $norm = 'bus';
+            elseif (str_contains($name, 'cruise') || str_contains($name, 'ship') || str_contains($name, 'boat')) $norm = 'cruise';
+            elseif (str_contains($name, 'track') || str_contains($name, 'hike') || str_contains($name, 'trek')) $norm = 'tracking';
+            elseif (str_contains($name, 'helicopter') || str_contains($name, 'sky')) $norm = 'helicopter';
+            return $orderMap[$norm] ?? 999;
+        })->values();
         $transitMusics = DB::table('transit_music')->orderBy('id', 'desc')->get();
         return view('admin.banners', compact('banners', 'transits', 'transitMusics'));
     }
@@ -3250,7 +3273,40 @@ class AdminController extends Controller
                 ],
             ]);
         }
-        $transits = DB::table('transits')->orderBy('id', 'asc')->paginate(10);
+        $dbTransits = DB::table('transits')->get();
+        $sortedTransits = $dbTransits->sortBy(function($t) {
+            $name = strtolower(trim($t->name));
+            $orderMap = [
+                'land' => 1,
+                'bullet' => 2,
+                'flight' => 3,
+                'train' => 4,
+                'bus' => 5,
+                'cruise' => 6,
+                'tracking' => 7,
+                'helicopter' => 8,
+            ];
+            $norm = $name;
+            if (str_contains($name, 'land') || str_contains($name, 'custom')) $norm = 'land';
+            elseif (str_contains($name, 'bullet') || str_contains($name, 'bike')) $norm = 'bullet';
+            elseif (str_contains($name, 'flight') || str_contains($name, 'air')) $norm = 'flight';
+            elseif (str_contains($name, 'train') || str_contains($name, 'rail')) $norm = 'train';
+            elseif (str_contains($name, 'bus') || str_contains($name, 'coach')) $norm = 'bus';
+            elseif (str_contains($name, 'cruise') || str_contains($name, 'ship') || str_contains($name, 'boat')) $norm = 'cruise';
+            elseif (str_contains($name, 'track') || str_contains($name, 'hike') || str_contains($name, 'trek')) $norm = 'tracking';
+            elseif (str_contains($name, 'helicopter') || str_contains($name, 'sky')) $norm = 'helicopter';
+            return $orderMap[$norm] ?? 999;
+        })->values();
+
+        $page = request()->get('page', 1);
+        $perPage = 10;
+        $transits = new \Illuminate\Pagination\LengthAwarePaginator(
+            $sortedTransits->forPage($page, $perPage),
+            $sortedTransits->count(),
+            $perPage,
+            $page,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
         return view('admin.transits', compact('transits'));
     }
 

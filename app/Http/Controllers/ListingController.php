@@ -144,6 +144,58 @@ class ListingController extends Controller
                     $pkg['agent']['logo'] = $dbAgent['logo'];
                 }
             }
+
+            // Normalise/infer properties so they match between filter logic and count logic
+            $titleLower = strtolower((string)($pkg['title'] ?? ''));
+
+            // 1. Tour Type
+            if (empty($pkg['tour_type'])) {
+                if (str_contains($titleLower, 'flight') || str_contains($titleLower, 'air')) {
+                    $pkg['tour_type'] = 'Flight Package';
+                } elseif (str_contains($titleLower, 'train') || str_contains($titleLower, 'rail')) {
+                    $pkg['tour_type'] = 'Train Package';
+                } elseif (str_contains($titleLower, 'bus') || str_contains($titleLower, 'coach')) {
+                    $pkg['tour_type'] = 'Bus Package';
+                } elseif (str_contains($titleLower, 'cruise') || str_contains($titleLower, 'boat')) {
+                    $pkg['tour_type'] = 'Cruise Package';
+                } else {
+                    $pkg['tour_type'] = 'Land/Customised Packages';
+                }
+            }
+
+            // 2. Categories List
+            if (empty($pkg['categories_list']) || $pkg['categories_list'] === '[]') {
+                $cats = [];
+                if (str_contains($titleLower, 'safari') || str_contains($titleLower, 'wildlife')) $cats[] = 'Safari';
+                if (str_contains($titleLower, 'mountain') || str_contains($titleLower, 'hill') || str_contains($titleLower, 'valley')) $cats[] = 'Mountain';
+                if (str_contains($titleLower, 'beach') || str_contains($titleLower, 'goa') || str_contains($titleLower, 'island')) $cats[] = 'Beach';
+                if (str_contains($titleLower, 'desert') || str_contains($titleLower, 'dune')) $cats[] = 'Desert';
+                if (str_contains($titleLower, 'temple') || str_contains($titleLower, 'yatra') || str_contains($titleLower, 'darshan')) $cats[] = 'Temples';
+                if (str_contains($titleLower, 'yacht') || str_contains($titleLower, 'cruise')) $cats[] = 'Yacht';
+                if (empty($cats)) $cats[] = 'City';
+                $pkg['categories_list'] = json_encode($cats);
+            }
+
+            // 3. Theme
+            if (empty($pkg['theme'])) {
+                if (str_contains($titleLower, 'honeymoon') || str_contains($titleLower, 'couple')) {
+                    $pkg['theme'] = 'Honeymoon';
+                } elseif (str_contains($titleLower, 'adventure') || str_contains($titleLower, 'trek')) {
+                    $pkg['theme'] = 'Adventure';
+                } else {
+                    $pkg['theme'] = 'Family/Group';
+                }
+            }
+
+            // 4. Included (normalise to array)
+            if (isset($pkg['included'])) {
+                if (is_string($pkg['included'])) {
+                    $pkg['included'] = json_decode($pkg['included'], true) ?: [];
+                }
+            } else {
+                $pkg['included'] = [];
+            }
+
             return $pkg;
         });
 
@@ -681,7 +733,7 @@ class ListingController extends Controller
             'services' => ['private_chef' => 0, 'tour_manager' => 0],
         ];
 
-        foreach ($basePackages as $pkg) {
+        foreach ($packages as $pkg) {
             $pkgArray = is_object($pkg) && method_exists($pkg, 'toArray') ? $pkg->toArray() : (array)$pkg;
 
             $title = strtolower((string)($pkgArray['title'] ?? ''));
@@ -727,7 +779,7 @@ class ListingController extends Controller
 
             // --- Compute Filter Counts ---
             // Tour Type
-            $tt = strtolower(trim($pkgArray['tour_type']));
+            $tt = strtolower(trim($pkgArray['tour_type'] ?? ''));
             $tt = rtrim($tt, 's'); // normalize trailing s
             if ($tt) {
                 $filterCounts['tour_type'][$tt] = ($filterCounts['tour_type'][$tt] ?? 0) + 1;
@@ -803,6 +855,9 @@ class ListingController extends Controller
 
             // Services
             $included = $pkgArray['included'] ?? [];
+            if (is_string($included)) {
+                $included = json_decode($included, true) ?: [];
+            }
             if (!is_array($included)) $included = [];
             $hasChef = false;
             $hasManager = false;

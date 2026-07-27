@@ -401,7 +401,7 @@
                     </div>
                 </div>
 
-                <x-filter-sidebar />
+                <x-filter-sidebar :filter-counts="$filterCounts" />
 
 
 
@@ -697,8 +697,17 @@
                             const oldSuggested = document.getElementById('suggested-packages-section');
                             if (newSuggested && oldSuggested) oldSuggested.innerHTML = newSuggested.innerHTML;
 
-                            // Re-render Lucide icons for new cards!
-                            if (window.lucide) window.lucide.createIcons();
+                             // Re-render Lucide icons for new cards!
+                             if (window.lucide) window.lucide.createIcons();
+
+                             // Swap individual filter counts dynamically without losing input states
+                             doc.querySelectorAll('[data-filter-count]').forEach(newEl => {
+                                 const key = newEl.getAttribute('data-filter-count');
+                                 const oldEl = document.querySelector(`[data-filter-count="${key}"]`);
+                                 if (oldEl) {
+                                     oldEl.textContent = newEl.textContent;
+                                 }
+                             });
 
                             // Update URL query params without reloading the page
                             history.pushState(null, '', `${window.location.pathname}?${params.toString()}`);
