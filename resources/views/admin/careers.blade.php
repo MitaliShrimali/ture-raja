@@ -580,8 +580,8 @@ function doDeleteLoc(id, name) {
                                 class="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 transition-colors group/dd cursor-pointer"
                                 @click="selectDept('{{ $dept->id }}', '{{ addslashes($dept->name) }}')">
                                 <span class="text-sm font-semibold text-gray-700">{{ $dept->name }}</span>
-                                <a href="/admin/careers/departments/delete/{{ $dept->id }}"
-                                    onclick="return confirm('Delete department: {{ addslashes($dept->name) }}?\nAll its job positions will also be deleted.')"
+                                <a href="{{ url('/admin/careers/departments/delete/' . $dept->id) }}"
+                                    onclick="event.preventDefault(); event.stopPropagation(); deleteDept('{{ $dept->id }}', '{{ addslashes($dept->name) }}', 'dept-dd-row-{{ $dept->id }}');"
                                     class="text-red-500 hover:text-red-700 p-1 opacity-80 hover:opacity-100 transition-all flex-shrink-0"
                                     style="line-height:0;">
                                     <i data-lucide="trash-2" style="width:13px;height:13px;"></i>
@@ -635,8 +635,8 @@ function doDeleteLoc(id, name) {
                                     <input type="checkbox" name="locations[]" value="{{ $loc->name }}" x-model="posForm.locations" class="rounded border-gray-300 text-primary focus:ring-primary/20 w-4 h-4">
                                     <span>{{ $loc->name }}</span>
                                 </label>
-                                <a href="/admin/careers/locations/delete/{{ $loc->id }}"
-                                    onclick="return confirm('Delete location: {{ addslashes($loc->name) }} permanently?')"
+                                <a href="{{ url('/admin/careers/locations/delete/' . $loc->id) }}"
+                                    onclick="event.preventDefault(); event.stopPropagation(); deleteLoc('{{ $loc->id }}', '{{ addslashes($loc->name) }}', 'loc-row-{{ $loc->id }}');"
                                     class="text-red-500 hover:text-red-700 p-0.5 opacity-80 hover:opacity-100 transition-all"
                                     style="line-height:0;">
                                     <i data-lucide="trash-2" style="width:12px;height:12px;"></i>

@@ -1734,11 +1734,26 @@ class AdminController extends Controller
             </div>", 400);
         }
 
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        $prefix = $settings['invoice_prefix'] ?? 'INV-';
+        $nextNumberVal = $settings['invoice_next_number'] ?? '1000';
+        $format = $settings['invoice_format'] ?? 'prefix_number';
+        $nextNumber = intval($nextNumberVal) + $payment->id;
+        $year = date('Y', strtotime($payment->date));
+
+        if ($format === 'number_only') {
+            $invoiceNo = (string)$nextNumber;
+        } elseif ($format === 'prefix_year_number') {
+            $invoiceNo = $prefix . $year . '-' . $nextNumber;
+        } else {
+            $invoiceNo = $prefix . $nextNumber;
+        }
+
         $invoiceData = json_decode($payment->invoice_data ?? '', true);
         if (!$invoiceData) {
             $price = ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') ? 0 : $payment->amount;
             $invoiceData = [
-                'invoice_no' => 'TR-INV-2024-' . str_pad($payment->id, 3, '0', STR_PAD_LEFT),
+                'invoice_no' => $invoiceNo,
                 'invoice_date' => \Carbon\Carbon::parse($payment->date)->format('F d, Y'),
                 'due_date' => \Carbon\Carbon::parse($payment->date)->addDays(30)->format('F d, Y'),
                 'customer_name' => $payment->user_name,
@@ -1763,7 +1778,7 @@ class AdminController extends Controller
             ];
         } else {
             $defaultData = [
-                'invoice_no' => 'TR-INV-2024-' . str_pad($payment->id, 3, '0', STR_PAD_LEFT),
+                'invoice_no' => $invoiceNo,
                 'invoice_date' => \Carbon\Carbon::parse($payment->date)->format('F d, Y'),
                 'due_date' => \Carbon\Carbon::parse($payment->date)->addDays(30)->format('F d, Y'),
                 'customer_name' => $payment->user_name,
@@ -1778,6 +1793,7 @@ class AdminController extends Controller
                 'notes' => "All payments should be made in favor of Tour Raja Private Limited.\nInterest at 18% p.a. will be charged if the bill is not paid by the due date.\nGoods/Services once sold cannot be returned.\nSubject to Noida Jurisdiction only."
             ];
             $invoiceData = array_merge($defaultData, $invoiceData);
+
 
             if (empty($invoiceData['services'])) {
                 $price = ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') ? 0 : $payment->amount;
@@ -2701,10 +2717,60 @@ class AdminController extends Controller
     }
 
     // SYSTEM SETTINGS
+    private function logActivity($activity, $details = null)
+    {
+        try {
+            $userName = Auth::check() ? Auth::user()->name : 'System/Admin';
+            DB::table('activity_logs')->insert([
+                'user_name' => $userName,
+                'activity' => $activity,
+                'details' => $details,
+                'ip_address' => request()->ip(),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Activity logging failed: ' . $e->getMessage());
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = Auth::check() ? Auth::user() : DB::table('users')->where('id', 1)->first();
+        if (!$user) {
+            return redirect()->back()->with('error', 'User not found!');
+        }
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()->with('error', 'Current password is incorrect!');
+        }
+
+        DB::table('users')->where('id', $user->id)->update([
+            'password' => Hash::make($request->new_password),
+            'updated_at' => now(),
+        ]);
+
+        $this->logActivity('Changed password', 'Admin account security password updated');
+
+        return redirect()->back()->with('success', 'Password updated successfully!');
+    }
+
+    public function activityLogs(Request $request)
+    {
+        $logs = DB::table('activity_logs')->orderBy('created_at', 'desc')->paginate(15);
+        return view('admin.activity-logs', compact('logs'));
+    }
+
     public function settings(Request $request)
     {
         $settings = DB::table('settings')->pluck('value', 'key')->toArray();
-        return view('admin.settings', compact('settings'));
+        $activities = DB::table('activity_logs')->orderBy('created_at', 'desc')->limit(5)->get();
+        return view('admin.settings', compact('settings', 'activities'));
     }
 
     public function updateSettings(Request $request)
@@ -2722,8 +2788,10 @@ class AdminController extends Controller
 
             DB::table('settings')->updateOrInsert(['key' => $key], ['value' => $value, 'updated_at' => now()]);
         }
+        $this->logActivity('Updated settings', 'Modified platform preferences and general parameters');
         return redirect()->back()->with('success', 'Settings updated successfully!');
     }
+
 
     public function preferences(Request $request)
     {
@@ -2804,8 +2872,11 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Updated profile details', "Admin profile updated for user: {$request->name}");
+
         return redirect()->back()->with('success', 'Admin profile updated!');
     }
+
 
     public function downloadInquiryReport(Request $request)
     {

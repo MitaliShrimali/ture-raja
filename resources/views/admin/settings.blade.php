@@ -7,6 +7,19 @@
 @section('content')
 @if(request('tab') === 'general')
 <div class="space-y-8 pb-12">
+@php
+    $phoneVal = $settings['contact_phone'] ?? '';
+    $countryCodeVal = $settings['contact_country_code'] ?? '';
+    if (empty($countryCodeVal) && str_starts_with($phoneVal, '+')) {
+        $parts = explode(' ', $phoneVal, 2);
+        if (count($parts) === 2) {
+            $countryCodeVal = $parts[0];
+            $phoneVal = $parts[1];
+        }
+    }
+    $phoneVal = preg_replace('/[^0-9]/', '', $phoneVal);
+@endphp
+
 
     <form action="{{ url('admin/settings/update') }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -37,8 +50,19 @@
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Contact Phone</label>
-                            <input type="text" name="contact_phone" value="{{ $settings['contact_phone'] ?? '+1 (555) 0123-4567' }}" 
-                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" required>
+                            <div class="flex gap-2">
+                                <select name="contact_country_code" class="bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-3 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200 w-28">
+                                    <option value="+91" {{ $countryCodeVal === '+91' ? 'selected' : '' }}>+91 (IN)</option>
+                                    <option value="+1" {{ $countryCodeVal === '+1' ? 'selected' : '' }}>+1 (US)</option>
+                                    <option value="+44" {{ $countryCodeVal === '+44' ? 'selected' : '' }}>+44 (UK)</option>
+                                    <option value="+971" {{ $countryCodeVal === '+971' ? 'selected' : '' }}>+971 (AE)</option>
+                                    <option value="+62" {{ $countryCodeVal === '+62' ? 'selected' : '' }}>+62 (ID)</option>
+                                    <option value="+60" {{ $countryCodeVal === '+60' ? 'selected' : '' }}>+60 (MY)</option>
+                                    <option value="+65" {{ $countryCodeVal === '+65' ? 'selected' : '' }}>+65 (SG)</option>
+                                </select>
+                                <input type="tel" name="contact_phone" value="{{ $phoneVal }}" placeholder="9876543210" pattern="[0-9]{5,12}" title="Please enter a valid 5 to 12 digit phone number"
+                                    class="flex-1 bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" required>
+                            </div>
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Website URL</label>
@@ -175,7 +199,7 @@
                                     <p class="text-xs text-gray-400 font-semibold">Last changed 4 months ago. Recommended every 6 months.</p>
                                 </div>
                             </div>
-                            <a href="#" class="text-sm font-black text-[#B23B06] hover:underline px-4 py-2">Update</a>
+                            <button type="button" onclick="openPasswordModal()" class="text-sm font-black text-[#B23B06] hover:underline px-4 py-2 focus:outline-none">Update</button>
                         </div>
 
                         <!-- 2FA Line -->
@@ -308,42 +332,44 @@
                     <h3 class="text-lg font-bold text-gray-900 border-b border-gray-50 pb-4">Recent Activity</h3>
                     
                     <div class="space-y-6">
-                        <!-- Activity 1 -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center shrink-0">
-                                <i data-lucide="log-in" class="w-5 h-5"></i>
+                        @forelse($activities ?? [] as $activity)
+                            @php
+                                $icon = 'activity';
+                                $colorClass = 'bg-gray-100 text-gray-500';
+                                $actLower = strtolower($activity->activity);
+                                if (str_contains($actLower, 'login')) {
+                                    $icon = 'log-in';
+                                    $colorClass = 'bg-amber-50 text-amber-500';
+                                } elseif (str_contains($actLower, 'settings') || str_contains($actLower, 'preference')) {
+                                    $icon = 'sliders';
+                                    $colorClass = 'bg-blue-50 text-blue-500';
+                                } elseif (str_contains($actLower, 'password') || str_contains($actLower, 'security')) {
+                                    $icon = 'shield-check';
+                                    $colorClass = 'bg-red-50 text-red-500';
+                                } elseif (str_contains($actLower, 'profile')) {
+                                    $icon = 'user';
+                                    $colorClass = 'bg-green-50 text-green-500';
+                                }
+                            @endphp
+                            <div class="flex items-start gap-4">
+                                <div class="w-10 h-10 rounded-full {{ $colorClass }} flex items-center justify-center shrink-0">
+                                    <i data-lucide="{{ $icon }}" class="w-5 h-5"></i>
+                                </div>
+                                <div class="space-y-0.5">
+                                    <h4 class="text-sm font-bold text-gray-900">{{ $activity->activity }}</h4>
+                                    <p class="text-[11px] text-gray-400 font-semibold">{{ $activity->details }}</p>
+                                    <p class="text-[10px] text-gray-400 font-medium">{{ $activity->user_name }} • {{ \Carbon\Carbon::parse($activity->created_at)->diffForHumans() }}</p>
+                                </div>
                             </div>
-                            <div class="space-y-0.5">
-                                <h4 class="text-sm font-bold text-gray-900">Successful Login</h4>
-                                <p class="text-xs text-gray-400 font-medium">San Francisco, CA • 2 hours ago</p>
+                        @empty
+                            <div class="text-center py-6 text-gray-400 text-xs font-semibold">
+                                No activity logs recorded yet.
                             </div>
-                        </div>
-
-                        <!-- Activity 2 -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
-                                <i data-lucide="database" class="w-5 h-5"></i>
-                            </div>
-                            <div class="space-y-0.5">
-                                <h4 class="text-sm font-bold text-gray-900">Bulk Expedition Update</h4>
-                                <p class="text-xs text-gray-400 font-medium">Bali Summer Retreats • Yesterday</p>
-                            </div>
-                        </div>
-
-                        <!-- Activity 3 -->
-                        <div class="flex items-start gap-4">
-                            <div class="w-10 h-10 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center shrink-0">
-                                <i data-lucide="shield-check" class="w-5 h-5"></i>
-                            </div>
-                            <div class="space-y-0.5">
-                                <h4 class="text-sm font-bold text-gray-900">Security Audit Performed</h4>
-                                <p class="text-xs text-gray-400 font-medium">Global System Log • 3 days ago</p>
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
 
                     <div class="pt-2 border-t border-gray-50 text-center">
-                        <a href="#" class="text-xs font-black text-gray-400 hover:text-gray-600 uppercase tracking-widest block py-2">View Full Log</a>
+                        <a href="{{ url('admin/settings/activity-logs') }}" class="text-xs font-black text-gray-400 hover:text-gray-600 uppercase tracking-widest block py-2">View Full Log</a>
                     </div>
                 </div>
 
@@ -385,6 +411,7 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
 </script>
 @else
 <div class="space-y-8 pb-12">

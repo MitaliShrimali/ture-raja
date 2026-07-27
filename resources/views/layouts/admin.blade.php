@@ -649,6 +649,91 @@
         });
     </script>
     <x-admin-support-chatbot />
+
+    <!-- Password Update Modal (Global) -->
+    <div id="passwordModal" class="fixed inset-0 hidden items-center justify-center p-4" style="z-index: 999999;">
+        <!-- Background overlay -->
+        <div class="absolute inset-0 transition-opacity" onclick="closePasswordModal()" style="background-color: rgba(17, 24, 39, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);"></div>
+        
+        <!-- Modal panel -->
+        <div class="relative bg-white rounded-[32px] shadow-2xl border border-gray-100 w-full max-w-md overflow-hidden transform transition-all duration-300 scale-100 flex flex-col p-8 z-10">
+            
+            <!-- Header with Key Icon & Close Button -->
+            <div class="flex items-center justify-between pb-6 border-b border-gray-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#FFF5F2] text-[#B23B06] flex items-center justify-center shadow-inner">
+                        <i data-lucide="key-round" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 leading-tight">Change Password</h3>
+                        <p class="text-xs text-gray-400 font-medium mt-0.5">Secure your administrator account</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closePasswordModal()" class="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-600 flex items-center justify-center transition-all focus:outline-none">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            
+            <!-- Form Fields -->
+            <form action="{{ url('admin/profile/change-password') }}" method="POST" class="space-y-5 pt-6">
+                @csrf
+                
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Current Password</label>
+                    <div class="relative">
+                        <input type="password" name="current_password" required placeholder="Enter current password" 
+                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                    </div>
+                </div>
+                
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">New Password</label>
+                    <div class="relative">
+                        <input type="password" name="new_password" required placeholder="Minimum 6 characters" 
+                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                    </div>
+                </div>
+                
+                <div class="space-y-1.5">
+                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Confirm New Password</label>
+                    <div class="relative">
+                        <input type="password" name="new_password_confirmation" required placeholder="Re-type new password" 
+                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="flex gap-3 pt-4 border-t border-gray-50 mt-6 justify-end">
+                    <button type="button" onclick="closePasswordModal()" 
+                        class="px-6 py-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 text-gray-600 text-sm font-bold transition-all focus:outline-none border border-gray-100">
+                        Cancel
+                    </button>
+                    <button type="submit" 
+                        class="px-6 py-3.5 rounded-2xl bg-[#B23B06] hover:bg-[#902F04] text-white text-sm font-bold transition-all shadow-md shadow-[#B23B06]/15 hover:shadow-lg focus:outline-none">
+                        Update Password
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openPasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closePasswordModal() {
+            const modal = document.getElementById('passwordModal');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 
 </html>

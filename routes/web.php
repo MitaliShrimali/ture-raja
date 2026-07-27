@@ -324,6 +324,9 @@ Route::prefix('admin')->group(function () {
     Route::get('/subscribers/toggle/{id}', [AdminController::class, 'toggleSubscriber']);
 
     Route::post('/settings/update', [AdminController::class, 'updateSettings']);
+    Route::post('/profile/change-password', [AdminController::class, 'changePassword']);
+    Route::get('/settings/activity-logs', [AdminController::class, 'activityLogs']);
+
 
     // Durations legacy redirect
     Route::get('/durations', fn() => redirect('/admin/settings/preferences/durations'));
