@@ -342,6 +342,8 @@
                 
                 @if($activePlan && $activePlan->id == $plan->id)
                     <button class="w-full py-3 bg-gray-100 text-gray-400 text-xs font-black rounded-xl uppercase tracking-widest cursor-not-allowed" disabled>Active</button>
+                @elseif($plan->price == 0)
+                    <button class="w-full py-3 bg-gray-100 text-gray-400 text-xs font-black rounded-xl uppercase tracking-widest cursor-not-allowed" disabled>Free Tier</button>
                 @else
                     <a href="{{ route('agent.checkout', ['type' => 'plan', 'id' => $plan->id]) }}" class="w-full py-3 bg-[#ea580c] text-white text-xs font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex justify-center items-center">Upgrade Now</a>
                 @endif
