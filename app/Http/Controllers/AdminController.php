@@ -258,6 +258,15 @@ class AdminController extends Controller
             $query->whereDate('created_at', '<=', $request->to_date);
         }
 
+        if ($request->input('filter') === 'expiring') {
+            $query->where(function($q) {
+                $q->whereNotNull('expiry_date')
+                  ->whereDate('expiry_date', '<=', now()->addDays(7));
+            });
+        } elseif ($request->input('filter') === 'active') {
+            $query->where('status', 'Active');
+        }
+
         $packages = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
         return view('admin.packages', compact('packages', 'search'));
     }

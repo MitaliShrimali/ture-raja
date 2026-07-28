@@ -5,12 +5,15 @@
 @section('content')
 @php
     $activeListings = DB::table('packages')->where('status', 'Active')->count();
-    $avgPrice = DB::table('packages')->where('status', 'Active')->avg('price') ?: 24000;
+    $avgPrice = DB::table('packages')->avg('price') ?: 0;
     $avgPriceFormatted = $avgPrice >= 1000 ? '₹' . number_format($avgPrice / 1000, 1) . 'k' : '₹' . number_format($avgPrice);
     
-    $expiringSoon = DB::table('packages')->where('status', 'Active')->where('created_at', '<', now()->subMonths(3))->count() ?: 8;
+    $expiringSoon = DB::table('packages')
+        ->whereNotNull('expiry_date')
+        ->whereDate('expiry_date', '<=', now()->addDays(7))
+        ->count();
     
-    $totalRevenue = DB::table('payments')->where('status', 'Completed')->sum('amount') ?: 420800;
+    $totalRevenue = DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount') ?: 0;
     $totalRevenueFormatted = $totalRevenue >= 100000 ? '₹' . number_format($totalRevenue / 1000, 1) . 'k' : '₹' . number_format($totalRevenue);
 @endphp
 
@@ -32,34 +35,32 @@
     <!-- Metrics Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <!-- Active Listings -->
-        <div class="bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4">
+        <a href="{{ url('/admin/packages?filter=active') }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
             <div class="flex items-center justify-between">
                 <p class="text-xs font-black text-muted-text uppercase tracking-widest">Active Listings</p>
-                <span class="text-xs font-black text-green-500 bg-green-50 px-2.5 py-1 rounded-lg">+12%</span>
             </div>
             <h3 class="text-4xl font-black font-syne text-foreground">{{ $activeListings }}</h3>
-        </div>
+        </a>
 
         <!-- Avg. Package Price -->
-        <div class="bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4">
+        <a href="{{ url('/admin/packages') }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
             <div class="flex items-center justify-between">
                 <p class="text-xs font-black text-muted-text uppercase tracking-widest">Avg. Package Price</p>
-                <span class="text-xs font-black text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg">Stable</span>
             </div>
             <h3 class="text-4xl font-black font-syne text-foreground">{{ $avgPriceFormatted }}</h3>
-        </div>
+        </a>
 
         <!-- Expiring Soon -->
-        <div class="bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4">
+        <a href="{{ url('/admin/packages?filter=expiring') }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
             <div class="flex items-center justify-between">
                 <p class="text-xs font-black text-muted-text uppercase tracking-widest">Expiring Soon</p>
                 <span class="text-xs font-black text-red-500 bg-red-50 px-2.5 py-1 rounded-lg">Critical</span>
             </div>
             <h3 class="text-4xl font-black font-syne text-foreground">{{ str_pad($expiringSoon, 2, '0', STR_PAD_LEFT) }}</h3>
-        </div>
+        </a>
 
         <!-- Total Revenue (Primary Dark Orange Filled Card) -->
-        <div class="p-8 rounded-[32px] shadow-premium space-y-4 relative overflow-hidden text-white" style="background-color: #af3a03;">
+        <a href="{{ url('/admin/payments') }}" class="block p-8 rounded-[32px] shadow-premium space-y-4 relative overflow-hidden text-white hover:opacity-90 transition-all" style="background-color: #af3a03;">
             <div class="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4">
                 <i data-lucide="ticket" class="w-32 h-32"></i>
             </div>
@@ -67,7 +68,7 @@
                 <p class="text-xs font-black uppercase tracking-widest opacity-80">Total Revenue</p>
             </div>
             <h3 class="text-4xl font-white font-syne">{{ $totalRevenueFormatted }}</h3>
-        </div>
+        </a>
     </div>
 
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
