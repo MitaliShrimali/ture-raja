@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="space-y-10 pb-12" x-data="{ 
-    tier: '{{ $agent->tier ?? 'Premium' }}', 
-    status: '{{ $agent->status ?? 'Active' }}',
+    tier: '{{ $agent->tier === 'Customise' ? 'Customise' : ($agent->plan_name ?? 'Basic') }}', 
+    status: '{{ (strtolower($agent->status) === 'active' || $agent->status == 1) ? 'Active' : 'Inactive' }}',
     showCustomPlanModal: false, 
     customAgentSearch: '{{ $agent->name }}', 
     customPlanTier: '{{ $agent->plan_name ?? '' }}', 
