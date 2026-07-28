@@ -1195,6 +1195,10 @@ class AdminController extends Controller
             }
         }
 
+        if (!$plan_id) {
+            $plan_id = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
+        }
+
         DB::table('agents')->insert([
             'name' => $request->name,
             'logo' => $logoUrl,
@@ -1312,6 +1316,10 @@ class AdminController extends Controller
             if ($planRecord) {
                 $plan_id = $planRecord->id;
             }
+        }
+
+        if (!$plan_id) {
+            $plan_id = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
         }
 
         DB::table('agents')->where('id', $request->id)->update([

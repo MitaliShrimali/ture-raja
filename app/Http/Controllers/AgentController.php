@@ -80,8 +80,10 @@ class AgentController extends Controller
             'status'      => 1,
             'pending'     => 1,
             'approved'    => 0,
-            'plan_id'     => DB::table('plans')->where('price', 0)->value('id') ?? 5, // Dynamic free plan
+            'plan_id'     => DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5, // Dynamic free plan
             'plan_status' => 'Active',
+            'service_guaranteed' => 0,
+            'service_guaranteed_expires_at' => null,
             'created_at'  => now(),
             'updated_at'  => now(),
         ];
@@ -321,7 +323,7 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         if ($agentId) {
             $agent = DB::table('agents')->where('id', $agentId)->first();
-            $freePlanId = DB::table('plans')->where('price', 0)->value('id') ?? 5;
+            $freePlanId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
             $plan = DB::table('plans')->where('id', $agent->plan_id ?? $freePlanId)->first();
             $limit = $plan ? $plan->package_limit : 1;
             
@@ -558,7 +560,7 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         if ($agentId) {
             $agent = DB::table('agents')->where('id', $agentId)->first();
-            $freePlanId = DB::table('plans')->where('price', 0)->value('id') ?? 5;
+            $freePlanId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
             $plan = DB::table('plans')->where('id', $agent->plan_id ?? $freePlanId)->first();
             $limit = $plan ? $plan->package_limit : 1;
             
@@ -1438,7 +1440,7 @@ class AgentController extends Controller
         $agent = DB::table('agents')->where('id', $agentId)->first();
         
         $activePlan = null;
-        $freePlanId = DB::table('plans')->where('price', 0)->value('id') ?? 5;
+        $freePlanId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
         if ($agent && $agent->plan_id) {
             $activePlan = DB::table('plans')->where('id', $agent->plan_id)->first();
         } else {
