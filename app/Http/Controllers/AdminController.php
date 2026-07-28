@@ -54,18 +54,13 @@ class AdminController extends Controller
                 })->toArray()
         ];
 
-        // Fallback recentActivities if database is fresh
-        if (empty($data['recentActivities'])) {
-            $data['recentActivities'] = [
-                ['user' => 'Rahul Sharma', 'action' => 'New agent registration', 'status' => 'pending', 'time' => '2 MINS AGO'],
-                ['user' => 'Global Travels', 'action' => 'Package approved: Bali Getaway', 'status' => 'completed', 'time' => '15 MINS AGO'],
-                ['user' => 'Anita Desai', 'action' => 'Subscription upgraded to Premium', 'status' => 'completed', 'time' => '1 HOUR AGO'],
-            ];
-        }
+        // Fallback recentActivities removed as per requirement
 
-        // Fetch recent payments for dashboard table
-        $recentPayments = DB::table('payments')
-            ->orderBy('id', 'desc')
+        // Fetch recent registered agents for dashboard table
+        $recentAgents = DB::table('agents')
+            ->leftJoin('plans', 'agents.plan_id', '=', 'plans.id')
+            ->select('agents.*', 'plans.name as plan_name')
+            ->orderBy('agents.id', 'desc')
             ->limit(5)
             ->get();
 
@@ -78,7 +73,7 @@ class AdminController extends Controller
 
         $pendingPackagesCount = DB::table('packages')->where('status', 'Draft')->count();
 
-        return view('admin.dashboard', compact('data', 'recentPayments', 'pendingPackages', 'pendingPackagesCount'));
+        return view('admin.dashboard', compact('data', 'recentAgents', 'pendingPackages', 'pendingPackagesCount'));
     }
 
     // ==========================================

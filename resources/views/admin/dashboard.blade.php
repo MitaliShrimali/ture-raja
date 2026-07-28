@@ -43,10 +43,10 @@
         <div class="lg:col-span-2 bg-white rounded-[32px] shadow-soft p-8 space-y-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-2xl font-black text-foreground">Recent Subscriptions</h3>
-                    <p class="text-sm text-muted-text font-medium">Tracking the latest 5 premium activations</p>
+                    <h3 class="text-2xl font-black text-foreground">Recent Registered Agents</h3>
+                    <p class="text-sm text-muted-text font-medium">Tracking the latest 5 agent registrations</p>
                 </div>
-                <a href="{{ url('/admin/payments') }}" class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
+                <a href="{{ url('/admin/registered-agents') }}" class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
                     View All <i data-lucide="arrow-up-right" size="14"></i>
                 </a>
             </div>
@@ -55,38 +55,41 @@
                 <table class="w-full text-left">
                     <thead>
                         <tr class="border-b border-border-soft">
-                            <th class="pb-4 text-[10px] font-black text-muted-text uppercase tracking-widest">User / Agent</th>
+                            <th class="pb-4 text-[10px] font-black text-muted-text uppercase tracking-widest">Agent</th>
+                            <th class="pb-4 text-[10px] font-black text-muted-text uppercase tracking-widest">Phone</th>
                             <th class="pb-4 text-[10px] font-black text-muted-text uppercase tracking-widest">Plan Type</th>
                             <th class="pb-4 text-[10px] font-black text-muted-text uppercase tracking-widest">Status</th>
-                            <th class="pb-4 text-[10px] font-black text-muted-text uppercase tracking-widest">Amount</th>
                             <th class="pb-4 text-[10px] font-black text-muted-text uppercase tracking-widest">Date</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-border-soft">
-                        @forelse($recentPayments as $payment)
+                        @forelse($recentAgents as $agent)
                             <tr class="group hover:bg-gray-50/50 transition-colors">
                                 <td class="py-5">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-muted-text uppercase">
-                                            {{ substr($payment->user_name, 0, 1) }}
+                                            {{ substr($agent->name, 0, 1) }}
                                         </div>
                                         <div>
-                                            <p class="text-sm font-bold text-foreground">{{ $payment->user_name }}</p>
-                                            <p class="text-[10px] text-muted-text font-medium">{{ $payment->email }}</p>
+                                            <p class="text-sm font-bold text-foreground">{{ $agent->name }}</p>
+                                            <p class="text-[10px] text-muted-text font-medium">{{ $agent->email }}</p>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="py-5">
+                                    <p class="text-xs text-muted-text font-bold">{{ $agent->phone }}</p>
+                                </td>
+                                <td class="py-5">
                                     <span class="px-3 py-1 rounded-full bg-primary/5 text-primary text-[10px] font-black uppercase tracking-wider">
-                                        {{ $payment->plan_type }}
+                                        {{ $agent->plan_name ?? 'Basic' }}
                                     </span>
                                 </td>
                                 <td class="py-5">
                                     @php
                                         $statusClass = 'text-red-500';
                                         $statusIcon = 'x-circle';
-                                        $lowerStatus = strtolower($payment->status);
-                                        if ($lowerStatus === 'success' || $lowerStatus === 'suss' || $lowerStatus === 'completed') {
+                                        $lowerStatus = strtolower($agent->status ?? 'pending');
+                                        if ($lowerStatus === 'active' || $lowerStatus === 'approved') {
                                             $statusClass = 'text-green-500';
                                             $statusIcon = 'check-circle-2';
                                         } elseif ($lowerStatus === 'pending') {
@@ -96,19 +99,16 @@
                                     @endphp
                                     <div class="flex items-center gap-2 {{ $statusClass }}">
                                         <i data-lucide="{{ $statusIcon }}" size="14"></i>
-                                        <span class="text-xs font-bold">{{ $payment->status }}</span>
+                                        <span class="text-xs font-bold">{{ ucfirst($agent->status ?? 'Pending') }}</span>
                                     </div>
                                 </td>
                                 <td class="py-5">
-                                    <p class="text-sm font-bold text-foreground">₹{{ number_format($payment->amount, 2) }}</p>
-                                </td>
-                                <td class="py-5">
-                                    <p class="text-xs text-muted-text font-medium">{{ date('M d, Y', strtotime($payment->date)) }}</p>
+                                    <p class="text-xs text-muted-text font-medium">{{ date('M d, Y', strtotime($agent->created_at)) }}</p>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="py-10 text-center text-sm font-bold text-muted-text">No subscription transactions found.</td>
+                                <td colspan="5" class="py-10 text-center text-sm font-bold text-muted-text">No recent agent registrations found.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -124,7 +124,7 @@
             </div>
 
             <div class="space-y-6">
-                @foreach($data['recentActivities'] as $idx => $activity)
+                @forelse($data['recentActivities'] as $idx => $activity)
                     <div class="flex gap-4 relative">
                         @if($idx !== count($data['recentActivities']) - 1)
                             <div class="absolute left-5 top-10 bottom-0 w-[1px] bg-border-soft"></div>
@@ -141,7 +141,9 @@
                             </p>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <p class="text-sm font-medium text-muted-text text-center py-4">No recent activities found.</p>
+                @endforelse
             </div>
 
             <a href="{{ url('/admin/settings/activity-logs') }}" class="w-full py-4 rounded-2xl bg-gray-50 text-xs font-black text-muted-text uppercase tracking-widest hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
