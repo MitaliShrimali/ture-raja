@@ -128,7 +128,7 @@
             { title: '', desc: '', duration: '' }
         ],
         addDay() {
-            this.days.push({ title: '', desc: '', duration: '3 Hours' });
+            this.days.push({ title: '', desc: '' });
         },
         removeDay(index) {
             if (this.days.length > 1) {
@@ -663,7 +663,7 @@
 
                     <!-- Brochure card  ~33% -->
                     <div
-                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="!itineraryContent">
+                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="brochureName || !itineraryContent">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
                                 <i data-lucide="file-text" size="16" class="text-primary"></i>
@@ -1234,7 +1234,12 @@
                                                 class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 <button type="button" @click="removeGalleryPhoto(idx)"
                                                     class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
-                                                    <i data-lucide="trash-2" size="14"></i>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+</svg>
                                                 </button>
                                             </div>
                                         </div>
@@ -1277,8 +1282,9 @@
         </form>
 
         <!-- Gallery Selection Modal -->
-        <div x-show="isGalleryModalOpen"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
+        <template x-teleport="body">
+            <div x-show="isGalleryModalOpen"
+                class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
             <div class="bg-white rounded-[32px] w-full max-w-4xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden"
                 @click.away="closeGalleryModal()">
                 <div class="flex items-center justify-between p-6 border-b border-gray-100">
@@ -1337,7 +1343,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+                </div>
+            </div>
+        </template>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>

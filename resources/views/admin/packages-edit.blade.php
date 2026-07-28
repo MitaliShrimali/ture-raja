@@ -77,6 +77,7 @@
         ];
     }, $galleryUrls))) }},
         brochureName: {{ json_encode($pkg->brochure ? basename($pkg->brochure) : '') }},
+        brochureUrl: {{ json_encode($pkg->brochure ? asset($pkg->brochure) : '') }},
         itineraryContent: {{ json_encode(strip_tags($pkg->editorial_itinerary ?? '') ? trim(strip_tags($pkg->editorial_itinerary)) : '') }},
         inclusions: {{ json_encode($included) }},
         exclusions: {{ json_encode($excluded) }},
@@ -166,7 +167,7 @@
         },
         days: {{ (is_array($itinerary) && count($itinerary) > 0) ? json_encode($itinerary) : json_encode([['title' => 'Day 1', 'desc' => 'Arrival & check-in', 'duration' => '3 Hours']]) }},
         addDay() {
-            this.days.push({ title: '', desc: '', duration: '3 Hours' });
+            this.days.push({ title: '', desc: '' });
         },
         removeDay(index) {
             if (this.days.length > 1) {
@@ -728,7 +729,7 @@
 
                     <!-- Brochure card  ~40% -->
                     <div
-                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="!itineraryContent">
+                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="brochureName || !itineraryContent">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
                                 <i data-lucide="file-text" size="16" class="text-[#e85d26]"></i>
@@ -858,7 +859,7 @@
                                     <div class="flex items-center justify-between">
                                         <div class="flex items-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2"
+                                                viewBox="0 0 24 24" fill="none" stroke="#F0642F" stroke-width="2"
                                                 stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M2 4v16" />
                                                 <path d="M2 8h20" />
@@ -942,7 +943,7 @@
                                                 class="flex-1 bg-white border border-gray-100 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-orange-200" />
                                             <button type="button"
                                                 @click="if(newHotelName.trim()){ hotels.push({ name: newHotelName.trim(), room: newHotelRoom.trim(), image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100' }); newHotelName=''; newHotelRoom=''; }"
-                                                class="w-10 h-10 shrink-0 text-white rounded-xl text-sm font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity"
+                                                class="w-10 h-10 shrink-0 text-white rounded-xl text-sm font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity bg-primary"
                                                 style="background-color: #e85d26 !important; color: white !important;">+</button>
                                         </div>
                                     </div>
@@ -1277,7 +1278,12 @@
                                             class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <button type="button" @click="removeGalleryPhoto(idx)"
                                                 class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
-                                                <i data-lucide="trash-2" size="14"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+</svg>
                                             </button>
                                         </div>
                                     </div>

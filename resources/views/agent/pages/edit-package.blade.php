@@ -77,6 +77,7 @@
         ];
     }, $galleryUrls))) }},
         brochureName: {{ json_encode($pkg->brochure ? basename($pkg->brochure) : '') }},
+        brochureUrl: {{ json_encode($pkg->brochure ? asset($pkg->brochure) : '') }},
         itineraryContent: {{ json_encode(strip_tags($pkg->editorial_itinerary ?? '') ? trim(strip_tags($pkg->editorial_itinerary)) : '') }},
         inclusions: {{ json_encode($included) }},
         exclusions: {{ json_encode($excluded) }},
@@ -121,6 +122,7 @@
         newHotelName: '',
         newHotelRoom: '',
         newHotelImage: '',
+        editingHotelIndex: null,
         validity_from: '',
         validity_to: '',
         toPicker: null,
@@ -179,7 +181,7 @@
         },
         days: {{ (is_array($itinerary) && count($itinerary) > 0) ? json_encode($itinerary) : json_encode([['title' => 'Day 1', 'desc' => 'Arrival & check-in', 'duration' => '3 Hours']]) }},
         addDay() {
-            this.days.push({ title: '', desc: '', duration: '3 Hours' });
+            this.days.push({ title: '', desc: '' });
         },
         removeDay(index) {
             if (this.days.length > 1) {
@@ -250,13 +252,10 @@
             this.closeGalleryModal();
         },
         previewPdf() {
-            if (this.brochureName) {
-                const existing = document.getElementById('existing-brochure-input');
-                if (this.$refs.brochureInput && this.$refs.brochureInput.files && this.$refs.brochureInput.files[0]) {
-                    window.open(URL.createObjectURL(this.$refs.brochureInput.files[0]), '_blank');
-                } else if (existing && existing.value) {
-                    window.open('{{ asset('') }}' + (existing.value.startsWith('/') ? existing.value.substring(1) : existing.value), '_blank');
-                }
+            if (this.$refs.brochureInput && this.$refs.brochureInput.files && this.$refs.brochureInput.files[0]) {
+                window.open(URL.createObjectURL(this.$refs.brochureInput.files[0]), '_blank');
+            } else if (this.brochureUrl) {
+                window.open(this.brochureUrl, '_blank');
             }
         },
         clearPdf() {
@@ -759,7 +758,7 @@
 
                     <!-- Brochure card  ~33% -->
                     <div
-                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="!itineraryContent">
+                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="brochureName || !itineraryContent">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
                                 <i data-lucide="file-text" size="16" class="text-primary"></i>
@@ -903,18 +902,58 @@
                                             <div
                                                 class="bg-white rounded-xl p-3 flex items-center justify-between shadow-sm">
                                                 <input type="hidden" name="hotels[]" :value="JSON.stringify(ht)">
-                                                <div class="flex items-center gap-3">
+                                                <div class="flex items-center gap-3 flex-1">
                                                     <img :src="ht.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'"
                                                         class="w-11 h-11 rounded-xl object-cover" />
-                                                    <div>
-                                                        <p class="text-xs font-bold text-gray-800" x-text="ht.name"></p>
-                                                        <p class="text-[10px] text-gray-400 font-medium"
-                                                            x-html="ht.room || 'Standard Room'"></p>
-                                                        <input type="hidden" name="hotels[]" :value="JSON.stringify(ht)">
+                                                    <div class="flex-1">
+                                                        <template x-if="editingHotelIndex !== idx">
+                                                            <div>
+                                                                <p class="text-xs font-bold text-gray-800 cursor-pointer hover:underline"
+                                                                    @click="editingHotelIndex = idx" x-text="ht.name"></p>
+                                                                <p class="text-[10px] text-gray-400 font-medium cursor-pointer hover:underline"
+                                                                    @click="editingHotelIndex = idx"
+                                                                    x-html="ht.room || 'Standard Room'"></p>
+                                                            </div>
+                                                        </template>
+                                                        <template x-if="editingHotelIndex === idx">
+                                                            <div class="space-y-1 pr-4">
+                                                                <input type="text" x-model="ht.name"
+                                                                    class="w-full bg-gray-50 border border-gray-100 rounded-lg py-1 px-2 text-xs outline-none focus:ring-1 focus:ring-primary/20"
+                                                                    @keydown.enter.prevent="editingHotelIndex = null" />
+                                                                <input type="text" x-model="ht.room"
+                                                                    class="w-full bg-gray-50 border border-gray-100 rounded-lg py-1 px-2 text-[10px] outline-none focus:ring-1 focus:ring-primary/20"
+                                                                    @keydown.enter.prevent="editingHotelIndex = null" />
+                                                            </div>
+                                                        </template>
                                                     </div>
                                                 </div>
-                                                <button type="button" @click="hotels.splice(idx, 1)"
-                                                    class="text-gray-300 hover:text-red-500 ml-2 text-lg leading-none">&times;</button>
+                                                <div class="flex items-center gap-1.5 shrink-0 ml-2">
+                                                    <button type="button"
+                                                        @click="editingHotelIndex = (editingHotelIndex === idx ? null : idx)"
+                                                        class="text-gray-400 hover:text-blue-500 transition-colors"
+                                                        title="Edit">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M12 20h9"></path>
+                                                            <path
+                                                                d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                    <button type="button" @click="hotels.splice(idx, 1)"
+                                                        class="text-gray-400 hover:text-red-500 transition-colors"
+                                                        title="Delete">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                                            <path
+                                                                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                                            </path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </template>
                                         <template x-if="hotels.length === 0">
@@ -979,9 +1018,7 @@
                                             <th
                                                 class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                                 Activity</th>
-                                            <th
-                                                class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                                Duration</th>
+                                            
                                             <th
                                                 class="py-4 px-6 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">
                                                 Actions</th>
@@ -1002,22 +1039,17 @@
                                                         class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm"
                                                         placeholder="e.g. Historical Guided Tour" />
                                                 </td>
-                                                <td class="py-4 px-6">
-                                                    <input type="text" name="itinerary_durations[]" x-model="day.duration"
-                                                        class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm"
-                                                        placeholder="e.g. 3 Hours" />
-                                                </td>
+                                                
                                                 <td class="py-4 px-6 text-right">
                                                     <button type="button" @click="removeDay(index)"
-                                                        class="p-1.5 text-gray-300 hover:text-red-400 transition-all"
-                                                        x-show="days.length > 1" title="Remove">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                            viewBox="0 0 24 24" fill="currentColor">
-                                                            <circle cx="12" cy="5" r="1.5" />
-                                                            <circle cx="12" cy="12" r="1.5" />
-                                                            <circle cx="12" cy="19" r="1.5" />
-                                                        </svg>
-                                                    </button>
+            class="p-1.5 text-gray-300 hover:text-red-400 transition-all" x-show="days.length > 1" title="Remove">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+</svg>
+        </button>
                                                 </td>
                                             </tr>
                                         </template>
@@ -1044,8 +1076,22 @@
                                                 style="background-color: #2f9e44 !important;"></span>
                                             <span x-text="item" class="flex-1"></span>
                                             <input type="hidden" name="included[]" :value="item">
-                                            <button type="button" @click="removeInclusion(i)"
-                                                class="text-gray-300 hover:text-red-400 transition-all text-xs">×</button>
+                                            <button type="button" @click="newInclusion = item; removeInclusion(i)"
+            class="text-blue-400 hover:text-blue-600 transition-all text-xs px-1" title="Edit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20h9"></path>
+    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+</svg>
+        </button>
+        <button type="button" @click="removeInclusion(i)"
+            class="text-red-400 hover:text-red-600 transition-all text-xs px-1" title="Delete">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+</svg>
+        </button>
                                         </li>
                                     </template>
                                 </ul>
@@ -1075,8 +1121,22 @@
                                                 style="background-color: #e03131 !important;"></span>
                                             <span x-text="item" class="flex-1"></span>
                                             <input type="hidden" name="excluded[]" :value="item">
-                                            <button type="button" @click="removeExclusion(i)"
-                                                class="text-gray-300 hover:text-red-400 transition-all text-xs">×</button>
+                                            <button type="button" @click="newExclusion = item; removeExclusion(i)"
+            class="text-blue-400 hover:text-blue-600 transition-all text-xs px-1" title="Edit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20h9"></path>
+    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+</svg>
+        </button>
+        <button type="button" @click="removeExclusion(i)"
+            class="text-red-400 hover:text-red-600 transition-all text-xs px-1" title="Delete">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+</svg>
+        </button>
                                         </li>
                                     </template>
                                 </ul>
@@ -1204,7 +1264,12 @@
                                             class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <button type="button" @click="removeGalleryPhoto(idx)"
                                                 class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
-                                                <i data-lucide="trash-2" size="14"></i>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="3 6 5 6 21 6"></polyline>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    <line x1="10" y1="11" x2="10" y2="17"></line>
+    <line x1="14" y1="11" x2="14" y2="17"></line>
+</svg>
                                             </button>
                                         </div>
                                     </div>
@@ -1231,23 +1296,13 @@
 
             <!-- Footer Actions Panel -->
             <div class="flex items-center justify-between pt-8 border-t border-gray-100 mt-8">
-                <button type="button" x-show="step === 2" @click="step = 1"
-                    class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center gap-2">
-                    <i data-lucide="chevron-left" size="14"></i> Previous
-                </button>
+                <div></div>
                 <div class="flex items-center gap-3 ml-auto">
                     <a href="{{ route('agent.my-packages') }}"
                         class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all">
                         Discard
                     </a>
-                    <button type="button"
-                        @click="if (document.getElementById('packageMainForm').querySelector('[name=title]').reportValidity() && document.getElementById('packageMainForm').querySelector('[name=price]').reportValidity()) step = 2;"
-                        x-show="step === 1"
-                        class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20"
-                        style="background-color: #e85d26 !important; color: #ffffff !important;">
-                        Save & Next
-                    </button>
-                    <button type="submit" x-show="step === 2"
+                    <button type="submit"
                         class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20"
                         style="background-color: #e85d26 !important; color: #ffffff !important;">
                         Save And Exit
