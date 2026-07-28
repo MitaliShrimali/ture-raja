@@ -248,6 +248,24 @@
                 });
             }
             this.closeGalleryModal();
+        },
+        previewPdf() {
+            if (this.brochureName) {
+                const existing = document.getElementById('existing-brochure-input');
+                if (this.$refs.brochureInput && this.$refs.brochureInput.files && this.$refs.brochureInput.files[0]) {
+                    window.open(URL.createObjectURL(this.$refs.brochureInput.files[0]), '_blank');
+                } else if (existing && existing.value) {
+                    window.open('{{ asset('') }}' + (existing.value.startsWith('/') ? existing.value.substring(1) : existing.value), '_blank');
+                }
+            }
+        },
+        clearPdf() {
+            this.brochureName = '';
+            if (this.$refs.brochureInput) this.$refs.brochureInput.value = '';
+            const existing = document.getElementById('existing-brochure-input');
+            if (existing) {
+                existing.value = '';
+            }
         }
     }">
         <!-- Custom Style Tags for Step Track and Segmented Controls -->
@@ -1077,54 +1095,6 @@
                     <!-- Right 1 Column -->
                     <div class="space-y-8">
 
-                        <!-- Pricing & Dates -->
-                        <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
-                            <h4 class="text-lg font-black text-gray-400 uppercase tracking-widest pl-1">Pricing & Dates</h4>
-
-                            <div class="space-y-4">
-                                <!-- Calculated INR Price -->
-                                <div class="space-y-1">
-                                    <label
-                                        class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Calculated
-                                        Price in INR (₹)</label>
-                                    <div class="relative">
-                                        <span
-                                            class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">₹</span>
-                                        <input type="number" step="0.01" x-model="inrPrice" @input="updatePrice(false)"
-                                            placeholder="55000"
-                                            class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none transition-all font-bold text-foreground text-sm" />
-                                    </div>
-                                </div>
-
-                                <!-- Old Price -->
-                                <div class="space-y-1">
-                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Old
-                                        Price (Strike-through)</label>
-                                    <div class="relative">
-                                        <span
-                                            class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400"
-                                            x-text="currency"></span>
-                                        <input type="number" step="0.01" name="old_price" x-model="old_price"
-                                            placeholder="65000"
-                                            class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none transition-all font-bold text-foreground text-sm" />
-                                    </div>
-                                </div>
-
-                                <!-- Start Date -->
-                                <div class="space-y-1">
-                                    <label
-                                        class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Package
-                                        Start Date</label>
-                                    <div class="relative">
-                                        <i data-lucide="calendar" size="16"
-                                            class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                        <input type="text" placeholder="12 October, 2026"
-                                            class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-14 pr-6 outline-none transition-all font-bold text-foreground text-sm" />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Essential Amenities -->
                         <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm transition-all duration-300" x-show="!brochureName">
                             <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Essential Amenities
@@ -1287,8 +1257,9 @@
         </form>
 
         <!-- Gallery Selection Modal -->
-        <div x-show="isGalleryModalOpen"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
+        <template x-teleport="body">
+            <div x-show="isGalleryModalOpen"
+                class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
             <div class="bg-white rounded-[32px] w-full max-w-4xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden"
                 @click.away="closeGalleryModal()">
                 <div class="flex items-center justify-between p-6 border-b border-gray-100">
@@ -1347,7 +1318,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </template>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.8.2/tinymce.min.js" referrerpolicy="origin"></script>

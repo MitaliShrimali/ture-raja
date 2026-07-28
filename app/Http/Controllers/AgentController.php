@@ -278,20 +278,7 @@ class AgentController extends Controller
             return redirect()->route('agent.login')->with('error', 'Please log in.');
         }
 
-        if (DB::table('branches')->where('agent_id', $agentId)->count() == 0) {
-            DB::table('branches')->insert([
-                [
-                    'agent_id' => $agentId,
-                    'agency_name' => 'Miths Holidays',
-                    'phone' => '+91 7383682183',
-                    'location' => 'Rajkot, Gujarat',
-                    'address' => '101 GF Nr Trikon Bagh Rajkot - Gujarat',
-                    'status' => 'Online',
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]
-            ]);
-        }
+
 
         $branches = DB::table('branches')->where('agent_id', $agentId)->orderBy('created_at', 'desc')->get();
 

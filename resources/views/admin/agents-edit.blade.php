@@ -263,13 +263,13 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="facebook" class="w-4 h-4"></i>
+                                    <i class="fab fa-facebook text-base"></i>
                                 </div>
                                 <input type="text" name="facebook" value="{{ $agent->facebook }}" placeholder="Facebook URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="twitter" class="w-4 h-4"></i>
+                                    <i class="fab fa-twitter text-base"></i>
                                 </div>
                                 <input type="text" name="twitter" value="{{ $agent->twitter }}" placeholder="Twitter URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
@@ -278,13 +278,13 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="linkedin" class="w-4 h-4"></i>
+                                    <i class="fab fa-linkedin text-base"></i>
                                 </div>
                                 <input type="text" name="linkedin" value="{{ $agent->linkedin }}" placeholder="LinkedIn URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="instagram" class="w-4 h-4"></i>
+                                    <i class="fab fa-instagram text-base"></i>
                                 </div>
                                 <input type="text" name="instagram" value="{{ $agent->instagram }}" placeholder="Instagram URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
