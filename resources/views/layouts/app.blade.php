@@ -8,6 +8,7 @@
     <meta name="description"
         content="@yield('description', 'Discover curated luxury travel packages with TourRaja. Your premium global travel partner.')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" href="{{ \Illuminate\Support\Facades\DB::table('settings')->where('key', 'favicon')->value('value') ?? asset('favicon.ico') }}">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

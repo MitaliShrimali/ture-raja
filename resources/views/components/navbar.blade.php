@@ -104,7 +104,7 @@
                 @endif
             </div>
             
-            @if(Auth::check())
+            @if(Auth::check() && Auth::user()->role === 'Customer')
                 <!-- Wishlist (Logged In) -->
                 <div class="relative hidden lg:block" x-data="{ open: false }" @click.away="open = false">
                     <button 
@@ -160,7 +160,7 @@
                 </div>
             @endif
 
-            @if(Auth::check())
+            @if(Auth::check() && Auth::user()->role === 'Customer')
                 <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2">
                     @if(Auth::user()->avatar)
                         <img src="{{ asset(Auth::user()->avatar) }}" class="w-full h-full rounded-full object-cover">
@@ -174,7 +174,7 @@
 
             <!-- Mobile Wishlist Icon -->
             <button 
-                @click="{{ Auth::check() ? 'window.location.href=\''.url('/profile').'\'' : '$dispatch(\'open-login-modal\')' }}"
+                @click="{{ (Auth::check() && Auth::user()->role === 'Customer') ? 'window.location.href=\''.url('/profile').'\'' : '$dispatch(\'open-login-modal\')' }}"
                 class="hidden relative flex items-center justify-center text-primary"
             >
                 <i data-lucide="heart" size="20" class=""></i>

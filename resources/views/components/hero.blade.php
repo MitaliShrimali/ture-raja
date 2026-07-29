@@ -2,9 +2,30 @@
 @php use Illuminate\Support\Str; @endphp
 
 <style>
-  .pure-white-placeholder::placeholder {
-    color: #ffffff !important;
+  .orange-placeholder::placeholder {
+    color: #e85d26 !important;
     opacity: 1 !important;
+  }
+
+  @media (min-width: 768px) {
+    .hero-search-divider {
+      position: relative;
+    }
+    .hero-search-divider::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 60%;
+      background-color: #e85d26;
+    }
+  }
+  @media (max-width: 767px) {
+    .hero-search-divider {
+      border-bottom: 1px solid #e85d26;
+    }
   }
 
   @media (max-width: 767px) {
@@ -107,7 +128,7 @@
 
   {{-- ── Main Hero Content (Centered Text + Search Form) ── --}}
   <div
-    class="absolute inset-0 z-20 flex flex-col items-center justify-end text-center px-4 md:px-8 pb-10 md:pb-14 hero-content-wrapper">
+    class="absolute inset-0 z-20 flex flex-col items-center justify-end text-center px-4 md:px-8 pb-4 md:pb-6 hero-content-wrapper">
 
     {{-- Main Headline --}}
     <h1 class="font-black leading-snug w-full mb-2 md:mb-4 hero-mobile-title"
@@ -118,29 +139,28 @@
     <div class="w-full max-w-7xl">
       <form action="{{ route('search') }}" method="GET">
         <div
-          style="background:rgba(255,255,255,0.3); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.35); border-radius:8px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);"
-          class="flex flex-col md:flex-row items-center gap-0">
+          style="background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid #e85d26; border-radius:8px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.15);"
+          class="flex flex-col md:flex-row items-center gap-0 overflow-hidden">
 
           {{-- Destination Field --}}
-          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4"
-            style="border-right: 1px solid rgba(255,255,255,0.2);">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 hero-search-divider">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2.5">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg> 
             <input type="text" name="destination" placeholder="Where You Go !!!"
-              class="bg-transparent border-none focus:ring-0 text-white placeholder-white text-[14px] font-medium outline-none w-full pure-white-placeholder"
+              class="bg-transparent border-none focus:ring-0 text-[#e85d26] placeholder-[#e85d26] text-[15px] font-bold outline-none w-full orange-placeholder"
               style="box-shadow: none;" value="{{ request('destination') }}">
           </div>
 
           {{-- Agent/City Field --}}
           <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2.5">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
             <input type="text" name="from_city" placeholder="Search agent from your city/near by location"
-              class="bg-transparent border-none focus:ring-0 text-white placeholder-white text-[14px] font-medium outline-none w-full pure-white-placeholder"
+              class="bg-transparent border-none focus:ring-0 text-[#e85d26] placeholder-[#e85d26] text-[15px] font-bold outline-none w-full orange-placeholder"
               style="box-shadow: none;" value="{{ request('from_city') }}">
           </div>
 
@@ -264,7 +284,7 @@
 </section>
 
 {{-- ── Popular Transits (below hero, white bg) ── --}}
-<section id="popular-transits-section" class="bg-white pt-0 pb-4 md:pt-2 md:pb-6">
+<section id="popular-transits-section" class="bg-white pt-8 pb-4 md:pt-12 md:pb-6">
   <div class="container-custom">
     <h2 class="font-black text-foreground tracking-tight font-heading mb-2 md:mb-4 text-center"
       style="font-size: 28px;">Popular Transits</h2>

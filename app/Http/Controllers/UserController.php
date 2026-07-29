@@ -431,6 +431,10 @@ class UserController extends Controller
 
     public function profile()
     {
+        if (Auth::check() && Auth::user()->role !== 'Customer') {
+            return redirect('/');
+        }
+
         $userId = $this->userId();
 
         try {
