@@ -44,6 +44,29 @@
       right: 16px !important;
     }
   }
+
+  .hero-ad-container {
+    width: 375px;
+    height: 98px;
+    margin: 0 auto;
+  }
+  @media (max-width: 380px) {
+    .hero-ad-container {
+      width: 100%;
+    }
+  }
+  @media (min-width: 768px) {
+    .hero-ad-container {
+      width: 100%;
+      height: 220px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .hero-ad-container {
+      width: 100%;
+      height: 280px; /* Maintains roughly the same aspect ratio for desktop */
+    }
+  }
 </style>
 
 <section class="relative overflow-hidden" style="height:55vh; min-height:400px; max-height:550px;">
@@ -387,12 +410,12 @@
         @endphp
         <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
           class="group flex-1 min-w-0 max-w-[85px] md:max-w-[105px] lg:max-w-[125px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
-          <div class="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center">
+          <div class="w-14 h-14 md:w-16 md:h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex items-center justify-center">
             <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}"
               class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
           </div>
           <span
-            class="text-center text-[11px] md:text-[12px] lg:text-[13px] font-bold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
+            class="text-center text-[12px] md:text-[14px] lg:text-[15px] font-bold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
         </a>
       @endforeach
     </div>
@@ -402,17 +425,67 @@
 {{-- ── ADS Section ── --}}
 <section class="bg-white pb-8 md:pb-12 border-b border-gray-100">
   <div class="container-custom">
-    @if(isset($homeAd) && $homeAd)
-      <a href="{{ route('ad.click', ['id' => $homeAd->id]) }}" target="_blank"
-        class="block w-full rounded-[20px] shadow-sm hover:shadow-md transition-shadow overflow-hidden group relative">
-        <span
-          class="absolute top-3 left-3 bg-black/60 text-white font-extrabold text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-md z-10 pointer-events-none font-sans">AD</span>
-        <img src="{{ asset($homeAd->image) }}" alt="{{ $homeAd->campaign_name }}"
-          class="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500">
-      </a>
+    @if(isset($homeAd) && count($homeAd) > 0)
+        <!-- Slider Wrapper -->
+        <div class="w-full overflow-hidden relative">
+            <!-- Slider Track -->
+            <div class="flex transition-transform duration-500 ease-in-out" id="homeAdSlider" style="width: 100%;">
+                @foreach($homeAd as $ad)
+                  <div class="w-full flex-shrink-0" style="flex: 0 0 100%;">
+                      <a href="{{ route('ad.click', ['id' => $ad->id ?? 0]) }}" target="_blank"
+                        class="block shadow-sm hover:shadow-md transition-shadow overflow-hidden group relative hero-ad-container">
+                        <span
+                          class="absolute top-3 left-3 bg-black/60 text-white font-extrabold text-[9px] uppercase tracking-wider px-2.5 py-1 rounded-md z-10 pointer-events-none font-sans">AD</span>
+                        <img src="{{ asset($ad->image ?? '') }}" alt="{{ $ad->campaign_name ?? 'Ad' }}"
+                          class="w-full h-full object-fill block group-hover:scale-[1.02] transition-transform duration-500">
+                      </a>
+                  </div>
+                @endforeach
+            </div>
+        </div>
+
+        @if(count($homeAd) > 1)
+            <!-- Dots -->
+            <div class="flex justify-center gap-2 mt-4" id="homeAdDots">
+                @foreach($homeAd as $index => $ad)
+                    <button class="w-2.5 h-2.5 rounded-full {{ $index === 0 ? 'bg-[#e85d26]' : 'bg-gray-300' }} transition-colors" onclick="goToHomeAd({{ $index }})"></button>
+                @endforeach
+            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    let currentAdIndex = 0;
+                    const adCount = {{ count($homeAd) }};
+                    const slider = document.getElementById('homeAdSlider');
+                    const dots = document.getElementById('homeAdDots').querySelectorAll('button');
+
+                    window.goToHomeAd = function(index) {
+                        currentAdIndex = index;
+                        updateHomeAdSlider();
+                    };
+
+                    function updateHomeAdSlider() {
+                        slider.style.transform = `translateX(-${currentAdIndex * 100}%)`;
+                        dots.forEach((dot, idx) => {
+                            if(idx === currentAdIndex) {
+                                dot.classList.remove('bg-gray-300');
+                                dot.classList.add('bg-[#e85d26]');
+                            } else {
+                                dot.classList.remove('bg-[#e85d26]');
+                                dot.classList.add('bg-gray-300');
+                            }
+                        });
+                    }
+
+                    setInterval(() => {
+                        currentAdIndex = (currentAdIndex + 1) % adCount;
+                        updateHomeAdSlider();
+                    }, 5000);
+                });
+            </script>
+        @endif
     @else
       <div
-        class="w-full h-[80px] md:h-[100px] lg:h-[120px] bg-[#d5d5d5] rounded-[20px] flex items-center justify-center shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+        class="bg-[#d5d5d5] flex items-center justify-center shadow-sm hover:shadow-md transition-shadow cursor-pointer hero-ad-container">
         <span class="text-lg md:text-xl font-black text-black tracking-widest">ADS</span>
       </div>
     @endif

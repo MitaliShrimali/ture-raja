@@ -140,8 +140,8 @@ class UserController extends Controller
 
         // Pull home packages for International and Domestic sections
         try {
-            $homeInternational = DB::table('home_packages')->where('type', 'international')->where('status', 'Live')->orderBy('id', 'desc')->get();
-            $homeDomestic = DB::table('home_packages')->where('type', 'domestic')->where('status', 'Live')->orderBy('id', 'desc')->get();
+            $homeInternational = DB::table('packages')->where('category', 'international')->where('status', 'Active')->orderBy('id', 'desc')->get();
+            $homeDomestic = DB::table('packages')->where('category', 'domestic')->where('status', 'Active')->orderBy('id', 'desc')->get();
         } catch (\Exception $e) {
             $homeInternational = collect();
             $homeDomestic = collect();
@@ -149,9 +149,9 @@ class UserController extends Controller
 
         // Pull an active Ad for the home page from DB
         try {
-            $homeAd = DB::table('ads')->where('status', 'Active')->where('position', 'Home Hero')->orderBy('id', 'desc')->first();
+            $homeAd = DB::table('ads')->where('status', 'Active')->where('position', 'Home Hero')->orderBy('id', 'desc')->get();
         } catch (\Exception $e) {
-            $homeAd = null;
+            $homeAd = collect();
         }
 
         // Pull active ads under domestic packages
@@ -501,10 +501,50 @@ class UserController extends Controller
             }
         } catch (\Exception $e) {}
 
+        // Fetch recently viewed packages
+        $viewedPackages = collect();
+        try {
+            $viewedIds = DB::table('user_viewed_packages')
+                ->where('user_id', $userId)
+                ->orderBy('viewed_at', 'desc')
+                ->limit(30)
+                ->pluck('package_id');
+                
+            $dbPkgs = \App\Models\Package::where('status', 'Active')->get();
+
+            if ($viewedIds->isNotEmpty()) {
+                $viewedPackages = $viewedIds->map(function ($id) use ($dbPkgs) {
+                    return $dbPkgs->firstWhere('id', $id);
+                })->filter();
+            }
+
+            // Also include packages matching their recent searches
+            $searchDestinations = DB::table('user_search_queries')
+                ->where('user_id', $userId)
+                ->whereNotNull('destination')
+                ->where('destination', '!=', '')
+                ->orderByDesc('created_at')
+                ->pluck('destination')
+                ->unique()
+                ->take(5);
+
+            foreach ($searchDestinations as $dest) {
+                // Find first package matching the destination search
+                $matchedPkg = $dbPkgs->first(function($p) use ($dest) {
+                    return stripos($p->location, $dest) !== false || stripos($p->title, $dest) !== false;
+                });
+                
+                // Add it to the list if not already there
+                if ($matchedPkg && !$viewedPackages->contains('id', $matchedPkg->id)) {
+                    $viewedPackages->push($matchedPkg);
+                }
+            }
+        } catch (\Exception $e) {}
+
         return view('profile', compact(
             'user', 'profile', 'wishlist', 'bookings',
             'packages', 'unreadCount', 'userNotifications',
-            'activePlan', 'userPayments', 'searchHistory'
+            'activePlan', 'userPayments', 'searchHistory', 'viewedPackages'
         ));
     }
 
@@ -512,6 +552,35 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         $userId = $this->userId();
+
+        // Handle avatar-only submission
+        if ($request->hasFile('avatar') && !$request->has('name')) {
+            $request->validate([
+                'avatar' => 'image|max:2048'
+            ]);
+            
+            try {
+                $file = $request->file('avatar');
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->move(public_path('avatars'), $filename);
+                $path = 'avatars/' . $filename;
+                
+                $exists = DB::table('user_profiles')->where('user_id', $userId)->exists();
+                if ($exists) {
+                    DB::table('user_profiles')->where('user_id', $userId)->update(['avatar' => $path]);
+                } else {
+                    DB::table('user_profiles')->insert([
+                        'user_id' => $userId,
+                        'avatar' => $path,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+                return redirect()->back()->with('success', 'Avatar updated successfully! ✅');
+            } catch (\Exception $e) {
+                return redirect()->back()->with('error', 'Failed to update avatar.');
+            }
+        }
 
         $request->validate([
             'name'  => 'required|string|max:255',

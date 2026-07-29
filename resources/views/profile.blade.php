@@ -13,7 +13,7 @@
     $displayGender  = $profileData ? ($profileData->gender        ?? '') : '';
     $displayAddress = trim($displayCity . ($displayCountry ? ', '.$displayCountry : ''));
     $avatarUrl      = ($profileData && $profileData->avatar)
-        ? asset('storage/'.$profileData->avatar)
+        ? asset($profileData->avatar)
         : 'https://api.dicebear.com/7.x/avataaars/svg?seed='.urlencode($displayName);
     $wishlistItems  = (isset($wishlist) && $wishlist)  ? $wishlist  : collect();
     $bookingItems   = (isset($bookings) && $bookings)  ? $bookings  : collect();
@@ -33,7 +33,7 @@
   {{-- ══════════ HERO ══════════ --}}
   <div class="pf-hero">
     <div class="pf-hero-bg">
-      <img src="{{ asset('tourex/hero-bg.png') }}" alt="cover">
+      <img src="{{ $avatarUrl }}" alt="cover">
     </div>
     <div class="pf-hero-overlay"></div>
     <div class="pf-hero-inner">
@@ -46,7 +46,7 @@
               enctype="multipart/form-data" id="pf-av-form">
           @csrf
           <label for="pf-av-input" class="pf-avatar-wrap">
-            <img src="{{ asset($avatarUrl) }}" alt="avatar" id="pf-av-img">
+            <img src="{{ $avatarUrl }}" alt="avatar" id="pf-av-img">
             <span class="pf-avatar-cam">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
                    stroke="#fff" stroke-width="2.5">
@@ -294,138 +294,102 @@
     <div x-show="tab==='history'" x-transition.opacity.duration.200ms>
 
       {{-- ── Your History / Searches ── --}}
-      <section class="pf-section pf-hist-section">
+      <section class="pf-section pf-hist-section" x-data="historyFilter()">
         <div class="pf-hist-head">
           <div>
             <h2 class="pf-hist-title">Your History/Searches</h2>
-            <p class="pf-hist-sub">Favourite destinations based on customer reviews</p>
+            <p class="pf-hist-sub">Packages you recently clicked or searched for</p>
           </div>
           <div class="pf-filters">
-            <button class="pf-flt">Categories
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button class="pf-flt">Duration
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button class="pf-flt">Review / Rating
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <button class="pf-flt">Price range
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <!-- Category Filter -->
+            <div class="relative" x-data="{ open: false }">
+              <button @click="open = !open" @click.outside="open = false" class="pf-flt" :class="{'bg-primary text-white border-primary': category}">
+                <span x-text="category || 'Categories'"></span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div x-show="open" class="absolute z-10 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2" style="display: none;">
+                <div @click="setCategory(''); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm font-bold">All Categories</div>
+                <div @click="setCategory('tropical'); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">Tropical</div>
+                <div @click="setCategory('mountains'); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">Mountains</div>
+                <div @click="setCategory('city'); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">City</div>
+                <div @click="setCategory('adventure'); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">Adventure</div>
+              </div>
+            </div>
+
+            <!-- Duration Filter -->
+            <div class="relative" x-data="{ open: false }">
+              <button @click="open = !open" @click.outside="open = false" class="pf-flt" :class="{'bg-primary text-white border-primary': duration}">
+                <span x-text="duration || 'Duration'"></span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div x-show="open" class="absolute z-10 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2" style="display: none;">
+                <div @click="setDuration(''); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm font-bold">Any Duration</div>
+                <div @click="setDuration('3 days'); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">Up to 3 Days</div>
+                <div @click="setDuration('5 days'); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">Up to 5 Days</div>
+                <div @click="setDuration('7 days'); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">7+ Days</div>
+              </div>
+            </div>
+
+            <!-- Rating Filter -->
+            <div class="relative" x-data="{ open: false }">
+              <button @click="open = !open" @click.outside="open = false" class="pf-flt" :class="{'bg-primary text-white border-primary': rating}">
+                <span x-text="rating ? rating + '+ Stars' : 'Review / Rating'"></span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div x-show="open" class="absolute z-10 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2" style="display: none;">
+                <div @click="setRating(0); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm font-bold">Any Rating</div>
+                <div @click="setRating(3); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">3+ Stars</div>
+                <div @click="setRating(4); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">4+ Stars</div>
+                <div @click="setRating(5); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">5 Stars</div>
+              </div>
+            </div>
+
+            <!-- Price Filter -->
+            <div class="relative" x-data="{ open: false }">
+              <button @click="open = !open" @click.outside="open = false" class="pf-flt" :class="{'bg-primary text-white border-primary': maxPrice}">
+                <span x-text="maxPrice ? 'Up to ₹' + maxPrice : 'Price range'"></span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </button>
+              <div x-show="open" class="absolute z-10 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-lg py-2" style="display: none;">
+                <div @click="setMaxPrice(0); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm font-bold">Any Price</div>
+                <div @click="setMaxPrice(2000); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">Up to ₹2,000</div>
+                <div @click="setMaxPrice(5000); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">Up to ₹5,000</div>
+                <div @click="setMaxPrice(10000); open = false" class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">Up to ₹10,000</div>
+              </div>
+            </div>
+            
+            <button @click="resetFilters()" x-show="category || duration || rating || maxPrice" class="pf-flt bg-gray-100 text-gray-500 hover:bg-gray-200 border-transparent text-xs py-1 px-3 ml-2" style="display: none;">
+              Reset
             </button>
           </div>
         </div>
 
-        @php
-          /* ── Build destination list dynamically ──
-             1. Pull unique destinations the user searched for
-             2. For each, try to find a matching package (by location or title)
-             3. Fall back to curated demo destinations if no searches exist
-          */
-          $searchedDests = isset($searchHistory) ? $searchHistory : collect();
-
-          // Map each searched destination to a package image + slug
-          $destCards = $searchedDests->map(function($s) use ($packages) {
-            $term = $s->destination ?: $s->from_city;
-            if (!$term) return null;
-            // Try to match a package by location or title
-            $pkg = $packages->first(function($p) use ($term) {
-              $loc   = is_array($p) ? ($p['location'] ?? '') : ($p->location ?? '');
-              $title = is_array($p) ? ($p['title']    ?? '') : ($p->title    ?? '');
-              return stripos($loc, $term) !== false || stripos($title, $term) !== false
-                  || stripos($term, $loc) !== false;
-            });
-            $img  = $pkg ? (is_array($pkg) ? $pkg['image']    : $pkg->image)    : null;
-            $slug = $pkg ? (is_array($pkg) ? ($pkg['slug'] ?? Str::slug($pkg['title'])) : Str::slug($pkg->title)) : null;
-            // If image looks like a relative path, wrap with asset()
-            if ($img && !str_starts_with($img, 'http')) {
-              $img = asset($img);
-            }
-            if (!$img) {
-              // Generic Unsplash for the searched city
-              $img = 'https://source.unsplash.com/400x300/?' . urlencode($term) . ',city,travel';
-            }
-            return ['name' => ucwords($term), 'image' => $img, 'slug' => $slug, 'count' => rand(80,400)];
-          })->filter()->unique('name')->take(7)->values();
-
-          // Also pull package locations from packages list to enrich
-          $pkgLocations = $packages->map(function($p) {
-            $img  = is_array($p) ? ($p['image'] ?? '') : ($p->image ?? '');
-            $loc  = is_array($p) ? ($p['location'] ?? '') : ($p->location ?? '');
-            $slug = is_array($p) ? ($p['slug']   ?? Str::slug($p['title'] ?? '')) : Str::slug($p->title ?? '');
-            if ($img && !str_starts_with($img, 'http')) $img = asset($img);
-            return ['name' => $loc, 'image' => $img, 'slug' => $slug, 'count' => rand(100,500)];
-          })->filter(fn($x) => !empty($x['name']))->unique('name');
-
-          // If fewer than 7 from search history, pad with package locations not already shown
-          if ($destCards->count() < 7) {
-            $existing = $destCards->pluck('name')->map('strtolower')->toArray();
-            $extra = $pkgLocations->filter(fn($x) => !in_array(strtolower($x['name']), $existing))
-                                  ->take(7 - $destCards->count())->values();
-            $destCards = $destCards->concat($extra);
-          }
-
-          // Final fallback if still empty
-          if ($destCards->isEmpty()) {
-            $destCards = collect([
-              ['name'=>'Venice',    'image'=>'https://images.unsplash.com/photo-1514890547357-a9ee288728e0?auto=format&fit=crop&w=400&q=80', 'slug'=>'venice',    'count'=>386],
-              ['name'=>'Amsterdam', 'image'=>'https://images.unsplash.com/photo-1534351590666-13e3e96b5017?auto=format&fit=crop&w=400&q=80', 'slug'=>'amsterdam', 'count'=>356],
-              ['name'=>'Budapest',  'image'=>'https://images.unsplash.com/photo-1551867633-194f125bddfa?auto=format&fit=crop&w=400&q=80', 'slug'=>'budapest',  'count'=>356],
-              ['name'=>'Lisbon',    'image'=>'https://images.unsplash.com/photo-1555881400-74d7acaacd8b?auto=format&fit=crop&w=400&q=80', 'slug'=>'lisbon',    'count'=>356],
-              ['name'=>'London',    'image'=>'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=400&q=80', 'slug'=>'london',    'count'=>356],
-              ['name'=>'Ottawa',    'image'=>'https://images.unsplash.com/photo-1503614472-8c93d56e92ce?auto=format&fit=crop&w=400&q=80', 'slug'=>'ottawa',    'count'=>356],
-              ['name'=>'Paris',     'image'=>'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=80', 'slug'=>'paris',     'count'=>356],
-            ]);
-          }
-
-          $firstRow  = $destCards->take(4);
-          $secondRow = $destCards->skip(4)->take(3);
-        @endphp
-
-        {{-- Row 1: 4 cards --}}
-        <div class="pf-dest-grid pf-dest-grid--4">
-          @foreach($firstRow as $dc)
-          <a href="{{ route('discover', ['search' => $dc['name']]) }}" class="pf-dest-card">
-            <div class="pf-dest-img">
-              <img src="{{ asset($dc['image']) }}" alt="{{ $dc['name'] }}" loading="lazy">
+        @if(isset($viewedPackages) && $viewedPackages->isNotEmpty())
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4" id="history-package-grid">
+                @foreach($viewedPackages as $pkg)
+                    <x-package-card 
+                        :pkg="$pkg" 
+                        class="tiny-pkg-card"
+                        data-category="{{ strtolower(is_array($pkg) ? ($pkg['category'] ?? $pkg['categories_list'] ?? '') : ($pkg->category ?? $pkg->categories_list ?? '')) }}"
+                        data-duration="{{ strtolower(is_array($pkg) ? ($pkg['duration'] ?? '') : ($pkg->duration ?? '')) }}"
+                        data-rating="{{ floor((float)(is_array($pkg) ? ($pkg['rating'] ?? 0) : ($pkg->rating ?? 0))) }}"
+                        data-price="{{ (float)(is_array($pkg) ? ($pkg['price'] ?? 0) : ($pkg->price ?? 0)) }}"
+                    />
+                @endforeach
             </div>
-            <div class="pf-dest-body">
-              <p class="pf-dest-name">{{ $dc['name'] }}</p>
-              <p class="pf-dest-meta">{{ $dc['count'] }}k Tours, 24k Activities</p>
+            
+            <div x-show="noResults" class="text-center py-10 bg-gray-50 rounded-2xl mt-4" style="display: none;">
+                <p class="text-gray-500 font-bold">No packages match your selected filters.</p>
+                <button @click="resetFilters()" class="mt-3 text-primary font-bold hover:underline">Clear filters</button>
             </div>
-            <div class="pf-dest-arrow">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        @else
+            <div class="text-center py-12 bg-gray-50 rounded-3xl mt-4 border border-dashed border-gray-200">
+                <i data-lucide="history" class="w-12 h-12 text-gray-300 mx-auto mb-3"></i>
+                <h3 class="text-lg font-black text-gray-700">No History Yet</h3>
+                <p class="text-gray-500 mt-1 max-w-sm mx-auto">Packages you view will appear here for quick access.</p>
+                <a href="{{ route('discover') }}" class="inline-block mt-5 px-6 py-2 bg-black text-white rounded-full font-bold text-sm hover:bg-primary transition-colors">Explore Packages</a>
             </div>
-          </a>
-          @endforeach
-        </div>
-
-        {{-- Row 2: 3 cards + CTA card --}}
-        <div class="pf-dest-grid pf-dest-grid--4" style="margin-top:16px">
-          @foreach($secondRow as $dc)
-          <a href="{{ route('discover', ['search' => $dc['name']]) }}" class="pf-dest-card">
-            <div class="pf-dest-img">
-              <img src="{{ asset($dc['image']) }}" alt="{{ $dc['name'] }}" loading="lazy">
-            </div>
-            <div class="pf-dest-body">
-              <p class="pf-dest-name">{{ $dc['name'] }}</p>
-              <p class="pf-dest-meta">{{ $dc['count'] }}k Tours, 24k Activities</p>
-            </div>
-            <div class="pf-dest-arrow">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </div>
-          </a>
-          @endforeach
-          {{-- CTA card --}}
-          <div class="pf-dest-cta">
-            <p class="pf-dest-cta-title">Crafting Your<br>Perfect Travel<br>Experience</p>
-            <a href="{{ route('discover') }}" class="pf-dest-cta-btn">
-              Browse
-              <span>All destinations</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </a>
-          </div>
-        </div>
+        @endif
       </section>
 
       {{-- ── Booking History List ── --}}
@@ -1053,5 +1017,48 @@ document.addEventListener('DOMContentLoaded', () => {
   .pf-dest-grid { grid-template-columns:repeat(2,1fr); }
 }
 </style>
+
+<script>
+function historyFilter() {
+    return {
+        category: '',
+        duration: '',
+        rating: 0,
+        maxPrice: 0,
+        noResults: false,
+        
+        setCategory(val) { this.category = val; this.applyFilters(); },
+        setDuration(val) { this.duration = val; this.applyFilters(); },
+        setRating(val) { this.rating = val; this.applyFilters(); },
+        setMaxPrice(val) { this.maxPrice = val; this.applyFilters(); },
+        resetFilters() {
+            this.category = '';
+            this.duration = '';
+            this.rating = 0;
+            this.maxPrice = 0;
+            this.applyFilters();
+        },
+        
+        applyFilters() {
+            const cards = document.querySelectorAll('#history-package-grid .tiny-pkg-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                let show = true;
+                
+                if (this.category && !card.dataset.category.includes(this.category)) show = false;
+                if (this.duration && !card.dataset.duration.includes(this.duration)) show = false;
+                if (this.rating > 0 && parseInt(card.dataset.rating) < this.rating) show = false;
+                if (this.maxPrice > 0 && parseFloat(card.dataset.price) > this.maxPrice) show = false;
+                
+                card.style.display = show ? 'flex' : 'none';
+                if (show) visibleCount++;
+            });
+            
+            this.noResults = (visibleCount === 0 && cards.length > 0);
+        }
+    }
+}
+</script>
 
 @endsection

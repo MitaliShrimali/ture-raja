@@ -82,14 +82,14 @@ class AdminController extends Controller
 
     public function internationalPackages(Request $request)
     {
-        $packages = DB::table('home_packages')->where('type', 'international')->orderBy('id', 'desc')->paginate(10);
-        return view('admin.packages-international', compact('packages'));
+        $request->merge(['destination_type' => 'international']);
+        return $this->packages($request);
     }
 
     public function domesticPackages(Request $request)
     {
-        $packages = DB::table('home_packages')->where('type', 'domestic')->orderBy('id', 'desc')->paginate(10);
-        return view('admin.packages-domestic', compact('packages'));
+        $request->merge(['destination_type' => 'domestic']);
+        return $this->packages($request);
     }
 
     public function storeHomePackage(Request $request)
@@ -267,8 +267,13 @@ class AdminController extends Controller
             $query->where('status', 'Active');
         }
 
+        if ($request->filled('destination_type')) {
+            $query->where('category', strtolower($request->destination_type));
+        }
+
         $packages = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
-        return view('admin.packages', compact('packages', 'search'));
+        $destinationType = $request->input('destination_type');
+        return view('admin.packages', compact('packages', 'search', 'destinationType'));
     }
 
     public function pendingPackages(Request $request)
@@ -297,12 +302,13 @@ class AdminController extends Controller
         return view('admin.package-detail', compact('pkg'));
     }
 
-    public function createPackage()
+    public function createPackage(Request $request)
     {
+        $category = $request->query('category');
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
-        return view('admin.packages-create', compact('agents', 'themes', 'holidayTypes'));
+        return view('admin.packages-create', compact('agents', 'themes', 'holidayTypes', 'category'));
     }
 
     public function editPackage($id)

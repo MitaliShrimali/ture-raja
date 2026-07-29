@@ -19,6 +19,15 @@ class HomeController extends Controller
             $packages = collect($this->getStaticPackages());
         }
 
+        // Pull home packages for International and Domestic sections
+        try {
+            $homeInternational = DB::table('packages')->where('category', 'international')->where('status', 'Active')->orderBy('id', 'desc')->get();
+            $homeDomestic = DB::table('packages')->where('category', 'domestic')->where('status', 'Active')->orderBy('id', 'desc')->get();
+        } catch (\Exception $e) {
+            $homeInternational = collect();
+            $homeDomestic = collect();
+        }
+
         // Fetch agents to enrich package cards with locations
         try {
             $agentsList = DB::table('agents')

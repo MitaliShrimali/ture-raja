@@ -12,19 +12,34 @@
         <img src="{{ asset('images/hot-air-balloon.gif') }}" alt="Balloon" class="absolute top-4 -right-4 md:right-8 w-14 h-14 md:w-20 md:h-20 z-10 pointer-events-none animate-[bounce_4s_ease-in-out_infinite]" style="opacity: 0.9;" />
         
         <div class="container-custom relative z-20">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-3 pl-12 pr-12 md:pl-20 md:pr-24">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-3">
                 <h2 class="font-bold text-[#1a1a1a] m-0" style="font-size: 34px;">
                     Top International Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=international') }}"
-                   class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 border border-gray-300 rounded-full px-4 py-1.5 hover:border-primary hover:text-primary transition-all self-start md:self-auto">
+                   class="inline-flex items-center gap-1 text-[10px] font-bold text-gray-700 border border-gray-300 rounded-full px-3 py-1 hover:border-primary hover:text-primary transition-all self-start md:self-auto">
                     View More
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
             </div>
 
-            {{-- 6 small cards --}}
-            <div class="flex flex-nowrap gap-5 pt-2 pb-4 overflow-x-auto hide-scrollbar">
+            <style>
+                @keyframes scrollRight {
+                    0% { transform: translateX(-50%); }
+                    100% { transform: translateX(0); }
+                }
+                .animate-scroll-right-intl {
+                    display: flex;
+                    width: max-content;
+                    animation: scrollRight 300s linear infinite;
+                }
+                .animate-scroll-right-dom {
+                    display: flex;
+                    width: max-content;
+                    animation: scrollRight 350s linear infinite;
+                }
+            </style>
+            <div class="overflow-hidden relative w-full pt-2 pb-4">
                 @php
                     if(isset($homeInternational) && $homeInternational->count() > 0) {
                         $intl = $homeInternational->map(function($pkg) {
@@ -44,15 +59,26 @@
                         ];
                     }
                 @endphp
-                @foreach($intl as $pkg)
+                @php 
+                    // Duplicate multiple times to ensure enough width for seamless scrolling
+                    $scrollingIntl = array_merge($intl, $intl, $intl, $intl); 
+                    // Calculate exact duration to maintain a constant, identical speed for any number of cards
+                    $intlDuration = count($intl) * 8;
+                @endphp
+                <div class="animate-scroll-right-intl gap-5" style="animation-duration: {{ $intlDuration }}s;">
+                @foreach($scrollingIntl as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-lg overflow-hidden block group flex-1" style="height:115px; min-width: 130px; flex-shrink: 0;">
+                   class="relative rounded-xl overflow-hidden block group" style="height:150px; width: 260px; flex-shrink: 0;">
                     <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                    <span style="position:absolute; bottom:8px; left:10px; color:#fff; font-size:18px; font-weight:700; text-shadow:0 1px 5px rgba(0,0,0,0.7); line-height:1.2;">{{ $pkg['title'] }}</span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                    <span style="position:absolute; bottom:12px; left:12px; color:#fff; font-size:14px; font-weight:800; text-shadow:0 1px 3px rgba(0,0,0,0.8); line-height:1.2;">{{ $pkg['title'] }}</span>
+                    <div class="absolute bottom-2 right-2 w-7 h-7 bg-white rounded-full flex items-center justify-center text-gray-900 shadow-md transition-transform duration-300 group-hover:translate-x-1">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
                 </a>
                 @endforeach
+                </div>
             </div>
         </div>
     </section>
@@ -64,19 +90,19 @@
         <img src="{{ asset('images/small-banner-decoration-4.png') }}" alt="Decoration 4" class="absolute top-4 -right-4 md:right-8 w-12 h-12 md:w-20 md:h-20 z-10 pointer-events-none animate-[bounce_4s_ease-in-out_infinite]" style="opacity: 0.9;" />
         
         <div class="container-custom relative z-20">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-3 pl-12 pr-12 md:pl-20 md:pr-24">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-3">
                 <h2 class="font-bold text-[#1a1a1a] m-0" style="font-size: 34px;">
                     Top Domestic Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=domestic') }}"
-                   class="inline-flex items-center gap-1.5 text-xs font-bold text-gray-700 border border-gray-300 rounded-full px-4 py-1.5 hover:border-primary hover:text-primary transition-all self-start md:self-auto">
+                   class="inline-flex items-center gap-1 text-[10px] font-bold text-gray-700 border border-gray-300 rounded-full px-3 py-1 hover:border-primary hover:text-primary transition-all self-start md:self-auto">
                     View More
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
             </div>
 
-            {{-- 6 small cards --}}
-            <div class="flex flex-nowrap gap-5 pt-2 pb-4 overflow-x-auto hide-scrollbar">
+            {{-- 6 small cards auto-scroll --}}
+            <div class="overflow-hidden relative w-full pt-2 pb-4">
                 @php
                     if(isset($homeDomestic) && $homeDomestic->count() > 0) {
                         $dom = $homeDomestic->map(function($pkg) {
@@ -96,15 +122,25 @@
                         ];
                     }
                 @endphp
-                @foreach($dom as $pkg)
+                @php 
+                    $scrollingDom = array_merge($dom, $dom, $dom, $dom); 
+                    // Calculate exact duration to maintain a constant, identical speed for any number of cards
+                    $domDuration = count($dom) * 8;
+                @endphp
+                <div class="animate-scroll-right-dom gap-5" style="animation-duration: {{ $domDuration }}s;">
+                @foreach($scrollingDom as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-lg overflow-hidden block group flex-1" style="height:115px; min-width: 130px; flex-shrink: 0;">
+                   class="relative rounded-xl overflow-hidden block group" style="height:150px; width: 260px; flex-shrink: 0;">
                     <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-                    <span style="position:absolute; bottom:8px; left:10px; color:#fff; font-size:18px; font-weight:700; text-shadow:0 1px 5px rgba(0,0,0,0.7); line-height:1.2;">{{ $pkg['title'] }}</span>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
+                    <span style="position:absolute; bottom:12px; left:12px; color:#fff; font-size:14px; font-weight:800; text-shadow:0 1px 3px rgba(0,0,0,0.8); line-height:1.2;">{{ $pkg['title'] }}</span>
+                    <div class="absolute bottom-2 right-2 w-7 h-7 bg-white rounded-full flex items-center justify-center text-gray-900 shadow-md transition-transform duration-300 group-hover:translate-x-1">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
                 </a>
                 @endforeach
+                </div>
             </div>
         </div>
     </section>
@@ -203,7 +239,7 @@
                     let slider = document.getElementById('promo-slider');
                     if (slider) this.scrollAmount = slider.scrollLeft;
                 }
-            }" x-init="startAutoScroll()" @mouseenter="stopAutoScroll()" @mouseleave="startAutoScroll()" @touchstart="stopAutoScroll()" @touchend="startAutoScroll()">
+            }" x-init="startAutoScroll()">
                 
                 <!-- SVG Airplane Path Left -->
                 <div class="absolute -top-12 -left-8 md:-top-16 md:-left-16 hidden md:block w-64 h-32 pointer-events-none z-20">
@@ -263,7 +299,7 @@
                                                 <h3 class="text-[18px] md:text-[20px] font-black leading-tight" style="{{ !empty($sticker->bg_color) ? 'color: ' . $sticker->bg_color . ';' : 'color: #111827;' }}">{{ $sticker->title }}</h3>
                                             </div>
                                             <div class="mt-auto">
-                                                <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
+                                                <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
                                             </div>
                                         </div>
                                     </a>
@@ -280,7 +316,7 @@
                                             <h3 class="text-white text-[10px] font-bold leading-tight">We Make Every<br>Trips Special</h3>
                                         </div>
                                         <div class="mt-auto text-right">
-                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
+                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
                                         </div>
                                     </div>
                                 </a>
@@ -294,7 +330,7 @@
                                             <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Buy 1, Get 1 Free<br>Attractions</h3>
                                         </div>
                                         <div class="mt-auto">
-                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
+                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
                                         </div>
                                     </div>
                                 </a>
@@ -310,7 +346,7 @@
                                             <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Attractions</span>
                                         </div>
                                         <div class="mt-auto">
-                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #e7602e;">View More &rarr;</span>
+                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #e7602e;">View More &rarr;</span>
                                         </div>
                                     </div>
                                 </a>
@@ -326,7 +362,7 @@
                                             <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Vacations</span>
                                         </div>
                                         <div class="mt-auto">
-                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #3b82f6;">View More &rarr;</span>
+                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #3b82f6;">View More &rarr;</span>
                                         </div>
                                     </div>
                                 </a>
@@ -340,7 +376,7 @@
                                             <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Romantic<br>Getaways</h3>
                                         </div>
                                         <div class="mt-auto">
-                                            <span class="inline-block text-white text-[11px] font-bold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity" style="background-color: #db2777;">View More &rarr;</span>
+                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #db2777;">View More &rarr;</span>
                                         </div>
                                     </div>
                                 </a>
@@ -353,9 +389,8 @@
 
     <!-- Section 3: Why Travel With TourRaja -->
     <div class="max-w-7xl mx-auto px-6 py-4 md:py-8 lg:py-10">
-        <x-section-title subtitle="The TourRaja Advantage" align="center">
-            Why tourraja !!!
-            <x-slot:description>The best booking platform you can trust</x-slot:description>
+        <x-section-title subtitle="The TourRaja Advantage" align="center" class="!space-y-0 mb-3">
+            <span style="font-size: 34px; line-height: 1; display: block; margin-top: 0;">Why tourraja !!!</span>
         </x-section-title>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -404,11 +439,11 @@
     <!-- Section 6: Browse by Travel Theme -->
     <section class="py-6 md:py-10 bg-white border-t border-border-soft/30 animate-fade-up">
         <div class="container-custom">
-            <h2 class="font-black text-foreground text-center mb-10 tracking-tight font-heading" style="font-size: 28px;">Browse by Travel Theme</h2>
+            <h2 class="font-black text-foreground text-center mb-4 tracking-tight font-heading" style="font-size: 28px;">Browse by Travel Theme</h2>
 
-            <div class="relative w-full group px-2 md:px-8">
+            <div class="relative w-full group/slider px-2 md:px-8">
                 <!-- Left Arrow -->
-                <button type="button" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex opacity-0 group-hover:opacity-100" onclick="document.getElementById('theme-slider').scrollBy({left: -250, behavior: 'smooth'})">
+                <button type="button" class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex opacity-0 group-hover/slider:opacity-100" onclick="document.getElementById('theme-slider').scrollBy({left: -250, behavior: 'smooth'})">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
 
@@ -451,7 +486,7 @@
                 </div>
 
                 <!-- Right Arrow -->
-                <button type="button" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex opacity-0 group-hover:opacity-100" onclick="document.getElementById('theme-slider').scrollBy({left: 250, behavior: 'smooth'})">
+                <button type="button" class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex opacity-0 group-hover/slider:opacity-100" onclick="document.getElementById('theme-slider').scrollBy({left: 250, behavior: 'smooth'})">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
             </div>
@@ -462,7 +497,7 @@
     <section class="py-6 md:py-10 lg:py-12 bg-background">
         <div class="container-custom">
             <!-- Header with Filters -->
-            <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12" style="z-index: 40; position: relative;">
+            <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-4" style="z-index: 40; position: relative;">
                 <div class="space-y-2">
                     <h2 class="text-3xl md:text-5xl font-black text-foreground tracking-tight font-heading">
                         Featured Travel Packages
@@ -598,6 +633,9 @@
                         }
                         if (!$slugVal && $title) {
                             $slugVal = \Illuminate\Support\Str::slug($title);
+                            if ($idVal) {
+                                $slugVal .= '-' . $idVal;
+                            }
                         }
 
                         // Resolve Agent
@@ -709,7 +747,7 @@
             </div>
 
             <!-- Load More Button -->
-            <div class="mt-8 md:mt-20 flex justify-center animate-fade-up" id="load-more-container">
+            <div class="mt-4 md:mt-6 flex justify-center animate-fade-up" id="load-more-container">
                 <a href="{{ url('/discover') }}" class="bg-black text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-premium inline-block text-center">
                     Load More Packages
                 </a>
@@ -722,14 +760,14 @@
     <section class="py-6 md:py-10 lg:pt-8 lg:pb-12 bg-white">
         <div class="container-custom">
             <!-- Header -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-10 gap-3">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
                 <div class="space-y-1">
                     <h2 class="text-2xl md:text-[40px] font-black text-foreground tracking-tight leading-tight">Top Categories Packages</h2>
                     <p class="text-gray-500 text-sm md:text-base">Favorite destinations based on customer reviews</p>
                 </div>
-                <a href="{{ url('/discover') }}" class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gray-200 text-sm font-bold hover:bg-gray-300 transition-colors self-start md:self-auto mt-2 md:mt-0">
+                <a href="{{ url('/discover') }}" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-200 text-[10px] font-bold hover:bg-gray-300 transition-colors self-start md:self-auto mt-2 md:mt-0">
                     View More 
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                 </a>
             </div>
 
@@ -869,8 +907,8 @@
     <!-- Section 8: Testimonials -->
     <section class="pt-6 md:pt-10 lg:pt-8 bg-white overflow-hidden">
         <div class="container-custom">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2 md:mb-4 animate-fade-up gap-6">
-                <div class="space-y-2">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-1 animate-fade-up gap-6">
+                <div class="space-y-1">
                     <h2 class="text-3xl md:text-4xl lg:text-6xl font-black text-foreground tracking-tight font-heading">What Our Clients Say!!!</h2>
                     <p class="text-text-muted text-base md:text-lg font-medium">They Love TourRaja!</p>
                 </div>
@@ -892,7 +930,7 @@
 
                     @foreach($allTestimonials as $testi)
                         <div class="flex-shrink-0 w-full md:w-[450px] testimonial-card">
-                            <div class="p-6 md:p-10 rounded-[40px] border border-border-soft bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-4 md:space-y-6">
+                            <div class="p-6 rounded-[32px] border border-border-soft bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-3">
                                 <h4 class="text-lg md:text-xl font-black text-foreground font-heading">The best booking system</h4>
                                 <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic">"{{ $testi['text'] }}"</p>
                                 
@@ -926,9 +964,6 @@
                 display: flex;
                 width: max-content;
                 animation: marquee 40s linear infinite;
-            }
-            .testimonial-track:hover {
-                animation-play-state: paused;
             }
             @media (max-width: 767px) {
                 .testimonial-card {

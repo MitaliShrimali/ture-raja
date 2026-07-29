@@ -112,7 +112,7 @@
                         class="relative flex items-center gap-2.5 text-left group"
                     >
                         <div class="relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                            <i data-lucide="heart" size="20" class="text-primary"></i>
+                            <i data-lucide="heart" size="20" class="text-primary nav-heart-icon"></i>
                             <span id="wishlist-count" class="absolute -top-1 -right-1 w-4 h-4 bg-black text-white text-[10px] font-black rounded-full flex items-center justify-center hidden">0</span>
                         </div>
                         <div class="hidden xl:flex flex-col justify-center transition-colors duration-300" :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'">
@@ -150,7 +150,7 @@
                         class="relative flex items-center gap-2.5 text-left group"
                     >
                         <div class="relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
-                            <i data-lucide="heart" size="20" class="text-primary"></i>
+                            <i data-lucide="heart" size="20" class="text-primary nav-heart-icon"></i>
                         </div>
                         <div class="hidden xl:flex flex-col justify-center transition-colors duration-300" :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'">
                             <span class="text-[14px] font-black leading-tight tracking-wide">Wishlist</span>
@@ -161,12 +161,14 @@
             @endif
 
             @if(Auth::check() && Auth::user()->role === 'Customer')
-                <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2">
-                    @if(Auth::user()->avatar)
-                        <img src="{{ asset(Auth::user()->avatar) }}" class="w-full h-full rounded-full object-cover">
-                    @else
-                        <img src="{{ asset('images/default-avatar.svg') }}" class="w-full h-full rounded-full object-cover">
-                    @endif
+                <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2 overflow-hidden">
+                    @php
+                        $navProfile = DB::table('user_profiles')->where('user_id', Auth::id())->first();
+                        $navAvatarUrl = ($navProfile && $navProfile->avatar)
+                            ? asset($navProfile->avatar)
+                            : asset('images/default-avatar.svg');
+                    @endphp
+                    <img src="{{ $navAvatarUrl }}" class="w-full h-full object-cover">
                 </a>
             @endif
 
@@ -177,7 +179,7 @@
                 @click="{{ (Auth::check() && Auth::user()->role === 'Customer') ? 'window.location.href=\''.url('/profile').'\'' : '$dispatch(\'open-login-modal\')' }}"
                 class="hidden relative flex items-center justify-center text-primary"
             >
-                <i data-lucide="heart" size="20" class=""></i>
+                <i data-lucide="heart" size="20" class="text-primary nav-heart-icon"></i>
             </button>
 
             <!-- Mobile Toggle -->

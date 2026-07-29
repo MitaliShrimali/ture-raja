@@ -633,6 +633,16 @@ Route::get('/packages/{slug}', function ($slug) {
     $dbPkg = $matched ? DB::table('packages')->where('id', $matched->id)->first() : null;
 
     if ($dbPkg) {
+        // Track package view for logged-in users
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            try {
+                DB::table('user_viewed_packages')->updateOrInsert(
+                    ['user_id' => \Illuminate\Support\Facades\Auth::id(), 'package_id' => $dbPkg->id],
+                    ['viewed_at' => now(), 'updated_at' => now()]
+                );
+            } catch (\Exception $e) {}
+        }
+
         $gallery = [];
         if ($dbPkg->gallery) {
             $gallery = json_decode($dbPkg->gallery, true) ?: [];

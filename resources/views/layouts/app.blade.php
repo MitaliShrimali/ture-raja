@@ -173,6 +173,13 @@
             e.preventDefault();
             e.stopPropagation();
 
+            const isAuthenticated = {{ (Auth::check() && Auth::user()->role === 'Customer') ? 'true' : 'false' }};
+            
+            if (!isAuthenticated) {
+                window.dispatchEvent(new CustomEvent('open-login-modal'));
+                return;
+            }
+
             let wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
             const index = wishlist.findIndex(item => item.slug === pkg.slug);
 
@@ -221,6 +228,15 @@
             if (countElMobile) {
                 countElMobile.textContent = wishlist.length;
             }
+
+            // Update Navbar Heart Icons
+            document.querySelectorAll('.nav-heart-icon').forEach(icon => {
+                if (wishlist.length > 0) {
+                    icon.classList.add('fill-primary');
+                } else {
+                    icon.classList.remove('fill-primary');
+                }
+            });
 
             // Update Dropdown Items (Desktop)
             if (itemsEl) {

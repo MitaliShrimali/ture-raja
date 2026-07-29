@@ -32,7 +32,7 @@
         stock: '',
         validity: '',
         sightseeing: '',
-        category: 'domestic',
+        category: '{{ strtolower($category ?? "domestic") }}',
         categories: [],
         badge: '',
         group_size: '',

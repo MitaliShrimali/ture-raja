@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Package;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PackageController extends Controller
 {
@@ -16,6 +17,16 @@ class PackageController extends Controller
             }
         } catch (\Exception $e) {
             $pkg = $this->getStaticPackage($id);
+        }
+
+        // Track package view for logged-in users
+        if (Auth::check() && $pkg instanceof Package) {
+            try {
+                DB::table('user_viewed_packages')->updateOrInsert(
+                    ['user_id' => Auth::id(), 'package_id' => $pkg->id],
+                    ['viewed_at' => now(), 'updated_at' => now()]
+                );
+            } catch (\Exception $e) {}
         }
 
         return view('package.show', compact('pkg'));

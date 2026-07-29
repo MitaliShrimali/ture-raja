@@ -27,7 +27,7 @@
             </div>
     <p class="text-muted-text font-medium">Manage all approved tour packages. Toggle visibility to control which appear on the customer site. Packages pending agent review are under <a href="{{ url('/admin/packages/pending') }}" class="text-primary font-black hover:underline">Pending Approvals</a>.</p>
         </div>
-        <a href="{{ url('/admin/packages/create') }}" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3 group shrink-0">
+        <a href="{{ url('/admin/packages/create' . (isset($destinationType) && $destinationType ? '?category=' . $destinationType : '')) }}" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3 group shrink-0">
             <i data-lucide="plus" size="20" class="group-hover:rotate-90 transition-transform"></i> Add New Package
         </a>
     </div>
@@ -85,12 +85,18 @@
                         class="w-full bg-gray-50 border-none rounded-xl py-2 pl-12 pr-4 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
                     >
                 </div>
+                
+                <select name="destination_type" class="w-full md:w-40 bg-gray-50 border-none rounded-xl py-2 px-4 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm text-muted-text">
+                    <option value="">All Types</option>
+                    <option value="international" {{ request('destination_type') == 'international' ? 'selected' : '' }}>International</option>
+                    <option value="domestic" {{ request('destination_type') == 'domestic' ? 'selected' : '' }}>Domestic</option>
+                </select>
                 <input type="date" name="from_date" value="{{ request('from_date') }}" class="w-full md:w-32 bg-gray-50 border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10" title="From Date">
                 <input type="date" name="to_date" value="{{ request('to_date') }}" class="w-full md:w-32 bg-gray-50 border-none rounded-xl py-2 px-4 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/10" title="To Date">
                 
                 <button type="submit" class="w-full md:w-auto bg-primary text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:bg-primary-hover transition-all">Filter</button>
-                @if(request()->hasAny(['search', 'from_date', 'to_date']))
-                    <a href="{{ url('/admin/packages') }}" class="w-full md:w-auto bg-gray-100 text-muted-text px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-200 transition-all text-center">Clear</a>
+                @if(request()->hasAny(['search', 'from_date', 'to_date', 'destination_type']))
+                    <a href="{{ url('/admin/packages' . (isset($destinationType) && $destinationType && !request()->has('search') && !request()->has('from_date') && !request()->has('to_date') ? '' : '')) }}" class="w-full md:w-auto bg-gray-100 text-muted-text px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-200 transition-all text-center">Clear</a>
                 @endif
             </form>
         </div>
