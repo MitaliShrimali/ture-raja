@@ -51,8 +51,12 @@
                     <td class="py-6 text-right font-medium text-gray-800">₹ {{ number_format($payment->amount ?? 0, 2) }}</td>
                 </tr>
                 <tr>
+                    <td class="py-4 text-right text-gray-500 font-medium border-t-2 border-gray-100">Taxes & Fees (18% GST)</td>
+                    <td class="py-4 text-right font-medium text-gray-800 border-t-2 border-gray-100">₹ {{ number_format(($payment->amount ?? 0) * 0.18, 2) }}</td>
+                </tr>
+                <tr>
                     <td class="py-4 text-right text-gray-800 font-bold text-lg border-t-2 border-gray-100">Total</td>
-                    <td class="py-4 text-right text-orange-500 font-bold text-2xl border-t-2 border-gray-100">₹ {{ number_format($payment->amount ?? 0, 2) }}</td>
+                    <td class="py-4 text-right text-orange-500 font-bold text-2xl border-t-2 border-gray-100">₹ {{ number_format(($payment->amount ?? 0) * 1.18, 2) }}</td>
                 </tr>
             </tfoot>
         </table>

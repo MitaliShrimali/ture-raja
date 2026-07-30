@@ -30,8 +30,8 @@
                         <span class="text-gray-900 font-bold">₹{{ number_format($amount, 2) }}</span>
                     </div>
                     <div class="flex justify-between items-center text-sm">
-                        <span class="text-gray-500 font-medium">Taxes & Fees</span>
-                        <span class="text-gray-900 font-bold">₹0.00</span>
+                        <span class="text-gray-500 font-medium">Taxes & Fees (18% GST)</span>
+                        <span class="text-gray-900 font-bold">₹{{ number_format($amount * 0.18, 2) }}</span>
                     </div>
                 </div>
 
@@ -39,7 +39,7 @@
 
                 <div class="flex justify-between items-center mb-8">
                     <span class="text-gray-900 font-black">Total Due</span>
-                    <span class="text-3xl text-[#ea580c] font-black">₹{{ number_format($amount, 2) }}</span>
+                    <span class="text-3xl text-[#ea580c] font-black">₹{{ number_format($amount * 1.18, 2) }}</span>
                 </div>
 
                 <p class="text-[10px] text-gray-400 text-center font-medium leading-relaxed">
@@ -119,7 +119,7 @@
                         </div>
                     @else
                         <button type="button" id="rzp-button1" class="w-full py-4 bg-[#ea580c] text-white font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center">
-                            <i class="fas fa-lock mr-2"></i> Complete Payment of ₹{{ number_format($amount, 2) }}
+                            <i class="fas fa-lock mr-2"></i> Complete Payment of ₹{{ number_format($amount * 1.18, 2) }}
                         </button>
                     @endif
                 </form>
@@ -133,7 +133,7 @@
     <script>
         var options = {
             "key": "{{ config('services.razorpay.key') }}",
-            "amount": "{{ round($amount * 100) }}", 
+            "amount": "{{ round($amount * 1.18 * 100) }}", 
             "currency": "INR",
             "name": "Tour Raja",
             "description": "{{ $itemName }}",

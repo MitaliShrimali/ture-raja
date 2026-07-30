@@ -30,9 +30,7 @@
                     <h2 class="text-4xl font-black mb-8">₹{{ number_format($payments->where('status', 'Success')->sum('amount'), 2) }}</h2>
                 </div>
                 <div>
-                    <button class="bg-white text-[#ea580c] font-black text-sm px-6 py-3 rounded-full hover:bg-gray-50 transition-colors shadow-lg flex items-center w-max">
-                        <i class="fas fa-plus-circle mr-2"></i> Top Up Credits
-                    </button>
+                    <!-- Top Up Credits Button Removed -->
                 </div>
             </div>
         </div>
@@ -121,7 +119,7 @@
                         @if($pkg->is_boosted ?? false)
                             <button class="bg-orange-100 text-[#ea580c] font-bold text-xs px-6 py-2.5 rounded-full cursor-default inline-block border border-orange-200" disabled>Active</button>
                         @else
-                            <a href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id]) }}" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-6 py-2.5 rounded-full transition-colors inline-block">Boost</a>
+                            <a href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id]) }}" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 inline-block shadow-lg shadow-orange-500/40 hover:scale-105 border border-orange-300">Boost <i class="fas fa-rocket ml-1"></i></a>
                         @endif
                     </div>
                 </div>
@@ -139,16 +137,26 @@
             </div>
             
             <!-- Trusted Agent -->
-            <div class="bg-blue-50/50 rounded-[2rem] border border-blue-100 shadow-sm p-6 mb-6">
-                <div class="flex justify-between items-start mb-4">
-                    <h4 class="text-lg font-bold text-gray-900">Trusted Agent</h4>
-                    <i class="fas fa-check-circle text-blue-500"></i>
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-[2rem] border-2 border-blue-400 shadow-xl shadow-blue-500/30 p-8 mb-6 transform scale-105 transition-all duration-300 relative overflow-hidden">
+                <style>
+                    @keyframes shine {
+                        0% { transform: translateX(-150%) skewX(-20deg); }
+                        100% { transform: translateX(250%) skewX(-20deg); }
+                    }
+                    .animate-shine {
+                        animation: shine 3s infinite;
+                    }
+                </style>
+                <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shine pointer-events-none"></div>
+                <div class="flex justify-between items-start mb-4 relative z-10">
+                    <h4 class="text-xl font-black text-blue-900">Trusted Agent</h4>
+                    <i class="fas fa-check-circle text-blue-500 text-2xl drop-shadow-md"></i>
                 </div>
-                <p class="text-xs text-gray-500 font-medium mb-4 leading-relaxed">Stand out with a Blue Tick and Service Guaranteed badge.</p>
+                <p class="text-sm text-blue-700 font-medium mb-4 leading-relaxed relative z-10">Stand out with a Blue Tick and Service Guaranteed badge.</p>
                 @if(isset($agent) && $agent->service_guaranteed)
-                    <button class="w-full bg-blue-100 text-blue-600 font-bold text-sm py-4 rounded-xl cursor-default border border-blue-200 block text-center">Active - Trusted Agent</button>
+                    <button class="w-full bg-blue-200 text-blue-800 font-bold text-sm py-4 rounded-xl cursor-default border border-blue-300 block text-center relative z-10">Active - Trusted Agent</button>
                 @else
-                    <a href="{{ route('agent.checkout', ['type' => 'ad', 'id' => 'blue_tick', 'name' => 'Trusted Agent Verification', 'amount' => 1499]) }}" class="w-full bg-blue-500 text-white font-bold text-sm py-4 rounded-xl hover:bg-blue-600 transition-colors shadow-lg block text-center shadow-blue-200">Get Verified - ₹1499</a>
+                    <a href="{{ route('agent.checkout', ['type' => 'ad', 'id' => 'blue_tick', 'name' => 'Trusted Agent Verification', 'amount' => 1499]) }}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-sm py-4 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg block text-center shadow-blue-500/50 relative z-10">Get Verified - ₹1499</a>
                 @endif
             </div>
 

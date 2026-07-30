@@ -35,7 +35,7 @@
 
                         <div class="text-right flex flex-col items-end">
                             <p class="text-3xl font-bold text-gray-400 mb-6 flex items-center">
-                                <i class="fas fa-rupee-sign text-lg mr-2"></i> {{ number_format($payment->amount ?? 0, 2) }}
+                                <i class="fas fa-rupee-sign text-lg mr-2"></i> {{ number_format(($payment->amount ?? 0) * 1.18, 2) }}
                             </p>
                             <a href="{{ route('agent.invoice.download', $payment->id) }}" target="_blank" class="bg-primary text-white px-8 py-3 rounded-2xl text-xs font-bold shadow-lg shadow-orange-100 hover:scale-105 transition-all">
                                 View Invoice
