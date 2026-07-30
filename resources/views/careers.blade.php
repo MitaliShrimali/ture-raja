@@ -429,7 +429,7 @@
                         </div>
 
                         <!-- Name Details -->
-                        <div class="grid grid-cols-1 {{ in_array('middle_name', $careerFormFields) ? 'md:grid-cols-3' : 'md:grid-cols-2' }} gap-6">
+                        <div class="grid grid-cols-1 {{ in_array('middle_name', $careerFormFields) ? 'md:grid-cols-3' : 'md:grid-cols-2' }} gap-6 items-end">
                             <div>
                                 <label class="form-label">First Name <span class="text-red-500">*</span></label>
                                 <input type="text" name="first_name" required placeholder="First Name" class="form-input">
@@ -501,7 +501,7 @@
 
                         <!-- Notice Period & Gender -->
                         @if(in_array('notice_period', $careerFormFields) || in_array('gender', $careerFormFields))
-                        <div class="grid grid-cols-1 {{ (in_array('notice_period', $careerFormFields) && in_array('gender', $careerFormFields)) ? 'md:grid-cols-2' : 'md:grid-cols-1' }} gap-6">
+                        <div class="grid grid-cols-1 {{ (in_array('notice_period', $careerFormFields) && in_array('gender', $careerFormFields)) ? 'md:grid-cols-2' : 'md:grid-cols-1' }} gap-6 items-end">
                             @if(in_array('notice_period', $careerFormFields))
                             <div>
                                 <label class="form-label">Notice Period <span class="text-red-500">*</span></label>
@@ -542,7 +542,7 @@
                                 $gridCols = 2;
                             }
                         @endphp
-                        <div class="grid grid-cols-1 {{ $gridCols === 3 ? 'md:grid-cols-3' : ($gridCols === 2 ? 'md:grid-cols-2' : 'md:grid-cols-1') }} gap-6">
+                        <div class="grid grid-cols-1 {{ $gridCols === 3 ? 'md:grid-cols-3' : ($gridCols === 2 ? 'md:grid-cols-2' : 'md:grid-cols-1') }} gap-6 items-end">
                             @if($showEducation)
                             <div>
                                 <label class="form-label">Highest Educational Qualification <span
@@ -567,7 +567,7 @@
 
                         <!-- CTC -->
                         @if(in_array('current_ctc', $careerFormFields) || in_array('expected_ctc', $careerFormFields))
-                        <div class="grid grid-cols-1 {{ (in_array('current_ctc', $careerFormFields) && in_array('expected_ctc', $careerFormFields)) ? 'md:grid-cols-2' : 'md:grid-cols-1' }} gap-6">
+                        <div class="grid grid-cols-1 {{ (in_array('current_ctc', $careerFormFields) && in_array('expected_ctc', $careerFormFields)) ? 'md:grid-cols-2' : 'md:grid-cols-1' }} gap-6 items-end">
                             @if(in_array('current_ctc', $careerFormFields))
                             <div>
                                 <label class="form-label">Current CTC</label>
@@ -600,7 +600,7 @@
                         @endphp
 
                         @if(count($activeCustomFields) > 0)
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 items-end">
                             @foreach($activeCustomFields as $cf)
                                 <div>
                                     <label class="form-label">{{ $cf['label'] }} <span class="text-red-500">*</span></label>
@@ -615,10 +615,12 @@
                                 class="w-full sm:w-auto px-10 py-4 bg-[#E8460A] text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-xl shadow-orange-500/20 hover:bg-[#d63f08] hover:-translate-y-0.5 transition-all duration-300">
                                 Apply for Position
                             </button>
-                            <p class="text-[11px] text-gray-400 font-medium text-center sm:text-left mt-4">
-                                By submitting this form, you agree to our <a href="{{ url('/privacy-policy') }}"
-                                    class="text-[#E8460A] hover:underline">Privacy Policy</a>.
-                            </p>
+                            <div class="text-[11px] text-gray-500 font-medium text-center sm:text-left mt-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <span class="font-bold text-gray-700">Privacy Notice:</span> By submitting your application, you consent to TourRaja collecting and processing your personal information solely for recruitment purposes. Your information will be handled securely and will not be shared with third parties except where required for the hiring process or by law.
+                                <br><br>
+                                Read our full <a href="{{ url('/privacy-policy-careers') }}" target="_blank" class="text-[#E8460A] hover:underline font-bold">Privacy Policy – Careers</a>.
+                            </div>
+                        </div>
                         </div>
                     </form>
                 </div>

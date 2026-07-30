@@ -21,6 +21,7 @@ Route::get('/career', [UserController::class, 'careers'])->name('career');
 Route::post('/career/submit', [UserController::class, 'submitCareer'])->name('career.submit');
 Route::get('/contact', function () { return view('contact'); });
 Route::get('/privacy-policy', function () { return view('privacy-policy'); });
+Route::get('/privacy-policy-careers', function () { return view('privacy-policy-careers'); });
 Route::get('/terms-and-conditions', function () { return view('terms'); });
 
 // Search from hero bar → redirect to listing
