@@ -144,40 +144,25 @@
     {{-- ── Content ──────────────────────────────────────────────────── --}}
     <div class="px-5 pt-4 pb-5 flex flex-col flex-grow gap-3 package-content">
 
-        {{-- Row 1: Title + Rating --}}
-        <div class="flex items-start justify-between gap-3">
-            <h3 class="font-black text-foreground leading-tight line-clamp-2 font-heading flex-grow" style="font-size:18px;">
+        {{-- Row 1: Title + Duration --}}
+        <div class="flex items-center justify-between gap-3">
+            <h3 class="font-black text-foreground leading-tight truncate font-heading flex-grow" style="font-size:18px;" title="{{ $title }}">
                 {{ $title }}
             </h3>
-            <div class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-orange-50 border border-orange-100 shrink-0 mt-0.5 shadow-sm">
-                <i data-lucide="star" class="fill-orange-400 text-orange-400" size="13"></i>
-                <span class="text-xs font-black text-foreground">{{ $rating }}</span>
-            </div>
+            @if($formattedDuration)
+                <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gray-50 border border-gray-200 shrink-0 shadow-sm text-[11px] font-bold text-gray-700">
+                    <i data-lucide="calendar-days" size="12" class="text-gray-500"></i>
+                    <span>{{ $formattedDuration }}</span>
+                </div>
+            @endif
         </div>
 
-        {{-- Row 2: Duration (3N/4D) | Tour Type --}}
+        {{-- Row 2: Tour Type + Theme --}}
         <div class="flex items-center gap-2 flex-wrap">
-            @if($formattedDuration)
-                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-50 border border-gray-200 text-[11px] font-bold text-gray-700">
-                    <i data-lucide="calendar-days" size="12" class="text-gray-500"></i>
-                    {{ $formattedDuration }}
-                </span>
-            @endif
-
             @if($tourTypeVal)
                 <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-100 text-[11px] font-bold text-orange-600">
                     <i data-lucide="{{ $transportIcon }}" size="12"></i>
                     {{ $tourTypeVal }}
-                </span>
-            @endif
-        </div>
-
-        {{-- Row 3: Destination Type (Category) | Theme --}}
-        <div class="flex items-center gap-2 flex-wrap">
-            @if($categoryVal)
-                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-100 text-[11px] font-bold text-blue-600">
-                    <i data-lucide="globe" size="12"></i>
-                    {{ ucfirst($categoryVal) }}
                 </span>
             @endif
 
@@ -226,7 +211,7 @@
             <div class="flex flex-col">
                 <span class="text-2xl font-black text-foreground tracking-tight font-heading">{{ $currency ?? '₹' }}{{ number_format($price) }}</span>
                 @if($oldPrice)
-                    <span class="text-[11px] text-primary font-black line-through">{{ $currency ?? '₹' }}{{ number_format($oldPrice) }}</span>
+                    <span class="text-[11px] text-gray-400 font-semibold line-through">{{ $currency ?? '₹' }}{{ number_format($oldPrice) }}</span>
                 @endif
             </div>
 

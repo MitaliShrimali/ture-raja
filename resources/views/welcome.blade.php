@@ -624,6 +624,32 @@
                             $theme = $pkg['theme'] ?? '';
                         }
 
+                        if (empty($tourType)) {
+                            $titleLower = strtolower((string)$title);
+                            if (str_contains($titleLower, 'flight') || str_contains($titleLower, 'air')) {
+                                $tourType = 'Flight Package';
+                            } elseif (str_contains($titleLower, 'train') || str_contains($titleLower, 'rail')) {
+                                $tourType = 'Train Package';
+                            } elseif (str_contains($titleLower, 'bus') || str_contains($titleLower, 'coach')) {
+                                $tourType = 'Bus Package';
+                            } elseif (str_contains($titleLower, 'cruise') || str_contains($titleLower, 'boat')) {
+                                $tourType = 'Cruise Package';
+                            } else {
+                                $tourType = 'Land/Customised Packages';
+                            }
+                        }
+
+                        if (empty($theme)) {
+                            $titleLower = strtolower((string)$title);
+                            if (str_contains($titleLower, 'honeymoon') || str_contains($titleLower, 'couple')) {
+                                $theme = 'Honeymoon';
+                            } elseif (str_contains($titleLower, 'adventure') || str_contains($titleLower, 'trek')) {
+                                $theme = 'Adventure';
+                            } else {
+                                $theme = 'Family/Group';
+                            }
+                        }
+
                         $durationDays = 3;
                         if ($duration) {
                             preg_match('/\d+/', $duration, $matches);
@@ -918,33 +944,27 @@
             <div class="relative group">
                 <div class="flex gap-6 overflow-hidden pt-2 pb-8 testimonial-track" id="testi-slider">
                     @php
-                        $testimonials = [
-                            ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara', 'rating' => 5],
-                            ['name' => 'Atend John', 'loc' => 'California', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=john', 'rating' => 5],
-                            ['name' => 'Sara Mohamed', 'loc' => 'Jakarta', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips.", 'img' => 'https://i.pravatar.cc/150?u=sara2', 'rating' => 3],
-                            ['name' => 'Michael Chen', 'loc' => 'Singapore', 'text' => "Excellent service and direct agent contact saved me 30% on my last Bali trip.", 'img' => 'https://i.pravatar.cc/150?u=mike', 'rating' => 5],
-                        ];
-                        // Clone for seamless loop
-                        $allTestimonials = array_merge($testimonials, $testimonials);
+                        $testimonials = \DB::table('reviews')->where('status', 'Active')->orderBy('id', 'desc')->get()->toArray();
+                        $allTestimonials = $testimonials; // Removed array_merge so it doesn't duplicate
                     @endphp
 
                     @foreach($allTestimonials as $testi)
                         <div class="flex-shrink-0 w-full md:w-[450px] testimonial-card">
                             <div class="p-6 rounded-[32px] border border-border-soft bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-3">
                                 <h4 class="text-lg md:text-xl font-black text-foreground font-heading">The best booking system</h4>
-                                <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic">"{{ $testi['text'] }}"</p>
+                                <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic break-words line-clamp-4">"{{ $testi->text }}"</p>
                                 
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between pt-4 border-t border-border-soft/50 mt-auto gap-4">
                                     <div class="flex items-center gap-4">
-                                        <img src="{{ asset($testi['img']) }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-primary/10">
+                                        <img src="{{ Str::startsWith($testi->image, 'http') ? $testi->image : asset($testi->image) }}" class="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover ring-2 ring-primary/10">
                                         <div class="flex flex-col">
-                                            <span class="font-black text-foreground text-sm md:text-base">{{ $testi['name'] }}</span>
-                                            <span class="text-[10px] md:text-xs text-text-muted font-bold">{{ $testi['loc'] }}</span>
+                                            <span class="font-black text-foreground text-sm md:text-base">{{ $testi->name }}</span>
+                                            <span class="text-[10px] md:text-xs text-text-muted font-bold">{{ $testi->location }}</span>
                                         </div>
                                     </div>
                                     <div class="flex gap-0.5">
                                         @for($i=0; $i<5; $i++)
-                                            <i data-lucide="star" size="14" class="{{ $i < $testi['rating'] ? 'fill-orange-400 text-orange-400' : 'text-gray-200' }}"></i>
+                                            <i data-lucide="star" size="14" class="{{ $i < $testi->rating ? 'fill-orange-400 text-orange-400' : 'text-gray-200' }}"></i>
                                         @endfor
                                     </div>
                                 </div>

@@ -3,12 +3,14 @@
 @section('content')
     @php
         // Fetch transit music for the active tour_type filter
-        $activeTourType = request('tour_type');
+        $activeTourTypes = array_filter((array) request('tour_type'));
+        $firstTourType = count($activeTourTypes) > 0 ? reset($activeTourTypes) : null;
+        
         $transitMusic = null;
-        if ($activeTourType) {
+        if ($firstTourType) {
             try {
                 $transitMusic = DB::table('transit_music')
-                    ->where('transit_name', $activeTourType)
+                    ->where('transit_name', $firstTourType)
                     ->where('status', 'Active')
                     ->first();
             } catch (\Exception $e) {
@@ -18,108 +20,38 @@
     @endphp
 
     {{-- Transit Music Player — same floating icon style as home page hero --}}
-    @if($transitMusic)
-        <audio id="transitBgMusic" src="{{ asset($transitMusic->music_file) }}" loop></audio>
+    <div id="transit-music-container">
+        @if($transitMusic)
+            <audio id="transitBgMusic" src="{{ asset($transitMusic->music_file) }}" loop></audio>
 
-        {{-- Floating circular button: bottom-right, raised to avoid overlap with scroll-up arrow --}}
-        <div class="fixed z-[300] select-none" style="bottom: 90px; right: 20px;">
+            {{-- Floating circular button: bottom-right, raised to avoid overlap with scroll-up arrow --}}
+            <div class="fixed select-none" style="z-index: 9999; bottom: 90px; right: 20px;">
 
-            <button type="button" onclick="toggleTransitSound()" id="transitSoundToggle"
-                class="w-8 h-8 rounded-full bg-[#e85d26] hover:bg-orange-600 flex items-center justify-center text-white transition-all shadow-md focus:outline-none"
-                style="box-shadow: 0 0 10px rgba(232, 93, 38, 0.4);"
-                title="{{ $transitMusic->music_name }} — {{ $activeTourType }}">
-                {{-- Music On Icon --}}
-                <svg id="transitMusicOnIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                    class="w-4 h-4 text-white">
-                    <path d="M9 18V5l12-2v13"></path>
-                    <circle cx="6" cy="18" r="3"></circle>
-                    <circle cx="18" cy="16" r="3"></circle>
-                </svg>
-                {{-- Music Off Icon (hidden by default) --}}
-                <svg id="transitMusicOffIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-                    class="w-4 h-4 text-white hidden">
-                    <line x1="2" y1="2" x2="22" y2="22"></line>
-                    <path d="M9 13V5l12-2v9"></path>
-                    <circle cx="6" cy="18" r="3"></circle>
-                    <circle cx="18" cy="16" r="3"></circle>
-                </svg>
-            </button>
-        </div>
-
-        <script>
-            function updateTransitSoundState(isPlaying) {
-                const toggle = document.getElementById('transitSoundToggle');
-                const onIcon = document.getElementById('transitMusicOnIcon');
-                const offIcon = document.getElementById('transitMusicOffIcon');
-                if (!toggle) return;
-                if (isPlaying) {
-                    toggle.style.backgroundColor = '#e85d26';
-                    if (onIcon) onIcon.classList.remove('hidden');
-                    if (offIcon) offIcon.classList.add('hidden');
-                } else {
-                    toggle.style.backgroundColor = '#4b5563';
-                    if (onIcon) onIcon.classList.add('hidden');
-                    if (offIcon) offIcon.classList.remove('hidden');
-                }
-            }
-
-            function toggleTransitSound() {
-                const audio = document.getElementById('transitBgMusic');
-                if (!audio) return;
-                if (audio.paused) {
-                    audio.play().then(() => {
-                        updateTransitSoundState(true);
-                        sessionStorage.setItem('transitMusicState', 'enabled');
-                    }).catch(e => console.log('Audio play failed:', e));
-                } else {
-                    audio.pause();
-                    updateTransitSoundState(false);
-                    sessionStorage.setItem('transitMusicState', 'disabled');
-                }
-            }
-
-            document.addEventListener('DOMContentLoaded', function () {
-                const audio = document.getElementById('transitBgMusic');
-                if (!audio) return;
-                audio.volume = 0.5;
-
-                const state = sessionStorage.getItem('transitMusicState');
-
-                if (state === 'disabled') {
-                    audio.pause();
-                    updateTransitSoundState(false);
-                } else if (state === 'enabled') {
-                    audio.play().then(() => {
-                        updateTransitSoundState(true);
-                    }).catch(() => {
-                        updateTransitSoundState(false);
-                    });
-                } else {
-                    // First visit — try autoplay, fallback to first click
-                    const startPlay = () => {
-                        if (sessionStorage.getItem('transitMusicState') === 'disabled') return;
-                        audio.play()
-                            .then(() => {
-                                updateTransitSoundState(true);
-                                document.removeEventListener('click', startPlay);
-                                document.removeEventListener('keydown', startPlay);
-                                if (!sessionStorage.getItem('transitMusicState')) {
-                                    sessionStorage.setItem('transitMusicState', 'played');
-                                }
-                            })
-                            .catch(e => {
-                                console.log('Autoplay blocked, waiting for interaction...', e);
-                            });
-                    };
-                    startPlay();
-                    document.addEventListener('click', startPlay);
-                    document.addEventListener('keydown', startPlay);
-                }
-            });
-        </script>
-    @endif
+                <button type="button" onclick="toggleTransitSound()" id="transitSoundToggle"
+                    class="w-8 h-8 rounded-full bg-[#e85d26] hover:bg-orange-600 flex items-center justify-center text-white transition-all shadow-md focus:outline-none border-[1.5px] border-white"
+                    style="box-shadow: 0 0 10px rgba(232, 93, 38, 0.4);"
+                    title="{{ $transitMusic->music_name }} — {{ $firstTourType }}">
+                    {{-- Music On Icon --}}
+                    <svg id="transitMusicOnIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="w-4 h-4 text-white">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                    {{-- Music Off Icon (hidden by default) --}}
+                    <svg id="transitMusicOffIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                        class="w-4 h-4 text-white hidden">
+                        <line x1="2" y1="2" x2="22" y2="22"></line>
+                        <path d="M9 13V5l12-2v9"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+        @endif
+    </div>
 
     <style>
         /* MOBILE LIST VIEW FIXES */
@@ -653,6 +585,77 @@
     </div>
     @push('scripts')
         <script>
+            window.updateTransitSoundState = function(isPlaying) {
+                const toggle = document.getElementById('transitSoundToggle');
+                const onIcon = document.getElementById('transitMusicOnIcon');
+                const offIcon = document.getElementById('transitMusicOffIcon');
+                if (!toggle) return;
+                if (isPlaying) {
+                    toggle.style.backgroundColor = '#e85d26';
+                    if (onIcon) onIcon.classList.remove('hidden');
+                    if (offIcon) offIcon.classList.add('hidden');
+                } else {
+                    toggle.style.backgroundColor = '#4b5563';
+                    if (onIcon) onIcon.classList.add('hidden');
+                    if (offIcon) offIcon.classList.remove('hidden');
+                }
+            };
+
+            window.toggleTransitSound = function() {
+                const audio = document.getElementById('transitBgMusic');
+                if (!audio) return;
+                if (audio.paused) {
+                    audio.play().then(() => {
+                        window.updateTransitSoundState(true);
+                        sessionStorage.setItem('transitMusicState', 'enabled');
+                    }).catch(e => console.log('Audio play failed:', e));
+                } else {
+                    audio.pause();
+                    window.updateTransitSoundState(false);
+                    sessionStorage.setItem('transitMusicState', 'disabled');
+                }
+            };
+
+            window.initTransitMusic = function() {
+                const audio = document.getElementById('transitBgMusic');
+                if (!audio) return;
+                audio.volume = 0.5;
+
+                const state = sessionStorage.getItem('transitMusicState');
+
+                if (state === 'disabled') {
+                    audio.pause();
+                    window.updateTransitSoundState(false);
+                } else if (state === 'enabled') {
+                    audio.play().then(() => {
+                        window.updateTransitSoundState(true);
+                    }).catch(() => {
+                        window.updateTransitSoundState(false);
+                    });
+                } else {
+                    // First visit — try autoplay, fallback to first click
+                    const startPlay = () => {
+                        if (sessionStorage.getItem('transitMusicState') === 'disabled') return;
+                        audio.play()
+                            .then(() => {
+                                window.updateTransitSoundState(true);
+                                document.removeEventListener('click', startPlay);
+                                document.removeEventListener('keydown', startPlay);
+                                if (!sessionStorage.getItem('transitMusicState')) {
+                                    sessionStorage.setItem('transitMusicState', 'played');
+                                }
+                            })
+                            .catch(e => {
+                                console.log('Autoplay blocked, waiting for interaction...', e);
+                            });
+                    };
+                    startPlay();
+                    document.addEventListener('click', startPlay);
+                    document.addEventListener('keydown', startPlay);
+                }
+            };
+            document.addEventListener('DOMContentLoaded', window.initTransitMusic);
+
             function loadMorePackages() {
                 const hiddenItems = document.querySelectorAll('.package-item.hidden');
                 for (let i = 0; i < 25 && i < hiddenItems.length; i++) {
@@ -711,6 +714,27 @@
                             const newSuggested = doc.getElementById('suggested-packages-section');
                             const oldSuggested = document.getElementById('suggested-packages-section');
                             if (newSuggested && oldSuggested) oldSuggested.innerHTML = newSuggested.innerHTML;
+
+                            // Swap transit music dynamically if it changed
+                            const newMusic = doc.getElementById('transit-music-container');
+                            const oldMusic = document.getElementById('transit-music-container');
+                            if (newMusic && oldMusic) {
+                                const newAudio = newMusic.querySelector('audio');
+                                const oldAudio = oldMusic.querySelector('audio');
+                                const newSrc = newAudio ? newAudio.getAttribute('src') : null;
+                                const oldSrc = oldAudio ? oldAudio.getAttribute('src') : null;
+
+                                if (newSrc !== oldSrc) {
+                                    // Make sure we stop the old audio before replacing
+                                    if (oldAudio) {
+                                        oldAudio.pause();
+                                        oldAudio.removeAttribute('src');
+                                        oldAudio.load();
+                                    }
+                                    oldMusic.innerHTML = newMusic.innerHTML;
+                                    if (window.initTransitMusic) window.initTransitMusic();
+                                }
+                            }
 
                             // Re-render Lucide icons for new cards!
                             if (window.lucide) window.lucide.createIcons();

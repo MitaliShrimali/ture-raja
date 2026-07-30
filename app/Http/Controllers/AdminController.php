@@ -2770,6 +2770,86 @@ class AdminController extends Controller
     }
 
     // SYSTEM SETTINGS
+    public function reviews(Request $request)
+    {
+        $reviews = DB::table('reviews')->orderBy('id', 'desc')->paginate(10);
+        return view('admin.reviews', compact('reviews'));
+    }
+
+    public function storeReview(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'text' => 'required'
+        ]);
+
+        $imagePath = $request->image;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/reviews'), $filename);
+            $imagePath = '/uploads/reviews/' . $filename;
+        }
+
+        DB::table('reviews')->insert([
+            'name' => $request->name,
+            'location' => $request->location,
+            'text' => $request->text,
+            'rating' => $request->rating ?? 5,
+            'image' => $imagePath ?? 'https://i.pravatar.cc/150?u='.$request->name,
+            'status' => $request->status ?? 'Active',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Review added successfully!');
+    }
+
+    public function updateReview(Request $request)
+    {
+        $request->validate([
+            'id' => 'required',
+            'name' => 'required',
+            'text' => 'required'
+        ]);
+
+        $imagePath = $request->image;
+        if ($request->hasFile('image_file')) {
+            $file = $request->file('image_file');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/reviews'), $filename);
+            $imagePath = '/uploads/reviews/' . $filename;
+        }
+
+        DB::table('reviews')->where('id', $request->id)->update([
+            'name' => $request->name,
+            'location' => $request->location,
+            'text' => $request->text,
+            'rating' => $request->rating ?? 5,
+            'image' => $imagePath,
+            'status' => $request->status ?? 'Active',
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Review updated successfully!');
+    }
+
+    public function deleteReview($id)
+    {
+        DB::table('reviews')->where('id', $id)->delete();
+        return redirect()->back()->with('success', 'Review deleted!');
+    }
+
+    public function toggleReview($id)
+    {
+        $review = DB::table('reviews')->where('id', $id)->first();
+        if ($review) {
+            $newStatus = $review->status === 'Active' ? 'Inactive' : 'Active';
+            DB::table('reviews')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+        }
+        return redirect()->back()->with('success', 'Review status updated!');
+    }
+
     private function logActivity($activity, $details = null)
     {
         try {

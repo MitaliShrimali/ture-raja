@@ -201,22 +201,6 @@
     </div>
     </div>
 
-    <!-- Scroll to Top Button -->
-    <div x-data="{ showScroll: false }" 
-         @scroll.window="showScroll = (window.pageYOffset > 500) ? true : false"
-         class="fixed bottom-6 right-6 z-[100]"
-         x-show="showScroll"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 translate-y-10"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         x-transition:leave="transition ease-in duration-300"
-         x-transition:leave-start="opacity-100 translate-y-0"
-         x-transition:leave-end="opacity-0 translate-y-10"
-         style="display: none;">
-        <button @click="window.scrollTo({top: 0, behavior: 'smooth'})"
-                class="bg-black hover:bg-black/80 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 border border-white/20">
-            <i data-lucide="chevron-up" size="24"></i>
-        </button>
-    </div>
+
   </div>
 </footer>

@@ -716,10 +716,10 @@
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 translate-y-4"
         @click="window.scrollTo({top: 0, behavior: 'smooth'})"
-        class="fixed right-6 bottom-24 md:bottom-8 z-[9999] w-10 h-10 border border-white flex items-center justify-center rounded-full bg-primary text-white shadow-[0_8px_20px_rgba(232,93,38,0.3)] hover:bg-[#d65220] hover:shadow-[0_12px_25px_rgba(232,93,38,0.4)] hover:-translate-y-1 transition-all duration-300 group"
+        class="fixed right-4 bottom-4 sm:right-6 sm:bottom-8 z-[9999] w-10 h-10 sm:w-12 sm:h-12 border-[1.5px] border-white flex items-center justify-center rounded-full bg-[#e85d26] text-white shadow-[0_8px_20px_rgba(232,93,38,0.3)] hover:bg-[#d04c1a] hover:shadow-[0_12px_25px_rgba(232,93,38,0.4)] hover:-translate-y-1 transition-all duration-300 group"
         aria-label="Scroll to top"
     >
-        <i data-lucide="chevron-up" class="w-5 h-5 group-hover:animate-bounce"></i>
+        <i data-lucide="chevron-up" class="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-bounce"></i>
     </button>
 
     <!-- Country Code Selector & Validator Script -->

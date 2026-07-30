@@ -94,6 +94,7 @@
                             'label' => 'SUBSCRIPTION OVERSIGHT',
                             'items' => [
                                 ['name' => 'Advertisement', 'icon' => 'megaphone', 'href' => '/admin/ads'],
+                                ['name' => 'Reviews', 'icon' => 'message-square', 'href' => '/admin/reviews'],
                                 ['name' => 'Lead Management', 'icon' => 'target', 'href' => '/admin/leads'],
                                 ['name' => 'Plan', 'icon' => 'clipboard-list', 'href' => '/admin/plans'],
                             ]
@@ -421,6 +422,7 @@
                 { name: 'International Packages', url: '{{ url("/admin/packages/international") }}' },
                 { name: 'Domestic Packages', url: '{{ url("/admin/packages/domestic") }}' },
                 { name: 'Advertisements', url: '{{ url("/admin/ads") }}' },
+                { name: 'Reviews', url: '{{ url("/admin/reviews") }}' },
                 { name: 'Leads', url: '{{ url("/admin/leads") }}' },
                 { name: 'Plans', url: '{{ url("/admin/plans") }}' },
                 { name: 'Payments', url: '{{ url("/admin/payments") }}' },

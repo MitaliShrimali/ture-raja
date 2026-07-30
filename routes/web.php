@@ -120,7 +120,11 @@ Route::prefix('admin')->group(function () {
         Route::get('/payments', [AdminController::class, 'payments']);
         Route::get('/ads', [AdminController::class, 'ads']);
         Route::get('/plans', [AdminController::class, 'plans']);
-
+        Route::get('/reviews', [AdminController::class, 'reviews']);
+        Route::post('/reviews/store', [AdminController::class, 'storeReview']);
+        Route::post('/reviews/update', [AdminController::class, 'updateReview']);
+        Route::get('/reviews/delete/{id}'   , [AdminController::class, 'deleteReview']);
+        Route::get('/reviews/toggle/{id}', [AdminController::class, 'toggleReview']);
     // Platform Settings
     Route::get('/home-editor', [AdminController::class, 'homeEditor']);
     Route::get('/notifications', [AdminController::class, 'notifications']);
@@ -758,6 +762,14 @@ Route::get('/packages/{slug}', function ($slug) {
                 ->toArray();
         }
 
+        if (empty($agentPackages)) {
+            $agentPackages = \App\Models\Package::where('status', 'Active')
+                ->where('id', '!=', $dbPkg->id)
+                ->inRandomOrder()
+                ->take(8)
+                ->get()
+                ->toArray();
+        }
         return view('packages.show', ['package' => $package, 'agentPackages' => $agentPackages]);
     }
 
