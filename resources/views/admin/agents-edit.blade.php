@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('admin_title', 'Agents Edit')
 
@@ -99,7 +99,7 @@
                     <div class="bg-white rounded-[32px] border border-border-soft p-6 space-y-6">
                         <div class="flex items-center gap-3">
                             <i data-lucide="sliders" size="20" class="text-primary"></i>
-                            <h3 class="text-lg font-black text-gray-800">Service Configuration</h3>
+                            <h3 class="text-lg font-black text-gray-800">Service offering</h3>
                         </div>
 
                         <div class="space-y-4">

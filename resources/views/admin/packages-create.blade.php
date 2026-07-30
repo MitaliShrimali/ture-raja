@@ -343,7 +343,7 @@
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Publish On
                                 Behalf Of (Agent)</label>
                             <div class="relative">
-                                <select name="agent"
+                                <select name="agent" id="agentSelect"
                                     class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 pr-10 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm appearance-none">
                                     <option value="">Admin (Default / Miths Holidays)</option>
                                     @php
@@ -1381,6 +1381,24 @@
                     }
                 });
             }
+        });
+    </script>
+
+    <!-- TomSelect Library -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            new TomSelect("#agentSelect", {
+                create: false,
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                placeholder: "Search for an Agent...",
+                maxOptions: 50
+            });
         });
     </script>
 @endsection

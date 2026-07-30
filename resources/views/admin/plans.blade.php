@@ -205,6 +205,13 @@
                                         <i data-lucide="eye" size="18"></i>
                                     </a>
                                     <a 
+                                        href="{{ url('/admin/plans/edit/' . $plan->id) }}"
+                                        class="p-2.5 text-muted-text hover:text-blue-500 hover:bg-blue-50 rounded-xl transition-all"
+                                        title="Edit Plan"
+                                    >
+                                        <i data-lucide="pencil" size="18"></i>
+                                    </a>
+                                    <a 
                                         href="{{ url('/admin/plans/delete/' . $plan->id) }}" 
                                         onclick="return confirm('Are you sure you want to delete this subscription plan tier?');"
                                         class="p-2.5 text-muted-text hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"

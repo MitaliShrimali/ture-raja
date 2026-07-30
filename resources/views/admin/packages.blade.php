@@ -5,13 +5,19 @@
 @section('content')
 @php
     $activeListings = DB::table('packages')->where('status', 'Active')->count();
-    $avgPrice = DB::table('packages')->avg('price') ?: 0;
-    $avgPriceFormatted = $avgPrice >= 1000 ? '₹' . number_format($avgPrice / 1000, 1) . 'k' : '₹' . number_format($avgPrice);
+    
+    $expiredPackages = DB::table('packages')
+        ->whereNotNull('expiry_date')
+        ->whereDate('expiry_date', '<', now())
+        ->count();
     
     $expiringSoon = DB::table('packages')
         ->whereNotNull('expiry_date')
+        ->whereDate('expiry_date', '>=', now())
         ->whereDate('expiry_date', '<=', now()->addDays(7))
         ->count();
+
+    $pendingPackages = DB::table('packages')->where('status', 'Pending')->count();
     
     $totalRevenue = DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount') ?: 0;
     $totalRevenueFormatted = $totalRevenue >= 100000 ? '₹' . number_format($totalRevenue / 1000, 1) . 'k' : '₹' . number_format($totalRevenue);
@@ -33,7 +39,7 @@
     </div>
 
     <!-- Metrics Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6">
         <!-- Active Listings -->
         <a href="{{ url('/admin/packages?filter=active') }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
             <div class="flex items-center justify-between">
@@ -42,12 +48,13 @@
             <h3 class="text-4xl font-black font-syne text-foreground">{{ $activeListings }}</h3>
         </a>
 
-        <!-- Avg. Package Price -->
-        <a href="{{ url('/admin/packages') }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
+        <!-- Expired Packages -->
+        <a href="{{ url('/admin/packages?filter=expired') }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
             <div class="flex items-center justify-between">
-                <p class="text-xs font-black text-muted-text uppercase tracking-widest">Avg. Package Price</p>
+                <p class="text-xs font-black text-muted-text uppercase tracking-widest">Expired Packages</p>
+                <span class="text-xs font-black text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg">Inactive</span>
             </div>
-            <h3 class="text-4xl font-black font-syne text-foreground">{{ $avgPriceFormatted }}</h3>
+            <h3 class="text-4xl font-black font-syne text-foreground">{{ $expiredPackages }}</h3>
         </a>
 
         <!-- Expiring Soon -->
@@ -57,6 +64,15 @@
                 <span class="text-xs font-black text-red-500 bg-red-50 px-2.5 py-1 rounded-lg">Critical</span>
             </div>
             <h3 class="text-4xl font-black font-syne text-foreground">{{ str_pad($expiringSoon, 2, '0', STR_PAD_LEFT) }}</h3>
+        </a>
+
+        <!-- Pending Packages -->
+        <a href="{{ url('/admin/packages/pending') }}" class="block bg-white p-8 rounded-[32px] shadow-soft border border-border-soft space-y-4 hover:shadow-lg hover:border-primary/20 transition-all">
+            <div class="flex items-center justify-between">
+                <p class="text-xs font-black text-muted-text uppercase tracking-widest">Pending Approvals</p>
+                <span class="text-xs font-black text-orange-500 bg-orange-50 px-2.5 py-1 rounded-lg">Review</span>
+            </div>
+            <h3 class="text-4xl font-black font-syne text-foreground">{{ $pendingPackages }}</h3>
         </a>
 
         <!-- Total Revenue (Primary Dark Orange Filled Card) -->
