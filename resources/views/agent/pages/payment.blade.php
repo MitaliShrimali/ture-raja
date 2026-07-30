@@ -184,7 +184,7 @@
                         <!-- Option 1 -->
                         <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
                             <div class="flex items-center">
-                                <input type="radio" name="name" value="Home Hero Banner" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c]" required>
+                                <input type="checkbox" name="name[]" value="Home Hero Banner" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" required onchange="validateAdCheckboxes()">
                                 <div class="ml-3">
                                     <p class="text-sm font-bold text-gray-900">Home Hero Banner</p>
                                     <p class="text-[10px] text-gray-400">Main spotlight visibility</p>
@@ -196,7 +196,7 @@
                         <!-- Option 2 -->
                         <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
                             <div class="flex items-center">
-                                <input type="radio" name="name" value="Package Sidebar" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c]">
+                                <input type="checkbox" name="name[]" value="Package Sidebar" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" onchange="validateAdCheckboxes()">
                                 <div class="ml-3">
                                     <p class="text-sm font-bold text-gray-900">Package Sidebar</p>
                                     <p class="text-[10px] text-gray-400">Targeted placement</p>
@@ -208,7 +208,7 @@
                         <!-- Option 3 -->
                         <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
                             <div class="flex items-center">
-                                <input type="radio" name="name" value="Footer Banner" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c]">
+                                <input type="checkbox" name="name[]" value="Footer Banner" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" onchange="validateAdCheckboxes()">
                                 <div class="ml-3">
                                     <p class="text-sm font-bold text-gray-900">Footer Banner</p>
                                     <p class="text-[10px] text-gray-400">Persistent site-wide visibility</p>
@@ -220,7 +220,7 @@
                         <!-- Option 4 -->
                         <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
                             <div class="flex items-center">
-                                <input type="radio" name="name" value="Under Domestic Packages" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c]">
+                                <input type="checkbox" name="name[]" value="Under Domestic Packages" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" onchange="validateAdCheckboxes()">
                                 <div class="ml-3">
                                     <p class="text-sm font-bold text-gray-900">Under Domestic Packages</p>
                                     <p class="text-[10px] text-gray-400">High intent placement</p>
@@ -434,6 +434,12 @@
 
 
 <script>
+function validateAdCheckboxes() {
+    const checkboxes = document.querySelectorAll('input[name="name[]"]');
+    const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+    checkboxes[0].required = !isChecked;
+}
+
 function filterBoosts() {
     const filter = document.getElementById('boostFilter').value;
     const cards = document.querySelectorAll('.boost-card');

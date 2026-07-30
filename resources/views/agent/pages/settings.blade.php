@@ -472,11 +472,24 @@ function confirmDeleteAccount() {
     }).then((result) => {
         if (result.isConfirmed) {
             Swal.fire({
-                title: 'Request Sent',
-                text: 'Your account deletion request is being processed.',
-                icon: 'success',
-                confirmButtonColor: '#F0642F',
+                title: 'Are you absolutely sure?',
+                text: 'Please confirm again that you want to delete your account.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#9ca3af',
+                confirmButtonText: 'Yes, I am sure',
                 borderRadius: '2rem'
+            }).then((secondResult) => {
+                if (secondResult.isConfirmed) {
+                    Swal.fire({
+                        title: 'Request Sent',
+                        text: 'Your account deletion request is being processed.',
+                        icon: 'success',
+                        confirmButtonColor: '#F0642F',
+                        borderRadius: '2rem'
+                    });
+                }
             });
         }
     });

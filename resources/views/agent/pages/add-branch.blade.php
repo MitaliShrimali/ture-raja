@@ -54,7 +54,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="relative">
                             <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">CITY (SEARCH) *</label>
                             <div class="relative">
@@ -71,9 +71,7 @@
                                 <input type="text" id="branchState" name="state" value="{{ old('state', $branch ? $branch->state : '') }}" required placeholder="State" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                             </div>
                         </div>
-                    </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">COUNTRY *</label>
                             <div class="relative">
@@ -81,14 +79,16 @@
                                 <input type="text" id="branchCountry" name="country" value="{{ old('country', $branch ? $branch->country : '') }}" required placeholder="Country" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                             </div>
                         </div>
+                    </div>
 
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div>
                             <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">STATUS *</label>
                             <div class="relative">
                                 <i class="fas fa-toggle-on absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
                                 <select name="status" required class="w-full pl-12 pr-10 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
-                                    <option value="Online" {{ old('status', $branch ? $branch->status : '') == 'Online' ? 'selected' : '' }}>Online</option>
-                                    <option value="Offline" {{ old('status', $branch ? $branch->status : '') == 'Offline' ? 'selected' : '' }}>Offline</option>
+                                    <option value="Active" {{ old('status', $branch ? $branch->status : '') == 'Active' ? 'selected' : '' }}>Active</option>
+                                    <option value="Inactive" {{ old('status', $branch ? $branch->status : '') == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                                 </select>
                                 <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
                             </div>

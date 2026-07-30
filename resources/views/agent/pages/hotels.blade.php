@@ -156,8 +156,8 @@
                         <div class="relative">
                             <select id="hotelStatus" name="status" required
                                 class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium appearance-none">
-                                <option value="Online">Online</option>
-                                <option value="Offline">Offline</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
                             </select>
                             <i class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] pointer-events-none"></i>
                         </div>

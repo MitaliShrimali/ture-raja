@@ -1674,8 +1674,23 @@ class AgentController extends Controller
                 $itemName = $plan->name . ' Plan';
             }
         } elseif ($type == 'ad') {
-            $amount = $request->query('amount', 499);
-            $itemName = $request->query('name', 'Ad Subscription');
+            $names = $request->query('name');
+            if (is_array($names)) {
+                $amount = 0;
+                $prices = [
+                    'Home Hero Banner' => 999,
+                    'Package Sidebar' => 499,
+                    'Footer Banner' => 399,
+                    'Under Domestic Packages' => 599,
+                ];
+                foreach ($names as $n) {
+                    $amount += $prices[$n] ?? 499;
+                }
+                $itemName = implode(', ', $names);
+            } else {
+                $amount = $request->query('amount', 499);
+                $itemName = $names ?? 'Ad Subscription';
+            }
         } elseif ($type == 'boost') {
             $amount = 12.50; // Daily boost rate mock
             $itemName = 'Boost Tour Package';

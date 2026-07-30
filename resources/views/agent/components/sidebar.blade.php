@@ -107,18 +107,7 @@
         </nav>
     </div>
 
-    <!-- Sidebar Help Card -->
-    <div class="px-4 pb-4">
-        <div class="p-3 bg-gradient-to-br from-[#e85d26] to-orange-400 rounded-xl relative overflow-hidden">
-            <div class="absolute -top-4 -right-4 w-10 h-10 bg-white/10 rounded-full"></div>
-            <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center text-white mb-2">
-                <i class="fas fa-question text-[8px]"></i>
-            </div>
-            <p class="text-white font-bold text-[10px] mb-0.5">Need help?</p>
-            <p class="text-white/80 text-[8px] mb-2 leading-tight">Please check guideline</p>
-            <button class="w-full bg-white text-[#e85d26] text-[8px] font-bold py-1 rounded-lg">Click Here</button>
-        </div>
-    </div>
+    <!-- Sidebar Help Card Removed -->
 </aside>
 
 <!-- Mobile Overlay Backdrop -->

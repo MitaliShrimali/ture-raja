@@ -29,6 +29,9 @@
         }
     </script>
     <style>
+        html {
+            font-size: 18px;
+        }
         .bg-pattern {
             background: linear-gradient(135deg, #F0642F 0%, #FF8A50 100%);
             position: relative;
