@@ -533,11 +533,11 @@
                             <select name="sort"
                                 class="w-full bg-white border border-[#e85d26] rounded-md py-2 pl-4 pr-10 text-sm font-semibold focus:outline-none appearance-none cursor-pointer hover:bg-orange-50 transition-all text-[#e85d26]">
                                 <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
-                                <option value="GUARANTEED SERVICE" {{ request('sort') == 'GUARANTEED SERVICE' || request('sort') == 'Recommended' ? 'selected' : '' }}>GUARANTEED SERVICE</option>
-                                <option value="PRICE (LOW TO HIGH)" {{ request('sort') == 'PRICE (LOW TO HIGH)' || request('sort') == 'Price: Low to High' ? 'selected' : '' }}>PRICE (LOW TO HIGH)</option>
-                                <option value="PRICE (HIGH TO LOW)" {{ request('sort') == 'PRICE (HIGH TO LOW)' || request('sort') == 'Price: High to Low' ? 'selected' : '' }}>PRICE (HIGH TO LOW)</option>
-                                <option value="DURATION (LOW TO HIGH)" {{ request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>DURATION (LOW TO HIGH)</option>
-                                <option value="DURATION (HIGH TO LOW)" {{ request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>DURATION (HIGH TO LOW)</option>
+                                <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' || request('sort') == 'Recommended' || request('sort') == 'GUARANTEED SERVICE' ? 'selected' : '' }}>Guaranteed Service</option>
+                                <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' || request('sort') == 'PRICE (LOW TO HIGH)' ? 'selected' : '' }}>Price (Low to High)</option>
+                                <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' || request('sort') == 'PRICE (HIGH TO LOW)' ? 'selected' : '' }}>Price (High to Low)</option>
+                                <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' || request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>Duration (Low to High)</option>
+                                <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' || request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>Duration (High to Low)</option>
                             </select>
                             <i data-lucide="chevron-down"
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none"
@@ -774,25 +774,7 @@
             });
 
             window.clearAllFilters = () => {
-                const form = document.getElementById('filter-form');
-                if (!form) return;
-
-                // Reset checkbox states
-                form.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-
-                // Reset range value to max
-                const range = form.querySelector('input[type="range"]');
-                if (range) {
-                    range.value = range.max;
-                    const label = document.getElementById('priceRangeValue');
-                    if (label) label.innerText = range.max;
-                }
-
-                // Clear all text inputs
-                form.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
-
-                // Trigger AJAX submit
-                form.dispatchEvent(new Event('submit'));
+                window.location.href = window.location.pathname;
             };
         </script>
     @endpush

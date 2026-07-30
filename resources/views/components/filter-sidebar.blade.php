@@ -117,7 +117,7 @@
                     this.open = false;
                 }
             }" class="relative" @click.away="open = false">
-                <label class="block text-sm font-bold text-gray-900 mb-1.5">Travel Destination</label>
+                <label class="block text-base font-bold text-gray-900 mb-1.5">Travel Destination</label>
                 <div class="relative">
                     <input type="text" name="search" x-model.debounce.300ms="query" @focus="open = true" autocomplete="new-password" placeholder="Search travel destination..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
                     <i data-lucide="search" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
@@ -179,7 +179,7 @@
                     this.open = false;
                 }
             }" class="relative" @click.away="open = false">
-                <label class="block text-sm font-bold text-gray-900 mb-1.5">Travel Agent Location</label>
+                <label class="block text-base font-bold text-gray-900 mb-1.5">Travel Agent Location</label>
                 <div class="relative">
                     <input type="text" name="city" x-model.debounce.300ms="query" @focus="open = true" autocomplete="new-password" placeholder="Search agent location..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
                     <i data-lucide="search" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
@@ -211,7 +211,7 @@
                 }
             </style>
             <div>
-                <label class="block text-sm font-bold text-gray-900 mb-1.5">Date of Travel</label>
+                <label class="block text-base font-bold text-gray-900 mb-1.5">Date of Travel</label>
                 <div class="relative">
                     <input type="text" onfocus="(this.type='date')" onblur="(this.value == '' ? this.type='text' : this.type='date')" name="check_in" value="{{ request('check_in') }}" class="no-cal-icon w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-gray-400" placeholder="YYYY-MM-DD">
                     <i data-lucide="calendar" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
@@ -230,13 +230,13 @@
             <div class="space-y-2">
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="private_chef" value="1" {{ request('private_chef') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
+                    <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
                         <i data-lucide="utensils" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Private Chef Included (<span data-filter-count="services.private_chef">{{ $filterCounts['services']['private_chef'] ?? 0 }}</span>)
                     </span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="tour_manager" value="1" {{ request('tour_manager') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
+                    <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
                         <i data-lucide="user" class="w-3.5 h-3.5 text-gray-500 group-hover:text-primary transition-colors"></i> Tour Manager Included (<span data-filter-count="services.tour_manager">{{ $filterCounts['services']['tour_manager'] ?? 0 }}</span>)
                     </span>
                 </label>
@@ -298,7 +298,7 @@
                 @foreach($visibleTypes as $type)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="tour_type[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ rtrim(strtolower($type), 's') }}">{{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }}</span>)</span>
+                        <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ rtrim(strtolower($type), 's') }}">{{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
                 
@@ -306,7 +306,7 @@
                     @foreach($hiddenTypes as $type)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="tour_type[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ rtrim(strtolower($type), 's') }}">{{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }}</span>)</span>
+                            <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ rtrim(strtolower($type), 's') }}">{{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }}</span>)</span>
                         </label>
                     @endforeach
                 </div>
@@ -327,11 +327,11 @@
             <div class="space-y-2">
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="category[]" value="domestic" {{ in_array('domestic', $selectedDestTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">Domestic (<span data-filter-count="destination_type.domestic">{{ $filterCounts['destination_type']['domestic'] ?? 0 }}</span>)</span>
+                    <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">Domestic (<span data-filter-count="destination_type.domestic">{{ $filterCounts['destination_type']['domestic'] ?? 0 }}</span>)</span>
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer group">
                     <input type="checkbox" name="category[]" value="international" {{ in_array('international', $selectedDestTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                    <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">International (<span data-filter-count="destination_type.international">{{ $filterCounts['destination_type']['international'] ?? 0 }}</span>)</span>
+                    <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">International (<span data-filter-count="destination_type.international">{{ $filterCounts['destination_type']['international'] ?? 0 }}</span>)</span>
                 </label>
             </div>
             <hr class="mt-5 border-gray-100">
@@ -370,7 +370,7 @@
                 @foreach($visibleCategories as $category)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="categories[]" value="{{ $category }}" {{ in_array($category, $selectedCategories) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }} (<span data-filter-count="category.{{ strtolower($category) }}">{{ $filterCounts['category'][strtolower($category)] ?? 0 }}</span>)</span>
+                        <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $category }} (<span data-filter-count="category.{{ strtolower($category) }}">{{ $filterCounts['category'][strtolower($category)] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
                 
@@ -379,7 +379,7 @@
                     @foreach($hiddenCategories as $category)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="categories[]" value="{{ $category }}" {{ in_array($category, $selectedCategories) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $category }} (<span data-filter-count="category.{{ strtolower($category) }}">{{ $filterCounts['category'][strtolower($category)] ?? 0 }}</span>)</span>
+                            <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $category }} (<span data-filter-count="category.{{ strtolower($category) }}">{{ $filterCounts['category'][strtolower($category)] ?? 0 }}</span>)</span>
                         </label>
                     @endforeach
                 </div>
@@ -399,19 +399,13 @@
             <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Holiday Types</h3>
             @php
                 $selectedHolidayTypes = (array) request('holiday_type', []);
-                $holidayTypesOptions = [
-                    'Most Popular' => 'most popular',
-                    'Honeymoon' => 'honeymoon',
-                    'Budget' => 'budget',
-                    'Multi City' => 'multi city',
-                    'Short Tour' => 'short tour'
-                ];
+                $holidayTypesOptions = DB::table('holiday_types')->where('status', 'Active')->pluck('name')->toArray();
             @endphp
             <div class="space-y-2">
-                @foreach($holidayTypesOptions as $label => $val)
+                @foreach($holidayTypesOptions as $val)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="holiday_type[]" value="{{ $val }}" {{ in_array($val, $selectedHolidayTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $label }} (<span data-filter-count="holiday_type.{{ $val }}">{{ $filterCounts['holiday_type'][$val] ?? 0 }}</span>)</span>
+                        <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $val }} (<span data-filter-count="holiday_type.{{ strtolower($val) }}">{{ $filterCounts['holiday_type'][strtolower($val)] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
             </div>
@@ -462,38 +456,21 @@
             <div class="flex items-center justify-between gap-3 mb-5">
                 <div class="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all overflow-hidden">
                     <span class="text-xs font-bold text-gray-400 mr-1 shrink-0">₹</span>
-                    <input type="number" name="min_price" x-model="min" @change="document.getElementById('price_custom').checked = true; updateMin(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
+                    <input type="number" name="min_price" x-model="min" @change="updateMin(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
                 </div>
                 <span class="text-gray-400 text-[10px] font-bold uppercase shrink-0">To</span>
                 <div class="flex-1 flex items-center bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/20 transition-all overflow-hidden">
                     <span class="text-xs font-bold text-gray-400 mr-1 shrink-0">₹</span>
-                    <input type="number" name="max_price" x-model="max" @change="document.getElementById('price_custom').checked = true; updateMax(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
+                    <input type="number" name="max_price" x-model="max" @change="updateMax(); triggerSubmit()" class="w-full bg-transparent border-none p-0 text-sm font-bold text-gray-800 focus:ring-0 min-w-0 text-center">
                 </div>
-            </div>
-
-            <!-- Price Radios -->
-            <div class="space-y-2.5 mt-6">
-                @php $pr = request('price_radio', 'all'); @endphp
-                @foreach([
-                    'all' => 'All Price',
-                    'custom' => 'Custom Range',
-                    'under_20k' => 'Under ₹ 20,000',
-                    '20k_40k' => '₹ 20,000 - ₹ 40,000',
-                    '40k_60k' => '₹ 40,000 - ₹ 60,000',
-                    'above_60k' => 'Above ₹ 60,000'
-                ] as $val => $label)
-                    <label class="flex items-center gap-2 cursor-pointer group">
-                        <input type="radio" name="price_radio" id="{{ $val === 'custom' ? 'price_custom' : '' }}" value="{{ $val }}" {{ $pr === $val ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $label }}</span>
-                    </label>
-                @endforeach
             </div>
             <hr class="mt-5 border-gray-100">
         </div>
 
         <!-- 4. City Removed -->
 
-        <!-- 5. Rating -->
+        <!-- 5. Rating Removed/Commented Out -->
+        <!--
         <div class="pt-6">
             <h3 class="font-bold text-gray-900 mb-4 tracking-wide" style="font-size: 20px;">Rating</h3>
             @php
@@ -503,7 +480,7 @@
                 @foreach(['5' => '5 Stars', '4' => '4 Stars', '3' => '3 Stars', '2' => '2 Stars', '1' => '1 Star', '0' => 'No rating'] as $val => $label)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="ratings[]" value="{{ $val }}" {{ in_array($val, $selectedRatings) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
+                        <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors flex items-center gap-1">
                             @if($val > 0)
                                 @for($i = 0; $i < $val; $i++)
                                     <i data-lucide="star" class="text-orange-400 fill-orange-400" size="12"></i>
@@ -518,6 +495,7 @@
             </div>
             <hr class="mt-5 border-gray-100">
         </div>
+        -->
 
         <!-- 6. Theme -->
         <div x-data="{ expanded: false }" class="pt-6">
@@ -535,7 +513,7 @@
                 @foreach($visibleThemes as $theme)
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="theme[]" value="{{ $theme }}" {{ in_array($theme, $selectedThemes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }} (<span data-filter-count="theme.{{ strtolower($theme) }}">{{ $filterCounts['theme'][strtolower($theme)] ?? 0 }}</span>)</span>
+                        <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $theme }} (<span data-filter-count="theme.{{ strtolower($theme) }}">{{ $filterCounts['theme'][strtolower($theme)] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
                 
@@ -543,7 +521,7 @@
                     @foreach($hiddenThemes as $theme)
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="theme[]" value="{{ $theme }}" {{ in_array($theme, $selectedThemes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-xs font-semibold group-hover:text-primary transition-colors">{{ $theme }} (<span data-filter-count="theme.{{ strtolower($theme) }}">{{ $filterCounts['theme'][strtolower($theme)] ?? 0 }}</span>)</span>
+                            <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $theme }} (<span data-filter-count="theme.{{ strtolower($theme) }}">{{ $filterCounts['theme'][strtolower($theme)] ?? 0 }}</span>)</span>
                         </label>
                     @endforeach
                 </div>

@@ -213,7 +213,8 @@
         };
 
         window.updateWishlistUI = function () {
-            const wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
+            const isAuthenticated = {{ (Auth::check() && Auth::user()->role === 'Customer') ? 'true' : 'false' }};
+            const wishlist = isAuthenticated ? JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]') : [];
             const countEl = document.getElementById('wishlist-count');
             const itemsEl = document.getElementById('wishlist-items');
 
@@ -230,7 +231,6 @@
             }
 
             // Update Navbar Heart Icons
-            const isAuthenticated = {{ (Auth::check() && Auth::user()->role === 'Customer') ? 'true' : 'false' }};
             document.querySelectorAll('.nav-heart-icon').forEach(icon => {
                 if (isAuthenticated && wishlist.length > 0) {
                     icon.setAttribute('fill', 'currentColor');

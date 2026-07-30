@@ -56,7 +56,7 @@
         @endphp
         
         <div class="flex-1 relative flex justify-center items-center z-20">
-            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-auto items-center justify-center gap-2 sm:gap-3 md:gap-5 px-2 transition-all duration-500 z-50 opacity-0 scale-90 translate-y-0 pointer-events-none" :class="{ 'opacity-100 scale-100 -translate-y-1/2 pointer-events-auto': isPastTransits || !isHome, 'opacity-0 scale-90 translate-y-0 pointer-events-none': !(isPastTransits || !isHome) }">
+            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-auto items-center justify-center gap-4 lg:gap-6 xl:gap-8 px-2 transition-all duration-500 z-50 opacity-0 scale-90 translate-y-0 pointer-events-none" :class="{ 'opacity-100 scale-100 -translate-y-1/2 pointer-events-auto': isPastTransits || !isHome, 'opacity-0 scale-90 translate-y-0 pointer-events-none': !(isPastTransits || !isHome) }">
                 @foreach($dbTransits as $t)
                   @php
                       $imgUrl = '';
@@ -70,11 +70,11 @@
                       $cleanType = $t->name;
                       $label = str_replace(" Package", "\nPackage", $t->name);
                   @endphp
-                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center group w-16 sm:w-20 md:w-24 flex-shrink-0">
+                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center justify-start group w-20 sm:w-24 md:w-[110px] flex-shrink-0 text-center">
                      <div class="w-8 h-8 md:w-10 md:h-10 lg:w-11 lg:h-11 flex items-center justify-center">
                         <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
-                     <span class="text-[9px] md:text-[10px] lg:text-[11px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-1 w-full text-center leading-tight whitespace-pre-line">{{ $label }}</span>
+                     <span class="text-[11px] md:text-[12px] lg:text-[14px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-1 w-full text-center leading-tight whitespace-pre-line">{{ $label }}</span>
                   </a>
                 @endforeach
             </div>

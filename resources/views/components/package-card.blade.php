@@ -91,6 +91,21 @@
     $agentLocation = trim(implode(', ', array_filter([$agentCity, $agentState])));
     if (!$agentLocation && $agentCountry) $agentLocation = $agentCountry;
 
+    // Guaranteed Service
+    $isGuaranteed = !empty($agentObj['service_guaranteed']);
+    if (!$isGuaranteed && !empty($agentName)) {
+        try {
+            $dbAgent = \Illuminate\Support\Facades\DB::table('agents')
+                ->where('name', 'LIKE', trim($agentName))
+                ->first();
+            if ($dbAgent) {
+                $isGuaranteed = !empty($dbAgent->service_guaranteed);
+            }
+        } catch (\Exception $e) {
+            // Ignore DB errors
+        }
+    }
+
     // Initials for avatar fallback
     $initials = strtoupper(implode('', array_map(fn($w) => $w[0] ?? '', array_slice(explode(' ', trim($agentName)), 0, 2))));
 
@@ -178,12 +193,19 @@
         @if(!$hideAgent)
         <div class="flex items-center gap-2.5 min-w-0">
             {{-- Agent Avatar --}}
-            <div class="w-9 h-9 rounded-full shrink-0 flex items-center justify-center overflow-hidden border-2 border-gray-100 shadow-sm"
-                 style="background: linear-gradient(135deg, #6d28d9, #4f46e5);">
-                @if($agentLogo)
-                    <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-full h-full object-cover">
-                @else
-                    <span class="text-[11px] font-black text-white">{{ $initials }}</span>
+            <div class="relative shrink-0">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-100 shadow-sm"
+                     style="background: linear-gradient(135deg, #6d28d9, #4f46e5);">
+                    @if($agentLogo)
+                        <img src="{{ $agentLogo }}" alt="{{ $agentName }}" class="w-full h-full object-cover">
+                    @else
+                        <span class="text-[11px] font-black text-white">{{ $initials }}</span>
+                    @endif
+                </div>
+                @if($isGuaranteed)
+                    <div class="absolute -bottom-1 -right-1 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center w-5 h-5 shadow-sm z-10 text-white">
+                        <i data-lucide="shield-check" class="w-3 h-3"></i>
+                    </div>
                 @endif
             </div>
             {{-- Agent Name + Location --}}
