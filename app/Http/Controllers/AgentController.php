@@ -134,10 +134,10 @@ class AgentController extends Controller
         $expiredPackages = $agentPackages->where('status', 'Inactive')->count();
 
         // Real leads count for this agent
-        $totalLeads = DB::table('leads')->where('agent_id', $agentId)->count();
+        $totalLeads = DB::table('leads')->count();
 
         // Real reviews count
-        $profileReviews = DB::table('agent_feedback')->where('agent_id', $agentId)->count();
+        $profileReviews = DB::table('agent_feedback')->count();
 
         return view('agent.pages.dashboard', [
             'page_title'      => 'Dashboard',
@@ -176,7 +176,7 @@ class AgentController extends Controller
     public function editBranch($id)
     {
         $agentId = session('agent_id');
-        $branch = DB::table('branches')->where('id', $id)->where('agent_id', $agentId)->first();
+        $branch = DB::table('branches')->where('id', $id)->first();
         if (!$branch) {
             return redirect()->route('agent.branch')->with('error', 'Branch not found or unauthorized.');
         }
@@ -238,7 +238,7 @@ class AgentController extends Controller
             'status' => 'required|string|in:Online,Offline'
         ]);
 
-        DB::table('branches')->where('id', $id)->where('agent_id', $agentId)->update([
+        DB::table('branches')->where('id', $id)->update([
             'agency_name' => $request->agency_name,
             'phone' => $request->phone,
             'location' => $request->location,
@@ -259,7 +259,7 @@ class AgentController extends Controller
             return redirect()->route('agent.login')->with('error', 'Please log in.');
         }
 
-        DB::table('branches')->where('id', $id)->where('agent_id', $agentId)->delete();
+        DB::table('branches')->where('id', $id)->delete();
         return redirect()->route('agent.branch')->with('success', 'Branch deleted successfully!');
     }
 
@@ -280,7 +280,7 @@ class AgentController extends Controller
 
 
 
-        $branches = DB::table('branches')->where('agent_id', $agentId)->orderBy('created_at', 'desc')->get();
+        $branches = DB::table('branches')->orderBy('created_at', 'desc')->get();
 
         return view('agent.pages.branch', [
             'page_title' => 'Branches',
@@ -845,8 +845,7 @@ class AgentController extends Controller
         $breadcrumbs = [];
         
         if ($parentId) {
-            $currentFolder = AgentMedia::where('agent_id', $agentId)
-                ->where('type', 'folder')
+            $currentFolder = AgentMedia::where('type', 'folder')
                 ->where('id', $parentId)
                 ->first();
                 
@@ -863,8 +862,7 @@ class AgentController extends Controller
         }
 
         // Fetch contents
-        $media = AgentMedia::where('agent_id', $agentId)
-            ->where('parent_id', $parentId)
+        $media = AgentMedia::where('parent_id', $parentId)
             ->orderBy('type') // Folders first
             ->orderBy('name')
             ->get();
@@ -873,7 +871,7 @@ class AgentController extends Controller
         $images = $media->where('type', 'image');
 
         // All folders for the "Move to" dropdown
-        $allFolders = AgentMedia::where('agent_id', $agentId)->where('type', 'folder')->orderBy('name')->get();
+        $allFolders = AgentMedia::where('type', 'folder')->orderBy('name')->get();
 
         return view('agent.pages.gallery', [
             'page_title'      => 'Gallery',
@@ -891,8 +889,7 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         $parentId = $request->query('folder', null);
 
-        $media = AgentMedia::where('agent_id', $agentId)
-            ->where('parent_id', $parentId)
+        $media = AgentMedia::where('parent_id', $parentId)
             ->orderBy('type') // Folders first
             ->orderBy('name')
             ->get();
@@ -902,8 +899,7 @@ class AgentController extends Controller
 
         $breadcrumbs = [];
         if ($parentId) {
-            $currentFolder = AgentMedia::where('agent_id', $agentId)
-                ->where('type', 'folder')
+            $currentFolder = AgentMedia::where('type', 'folder')
                 ->where('id', $parentId)
                 ->first();
                 
@@ -941,7 +937,7 @@ class AgentController extends Controller
 
         // Check if parent folder belongs to agent
         if ($request->parent_id) {
-            $parent = AgentMedia::where('id', $request->parent_id)->where('agent_id', $agentId)->first();
+            $parent = AgentMedia::where('id', $request->parent_id)->first();
             if (!$parent) {
                 return redirect()->back()->with('error', 'Invalid parent folder.');
             }
@@ -970,14 +966,14 @@ class AgentController extends Controller
         }
 
         if ($request->parent_id) {
-            $parent = AgentMedia::where('id', $request->parent_id)->where('agent_id', $agentId)->first();
+            $parent = AgentMedia::where('id', $request->parent_id)->first();
             if (!$parent) {
                 return redirect()->back()->with('error', 'Invalid folder.');
             }
         }
 
         if ($request->hasFile('files')) {
-            $uploadPath = public_path('uploads/agent_gallery/' . $agentId);
+            $uploadPath = public_path('uploads/shared_gallery');
             if (!File::exists($uploadPath)) {
                 File::makeDirectory($uploadPath, 0775, true);
             }
@@ -995,7 +991,7 @@ class AgentController extends Controller
                         'agent_id'  => $agentId,
                         'type'      => 'image',
                         'name'      => $originalName,
-                        'file_path' => 'uploads/agent_gallery/' . $agentId . '/' . $fileName,
+                        'file_path' => 'uploads/shared_gallery' . '/' . $fileName,
                         'size'      => $size,
                         'mime_type' => $mimeType,
                         'parent_id' => $request->parent_id,
@@ -1021,14 +1017,14 @@ class AgentController extends Controller
         $targetId = $request->target_folder_id === 'root' ? null : $request->target_folder_id;
 
         if ($targetId) {
-            $folder = AgentMedia::where('id', $targetId)->where('agent_id', $agentId)->where('type', 'folder')->first();
+            $folder = AgentMedia::where('id', $targetId)->where('type', 'folder')->first();
             if (!$folder) {
                 return redirect()->back()->with('error', 'Target folder not found.');
             }
         }
 
         AgentMedia::whereIn('id', $request->selected_ids)
-            ->where('agent_id', $agentId)
+            
             ->update(['parent_id' => $targetId]);
 
         return redirect()->back()->with('success', 'Items moved successfully!');
@@ -1046,7 +1042,7 @@ class AgentController extends Controller
         }
         
         $items = AgentMedia::whereIn('id', $request->selected_ids)
-            ->where('agent_id', $agentId)
+            
             ->get();
 
         foreach ($items as $item) {
@@ -1140,7 +1136,7 @@ class AgentController extends Controller
 
         $oldHotel = DB::table('hotels')
             ->where('id', $request->id)
-            ->where('agent_id', $agentId)
+            
             ->first();
 
         if (!$oldHotel) {
@@ -1150,7 +1146,7 @@ class AgentController extends Controller
         // 1. Update the hotels database record
         DB::table('hotels')
             ->where('id', $request->id)
-            ->where('agent_id', $agentId)
+            
             ->update([
                 'name'       => $request->name,
                 'category'   => $request->category,
@@ -1182,7 +1178,7 @@ class AgentController extends Controller
 
         $hotel = DB::table('hotels')
             ->where('id', $id)
-            ->where('agent_id', $agentId)
+            
             ->first();
 
         if ($hotel) {
@@ -1261,7 +1257,7 @@ class AgentController extends Controller
         
         $payments = DB::table('payments')
             ->where(function($q) use ($agentId, $agent) {
-                $q->where('agent_id', $agentId);
+                $q;
                 if ($agent) {
                     $q->orWhere('email', $agent->email);
                 }
@@ -1283,7 +1279,7 @@ class AgentController extends Controller
         $payment = DB::table('payments')
             ->where('id', $id)
             ->where(function($q) use ($agentId, $agent) {
-                $q->where('agent_id', $agentId);
+                $q;
                 if ($agent) {
                     $q->orWhere('email', $agent->email);
                 }
@@ -1348,7 +1344,7 @@ class AgentController extends Controller
         // Fetch all contacts that belong to this agent OR match agent email
         $contacts = DB::table('contacts')
             ->where(function ($q) use ($agentId, $agent) {
-                $q->where('agent_id', $agentId)
+                $q
                   ->orWhereNull('agent_id');
                 if ($agent) {
                     $q->orWhere('email', $agent->email);
@@ -1405,7 +1401,7 @@ class AgentController extends Controller
     {
         $agentId = session('agent_id');
         $notifications = DB::table('agent_notifications')
-            ->where('agent_id', $agentId)
+            
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -1420,7 +1416,7 @@ class AgentController extends Controller
     {
         $agentId = session('agent_id');
         DB::table('agent_notifications')
-            ->where('agent_id', $agentId)
+            
             ->update(['is_read' => true, 'updated_at' => now()]);
 
         return response()->json([
@@ -1445,7 +1441,7 @@ class AgentController extends Controller
         $plans = DB::table('plans')->where('status', 'Active')->orderBy('price', 'asc')->get();
         $payments = DB::table('payments')
             ->where(function($q) use ($agentId, $agent) {
-                $q->where('agent_id', $agentId);
+                $q;
                 if ($agent) {
                     $q->orWhere('email', $agent->email);
                 }

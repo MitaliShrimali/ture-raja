@@ -346,6 +346,14 @@ Route::prefix('admin')->group(function () {
         Route::post('/offer-stickers/update', [AdminController::class, 'updateOfferSticker']);
         Route::get('/offer-stickers/delete/{id}', [AdminController::class, 'deleteOfferSticker']);
         Route::get('/offer-stickers/toggle/{id}', [AdminController::class, 'toggleOfferSticker']);
+
+        // Gallery
+        Route::get('/gallery', [AdminController::class, 'gallery'])->name('admin.gallery');
+        Route::get('/api/gallery', [AdminController::class, 'apiGallery'])->name('admin.api.gallery');
+        Route::post('/gallery/upload', [AdminController::class, 'uploadMedia'])->name('admin.gallery.upload');
+        Route::post('/gallery/create-folder', [AdminController::class, 'createFolder'])->name('admin.gallery.create-folder');
+        Route::post('/gallery/move', [AdminController::class, 'moveMedia'])->name('admin.gallery.move');
+        Route::post('/gallery/delete', [AdminController::class, 'deleteMedia'])->name('admin.gallery.delete');
     });
 });
 

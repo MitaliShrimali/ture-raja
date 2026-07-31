@@ -1,4 +1,4 @@
-@extends('agent.layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Gallery - Tour Raja Agent')
 
@@ -27,10 +27,10 @@
 
     <!-- Breadcrumbs -->
     <div class="flex items-center gap-2 mb-6 text-sm text-gray-500 font-medium">
-        <a href="{{ route('agent.gallery') }}" class="hover:text-primary transition-colors"><i class="fas fa-home"></i> Gallery</a>
+        <a href="{{ route('admin.gallery') }}" class="hover:text-primary transition-colors"><i class="fas fa-home"></i> Gallery</a>
         @foreach($breadcrumbs as $crumb)
             <span>/</span>
-            <a href="{{ route('agent.gallery', ['folder' => $crumb->id]) }}" class="hover:text-primary transition-colors">{{ $crumb->name }}</a>
+            <a href="{{ route('admin.gallery', ['folder' => $crumb->id]) }}" class="hover:text-primary transition-colors">{{ $crumb->name }}</a>
         @endforeach
     </div>
 
@@ -105,7 +105,7 @@
             <!-- Render Folders first -->
             @foreach($folders as $folder)
                 <div class="gallery-item bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 group relative">
-                    <a href="{{ route('agent.gallery', ['folder' => $folder->id]) }}" class="block p-6 text-center hover:bg-gray-50 transition-colors">
+                    <a href="{{ route('admin.gallery', ['folder' => $folder->id]) }}" class="block p-6 text-center hover:bg-gray-50 transition-colors">
                         <i class="fas fa-folder text-yellow-400 text-5xl mb-3 group-hover:scale-110 transition-transform"></i>
                         <p class="text-[11px] font-bold text-gray-800 truncate">{{ $folder->name }}</p>
                     </a>
@@ -151,7 +151,7 @@
                 <i class="fas fa-times"></i>
             </button>
             <h3 class="text-xl font-black text-gray-800 mb-6 font-syne">Create New Folder</h3>
-            <form action="{{ route('agent.gallery.create-folder') }}" method="POST">
+            <form action="{{ route('admin.gallery.create-folder') }}" method="POST">
                 @csrf
                 <input type="hidden" name="parent_id" value="{{ $currentFolder ? $currentFolder->id : '' }}">
                 <div class="space-y-4">
@@ -174,7 +174,7 @@
                 <i class="fas fa-times"></i>
             </button>
             <h3 class="text-xl font-black text-gray-800 mb-6 font-syne">Upload Images</h3>
-            <form action="{{ route('agent.gallery.upload') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.gallery.upload') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="parent_id" value="{{ $currentFolder ? $currentFolder->id : '' }}">
                 
@@ -233,14 +233,14 @@
         function moveItems(folderId) {
             document.getElementById('target_folder_id').value = folderId;
             const form = document.getElementById('gallery-form');
-            form.action = "{{ route('agent.gallery.move') }}";
+            form.action = "{{ route('admin.gallery.move') }}";
             form.submit();
         }
 
         function deleteSelected() {
             if(confirm("Are you sure you want to delete the selected items? (Folders will be deleted with all their contents)")) {
                 const form = document.getElementById('gallery-form');
-                form.action = "{{ route('agent.gallery.delete') }}";
+                form.action = "{{ route('admin.gallery.delete') }}";
                 form.submit();
             }
         }

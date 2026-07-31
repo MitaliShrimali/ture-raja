@@ -76,6 +76,7 @@
                             'label' => 'AGENT MANAGEMENT',
                             'items' => [
                                 ['name' => 'Paid User', 'icon' => 'user-plus', 'href' => '/admin/registered-agents'],
+                                ['name' => 'Gallery', 'icon' => 'image', 'href' => '/admin/gallery'],
                                 [
                                     'name' => 'Tour Packages',
                                     'icon' => 'package',
