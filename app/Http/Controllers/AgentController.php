@@ -470,7 +470,11 @@ class AgentController extends Controller
         
         $keywords = [];
         if ($request->has('keywords') && !empty($request->keywords)) {
-            $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+            if (is_array($request->keywords)) {
+                $keywords = array_values(array_filter(array_map('trim', $request->keywords)));
+            } else {
+                $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+            }
         }
 
         $amenities = $request->input('amenities', []);
@@ -641,7 +645,11 @@ class AgentController extends Controller
         
         $keywords = [];
         if ($request->has('keywords') && !empty($request->keywords)) {
-            $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+            if (is_array($request->keywords)) {
+                $keywords = array_values(array_filter(array_map('trim', $request->keywords)));
+            } else {
+                $keywords = array_values(array_filter(array_map('trim', explode(',', $request->keywords))));
+            }
         }
 
         $amenities = $request->input('amenities', []);

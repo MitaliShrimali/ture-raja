@@ -411,17 +411,12 @@
                             "
                         >
                     </div>
-                    <div class="text-center">
-                        <p class="text-[10px] text-muted-text font-bold uppercase tracking-widest">OR USE EXTERNAL URL</p>
-                    </div>
+                    
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Banner Title<span class="text-primary">*</span></label>
                         <input required type="text" name="title" placeholder="E.g. Get Up to 20% OFF on south India" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Image URL</label>
-                        <input type="text" name="image" placeholder="E.g. https://images.unsplash.com/..." class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
+                    
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Link URL</label>
                         <input type="text" name="link" placeholder="E.g. /packages/south-india" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
@@ -517,18 +512,13 @@
                             "
                         >
                     </div>
-                    <div class="text-center">
-                        <p class="text-[10px] text-muted-text font-bold uppercase tracking-widest">OR USE EXTERNAL URL</p>
-                    </div>
+                    
                     
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Banner Title<span class="text-primary">*</span></label>
                         <input required type="text" name="title" x-model="editBanner.title" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
                     </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Image URL</label>
-                        <input type="text" name="image" x-model="editBanner.image" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
+                    
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Target Link URL</label>
                         <input type="text" name="link" x-model="editBanner.link" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />

@@ -6,7 +6,7 @@
     <!-- Load Lucide for this view -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <div class="space-y-8 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
+    <div class="space-y-4 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
         step: 1,
         title: '',
         location: '',
@@ -48,6 +48,14 @@
         newExclusion: '',
         editingInclusionIndex: null,
         editingExclusionIndex: null,
+        customAmenities: [],
+        newAmenity: '',
+        addAmenity() {
+            if (this.newAmenity.trim()) {
+                this.customAmenities.push(this.newAmenity.trim());
+                this.newAmenity = '';
+            }
+        },
         cities: [],
         newCity: '',
         keywords: [],
@@ -673,44 +681,45 @@
                 <!-- Tags & Keywords Card -->
                 <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-orange-50 text-[#e85d26] rounded-xl flex items-center justify-center">
+                        <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center">
                             <i data-lucide="tag" size="20"></i>
                         </div>
                         <h3 class="text-lg font-black text-gray-800">Tags & Keywords</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                        <!-- Tag Name -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                        <!-- Tag Name (1 column) -->
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Tag Name
-                                (e.g. 25% Off, Popular)</label>
+                                (e.g. 25% Off)</label>
                             <input type="text" name="badge" placeholder="e.g. 25% Off"
-                                class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm" />
+                                class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm" />
                         </div>
 
-                        <!-- Search Keywords -->
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Search
-                                Keywords (Helps travelers find you)</label>
-                            <div
-                                class="w-full bg-[#F5F5F5] rounded-2xl p-4 flex flex-wrap items-center gap-2 border border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-[#e85d26]/25 transition-all">
-                                <template x-for="(kw, idx) in keywords" :key="idx">
-                                    <span
-                                        class="px-3.5 py-1.5 bg-gray-200 text-gray-700 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
-                                        <span x-text="kw"></span>
-                                        <i class="cursor-pointer font-black text-xs leading-none text-gray-400 hover:text-gray-600"
-                                            @click="removeKeyword(idx)">&times;</i>
-                                    </span>
+                        <!-- Search Keywords (2 columns) -->
+                        <div class="space-y-4 md:col-span-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Trip Location/Search Keywords <span class="text-red-500">*</span></label>
+                            
+                            <!-- Tags Flex Container -->
+                            <div class="flex flex-wrap gap-3">
+                                <template x-for="(keyword, i) in keywords" :key="i">
+                                    <div class="flex items-center justify-between min-w-[140px] px-4 py-2.5 bg-white rounded-md border border-gray-200 shadow-sm">
+                                        <span class="text-xs font-medium text-gray-700" x-text="keyword"></span>
+                                        <button type="button" @click="removeKeyword(i)" class="text-gray-400 hover:text-red-500 ml-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        </button>
+                                    </div>
                                 </template>
-                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()"
-                                    @keydown.comma.prevent="addKeyword()" placeholder="Type keyword & enter/comma..."
-                                    class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0"
-                                    style="border: none !important; outline: none !important; box-shadow: none !important;" />
+                            </div>
+
+                            <!-- Add More Input & Button -->
+                            <div class="flex items-center gap-3">
+                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" placeholder="Type keyword..." class="w-48 bg-white border border-gray-200 rounded-md py-2.5 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary/30 shadow-sm" />
+                                <button type="button" @click="addKeyword()" class="px-4 py-2.5 bg-[#EEF2FF] text-[#4F46E5] rounded-md text-xs font-bold hover:bg-[#E0E7FF] transition-colors">Add more</button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
             <!-- ==================== STEP 2: ITINERARY, MEALS & PHOTOS ==================== -->
             <div class="space-y-8 mt-8">
@@ -791,12 +800,7 @@
                             <input type="file" name="brochure_file" x-ref="brochureInput" accept=".pdf" class="hidden"
                                 @change="brochureName = $event.target.files[0] ? $event.target.files[0].name : ''" />
                         </div>
-                    </div>
-
-                    <!-- OR divider -->
-                    <div x-show="!brochureName && !itineraryContent" class="flex items-center justify-center shrink-0 px-2">
-                        <span class="text-xs font-black text-gray-400 uppercase tracking-widest">OR</span>
-                    </div>
+                      </div>
 
                     <!-- Itinerary card  ~60% -->
                     <div x-show="!brochureName"
@@ -935,6 +939,21 @@
                                                 style="background-color: #e85d26 !important; color: white !important;">+</button>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- About Tours sub-card -->
+                                <div class="bg-gray-50 rounded-2xl p-5 space-y-3 border border-gray-100">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0642F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        </svg>
+                                        <span class="text-sm font-bold text-red-500">About Tours</span>
+                                    </div>
+                                    <textarea name="about_tours" rows="5"
+                                        class="w-full h-[calc(100%-2.5rem)] bg-[#E8E8E8] border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-700 outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                                        placeholder="Brief overview about the tour..."></textarea>
                                 </div>
                             </div>
 
@@ -1169,8 +1188,6 @@
                     <!-- Right 1 Column -->
                     <div class="space-y-8">
 
-
-
                         <!-- Essential Amenities -->
                         <div x-show="!brochureName"
                             class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6 shadow-sm">
@@ -1226,46 +1243,30 @@
                                     <input type="checkbox" name="amenities[]" value="Tour Manager Included"
                                         class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
                                 </label>
+
+                                <div class="flex gap-2 pt-2">
+                                    <input type="text" x-model="newAmenity" @keydown.enter.prevent="addAmenity()" placeholder="Custom amenity..." class="flex-1 bg-white border border-gray-200 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary/50" />
+                                    <button type="button" @click="addAmenity()" class="px-3 py-2 bg-gray-800 text-white rounded-xl text-xs font-bold">+Amenity</button>
+                                </div>
+                                <template x-for="(am, idx) in customAmenities" :key="idx">
+                                    <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all mt-2">
+                                        <div class="flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            <span class="text-xs font-bold text-gray-700" x-text="am"></span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" name="amenities[]" :value="am" checked class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                            <button type="button" @click.prevent="customAmenities.splice(idx, 1)" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Remove amenity">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            </button>
+                                        </div>
+                                    </label>
+                                </template>
                             </div>
                         </div>
 
-                        <!-- Media Uploads (Featured & Gallery) -->
+                        <!-- Media Uploads (Gallery) -->
                         <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-8 shadow-sm">
-
-                            <!-- Primary featured photo upload -->
-                            <div class="space-y-4">
-                                <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Main Featured
-                                    Image</h4>
-                                <p class="text-[10px] text-gray-400 font-medium pl-1 -mt-3">Select a single thumbnail banner
-                                    for card listing.</p>
-
-                                <div class="flex items-center gap-4">
-                                    <div class="w-32 h-24 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:bg-orange-50/20 transition-all"
-                                        @click="$refs.mainImageInput.click()">
-                                        <template x-if="previewUrl">
-                                            <img :src="previewUrl" class="w-full h-full object-cover" />
-                                        </template>
-                                        <template x-if="!previewUrl">
-                                            <div class="text-center">
-                                                <i data-lucide="image" class="text-gray-300 mx-auto" size="20"></i>
-                                                <span class="text-[9px] font-bold text-gray-400 mt-1 block">Upload</span>
-                                            </div>
-                                        </template>
-                                    </div>
-                                    <div class="space-y-2">
-                                        <button type="button"
-                                            class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs shadow-sm transition-all"
-                                            @click="$refs.mainImageInput.click()">
-                                            Choose Featured Image
-                                        </button>
-                                        <input type="file" name="image_file" x-ref="mainImageInput" class="hidden"
-                                            accept="image/*"
-                                            @change="previewUrl = URL.createObjectURL($event.target.files[0])" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Divider -->
                             <div class="h-px w-full bg-gray-100"></div>
 
                             <!-- Gallery Portfolio Card -->
