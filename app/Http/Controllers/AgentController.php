@@ -1588,6 +1588,7 @@ class AgentController extends Controller
             'country' => $request->input('country'),
             'pincode' => $request->input('pincode'),
             'website' => $request->input('website'),
+            'gst_number' => $request->input('gst_number'),
             'about' => $request->input('about'),
             'facebook' => $request->input('facebook'),
             'twitter' => $request->input('twitter'),
@@ -1611,11 +1612,18 @@ class AgentController extends Controller
             $data['logo'] = null;
         }
 
-        if ($request->input('delete_card') == '1') {
-            if ($agent && $agent->business_card && file_exists(public_path($agent->business_card))) {
-                @unlink(public_path($agent->business_card));
+        if ($request->input('delete_card_front') == '1') {
+            if ($agent && $agent->business_card_front && file_exists(public_path($agent->business_card_front))) {
+                @unlink(public_path($agent->business_card_front));
             }
-            $data['business_card'] = null;
+            $data['business_card_front'] = null;
+        }
+
+        if ($request->input('delete_card_back') == '1') {
+            if ($agent && $agent->business_card_back && file_exists(public_path($agent->business_card_back))) {
+                @unlink(public_path($agent->business_card_back));
+            }
+            $data['business_card_back'] = null;
         }
 
         if ($request->hasFile('logo_file')) {
@@ -1631,16 +1639,29 @@ class AgentController extends Controller
             }
         }
 
-        if ($request->hasFile('business_card_file')) {
-            $file = $request->file('business_card_file');
+        if ($request->hasFile('business_card_front_file')) {
+            $file = $request->file('business_card_front_file');
             if ($file->isValid()) {
                 // Delete old card
-                if ($agent && $agent->business_card && file_exists(public_path($agent->business_card))) {
-                    @unlink(public_path($agent->business_card));
+                if ($agent && $agent->business_card_front && file_exists(public_path($agent->business_card_front))) {
+                    @unlink(public_path($agent->business_card_front));
                 }
-                $fileName = time() . '_card_' . $file->getClientOriginalName();
+                $fileName = time() . '_card_front_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/agents'), $fileName);
-                $data['business_card'] = '/uploads/agents/' . $fileName;
+                $data['business_card_front'] = '/uploads/agents/' . $fileName;
+            }
+        }
+
+        if ($request->hasFile('business_card_back_file')) {
+            $file = $request->file('business_card_back_file');
+            if ($file->isValid()) {
+                // Delete old card
+                if ($agent && $agent->business_card_back && file_exists(public_path($agent->business_card_back))) {
+                    @unlink(public_path($agent->business_card_back));
+                }
+                $fileName = time() . '_card_back_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/agents'), $fileName);
+                $data['business_card_back'] = '/uploads/agents/' . $fileName;
             }
         }
 
@@ -1653,6 +1674,35 @@ class AgentController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Profile settings updated successfully!');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|same:confirm_new_password',
+        ]);
+
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please login first.');
+        }
+
+        $agent = \DB::table('agents')->where('id', $agentId)->first();
+        if (!$agent) {
+            return redirect()->back()->with('error', 'Agent not found.');
+        }
+
+        if (!\Hash::check($request->current_password, $agent->password)) {
+            return redirect()->back()->with('error', 'Current password does not match.');
+        }
+
+        \DB::table('agents')->where('id', $agentId)->update([
+            'password' => \Hash::make($request->new_password),
+            'updated_at' => now()
+        ]);
+
+        return redirect()->back()->with('success', 'Password updated successfully!');
     }
 
     public function upgradePlan(Request $request)

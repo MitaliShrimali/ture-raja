@@ -411,6 +411,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
         Route::post('/services/add', [AgentController::class, 'addAgentService'])->name('services.add');
         Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
         Route::post('/settings/update', [AgentController::class, 'updateSettings'])->name('settings.update');
+        Route::post('/settings/password', [AgentController::class, 'updatePassword'])->name('settings.password');
     });
 });
 

@@ -80,15 +80,15 @@
                                         
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COMPANY NAME</label>
-                                                <input type="text" name="name" value="{{ $agent->agency_name ?? $agent->name ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COMPANY NAME <span class="text-red-500">*</span></label>
+                                                <input type="text" name="name" value="{{ $agent->agency_name ?? $agent->name ?? '' }}" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
                                                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SINCE</label>
                                                 <input type="text" name="since" value="{{ $agent->since ?? '2026' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PRIMARY MOBILE *</label>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PRIMARY MOBILE <span class="text-red-500">*</span></label>
                                                 <div class="flex gap-2 items-center">
                                                     <div class="relative w-28 shrink-0">
                                                         <select class="phone-country-code w-full px-3 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
@@ -138,16 +138,20 @@
                                                 <input type="text" name="landline" value="{{ $agent->landline ?? '' }}" placeholder="e.g. +91-79-12345678" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICIAL EMAIL ADDRESS</label>
-                                                <input type="email" name="email" value="{{ $agent->email ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICIAL EMAIL ADDRESS <span class="text-red-500">*</span></label>
+                                                <input type="email" name="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email ending with a proper domain like .com" value="{{ $agent->email ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
                                                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">WEBSITE URL</label>
                                                 <input type="url" name="website" value="{{ $agent->website ?? '' }}" placeholder="e.g. https://www.youragency.com" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">GST NUMBER</label>
+                                                <input type="text" name="gst_number" value="{{ $agent->gst_number ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium uppercase focus:ring-2 focus:ring-primary/20">
+                                            </div>
                                             <div class="md:col-span-2">
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">ABOUT TRAVEL AGENT (Max 160 characters - Fits in Orange Header)</label>
-                                                <textarea name="about" rows="3" maxlength="160" placeholder="Describe your agency in 3-4 sentences..." class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ $agent->about ?? '' }}</textarea>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">ABOUT TRAVEL AGENT (Max 160 characters - Fits in Orange Header) <span class="text-red-500">*</span></label>
+                                                <textarea name="about" required rows="3" maxlength="160" placeholder="Describe your agency in 3-4 sentences..." class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ $agent->about ?? '' }}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -161,26 +165,26 @@
 
                                         <div class="space-y-6">
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICE ADDRESS</label>
-                                                <input type="text" name="address" value="{{ $agent->address ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICE ADDRESS <span class="text-red-500">*</span></label>
+                                                <input type="text" name="address" required value="{{ $agent->address ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                 <div class="relative">
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">CITY (SEARCH) *</label>
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">CITY (SEARCH) <span class="text-red-500">*</span></label>
                                                     <input type="text" id="settingsCity" name="city" value="{{ $agent->city ?? '' }}" required placeholder="Search city" autocomplete="off" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                     <div id="citySuggestions" class="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto bg-white rounded-2xl border border-gray-100 shadow-xl hidden custom-scroll"></div>
                                                 </div>
                                                 <div>
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">STATE *</label>
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">STATE <span class="text-red-500">*</span></label>
                                                     <input type="text" id="settingsState" name="state" value="{{ $agent->state ?? '' }}" required placeholder="State" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                 </div>
                                                 <div>
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COUNTRY *</label>
+                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COUNTRY <span class="text-red-500">*</span></label>
                                                     <input type="text" id="settingsCountry" name="country" value="{{ $agent->country ?? '' }}" required placeholder="Country" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                 </div>
                                             </div>
                                             <div class="w-1/3">
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PINCODE *</label>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PINCODE <span class="text-red-500">*</span></label>
                                                 <input type="text" name="pincode" value="{{ $agent->pincode ?? '' }}" required pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                         </div>
@@ -197,39 +201,68 @@
                                         <div class="flex items-center justify-between mb-6">
                                             <div class="flex items-center">
                                                 <div class="w-1.5 h-6 bg-orange-800 rounded-full mr-4"></div>
-                                                <h4 class="text-lg font-bold text-gray-800 tracking-tight">Business Card</h4>
+                                                <h4 class="text-lg font-bold text-gray-800 tracking-tight">Business Card <span class="text-red-500">*</span></h4>
                                             </div>
                                             <!-- Success Badge Preview Icon -->
-                                            <div id="card_success_badge" class="{{ ($agent && $agent->business_card) ? '' : 'hidden' }} flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 rounded-full text-[10px] font-bold border border-green-100">
+                                            <div id="card_success_badge" class="{{ ($agent && ($agent->business_card_front || $agent->business_card_back || $agent->business_card)) ? '' : 'hidden' }} flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 rounded-full text-[10px] font-bold border border-green-100">
                                                 <i class="fas fa-check-circle"></i> Card Uploaded
                                             </div>
                                         </div>
-                                        <p class="text-[10px] text-gray-400 font-medium mb-6 -mt-3">Upload a single image containing both front and back of your business card (Max 2MB). Note: Front and back must be in one single image.</p>
+                                        <p class="text-[10px] text-gray-400 font-medium mb-6 -mt-3">Upload front and back images of your business card (Max 2MB each).</p>
                                         
-                                        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                                            <div class="md:col-span-8">
-                                                <div class="w-full aspect-[1.58/1] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-orange-50/20 transition-all relative" onclick="document.getElementById('business_card_file').click()">
-                                                    @if($agent && $agent->business_card)
-                                                        <img id="card_preview" src="{{ asset($agent->business_card) }}" class="w-full h-full object-cover">
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                                            <!-- Front Side -->
+                                            <div>
+                                                <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-3 tracking-widest">FRONT SIDE</h5>
+                                                <div class="w-full aspect-[1.58/1] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-orange-50/20 transition-all relative" onclick="document.getElementById('business_card_front_file').click()">
+                                                    @if($agent && $agent->business_card_front)
+                                                        <img id="card_front_preview" src="{{ asset($agent->business_card_front) }}" class="w-full h-full object-cover">
+                                                    @elseif($agent && $agent->business_card)
+                                                        <img id="card_front_preview" src="{{ asset($agent->business_card) }}" class="w-full h-full object-cover">
                                                     @else
-                                                        <img id="card_preview" class="hidden w-full h-full object-cover">
-                                                        <div id="card_placeholder" class="text-center p-4">
+                                                        <img id="card_front_preview" class="hidden w-full h-full object-cover">
+                                                        <div id="card_front_placeholder" class="text-center p-4">
                                                             <i class="fas fa-id-card text-2xl text-gray-300 mb-2"></i>
-                                                            <span class="text-[10px] font-bold text-gray-400 block">Click to upload business card</span>
-                                                            <span class="text-[8px] text-red-500 font-bold block mt-1">Note: Front & back must be in a single image</span>
+                                                            <span class="text-[10px] font-bold text-gray-400 block">Click to upload front</span>
                                                         </div>
                                                     @endif
                                                 </div>
+                                                <div class="flex gap-3 mt-3">
+                                                    <button type="button" onclick="document.getElementById('business_card_front_file').click()" class="flex-1 py-3 bg-primary hover:bg-orange-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all">
+                                                        <i class="fas fa-upload mr-1"></i> Front
+                                                    </button>
+                                                    <button type="button" id="delete_card_front_btn" onclick="deleteCardFront()" class="{{ ($agent && ($agent->business_card_front || $agent->business_card)) ? '' : 'hidden' }} flex-1 py-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">
+                                                        <i class="fas fa-trash-alt mr-1"></i> Delete
+                                                    </button>
+                                                </div>
+                                                <input type="file" name="business_card_front_file" id="business_card_front_file" class="hidden" accept="image/*" onchange="previewCardFront(this)">
+                                                <input type="hidden" name="delete_card_front" id="delete_card_front" value="0">
                                             </div>
-                                            <div class="md:col-span-4 space-y-3">
-                                                <button type="button" onclick="document.getElementById('business_card_file').click()" class="w-full py-3 bg-primary hover:bg-orange-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm transition-all">
-                                                    <i class="fas fa-upload mr-1"></i> Upload Card
-                                                </button>
-                                                <button type="button" id="delete_card_btn" onclick="deleteCard()" class="{{ ($agent && $agent->business_card) ? '' : 'hidden' }} w-full py-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                                                    <i class="fas fa-trash-alt mr-1"></i> Delete Card
-                                                </button>
-                                                <input type="file" name="business_card_file" id="business_card_file" class="hidden" accept="image/*" onchange="previewCard(this)">
-                                                <input type="hidden" name="delete_card" id="delete_card" value="0">
+
+                                            <!-- Back Side -->
+                                            <div>
+                                                <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-3 tracking-widest">BACK SIDE</h5>
+                                                <div class="w-full aspect-[1.58/1] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-orange-50/20 transition-all relative" onclick="document.getElementById('business_card_back_file').click()">
+                                                    @if($agent && $agent->business_card_back)
+                                                        <img id="card_back_preview" src="{{ asset($agent->business_card_back) }}" class="w-full h-full object-cover">
+                                                    @else
+                                                        <img id="card_back_preview" class="hidden w-full h-full object-cover">
+                                                        <div id="card_back_placeholder" class="text-center p-4">
+                                                            <i class="fas fa-id-card text-2xl text-gray-300 mb-2"></i>
+                                                            <span class="text-[10px] font-bold text-gray-400 block">Click to upload back</span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                                <div class="flex gap-3 mt-3">
+                                                    <button type="button" onclick="document.getElementById('business_card_back_file').click()" class="flex-1 py-3 bg-primary hover:bg-orange-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all">
+                                                        <i class="fas fa-upload mr-1"></i> Back
+                                                    </button>
+                                                    <button type="button" id="delete_card_back_btn" onclick="deleteCardBack()" class="{{ ($agent && $agent->business_card_back) ? '' : 'hidden' }} flex-1 py-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">
+                                                        <i class="fas fa-trash-alt mr-1"></i> Delete
+                                                    </button>
+                                                </div>
+                                                <input type="file" name="business_card_back_file" id="business_card_back_file" class="hidden" accept="image/*" onchange="previewCardBack(this)">
+                                                <input type="hidden" name="delete_card_back" id="delete_card_back" value="0">
                                             </div>
                                         </div>
                                     </div>
@@ -261,21 +294,7 @@
                                         </div>
                                     </div>
 
-                                    <!-- Tax & Compliance -->
-                                    <div class="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100 relative overflow-hidden group">
-                                        <div class="absolute top-0 left-0 w-full h-1 bg-orange-800"></div>
-                                        <h4 class="text-xs font-bold text-gray-800 mb-6 tracking-tight">Tax & Compliance</h4>
-                                        <div class="space-y-4">
-                                            <div>
-                                                <label class="block text-[8px] font-bold text-gray-300 uppercase mb-1.5 tracking-widest">PAN NUMBER</label>
-                                                <input type="text" name="pan_number" value="ABCDE1234F" class="w-full px-4 py-2.5 rounded-lg bg-gray-50 border-none text-[10px] font-bold text-gray-800 uppercase">
-                                            </div>
-                                            <div>
-                                                <label class="block text-[8px] font-bold text-gray-300 uppercase mb-1.5 tracking-widest">GST NUMBER</label>
-                                                <input type="text" name="gst_number" value="29ABCDE1234F1Z5" class="w-full px-4 py-2.5 rounded-lg bg-gray-50 border-none text-[10px] font-bold text-gray-800 uppercase">
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <!-- Tax & Compliance removed -->
 
                                     <!-- Social Integration -->
                                     <div class="bg-white p-6 rounded-[32px] shadow-sm border border-gray-100">
@@ -322,27 +341,45 @@
                                 </div>
                             </div>
 
-                            <div class="space-y-6">
-                                <div class="grid grid-cols-1 gap-6">
-                                    <div class="space-y-2">
-                                        <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Current Password</label>
-                                        <input type="password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold">
+                            <form action="{{ route('agent.settings.password') }}" method="POST">
+                                @csrf
+                                <div class="space-y-6">
+                                    <div class="grid grid-cols-1 gap-6">
+                                        <div class="space-y-2">
+                                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Current Password</label>
+                                            <div class="relative">
+                                                <input type="password" name="current_password" id="current_password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold pr-12" required>
+                                                <button type="button" onclick="togglePasswordVisibility('current_password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="space-y-2">
+                                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">New Password</label>
+                                                <div class="relative">
+                                                    <input type="password" name="new_password" id="new_password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold pr-12" required minlength="8">
+                                                    <button type="button" onclick="togglePasswordVisibility('new_password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Confirm New Password</label>
+                                                <div class="relative">
+                                                    <input type="password" name="confirm_new_password" id="confirm_new_password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold pr-12" required minlength="8">
+                                                    <button type="button" onclick="togglePasswordVisibility('confirm_new_password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                                                        <i class="fas fa-eye"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div class="space-y-2">
-                                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">New Password</label>
-                                            <input type="password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold">
-                                        </div>
-                                        <div class="space-y-2">
-                                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Confirm New Password</label>
-                                            <input type="password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold">
-                                        </div>
+                                    <div class="pt-4">
+                                        <button type="submit" class="w-full py-4 bg-primary text-white text-xs font-black rounded-2xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all uppercase tracking-widest">Update Password</button>
                                     </div>
                                 </div>
-                                <div class="pt-4">
-                                    <button class="w-full py-4 bg-primary text-white text-xs font-black rounded-2xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all uppercase tracking-widest">Update Password</button>
-                                </div>
-                            </div>
+                            </form>
                         </div>
 
                         <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
@@ -457,6 +494,21 @@ function switchTab(tabName) {
     const activeBtn = document.getElementById('tab-' + tabName);
     activeBtn.classList.add('bg-primary', 'text-white', 'shadow-lg', 'shadow-orange-100');
     activeBtn.classList.remove('text-gray-400', 'hover:bg-gray-50');
+}
+
+function togglePasswordVisibility(inputId, button) {
+    const input = document.getElementById(inputId);
+    const icon = button.querySelector('i');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
 }
 
 function confirmDeleteAccount() {
@@ -728,14 +780,14 @@ function deleteLogo() {
     calculateLiveProgress();
 }
 
-// Client-side Business Card Image preview helper
-function previewCard(input) {
+// Client-side Business Card Image preview helper (Front)
+function previewCardFront(input) {
     if (input.files && input.files[0]) {
         const fileSize = input.files[0].size / 1024 / 1024; // in MB
         if (fileSize > 2) {
             Swal.fire({
                 title: 'File Too Large',
-                text: 'Your business card file must be less than 2MB. Your file is ' + fileSize.toFixed(2) + 'MB.',
+                text: 'Your front business card file must be less than 2MB. Your file is ' + fileSize.toFixed(2) + 'MB.',
                 icon: 'warning',
                 confirmButtonColor: '#F0642F',
                 borderRadius: '2rem'
@@ -745,11 +797,11 @@ function previewCard(input) {
         }
         const reader = new FileReader();
         reader.onload = function(e) {
-            const preview = document.getElementById('card_preview');
-            const placeholder = document.getElementById('card_placeholder');
+            const preview = document.getElementById('card_front_preview');
+            const placeholder = document.getElementById('card_front_placeholder');
             const badge = document.getElementById('card_success_badge');
-            const deleteBtn = document.getElementById('delete_card_btn');
-            const deleteInput = document.getElementById('delete_card');
+            const deleteBtn = document.getElementById('delete_card_front_btn');
+            const deleteInput = document.getElementById('delete_card_front');
             
             if (preview) {
                 preview.src = e.target.result;
@@ -766,18 +818,71 @@ function previewCard(input) {
     }
 }
 
-// Client-side Business Card Delete handler
-function deleteCard() {
-    const preview = document.getElementById('card_preview');
-    const placeholder = document.getElementById('card_placeholder');
-    const badge = document.getElementById('card_success_badge');
-    const deleteBtn = document.getElementById('delete_card_btn');
-    const deleteInput = document.getElementById('delete_card');
-    const fileInput = document.getElementById('business_card_file');
+// Client-side Business Card Image preview helper (Back)
+function previewCardBack(input) {
+    if (input.files && input.files[0]) {
+        const fileSize = input.files[0].size / 1024 / 1024; // in MB
+        if (fileSize > 2) {
+            Swal.fire({
+                title: 'File Too Large',
+                text: 'Your back business card file must be less than 2MB. Your file is ' + fileSize.toFixed(2) + 'MB.',
+                icon: 'warning',
+                confirmButtonColor: '#F0642F',
+                borderRadius: '2rem'
+            });
+            input.value = ''; // Reset input
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('card_back_preview');
+            const placeholder = document.getElementById('card_back_placeholder');
+            const badge = document.getElementById('card_success_badge');
+            const deleteBtn = document.getElementById('delete_card_back_btn');
+            const deleteInput = document.getElementById('delete_card_back');
+            
+            if (preview) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            if (placeholder) placeholder.classList.add('hidden');
+            if (badge) badge.classList.remove('hidden');
+            if (deleteBtn) deleteBtn.classList.remove('hidden');
+            if (deleteInput) deleteInput.value = '0';
+            
+            calculateLiveProgress();
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Client-side Business Card Delete handler (Front)
+function deleteCardFront() {
+    const preview = document.getElementById('card_front_preview');
+    const placeholder = document.getElementById('card_front_placeholder');
+    const deleteBtn = document.getElementById('delete_card_front_btn');
+    const deleteInput = document.getElementById('delete_card_front');
+    const fileInput = document.getElementById('business_card_front_file');
     
     if (preview) preview.classList.add('hidden');
     if (placeholder) placeholder.classList.remove('hidden');
-    if (badge) badge.classList.add('hidden');
+    if (deleteBtn) deleteBtn.classList.add('hidden');
+    if (deleteInput) deleteInput.value = '1';
+    if (fileInput) fileInput.value = '';
+    
+    calculateLiveProgress();
+}
+
+// Client-side Business Card Delete handler (Back)
+function deleteCardBack() {
+    const preview = document.getElementById('card_back_preview');
+    const placeholder = document.getElementById('card_back_placeholder');
+    const deleteBtn = document.getElementById('delete_card_back_btn');
+    const deleteInput = document.getElementById('delete_card_back');
+    const fileInput = document.getElementById('business_card_back_file');
+    
+    if (preview) preview.classList.add('hidden');
+    if (placeholder) placeholder.classList.remove('hidden');
     if (deleteBtn) deleteBtn.classList.add('hidden');
     if (deleteInput) deleteInput.value = '1';
     if (fileInput) fileInput.value = '';
