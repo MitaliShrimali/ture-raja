@@ -61,7 +61,7 @@
                             @endfor
                         </div>
 
-                        <p class="text-sm text-gray-600 italic flex-grow mb-6">"{{ $review->text }}"</p>
+                        <p class="text-sm text-gray-600 italic flex-grow mb-6 break-words">"{{ $review->text }}"</p>
 
                         <div class="flex items-center gap-2 mt-auto pt-4 border-t border-gray-100">
                             <button @click="editReview = {{ json_encode($review) }}; showEditModal = true" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black bg-gray-50 text-foreground hover:bg-gray-100 hover:text-primary transition-colors">
@@ -98,9 +98,9 @@
     </div>
 
     <!-- Add Modal -->
-    <div x-show="showAddModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" x-transition.opacity>
+    <div x-show="showAddModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" x-transition.opacity>
         <div class="absolute inset-0 bg-foreground/40 backdrop-blur-sm" @click="showAddModal = false"></div>
-        <div class="relative w-full max-w-2xl bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 animate-fade-in-up max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="relative w-full max-w-2xl bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 animate-fade-in-up">
             
             <div class="flex items-center justify-between mb-8 pb-4 border-b border-border-soft">
                 <div class="space-y-1">
@@ -174,9 +174,9 @@
     </div>
 
     <!-- Edit Modal -->
-    <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" x-transition.opacity>
+    <div x-show="showEditModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" x-transition.opacity>
         <div class="absolute inset-0 bg-foreground/40 backdrop-blur-sm" @click="showEditModal = false"></div>
-        <div class="relative w-full max-w-2xl bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 animate-fade-in-up max-h-[90vh] overflow-y-auto custom-scrollbar">
+        <div class="relative w-full max-w-2xl bg-white rounded-[32px] shadow-2xl p-6 sm:p-8 animate-fade-in-up">
             
             <div class="flex items-center justify-between mb-8 pb-4 border-b border-border-soft">
                 <div class="space-y-1">

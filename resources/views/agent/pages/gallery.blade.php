@@ -38,7 +38,7 @@
     <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8">
         <div class="flex-grow flex items-center px-4">
             <i class="fas fa-search text-gray-300 mr-3"></i>
-            <input type="text" id="gallerySearchInput" oninput="filterGallery()" placeholder="Search Image/Folder" class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
+            <input type="text" id="gallerySearchInput" oninput="filterGallery()" placeholder="Search image for destination/choose image..." class="w-full bg-transparent border-none outline-none text-sm text-gray-600 placeholder:text-gray-300">
         </div>
         <button class="bg-primary text-white w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-orange-100">
             <i class="fas fa-search"></i>
