@@ -279,6 +279,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/payments/store', [AdminController::class, 'storePayment']);
     Route::post('/payments/update', [AdminController::class, 'updatePayment']);
     Route::get('/payments/delete/{id}', [AdminController::class, 'deletePayment']);
+    Route::get('/payments/print', [AdminController::class, 'printPayments']);
     Route::get('/payments/invoice', function() { return redirect('/admin/payments'); });
     Route::get('/payments/invoice/{id}', [AdminController::class, 'paymentInvoice']);
     Route::post('/payments/invoice/update', [AdminController::class, 'updatePaymentInvoice']);

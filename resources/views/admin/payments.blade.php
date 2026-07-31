@@ -18,9 +18,11 @@
             <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-3">
                 <i data-lucide="plus" size="20"></i> Add Payment
             </button>
-            <button onclick="window.print()" class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3 print:hidden">
+            <a href="{{ url('/admin/payments/print') }}?{{ http_build_query(request()->only(['search','plan_type','status','from_date','to_date','service_guaranteed','generate_bill'])) }}&autoprint=1"
+               target="_blank"
+               class="bg-foreground text-white px-8 py-4 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-3">
                 <i data-lucide="download" size="20"></i> Download PDF
-            </button>
+            </a>
         </div>
     </div>
 

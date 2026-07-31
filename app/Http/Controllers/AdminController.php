@@ -1749,6 +1749,62 @@ class AdminController extends Controller
         return view('admin.payments', compact('payments', 'plans', 'agentsList'));
     }
 
+    public function printPayments(Request $request)
+    {
+        $query = DB::table('payments')
+            ->select('payments.*')
+            ->addSelect([
+                'service_guaranteed' => DB::table('agents')
+                    ->select('service_guaranteed')
+                    ->whereColumn('agents.email', 'payments.email')
+                    ->limit(1)
+            ]);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('payments.payment_id', 'like', "%{$search}%")
+                    ->orWhere('payments.user_name', 'like', "%{$search}%")
+                    ->orWhere('payments.email', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('plan_type')) {
+            $query->where('payments.plan_type', 'like', "%{$request->plan_type}%");
+        }
+
+        if ($request->filled('status')) {
+            $query->where('payments.status', $request->status);
+        }
+
+        if ($request->filled('from_date')) {
+            $query->whereDate('payments.date', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $query->whereDate('payments.date', '<=', $request->to_date);
+        }
+
+        if ($request->filled('service_guaranteed')) {
+            $query->whereExists(function ($q) use ($request) {
+                $q->select(DB::raw(1))
+                    ->from('agents')
+                    ->whereColumn('agents.email', 'payments.email')
+                    ->where('service_guaranteed', $request->service_guaranteed);
+            });
+        }
+
+        if ($request->filled('generate_bill')) {
+            $query->where('payments.generate_bill', $request->generate_bill);
+        }
+
+        $payments  = $query->orderBy('payments.id', 'desc')->get();
+        $settings  = DB::table('settings')->pluck('value', 'key')->toArray();
+        $filters   = $request->only(['search', 'plan_type', 'status', 'from_date', 'to_date', 'service_guaranteed', 'generate_bill']);
+
+        return view('admin.payments-print', compact('payments', 'settings', 'filters'));
+    }
+
     public function paymentInvoice($id)
     {
         try {
