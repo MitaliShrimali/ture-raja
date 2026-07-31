@@ -342,33 +342,87 @@
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Publish On
                                 Behalf Of (Agent)</label>
-                            <div class="relative">
-                                <select name="agent" id="agentSelect"
-                                    class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 pr-10 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm appearance-none">
-                                    <option value="">Admin (Default / Miths Holidays)</option>
-                                    @php
-                                        $paidAgents = $agents->filter(function ($a) {
-                                            return !empty($a->plan_id) && $a->plan_id > 1; });
-                                        $freeAgents = $agents->filter(function ($a) {
-                                            return empty($a->plan_id) || $a->plan_id <= 1; });
-                                    @endphp
-                                    <optgroup label="Paid Agents">
-                                        @foreach($paidAgents as $ag)
-                                            <option value="{{ $ag->name }}">
-                                                {{ $ag->name }}{{ $ag->agency_name ? ' (' . $ag->agency_name . ')' : '' }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Free Agents">
-                                        @foreach($freeAgents as $ag)
-                                            <option value="{{ $ag->name }}">
-                                                {{ $ag->name }}{{ $ag->agency_name ? ' (' . $ag->agency_name . ')' : '' }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                                <i data-lucide="chevron-down" size="16"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                            @php
+                                $paidAgents = $agents->filter(function ($a) {
+                                    return !empty($a->plan_id) && $a->plan_id > 1; });
+                                $freeAgents = $agents->filter(function ($a) {
+                                    return empty($a->plan_id) || $a->plan_id <= 1; });
+                            @endphp
+                            <div class="relative" x-data="{
+                                open: false,
+                                search: '',
+                                selected: '{{ old('agent') ?? "" }}',
+                                options: [
+                                    { value: '', label: 'Admin (Default / Miths Holidays)', group: 'Default' },
+                                    @foreach($paidAgents as $ag)
+                                    { value: '{{ addslashes($ag->name) }}', label: '{{ addslashes($ag->name . ($ag->agency_name ? " (".$ag->agency_name.")" : "")) }}', group: 'Paid Agents' },
+                                    @endforeach
+                                    @foreach($freeAgents as $ag)
+                                    { value: '{{ addslashes($ag->name) }}', label: '{{ addslashes($ag->name . ($ag->agency_name ? " (".$ag->agency_name.")" : "")) }}', group: 'Free Agents' },
+                                    @endforeach
+                                ],
+                                get groupedFilteredOptions() {
+                                    let opts = this.search === '' 
+                                        ? this.options 
+                                        : this.options.filter(opt => opt.label.toLowerCase().includes(this.search.toLowerCase()));
+                                    
+                                    let groups = {};
+                                    opts.forEach(opt => {
+                                        let g = opt.group || 'Default';
+                                        if (!groups[g]) groups[g] = [];
+                                        groups[g].push(opt);
+                                    });
+                                    
+                                    return Object.keys(groups).map(k => ({ name: k, items: groups[k] }));
+                                },
+                                get selectedLabel() {
+                                    const opt = this.options.find(o => o.value === this.selected);
+                                    return opt ? opt.label : 'Admin (Default / Miths Holidays)';
+                                },
+                                selectOption(val) {
+                                    this.selected = val;
+                                    this.open = false;
+                                    this.search = '';
+                                }
+                            }" @click.outside="open = false">
+                                <!-- Hidden real input -->
+                                <input type="hidden" name="agent" :value="selected">
+                                
+                                <!-- Custom Dropdown Button -->
+                                <button type="button" @click="open = !open; if(open) { $nextTick(() => $refs.searchInput.focus()); }"
+                                    class="w-full text-left bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 pr-10 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm">
+                                    <span x-text="selectedLabel" class="block truncate"></span>
+                                </button>
+                                <i data-lucide="chevron-down" size="16" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-transform" :class="open ? 'rotate-180' : ''"></i>
+                                
+                                <!-- Dropdown Menu -->
+                                <div x-show="open" x-transition class="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-2xl shadow-xl flex flex-col" style="display: none; max-height: 350px;">
+                                    <!-- Search Bar Inside Dropdown -->
+                                    <div class="p-3 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+                                        <div class="relative">
+                                            <i data-lucide="search" size="14" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                            <input x-ref="searchInput" type="text" x-model="search" placeholder="Search agent..." class="w-full bg-[#F5F5F5] border-none rounded-xl py-2 pl-9 pr-4 outline-none text-sm font-semibold focus:ring-2 focus:ring-[#e85d26]/25" @keydown.escape="open = false">
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Options List -->
+                                    <ul class="overflow-y-auto flex-1 p-2 space-y-1" style="max-height: 250px;">
+                                        <template x-if="groupedFilteredOptions.length === 0">
+                                            <li class="px-4 py-3 text-sm text-gray-400 font-medium text-center">No agents found</li>
+                                        </template>
+                                        <template x-for="group in groupedFilteredOptions" :key="group.name">
+                                            <div>
+                                                <template x-if="group.name !== 'Default' && group.items.length > 0">
+                                                    <div class="px-4 py-1 text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2 mb-1" x-text="group.name"></div>
+                                                </template>
+                                                <template x-for="opt in group.items" :key="opt.value">
+                                                    <li @click="selectOption(opt.value)" class="px-4 py-2 text-sm font-bold rounded-xl cursor-pointer hover:bg-orange-50 hover:text-[#e85d26] transition-colors truncate" :class="selected === opt.value ? 'bg-orange-50 text-[#e85d26]' : 'text-gray-700'" x-text="opt.label">
+                                                    </li>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 

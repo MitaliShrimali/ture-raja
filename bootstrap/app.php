@@ -11,6 +11,10 @@ $app = Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->validateCsrfTokens(except: [
+            'agent/*', // Bypass CSRF temporarily
+        ]);
+
         // Register custom agent session-based auth middleware
         $middleware->alias([
             'agent.auth' => \App\Http\Middleware\AgentAuthenticate::class,

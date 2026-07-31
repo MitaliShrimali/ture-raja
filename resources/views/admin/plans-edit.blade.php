@@ -20,7 +20,8 @@
     package_limit: '{{ $plan->package_limit ?? 15 }}', 
     description: {{ json_encode($plan->description ?? 'Specialized subscription tier for travel agents.') }},
     features: {{ json_encode($featuresString) }},
-    status: '{{ $plan->status ?? 'Active' }}'
+    status: '{{ $plan->status ?? 'Active' }}',
+    gst: '{{ $plan->gst ?? 18 }}'
 }">
     <!-- Breadcrumb & Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -76,7 +77,7 @@
                     <input required type="text" name="name" x-model="name" value="{{ $plan->name }}" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Package Limit -->
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Number of Packages<span class="text-primary">*</span></label>
@@ -93,6 +94,15 @@
                         <div class="relative">
                             <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">₹</span>
                             <input required type="number" step="0.01" name="price" x-model="price" value="{{ $plan->price }}" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
+                        </div>
+                    </div>
+
+                    <!-- GST -->
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">GST (%)</label>
+                        <div class="relative">
+                            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400">%</span>
+                            <input type="number" step="0.01" name="gst" x-model="gst" value="{{ $plan->gst ?? 18 }}" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 pl-6 pr-12 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground" />
                         </div>
                     </div>
                 </div>

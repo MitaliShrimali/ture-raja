@@ -1665,12 +1665,14 @@ class AgentController extends Controller
         $type = $request->query('type');
         $id = $request->query('id');
         $amount = 0;
+        $gst = 18.00;
         $itemName = '';
 
         if ($type == 'plan') {
             $plan = DB::table('plans')->where('id', $id)->first();
             if ($plan) {
                 $amount = $plan->price;
+                $gst = $plan->gst ?? 18.00;
                 $itemName = $plan->name . ' Plan';
             }
         } elseif ($type == 'ad') {
@@ -1696,10 +1698,12 @@ class AgentController extends Controller
             $itemName = 'Boost Tour Package';
         }
 
+        $totalAmount = $amount * (1 + ($gst / 100));
+
         // Razorpay Order Generation
         $razorpayOrderId = null;
         $razorpayError = null;
-        if ($amount > 0) {
+        if ($totalAmount > 0) {
             try {
                 if (!config('services.razorpay.key') || !config('services.razorpay.secret')) {
                     throw new \Exception('Razorpay keys are missing from configuration. Did you clear the config cache?');
@@ -1707,7 +1711,7 @@ class AgentController extends Controller
                 $api = new \Razorpay\Api\Api(config('services.razorpay.key'), config('services.razorpay.secret'));
                 $orderData = [
                     'receipt'         => 'rcptid_' . time(),
-                    'amount'          => round($amount * 100), // Amount in paise
+                    'amount'          => round($totalAmount * 100), // Amount in paise
                     'currency'        => 'INR'
                 ];
                 $razorpayOrder = $api->order->create($orderData);
@@ -1724,6 +1728,8 @@ class AgentController extends Controller
             'type' => $type,
             'id' => $id,
             'amount' => $amount,
+            'gst' => $gst,
+            'totalAmount' => $totalAmount,
             'itemName' => $itemName,
             'razorpayOrderId' => $razorpayOrderId,
             'razorpayError' => $razorpayError

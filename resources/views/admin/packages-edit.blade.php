@@ -383,50 +383,112 @@
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Publish On
                                 Behalf Of (Agent)</label>
-                            <div class="relative">
-                                <select name="agent"
-                                    class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 pr-10 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm appearance-none">
-                                    @php
-                                        $currentAgentName = '';
-                                        if (!empty($pkg->agent)) {
-                                            $decoded = json_decode($pkg->agent, true);
-                                            if (is_array($decoded) && isset($decoded['name'])) {
-                                                $currentAgentName = $decoded['name'];
-                                            } else {
-                                                $currentAgentName = $pkg->agent;
-                                            }
-                                        }
+                            @php
+                                $currentAgentName = '';
+                                if (!empty($pkg->agent)) {
+                                    $decoded = json_decode($pkg->agent, true);
+                                    if (is_array($decoded) && isset($decoded['name'])) {
+                                        $currentAgentName = $decoded['name'];
+                                    } else {
+                                        $currentAgentName = $pkg->agent;
+                                    }
+                                }
 
-                                        $selectedAgentValue = '';
-                                        foreach ($agents as $ag) {
-                                            if ($ag->name === $currentAgentName || $ag->agency_name === $currentAgentName) {
-                                                $selectedAgentValue = $ag->name;
-                                                break;
-                                            }
-                                        }
-                                    @endphp
-                                    <option value="">Admin (Default / Miths Holidays)</option>
-                                    @php
-                                        $paidAgents = $agents->filter(function ($a) {
-                                            return !empty($a->plan_id) && $a->plan_id > 1; });
-                                        $freeAgents = $agents->filter(function ($a) {
-                                            return empty($a->plan_id) || $a->plan_id <= 1; });
-                                    @endphp
-                                    <optgroup label="Paid Agents">
-                                        @foreach($paidAgents as $ag)
-                                            <option value="{{ $ag->name }}" {{ $selectedAgentValue === $ag->name ? 'selected' : '' }}>{{ $ag->name }}{{ $ag->agency_name ? ' (' . $ag->agency_name . ')' : '' }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                    <optgroup label="Free Agents">
-                                        @foreach($freeAgents as $ag)
-                                            <option value="{{ $ag->name }}" {{ $selectedAgentValue === $ag->name ? 'selected' : '' }}>{{ $ag->name }}{{ $ag->agency_name ? ' (' . $ag->agency_name . ')' : '' }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                </select>
-                                <i data-lucide="chevron-down" size="16"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                $selectedAgentValue = '';
+                                foreach ($agents as $ag) {
+                                    if ($ag->name === $currentAgentName || $ag->agency_name === $currentAgentName) {
+                                        $selectedAgentValue = $ag->name;
+                                        break;
+                                    }
+                                }
+
+                                $paidAgents = $agents->filter(function ($a) { return !empty($a->plan_id) && $a->plan_id > 1; });
+                                $freeAgents = $agents->filter(function ($a) { return empty($a->plan_id) || $a->plan_id <= 1; });
+                                
+                                $agentsData = [
+                                    ['value' => '', 'label' => 'Admin (Default / Miths Holidays)', 'group' => 'Admin']
+                                ];
+                                foreach($paidAgents as $ag) {
+                                    $label = $ag->name . ($ag->agency_name ? ' (' . $ag->agency_name . ')' : '');
+                                    $agentsData[] = ['value' => $ag->name, 'label' => $label, 'group' => 'Paid Agents'];
+                                }
+                                foreach($freeAgents as $ag) {
+                                    $label = $ag->name . ($ag->agency_name ? ' (' . $ag->agency_name . ')' : '');
+                                    $agentsData[] = ['value' => $ag->name, 'label' => $label, 'group' => 'Free Agents'];
+                                }
+                            @endphp
+                            <div class="relative" x-data="{
+                                open: false,
+                                search: '',
+                                selected: '{{ addslashes($selectedAgentValue) }}',
+                                options: {{ json_encode($agentsData) }},
+                                get filteredOptions() {
+                                    if (this.search === '') return this.options;
+                                    return this.options.filter(opt => opt.label.toLowerCase().includes(this.search.toLowerCase()));
+                                },
+                                get groupedOptions() {
+                                    let groups = {};
+                                    this.filteredOptions.forEach(opt => {
+                                        if (!groups[opt.group]) groups[opt.group] = [];
+                                        groups[opt.group].push(opt);
+                                    });
+                                    return groups;
+                                },
+                                get selectedLabel() {
+                                    let opt = this.options.find(o => o.value === this.selected);
+                                    return opt ? opt.label : 'Select Agent...';
+                                }
+                            }" @click.away="open = false">
+                                <input type="hidden" name="agent" :value="selected">
+                                
+                                <!-- Dropdown Button -->
+                                <button type="button" @click="open = !open; if(open) $nextTick(() => { $refs.agentSearch.focus() })" 
+                                    class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 pr-10 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm text-left flex items-center justify-between">
+                                    <span x-text="selectedLabel" class="truncate block w-full"></span>
+                                    <i data-lucide="chevron-down" size="16" class="text-gray-400"></i>
+                                </button>
+                                
+                                <!-- Dropdown Menu -->
+                                <div x-show="open" 
+                                     x-transition:enter="transition ease-out duration-100" 
+                                     x-transition:enter-start="transform opacity-0 scale-95" 
+                                     x-transition:enter-end="transform opacity-100 scale-100" 
+                                     x-transition:leave="transition ease-in duration-75" 
+                                     x-transition:leave-start="transform opacity-100 scale-100" 
+                                     x-transition:leave-end="transform opacity-0 scale-95" 
+                                     class="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col"
+                                     style="display: none;">
+                                     
+                                    <!-- Search Box -->
+                                    <div class="p-3 border-b border-gray-100 bg-white sticky top-0">
+                                        <div class="relative">
+                                            <i data-lucide="search" size="14" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                            <input type="text" x-model="search" x-ref="agentSearch" placeholder="Search agent..." 
+                                                class="w-full bg-gray-50 border-none rounded-xl py-2 pl-9 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all" />
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Options List -->
+                                    <div class="max-h-60 overflow-y-auto p-2 scrollbar-thin">
+                                        <template x-if="Object.keys(groupedOptions).length === 0">
+                                            <div class="p-4 text-center text-sm font-medium text-gray-400">No agents found</div>
+                                        </template>
+                                        
+                                        <template x-for="(opts, groupName) in groupedOptions" :key="groupName">
+                                            <div>
+                                                <div class="px-3 py-1.5 text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2" x-text="groupName"></div>
+                                                <template x-for="opt in opts" :key="opt.value">
+                                                    <div @click="selected = opt.value; open = false; search = ''" 
+                                                         class="px-3 py-2.5 rounded-xl cursor-pointer transition-all flex items-center justify-between"
+                                                         :class="selected === opt.value ? 'bg-orange-50 text-[#e85d26]' : 'hover:bg-gray-50 text-gray-700'">
+                                                        <span class="text-sm font-bold truncate" x-text="opt.label"></span>
+                                                        <i data-lucide="check" size="14" x-show="selected === opt.value"></i>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

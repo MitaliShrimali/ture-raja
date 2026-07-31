@@ -2107,7 +2107,8 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required',
             'price' => 'required|numeric',
-            'package_limit' => 'required|integer'
+            'package_limit' => 'required|integer',
+            'gst' => 'nullable|numeric|min:0'
         ]);
 
         $features = [];
@@ -2123,6 +2124,7 @@ class AdminController extends Controller
             'package_limit' => $request->package_limit,
             'duration' => $request->duration ?? '1 Month',
             'description' => $request->description,
+            'gst' => $request->gst ?? 18.00,
             'features' => json_encode(array_values($features)),
             'status' => $request->has('status') ? 'Active' : 'Inactive',
             'created_at' => now(),
@@ -2147,7 +2149,8 @@ class AdminController extends Controller
             'id' => 'required',
             'name' => 'required',
             'price' => 'required|numeric',
-            'package_limit' => 'required|integer'
+            'package_limit' => 'required|integer',
+            'gst' => 'nullable|numeric|min:0'
         ]);
 
         $features = [];
@@ -2163,6 +2166,7 @@ class AdminController extends Controller
             'package_limit' => $request->package_limit,
             'duration' => $request->duration,
             'description' => $request->description,
+            'gst' => $request->gst ?? 18.00,
             'features' => json_encode(array_values($features)),
             'status' => $request->has('status') ? 'Active' : 'Inactive',
             'updated_at' => now(),
@@ -2190,6 +2194,7 @@ class AdminController extends Controller
             'package_limit' => $plan->package_limit,
             'duration' => $plan->duration,
             'description' => $plan->description,
+            'gst' => $plan->gst ?? 18.00,
             'features' => $plan->features,
             'status' => 'Active',
             'created_at' => now(),
