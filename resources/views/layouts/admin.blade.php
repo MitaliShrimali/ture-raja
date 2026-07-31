@@ -685,24 +685,33 @@
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Current Password</label>
                     <div class="relative">
-                        <input type="password" name="current_password" required placeholder="Enter current password" 
-                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                        <input type="password" id="current_password" name="current_password" required placeholder="Enter current password" 
+                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 pr-12 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                        <button type="button" onclick="togglePwd('current_password', 'eye_current')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                            <i id="eye_current" data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
                     </div>
                 </div>
                 
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">New Password</label>
                     <div class="relative">
-                        <input type="password" name="new_password" required placeholder="Minimum 6 characters" 
-                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                        <input type="password" id="new_password" name="new_password" required placeholder="Minimum 6 characters" 
+                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 pr-12 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                        <button type="button" onclick="togglePwd('new_password', 'eye_new')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                            <i id="eye_new" data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
                     </div>
                 </div>
                 
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Confirm New Password</label>
                     <div class="relative">
-                        <input type="password" name="new_password_confirmation" required placeholder="Re-type new password" 
-                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                        <input type="password" id="new_password_confirmation" name="new_password_confirmation" required placeholder="Re-type new password" 
+                            class="w-full bg-[#FBFBFA] border border-gray-100 text-gray-800 text-sm font-semibold rounded-2xl px-4 py-4 pr-12 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 focus:border-[#B23B06]/40 outline-none transition-all duration-200">
+                        <button type="button" onclick="togglePwd('new_password_confirmation', 'eye_confirm')" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                            <i id="eye_confirm" data-lucide="eye" class="w-4 h-4"></i>
+                        </button>
                     </div>
                 </div>
                 
@@ -727,6 +736,7 @@
             if (modal) {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         }
 
@@ -736,6 +746,20 @@
                 modal.classList.remove('flex');
                 modal.classList.add('hidden');
             }
+        }
+
+        function togglePwd(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon  = document.getElementById(iconId);
+            if (!input || !icon) return;
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     </script>
 </body>

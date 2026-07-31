@@ -46,23 +46,27 @@
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Primary Email</label>
                             <input type="email" name="primary_email" value="{{ $settings['primary_email'] ?? 'admin@explorerglobal.com' }}" 
+                                pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"
+                                title="Please enter a valid email address (e.g. name@example.com)"
                                 class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" required>
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Contact Phone</label>
                             <div class="flex gap-2">
-                                <select name="contact_country_code" class="bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-3 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200 w-28">
-                                    <option value="+91" {{ $countryCodeVal === '+91' ? 'selected' : '' }}>+91 (IN)</option>
-                                    <option value="+1" {{ $countryCodeVal === '+1' ? 'selected' : '' }}>+1 (US)</option>
-                                    <option value="+44" {{ $countryCodeVal === '+44' ? 'selected' : '' }}>+44 (UK)</option>
-                                    <option value="+971" {{ $countryCodeVal === '+971' ? 'selected' : '' }}>+971 (AE)</option>
-                                    <option value="+62" {{ $countryCodeVal === '+62' ? 'selected' : '' }}>+62 (ID)</option>
-                                    <option value="+60" {{ $countryCodeVal === '+60' ? 'selected' : '' }}>+60 (MY)</option>
-                                    <option value="+65" {{ $countryCodeVal === '+65' ? 'selected' : '' }}>+65 (SG)</option>
+                                <select name="contact_country_code" id="contact_country_code" class="bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-3 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200 w-28" onchange="updatePhoneValidation()">
+                                    <option value="+91" data-len="10" {{ $countryCodeVal === '+91' ? 'selected' : '' }}>+91 (IN)</option>
+                                    <option value="+1" data-len="10" {{ $countryCodeVal === '+1' ? 'selected' : '' }}>+1 (US)</option>
+                                    <option value="+44" data-len="10" {{ $countryCodeVal === '+44' ? 'selected' : '' }}>+44 (UK)</option>
+                                    <option value="+971" data-len="9" {{ $countryCodeVal === '+971' ? 'selected' : '' }}>+971 (AE)</option>
+                                    <option value="+62" data-len="11" {{ $countryCodeVal === '+62' ? 'selected' : '' }}>+62 (ID)</option>
+                                    <option value="+60" data-len="9" {{ $countryCodeVal === '+60' ? 'selected' : '' }}>+60 (MY)</option>
+                                    <option value="+65" data-len="8" {{ $countryCodeVal === '+65' ? 'selected' : '' }}>+65 (SG)</option>
                                 </select>
-                                <input type="tel" name="contact_phone" value="{{ $phoneVal }}" placeholder="9876543210" pattern="[0-9]{5,12}" title="Please enter a valid 5 to 12 digit phone number"
-                                    class="flex-1 bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" required>
+                                <input type="tel" id="contact_phone_input" name="contact_phone" value="{{ $phoneVal }}" placeholder="10-digit number" 
+                                    class="flex-1 bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" required
+                                    oninput="this.value=this.value.replace(/[^0-9]/g,''); validatePhone(this)">
                             </div>
+                            <p id="phone_error" class="text-xs text-red-500 font-semibold hidden">Please enter a valid phone number for the selected country code.</p>
                         </div>
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Website URL</label>
@@ -118,20 +122,33 @@
 
                         <div class="space-y-4">
                             <div class="flex items-center justify-between bg-[#F5F4F2] rounded-xl px-5 py-3.5">
-                                <span class="text-xs font-black text-gray-800">CGST (%)</span>
-                                <input type="number" name="cgst" value="{{ $settings['cgst'] ?? '9' }}" 
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" id="cgst_enabled" name="cgst_enabled" value="1" {{ ($settings['cgst_enabled'] ?? '1') == '1' ? 'checked' : '' }}
+                                        class="w-4 h-4 rounded accent-[#B23B06] cursor-pointer">
+                                    <label for="cgst_enabled" class="text-xs font-black text-gray-800 cursor-pointer">CGST (%)</label>
+                                </div>
+                                <input type="number" name="cgst" value="{{ $settings['cgst'] ?? '9' }}" min="0" max="100" step="0.01"
                                     class="bg-transparent border-0 text-right font-black text-xl text-[#B23B06] w-20 focus:ring-0 p-0">
                             </div>
                             <div class="flex items-center justify-between bg-[#F5F4F2] rounded-xl px-5 py-3.5">
-                                <span class="text-xs font-black text-gray-800">SGST (%)</span>
-                                <input type="number" name="sgst" value="{{ $settings['sgst'] ?? '9' }}" 
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" id="sgst_enabled" name="sgst_enabled" value="1" {{ ($settings['sgst_enabled'] ?? '1') == '1' ? 'checked' : '' }}
+                                        class="w-4 h-4 rounded accent-[#B23B06] cursor-pointer">
+                                    <label for="sgst_enabled" class="text-xs font-black text-gray-800 cursor-pointer">SGST (%)</label>
+                                </div>
+                                <input type="number" name="sgst" value="{{ $settings['sgst'] ?? '9' }}" min="0" max="100" step="0.01"
                                     class="bg-transparent border-0 text-right font-black text-xl text-[#B23B06] w-20 focus:ring-0 p-0">
                             </div>
                             <div class="flex items-center justify-between bg-[#F5F4F2] rounded-xl px-5 py-3.5">
-                                <span class="text-xs font-black text-gray-800">IGST (%)</span>
-                                <input type="number" name="igst" value="{{ $settings['igst'] ?? '18' }}" 
+                                <div class="flex items-center gap-3">
+                                    <input type="checkbox" id="igst_enabled" name="igst_enabled" value="1" {{ ($settings['igst_enabled'] ?? '0') == '1' ? 'checked' : '' }}
+                                        class="w-4 h-4 rounded accent-[#B23B06] cursor-pointer">
+                                    <label for="igst_enabled" class="text-xs font-black text-gray-800 cursor-pointer">IGST (%)</label>
+                                </div>
+                                <input type="number" name="igst" value="{{ $settings['igst'] ?? '18' }}" min="0" max="100" step="0.01"
                                     class="bg-transparent border-0 text-right font-black text-xl text-[#B23B06] w-20 focus:ring-0 p-0">
                             </div>
+                            <p class="text-[10px] text-gray-400 font-semibold pt-1">Check the taxes you want to apply on invoices. Unchecked taxes will not appear on generated invoices.</p>
                             <div class="space-y-2 pt-2">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">GST Identification Number</label>
                                 <input type="text" name="gstin" value="{{ $settings['gstin'] ?? '22AAAAA0000A1Z5' }}" 
@@ -150,32 +167,23 @@
                         <h3 class="text-lg font-bold text-gray-900">Invoice Sequence & Format</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Prefix</label>
-                            <input type="text" name="invoice_prefix" value="{{ $settings['invoice_prefix'] ?? 'INV-' }}" 
-                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200">
+                            <input type="text" id="invoice_prefix_input" name="invoice_prefix" value="{{ $settings['invoice_prefix'] ?? 'INV-' }}" 
+                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200"
+                                onkeyup="document.getElementById('invoice_preview_prefix').textContent = this.value">
                         </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Next Number</label>
-                            <input type="text" name="invoice_next_number" value="{{ $settings['invoice_next_number'] ?? '1024' }}" 
-                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Format</label>
-                            <div class="relative">
-                                <select name="invoice_format" 
-                                    class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl px-4 py-3.5 pr-10 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200 appearance-none">
-                                    <option value="prefix_number" {{ ($settings['invoice_format'] ?? '') === 'prefix_number' ? 'selected' : '' }}>Prefix + Number</option>
-                                    <option value="number_only" {{ ($settings['invoice_format'] ?? '') === 'number_only' ? 'selected' : '' }}>Number Only</option>
-                                    <option value="prefix_year_number" {{ ($settings['invoice_format'] ?? '') === 'prefix_year_number' ? 'selected' : '' }}>Prefix + Year + Number</option>
-                                </select>
-                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
-                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                                </div>
+                        <div class="space-y-2 flex flex-col justify-center">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Format Example</label>
+                            <div class="text-sm font-semibold text-gray-700 bg-gray-50 px-4 py-3.5 rounded-xl border border-gray-100">
+                                <span id="invoice_preview_prefix" class="text-[#B23B06]">{{ $settings['invoice_prefix'] ?? 'INV-' }}</span>{{ date('Y') }}-01
                             </div>
                         </div>
                     </div>
+                    <p class="text-xs text-gray-500 font-medium">
+                        The invoice format is automatically set to <strong>PREFIX + YEAR + SEQUENCE</strong>. The sequence starts at 01 and automatically resets every new calendar year.
+                    </p>
                 </div>
 
                 <!-- Security & Authentication -->
@@ -280,35 +288,46 @@
 
                     <div class="space-y-4">
                         <div class="relative flex items-center">
-                            <div class="absolute left-4 text-gray-400">
-                                <i data-lucide="facebook" class="w-4 h-4"></i>
+                            <div class="absolute left-4 flex items-center justify-center w-5 h-5" style="color: #1877F2;">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                             </div>
                             <input type="text" name="facebook_url" value="{{ $settings['facebook_url'] ?? 'facebook.com/explorerglobal' }}" 
-                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl pl-12 pr-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200">
+                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl pl-12 pr-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" placeholder="facebook.com/yourpage">
                         </div>
 
                         <div class="relative flex items-center">
-                            <div class="absolute left-4 text-gray-400">
-                                <i data-lucide="instagram" class="w-4 h-4"></i>
+                            <div class="absolute left-4 flex items-center justify-center w-5 h-5">
+                                <svg class="w-5 h-5" fill="url(#ig-grad)" viewBox="0 0 24 24">
+                                    <defs>
+                                        <linearGradient id="ig-grad" x1="0" y1="1" x2="1" y2="0">
+                                            <stop offset="0%" stop-color="#f09433"/>
+                                            <stop offset="25%" stop-color="#e6683c"/>
+                                            <stop offset="50%" stop-color="#dc2743"/>
+                                            <stop offset="75%" stop-color="#cc2366"/>
+                                            <stop offset="100%" stop-color="#bc1888"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                                </svg>
                             </div>
                             <input type="text" name="instagram_url" value="{{ $settings['instagram_url'] ?? 'instagram.com/explorerglobal' }}" 
-                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl pl-12 pr-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200">
+                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl pl-12 pr-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" placeholder="instagram.com/yourhandle">
                         </div>
 
                         <div class="relative flex items-center">
-                            <div class="absolute left-4 text-gray-400">
-                                <i data-lucide="linkedin" class="w-4 h-4"></i>
+                            <div class="absolute left-4 flex items-center justify-center w-5 h-5" style="color: #0A66C2;">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                             </div>
                             <input type="text" name="linkedin_url" value="{{ $settings['linkedin_url'] ?? 'linkedin.com/company/explorerglobal' }}" 
-                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl pl-12 pr-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200">
+                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl pl-12 pr-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" placeholder="linkedin.com/company/yourpage">
                         </div>
 
                         <div class="relative flex items-center">
-                            <div class="absolute left-4 text-gray-400">
-                                <i data-lucide="twitter" class="w-4 h-4"></i>
+                            <div class="absolute left-4 flex items-center justify-center w-5 h-5" style="color: #000;">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.91-5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                             </div>
                             <input type="text" name="twitter_url" value="{{ $settings['twitter_url'] ?? 'twitter.com/explorertravel' }}" 
-                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl pl-12 pr-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200">
+                                class="w-full bg-[#F5F4F2] border-0 text-gray-800 text-sm font-semibold rounded-xl pl-12 pr-4 py-3.5 focus:bg-white focus:ring-2 focus:ring-[#B23B06]/20 transition-all duration-200" placeholder="x.com/yourhandle">
                         </div>
                     </div>
                 </div>
@@ -412,6 +431,27 @@
         }
     }
 
+    // Phone validation based on country code
+    const phoneLengths = { '+91': 10, '+1': 10, '+44': 10, '+971': 9, '+62': 11, '+60': 9, '+65': 8 };
+    function validatePhone(input) {
+        const codeSelect = document.getElementById('contact_country_code');
+        const errorEl = document.getElementById('phone_error');
+        if (!codeSelect || !errorEl) return;
+        const required = phoneLengths[codeSelect.value] || 10;
+        if (input.value.length > required) input.value = input.value.substring(0, required);
+        if (input.value.length > 0 && input.value.length !== required) {
+            errorEl.textContent = `Phone number must be exactly ${required} digits for ${codeSelect.value}.`;
+            errorEl.classList.remove('hidden');
+            input.setCustomValidity('Invalid length');
+        } else {
+            errorEl.classList.add('hidden');
+            input.setCustomValidity('');
+        }
+    }
+    function updatePhoneValidation() {
+        const input = document.getElementById('contact_phone_input');
+        if (input) validatePhone(input);
+    }
 </script>
 @else
 <div class="space-y-8 pb-12">

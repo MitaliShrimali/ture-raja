@@ -1784,19 +1784,15 @@ class AdminController extends Controller
         }
 
         $settings = DB::table('settings')->pluck('value', 'key')->toArray();
-        $prefix = $settings['invoice_prefix'] ?? 'INV-';
-        $nextNumberVal = $settings['invoice_next_number'] ?? '1000';
-        $format = $settings['invoice_format'] ?? 'prefix_number';
-        $nextNumber = intval($nextNumberVal) + $payment->id;
-        $year = date('Y', strtotime($payment->date));
+        $prefix = rtrim($settings['invoice_prefix'] ?? 'INV', '-') . '-';
+        $year   = date('Y');
 
-        if ($format === 'number_only') {
-            $invoiceNo = (string)$nextNumber;
-        } elseif ($format === 'prefix_year_number') {
-            $invoiceNo = $prefix . $year . '-' . $nextNumber;
-        } else {
-            $invoiceNo = $prefix . $nextNumber;
-        }
+        // Count invoices already created this calendar year to get the sequence
+        $countThisYear = DB::table('payments')
+            ->whereYear('created_at', $year)
+            ->count();
+        $sequence = str_pad($countThisYear + 1, 2, '0', STR_PAD_LEFT);
+        $invoiceNo = $prefix . $year . '-' . $sequence;
 
         $invoiceData = json_decode($payment->invoice_data ?? '', true);
         if (!$invoiceData) {
@@ -2936,6 +2932,13 @@ class AdminController extends Controller
 
             DB::table('settings')->updateOrInsert(['key' => $key], ['value' => $value, 'updated_at' => now()]);
         }
+
+        // Always lock invoice format to PREFIX-YEAR-SEQUENCE
+        DB::table('settings')->updateOrInsert(
+            ['key' => 'invoice_format'],
+            ['value' => 'prefix_year_sequence', 'updated_at' => now()]
+        );
+
         $this->logActivity('Updated settings', 'Modified platform preferences and general parameters');
         return redirect()->back()->with('success', 'Settings updated successfully!');
     }

@@ -1860,6 +1860,14 @@ class AgentController extends Controller
             }
         }
 
+        // Generate invoice number: PREFIX-YEAR-SEQUENCE (auto-increment per year)
+        $invoiceSettings = DB::table('settings')->pluck('value', 'key')->toArray();
+        $invPrefix   = rtrim($invoiceSettings['invoice_prefix'] ?? 'INV', '-') . '-';
+        $invYear     = date('Y');
+        $invCount    = DB::table('payments')->whereYear('created_at', $invYear)->count();
+        $invSequence = str_pad($invCount + 1, 2, '0', STR_PAD_LEFT);
+        $invoiceNumber = $invPrefix . $invYear . '-' . $invSequence;
+
         DB::table('payments')->insert([
             'agent_id'       => $agentId,
             'user_name'      => $agent->name ?? 'Agent',
@@ -1868,7 +1876,7 @@ class AgentController extends Controller
             'amount'         => $amount,
             'status'         => 'Success',
             'type'           => $type,
-            'invoice_number' => 'INV-' . strtoupper(uniqid()),
+            'invoice_number' => $invoiceNumber,
             'payment_id'     => 'PAY-' . strtoupper(uniqid()),
             'date'           => now()->toDateString(),
             'created_at'     => now(),
