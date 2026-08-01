@@ -27,8 +27,8 @@ class AgentController extends Controller
     public function loginSubmit(Request $request)
     {
         $request->validate([
-            'email'    => 'required|email',
-            'password' => 'required|min:6',
+            'email'    => 'required|email|max:255',
+            'password' => 'required|min:6|max:255',
         ]);
 
         $agent = DB::table('agents')

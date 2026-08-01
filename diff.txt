@@ -1,0 +1,734 @@
+--- edit
++++ create
+@@ -3 +3 @@
+-@section('admin_title', 'Edit Package')
++@section('admin_title', 'Add New Package')
+@@ -6,24 +5,0 @@
+-    @php
+-        $galleryUrls = json_decode($pkg->gallery, true) ?: [];
+-        $included = json_decode($pkg->included, true) ?: [];
+-        $excluded = json_decode($pkg->excluded, true) ?: [];
+-        $itinerary = json_decode($pkg->itinerary, true) ?: [];
+-        $itinerary = json_decode($pkg->itinerary, true) ?: [];
+-        $keywords = json_decode($pkg->keywords, true) ?: [];
+-        $transfers = json_decode($pkg->transfers, true) ?: [];
+-        $hotels = json_decode($pkg->hotels, true) ?: [];
+-        $meals = json_decode($pkg->meals, true) ?: [];
+-        $agentData = json_decode($pkg->agent, true) ?: [];
+-        $agentName = $agentData['name'] ?? 'Miths Holidays';
+-
+-        $dbCategory = $pkg->categories_list ?? '[]';
+-        $catArray = [];
+-        if (is_string($dbCategory) && (str_starts_with(trim($dbCategory), '[') || str_starts_with(trim($dbCategory), '{'))) {
+-            $catArray = json_decode($dbCategory, true) ?: [];
+-        } elseif (is_string($dbCategory) && !empty($dbCategory)) {
+-            $catArray = [$dbCategory];
+-        } elseif (is_array($dbCategory)) {
+-            $catArray = $dbCategory;
+-        }
+-    @endphp
+-
+@@ -33 +9 @@
+-    <div class="space-y-8 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
++    <div class="space-y-4 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
+@@ -35,8 +11,4 @@
+-          category: {{ json_encode($pkg->category ?? 'domestic') }},
+-        title: {{ json_encode($pkg->title) }},
+-        location: {{ json_encode($pkg->location) }},
+-        duration: {{ json_encode($pkg->duration) }},
+-        validity: {{ json_encode($pkg->validity ?? '') }},
+-        sightseeing: {{ json_encode($pkg->sightseeing ?? '') }},
+-        price: {{ json_encode($pkg->price) }},
+-        currency: {{ json_encode($pkg->currency ?? '₹') }},
++        title: '',
++        location: '',
++        duration: '',
++        price: '',
+@@ -43,0 +16 @@
++        currency: '₹',
+@@ -45,6 +17,0 @@
+-        initPrice() {
+-            if (this.price) {
+-                this.inrPrice = (this.price * this.rates[this.currency]).toFixed(2);
+-                if(this.inrPrice.endsWith('.00')) this.inrPrice = Math.round(this.inrPrice);
+-            }
+-        },
+@@ -64,21 +31,16 @@
+-        old_price: {{ json_encode($pkg->old_price ?? '') }},
+-        stock: {{ json_encode($pkg->stock) }},
+-        categories: {{ json_encode($catArray) }},
+-        badge: {{ json_encode($pkg->badge ?? '') }},
+-        group_size: {{ json_encode($pkg->group_size ?? 'Direct Flight') }},
+-        rating: {{ json_encode($pkg->rating ?? '4.8') }},
+-        reviews: {{ json_encode($pkg->reviews ?? '10') }},
+-        previewUrl: {{ json_encode($pkg->image ? asset($pkg->image) : '') }}, 
+-        galleryPreviews: {{ json_encode(array_values(array_map(function ($url) {
+-        return [
+-            'url' => '/' . ltrim($url, '/'),
+-            'name' => basename($url),
+-            'size' => 'Existing',
+-            'is_existing' => true
+-        ];
+-    }, $galleryUrls))) }},
+-        brochureName: {{ json_encode($pkg->brochure ? basename($pkg->brochure) : '') }},
+-        brochureUrl: {{ json_encode($pkg->brochure ? asset($pkg->brochure) : '') }},
+-        itineraryContent: {{ json_encode(strip_tags($pkg->editorial_itinerary ?? '') ? trim(strip_tags($pkg->editorial_itinerary)) : '') }},
+-        inclusions: {{ json_encode($included) }},
+-        exclusions: {{ json_encode($excluded) }},
++        old_price: '',
++        stock: '',
++        validity: '',
++        sightseeing: '',
++        category: '{{ strtolower($category ?? "domestic") }}',
++        categories: [],
++        badge: '',
++        group_size: '',
++        rating: '',
++        reviews: '',
++        previewUrl: '', 
++        galleryPreviews: [],
++        brochureName: '',
++        itineraryContent: '',
++        inclusions: [],
++        exclusions: [],
+@@ -89 +51,9 @@
+-        cities: {{ json_encode(array_values(array_filter(array_map('trim', explode(',', $pkg->location ?? ''))))) }},
++        customAmenities: [],
++        newAmenity: '',
++        addAmenity() {
++            if (this.newAmenity.trim()) {
++                this.customAmenities.push(this.newAmenity.trim());
++                this.newAmenity = '';
++            }
++        },
++        cities: [],
+@@ -91 +61 @@
+-        keywords: {{ json_encode($keywords) }},
++        keywords: [],
+@@ -122,2 +92,2 @@
+-        transfers: {{ json_encode($transfers) }},
+-        hotels: {{ json_encode($hotels) }},
++        transfers: [],
++        hotels: [],
+@@ -129 +98,0 @@
+-        brochureUrl: {{ json_encode($pkg->brochure ? asset($pkg->brochure) : '') }},
+@@ -133,2 +101,0 @@
+-            } else if (this.brochureUrl) {
+-                window.open(this.brochureUrl, '_blank');
+@@ -140,2 +106,0 @@
+-            let existingInput = document.getElementById('existing-brochure-input');
+-            if (existingInput) existingInput.value = '';
+@@ -169 +134,3 @@
+-        days: {{ (is_array($itinerary) && count($itinerary) > 0) ? json_encode($itinerary) : json_encode([['title' => 'Day 1', 'desc' => 'Arrival & check-in', 'duration' => '3 Hours']]) }},
++        days: [
++            { title: '', desc: '', duration: '' }
++        ],
+@@ -385,2 +352,2 @@
+-                    <h2 class="font-black text-gray-800 tracking-tight text-2xl">Edit Travel Package</h2>
+-                    <p class="text-gray-400 font-medium text-xs mt-0.5">Update package details, manage brochures, and edit
++                    <h2 class="font-black text-gray-800 tracking-tight text-2xl">Create Travel Package</h2>
++                    <p class="text-gray-400 font-medium text-xs mt-0.5">Configure package details, upload brochures, and add
+@@ -405 +372 @@
+-        <form id="packageMainForm" action="{{ url('/admin/packages/update') }}" method="POST" enctype="multipart/form-data"
++        <form id="packageMainForm" action="{{ url('/admin/packages/store') }}" method="POST" enctype="multipart/form-data"
+@@ -408 +374,0 @@
+-            <input type="hidden" name="id" value="{{ $pkg->id }}" />
+@@ -435,32 +401,4 @@
+-                                $currentAgentName = '';
+-                                if (!empty($pkg->agent)) {
+-                                    $decoded = json_decode($pkg->agent, true);
+-                                    if (is_array($decoded) && isset($decoded['name'])) {
+-                                        $currentAgentName = $decoded['name'];
+-                                    } else {
+-                                        $currentAgentName = $pkg->agent;
+-                                    }
+-                                }
+-
+-                                $selectedAgentValue = '';
+-                                foreach ($agents as $ag) {
+-                                    if ($ag->name === $currentAgentName || $ag->agency_name === $currentAgentName) {
+-                                        $selectedAgentValue = $ag->name;
+-                                        break;
+-                                    }
+-                                }
+-
+-                                $paidAgents = $agents->filter(function ($a) { return !empty($a->plan_id) && $a->plan_id > 1; });
+-                                $freeAgents = $agents->filter(function ($a) { return empty($a->plan_id) || $a->plan_id <= 1; });
+-                                
+-                                $agentsData = [
+-                                    ['value' => '', 'label' => 'Admin (Default / Miths Holidays)', 'group' => 'Admin']
+-                                ];
+-                                foreach($paidAgents as $ag) {
+-                                    $label = $ag->name . ($ag->agency_name ? ' (' . $ag->agency_name . ')' : '');
+-                                    $agentsData[] = ['value' => $ag->name, 'label' => $label, 'group' => 'Paid Agents'];
+-                                }
+-                                foreach($freeAgents as $ag) {
+-                                    $label = $ag->name . ($ag->agency_name ? ' (' . $ag->agency_name . ')' : '');
+-                                    $agentsData[] = ['value' => $ag->name, 'label' => $label, 'group' => 'Free Agents'];
+-                                }
++                                $paidAgents = $agents->filter(function ($a) {
++                                    return !empty($a->plan_id) && $a->plan_id > 1; });
++                                $freeAgents = $agents->filter(function ($a) {
++                                    return empty($a->plan_id) || $a->plan_id <= 1; });
+@@ -471,7 +409,15 @@
+-                                selected: '{{ addslashes($selectedAgentValue) }}',
+-                                options: {{ json_encode($agentsData) }},
+-                                get filteredOptions() {
+-                                    if (this.search === '') return this.options;
+-                                    return this.options.filter(opt => opt.label.toLowerCase().includes(this.search.toLowerCase()));
+-                                },
+-                                get groupedOptions() {
++                                selected: '{{ old('agent') ?? "" }}',
++                                options: [
++                                    { value: '', label: 'Admin (Default / Miths Holidays)', group: 'Default' },
++                                    @foreach($paidAgents as $ag)
++                                    { value: '{{ addslashes($ag->name) }}', label: '{{ addslashes($ag->name . ($ag->agency_name ? " (".$ag->agency_name.")" : "")) }}', group: 'Paid Agents' },
++                                    @endforeach
++                                    @foreach($freeAgents as $ag)
++                                    { value: '{{ addslashes($ag->name) }}', label: '{{ addslashes($ag->name . ($ag->agency_name ? " (".$ag->agency_name.")" : "")) }}', group: 'Free Agents' },
++                                    @endforeach
++                                ],
++                                get groupedFilteredOptions() {
++                                    let opts = this.search === '' 
++                                        ? this.options 
++                                        : this.options.filter(opt => opt.label.toLowerCase().includes(this.search.toLowerCase()));
++                                    
+@@ -479,3 +425,4 @@
+-                                    this.filteredOptions.forEach(opt => {
+-                                        if (!groups[opt.group]) groups[opt.group] = [];
+-                                        groups[opt.group].push(opt);
++                                    opts.forEach(opt => {
++                                        let g = opt.group || 'Default';
++                                        if (!groups[g]) groups[g] = [];
++                                        groups[g].push(opt);
+@@ -483 +430,2 @@
+-                                    return groups;
++                                    
++                                    return Object.keys(groups).map(k => ({ name: k, items: groups[k] }));
+@@ -486,2 +434,7 @@
+-                                    let opt = this.options.find(o => o.value === this.selected);
+-                                    return opt ? opt.label : 'Select Agent...';
++                                    const opt = this.options.find(o => o.value === this.selected);
++                                    return opt ? opt.label : 'Admin (Default / Miths Holidays)';
++                                },
++                                selectOption(val) {
++                                    this.selected = val;
++                                    this.open = false;
++                                    this.search = '';
+@@ -489 +442,2 @@
+-                            }" @click.away="open = false">
++                            }" @click.outside="open = false">
++                                <!-- Hidden real input -->
+@@ -492,5 +446,4 @@
+-                                <!-- Dropdown Button -->
+-                                <button type="button" @click="open = !open; if(open) $nextTick(() => { $refs.agentSearch.focus() })" 
+-                                    class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 pr-10 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm text-left flex items-center justify-between">
+-                                    <span x-text="selectedLabel" class="truncate block w-full"></span>
+-                                    <i data-lucide="chevron-down" size="16" class="text-gray-400"></i>
++                                <!-- Custom Dropdown Button -->
++                                <button type="button" @click="open = !open; if(open) { $nextTick(() => $refs.searchInput.focus()); }"
++                                    class="w-full text-left bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 pr-10 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm">
++                                    <span x-text="selectedLabel" class="block truncate"></span>
+@@ -497,0 +451 @@
++                                <i data-lucide="chevron-down" size="16" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none transition-transform" :class="open ? 'rotate-180' : ''"></i>
+@@ -500,12 +454,3 @@
+-                                <div x-show="open" 
+-                                     x-transition:enter="transition ease-out duration-100" 
+-                                     x-transition:enter-start="transform opacity-0 scale-95" 
+-                                     x-transition:enter-end="transform opacity-100 scale-100" 
+-                                     x-transition:leave="transition ease-in duration-75" 
+-                                     x-transition:leave-start="transform opacity-100 scale-100" 
+-                                     x-transition:leave-end="transform opacity-0 scale-95" 
+-                                     class="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col"
+-                                     style="display: none;">
+-                                     
+-                                    <!-- Search Box -->
+-                                    <div class="p-3 border-b border-gray-100 bg-white sticky top-0">
++                                <div x-show="open" x-transition class="absolute z-50 mt-1 w-full bg-white border border-gray-100 rounded-2xl shadow-xl flex flex-col" style="display: none; max-height: 350px;">
++                                    <!-- Search Bar Inside Dropdown -->
++                                    <div class="p-3 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-2xl">
+@@ -514,2 +459 @@
+-                                            <input type="text" x-model="search" x-ref="agentSearch" placeholder="Search agent..." 
+-                                                class="w-full bg-gray-50 border-none rounded-xl py-2 pl-9 pr-4 text-sm font-medium outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all" />
++                                            <input x-ref="searchInput" type="text" x-model="search" placeholder="Search agent..." class="w-full bg-[#F5F5F5] border-none rounded-xl py-2 pl-9 pr-4 outline-none text-sm font-semibold focus:ring-2 focus:ring-[#e85d26]/25" @keydown.escape="open = false">
+@@ -520,3 +464,3 @@
+-                                    <div class="max-h-60 overflow-y-auto p-2 scrollbar-thin">
+-                                        <template x-if="Object.keys(groupedOptions).length === 0">
+-                                            <div class="p-4 text-center text-sm font-medium text-gray-400">No agents found</div>
++                                    <ul class="overflow-y-auto flex-1 p-2 space-y-1" style="max-height: 250px;">
++                                        <template x-if="groupedFilteredOptions.length === 0">
++                                            <li class="px-4 py-3 text-sm text-gray-400 font-medium text-center">No agents found</li>
+@@ -524,2 +468 @@
+-                                        
+-                                        <template x-for="(opts, groupName) in groupedOptions" :key="groupName">
++                                        <template x-for="group in groupedFilteredOptions" :key="group.name">
+@@ -527,8 +470,6 @@
+-                                                <div class="px-3 py-1.5 text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2" x-text="groupName"></div>
+-                                                <template x-for="opt in opts" :key="opt.value">
+-                                                    <div @click="selected = opt.value; open = false; search = ''" 
+-                                                         class="px-3 py-2.5 rounded-xl cursor-pointer transition-all flex items-center justify-between"
+-                                                         :class="selected === opt.value ? 'bg-orange-50 text-[#e85d26]' : 'hover:bg-gray-50 text-gray-700'">
+-                                                        <span class="text-sm font-bold truncate" x-text="opt.label"></span>
+-                                                        <i data-lucide="check" size="14" x-show="selected === opt.value"></i>
+-                                                    </div>
++                                                <template x-if="group.name !== 'Default' && group.items.length > 0">
++                                                    <div class="px-4 py-1 text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2 mb-1" x-text="group.name"></div>
++                                                </template>
++                                                <template x-for="opt in group.items" :key="opt.value">
++                                                    <li @click="selectOption(opt.value)" class="px-4 py-2 text-sm font-bold rounded-xl cursor-pointer hover:bg-orange-50 hover:text-[#e85d26] transition-colors truncate" :class="selected === opt.value ? 'bg-orange-50 text-[#e85d26]' : 'text-gray-700'" x-text="opt.label">
++                                                    </li>
+@@ -538 +479 @@
+-                                    </div>
++                                    </ul>
+@@ -665,2 +606 @@
+-                            <input type="text" name="departure_city" id="departureCity"
+-                                value="{{ $pkg->departure_city ?? '' }}" placeholder="New Delhi"
++                            <input type="text" name="departure_city" id="departureCity" placeholder="New Delhi"
+@@ -678,2 +618 @@
+-                            <input type="text" name="departure_state" id="departureState"
+-                                value="{{ $pkg->departure_state ?? '' }}" placeholder="Delhi"
++                            <input type="text" name="departure_state" id="departureState" placeholder="Delhi"
+@@ -687,2 +626 @@
+-                            <input type="text" name="departure_country" id="departureCountry"
+-                                value="{{ $pkg->departure_country ?? '' }}" placeholder="India"
++                            <input type="text" name="departure_country" id="departureCountry" placeholder="India"
+@@ -714,5 +652,5 @@
+-                                    <option value="₹" {{ ($pkg->currency ?? '') === '₹' ? 'selected' : '' }}>INR (₹)</option>
+-                                    <option value="$" {{ ($pkg->currency ?? '') === '$' ? 'selected' : '' }}>USD ($)</option>
+-                                    <option value="AED" {{ ($pkg->currency ?? '') === 'AED' ? 'selected' : '' }}>AED</option>
+-                                    <option value="€" {{ ($pkg->currency ?? '') === '€' ? 'selected' : '' }}>EUR (€)</option>
+-                                    <option value="£" {{ ($pkg->currency ?? '') === '£' ? 'selected' : '' }}>GBP (£)</option>
++                                    <option value="₹">INR (₹)</option>
++                                    <option value="$">USD ($)</option>
++                                    <option value="AED">AED</option>
++                                    <option value="€">EUR (€)</option>
++                                    <option value="£">GBP (£)</option>
+@@ -769,3 +707,3 @@
+-                                    <option value="" disabled>Select Theme</option>
+-                                    @foreach($themes as $theme)
+-                                        <option value="{{ $theme->name }}" {{ (isset($pkg->theme) && $pkg->theme == $theme->name) ? 'selected' : '' }}>{{ $theme->name }}</option>
++                                    <option value="">Select Theme</option>
++                                    @foreach($themes as $t)
++                                        <option value="{{ $t->name }}">{{ $t->name }}</option>
+@@ -780,3 +718,3 @@
+-                                    <option value="" disabled>Select Holiday Type</option>
+-                                    @foreach($holidayTypes as $type)
+-                                        <option value="{{ $type->name }}" {{ (isset($pkg->holiday_type) && $pkg->holiday_type == $type->name) ? 'selected' : '' }}>{{ $type->name }}</option>
++                                    <option value="">Select Holiday Type</option>
++                                    @foreach($holidayTypes as $h)
++                                        <option value="{{ $h->name }}">{{ $h->name }}</option>
+@@ -793 +731 @@
+-                        <div class="w-10 h-10 bg-orange-50 text-[#e85d26] rounded-xl flex items-center justify-center">
++                        <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center">
+@@ -799,2 +737,2 @@
+-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+-                        <!-- Tag Name -->
++                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
++                        <!-- Tag Name (1 column) -->
+@@ -803,19 +741,18 @@
+-                                (e.g. 25% Off, Popular)</label>
+-                            <input type="text" name="badge" value="{{ old('badge', $pkg->badge ?? '') }}"
+-                                placeholder="e.g. 25% Off"
+-                                class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm" />
+-                        </div>
+-
+-                        <!-- Search Keywords -->
+-                        <div class="space-y-2">
+-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Search
+-                                Keywords (Helps travelers find you)</label>
+-                            <div
+-                                class="w-full bg-[#F5F5F5] rounded-2xl p-4 flex flex-wrap items-center gap-2 border border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-[#e85d26]/25 transition-all">
+-                                <template x-for="(kw, idx) in keywords" :key="idx">
+-                                    <span
+-                                        class="px-3.5 py-1.5 bg-gray-200 text-gray-700 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
+-                                        <span x-text="kw"></span>
+-                                        <i class="cursor-pointer font-black text-xs leading-none text-gray-400 hover:text-gray-600"
+-                                            @click="removeKeyword(idx)">&times;</i>
+-                                    </span>
++                                (e.g. 25% Off)</label>
++                            <input type="text" name="badge" placeholder="e.g. 25% Off"
++                                class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm" />
++                        </div>
++
++                        <!-- Search Keywords (2 columns) -->
++                        <div class="space-y-4 md:col-span-2">
++                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Trip Location/Search Keywords <span class="text-red-500">*</span></label>
++                            
++                            <!-- Tags Flex Container -->
++                            <div class="flex flex-wrap gap-3">
++                                <template x-for="(keyword, i) in keywords" :key="i">
++                                    <div class="flex items-center justify-between min-w-[140px] px-4 py-2.5 bg-white rounded-md border border-gray-200 shadow-sm">
++                                        <span class="text-xs font-medium text-gray-700" x-text="keyword"></span>
++                                        <button type="button" @click="removeKeyword(i)" class="text-gray-400 hover:text-red-500 ml-3">
++                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
++                                        </button>
++                                    </div>
+@@ -823,5 +760,6 @@
+-                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()"
+-                                    @keydown.comma.prevent="addKeyword()" placeholder="Type keyword & enter/comma..."
+-                                    class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0"
+-                                    style="border: none !important; outline: none !important; box-shadow: none !important;" />
+-                                <input type="hidden" name="keywords" :value="keywords.join(',')" />
++                            </div>
++
++                            <!-- Add More Input & Button -->
++                            <div class="flex items-center gap-3">
++                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" placeholder="Type keyword..." class="w-48 bg-white border border-gray-200 rounded-md py-2.5 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary/30 shadow-sm" />
++                                <button type="button" @click="addKeyword()" class="px-4 py-2.5 bg-[#EEF2FF] text-[#4F46E5] rounded-md text-xs font-bold hover:bg-[#E0E7FF] transition-colors">Add more</button>
+@@ -832 +769,0 @@
+-            </div>
+@@ -841,2 +778,2 @@
+-                    <div
+-                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="brochureName || !itineraryContent">
++                    <div x-show="!itineraryContent"
++                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col">
+@@ -912,11 +849,2 @@
+-                            @if($pkg->brochure)
+-                                <input type="hidden" name="existing_brochure" id="existing-brochure-input"
+-                                    value="{{ $pkg->brochure }}" />
+-                            @endif
+-                        </div>
+-                    </div>
+-
+-                    <!-- OR divider -->
+-                    <div class="flex items-center justify-center shrink-0 px-2">
+-                        <span class="text-xs font-black text-gray-400 uppercase tracking-widest">OR</span>
+-                    </div>
++                        </div>
++                      </div>
+@@ -925,2 +853,2 @@
+-                    <div
+-                        class="flex-1 bg-white rounded-[28px] border border-gray-100 p-6 space-y-3 shadow-sm flex flex-col transition-all duration-300" x-show="!brochureName">
++                    <div x-show="!brochureName"
++                        class="flex-1 bg-white rounded-[28px] border border-gray-100 p-6 space-y-3 shadow-sm flex flex-col">
+@@ -935 +863 @@
+-                            class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none">{{ old('editorial_itinerary', $pkg->editorial_itinerary ?? '') }}</textarea>
++                            class="w-full flex-1 bg-transparent border-none py-4 px-5 outline-none text-gray-700 text-sm resize-none"></textarea>
+@@ -961 +889,2 @@
+-                        <div class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-6 shadow-sm transition-all duration-300" x-show="!brochureName">
++                        <div x-show="!brochureName"
++                            class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-6 shadow-sm">
+@@ -972 +901 @@
+-                                                viewBox="0 0 24 24" fill="none" stroke="#F0642F" stroke-width="2"
++                                                viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2"
+@@ -1056 +985 @@
+-                                                class="w-10 h-10 shrink-0 text-white rounded-xl text-sm font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity bg-primary"
++                                                class="w-10 h-10 shrink-0 text-white rounded-xl text-sm font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity"
+@@ -1060,0 +990,15 @@
++
++                                <!-- About Tours sub-card -->
++                                <div class="bg-gray-50 rounded-2xl p-5 space-y-3 border border-gray-100">
++                                    <div class="flex items-center gap-2">
++                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0642F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++                                            <circle cx="12" cy="12" r="10"></circle>
++                                            <line x1="12" y1="16" x2="12" y2="12"></line>
++                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
++                                        </svg>
++                                        <span class="text-sm font-bold text-red-500">About Tours</span>
++                                    </div>
++                                    <textarea name="about_tours" rows="5"
++                                        class="w-full h-[calc(100%-2.5rem)] bg-[#E8E8E8] border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-700 outline-none focus:ring-2 focus:ring-primary/20 resize-none"
++                                        placeholder="Brief overview about the tour..."></textarea>
++                                </div>
+@@ -1064,0 +1009,3 @@
++
++
++                                <!-- Sightseeing Details List -->
+@@ -1068 +1015 @@
+-                                    class="w-full bg-[#F8F8F8] border-none rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-primary/15 transition-all text-sm text-gray-600 resize-none">{{ $pkg->terms ?? '' }}</textarea>
++                                    class="w-full bg-[#F8F8F8] border-none rounded-2xl py-4 px-5 outline-none focus:ring-2 focus:ring-primary/15 transition-all text-sm text-gray-600 resize-none"></textarea>
+@@ -1073 +1020,2 @@
+-                        <div class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-5 shadow-sm transition-all duration-300" x-show="!brochureName">
++                        <div x-show="!brochureName"
++                            class="bg-white rounded-[28px] border border-gray-100 p-8 space-y-5 shadow-sm">
+@@ -1148 +1096 @@
+-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 transition-all duration-300" x-show="!brochureName">
++                        <div x-show="!brochureName" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+@@ -1290,2 +1237,0 @@
+-
+-
+@@ -1293 +1239,2 @@
+-                        <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6 shadow-sm transition-all duration-300" x-show="!brochureName">
++                        <div x-show="!brochureName"
++                            class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6 shadow-sm">
+@@ -1298,3 +1244,0 @@
+-                                @php
+-                                    $amenities = json_decode($pkg->amenities, true) ?: [];
+-                                @endphp
+@@ -1307 +1251 @@
+-                                    <input type="checkbox" name="amenities[]" value="Free Wifi" {{ in_array('Free Wifi', $amenities) ? 'checked' : '' }}
++                                    <input type="checkbox" checked
+@@ -1317 +1261 @@
+-                                    <input type="checkbox" name="amenities[]" value="Breakfast Included" {{ in_array('Breakfast Included', $amenities) ? 'checked' : '' }}
++                                    <input type="checkbox" checked
+@@ -1327 +1271 @@
+-                                    <input type="checkbox" name="amenities[]" value="Travel Insurance" {{ in_array('Travel Insurance', $amenities) ? 'checked' : '' }}
++                                    <input type="checkbox"
+@@ -1336 +1280 @@
+-                                    <input type="checkbox" name="amenities[]" value="Private Chef Included" {{ in_array('Private Chef Included', $amenities) ? 'checked' : '' }}
++                                    <input type="checkbox" name="amenities[]" value="Private Chef Included"
+@@ -1346 +1290 @@
+-                                    <input type="checkbox" name="amenities[]" value="Tour Manager Included" {{ in_array('Tour Manager Included', $amenities) ? 'checked' : '' }}
++                                    <input type="checkbox" name="amenities[]" value="Tour Manager Included"
+@@ -1348,0 +1293,19 @@
++
++                                <div class="flex gap-2 pt-2">
++                                    <input type="text" x-model="newAmenity" @keydown.enter.prevent="addAmenity()" placeholder="Custom amenity..." class="flex-1 bg-white border border-gray-200 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary/50" />
++                                    <button type="button" @click="addAmenity()" class="px-3 py-2 bg-gray-800 text-white rounded-xl text-xs font-bold">+Amenity</button>
++                                </div>
++                                <template x-for="(am, idx) in customAmenities" :key="idx">
++                                    <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all mt-2">
++                                        <div class="flex items-center gap-3">
++                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="20 6 9 17 4 12"></polyline></svg>
++                                            <span class="text-xs font-bold text-gray-700" x-text="am"></span>
++                                        </div>
++                                        <div class="flex items-center gap-3">
++                                            <input type="checkbox" name="amenities[]" :value="am" checked class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
++                                            <button type="button" @click.prevent="customAmenities.splice(idx, 1)" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Remove amenity">
++                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
++                                            </button>
++                                        </div>
++                                    </label>
++                                </template>
+@@ -1364,7 +1327 @@
+-                                <template x-for="(img, idx) in galleryPreviews" :key="idx">
+-                                    <div
+-                                        class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100 shadow-sm">
+-                                        <img :src="img.url" class="w-full h-full object-cover" />
+-                                        <template x-if="img.is_existing">
+-                                            <input type="hidden" name="existing_gallery_urls[]" :value="img.url.replace(/^\//, '')">
+-                                        </template>
++                                    <template x-for="(img, idx) in galleryPreviews" :key="idx">
+@@ -1372,4 +1329,10 @@
+-                                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+-                                            <button type="button" @click="removeGalleryPhoto(idx)"
+-                                                class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
+-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
++                                            class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100 shadow-sm">
++                                            <img :src="img.url" class="w-full h-full object-cover" />
++                                            <template x-if="img.is_existing">
++                                                <input type="hidden" name="existing_gallery_urls[]" :value="img.url.replace(/^\//, '')">
++                                            </template>
++                                            <div
++                                                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
++                                                <button type="button" @click="removeGalleryPhoto(idx)"
++                                                    class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
++                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+@@ -1381 +1344,2 @@
+-                                            </button>
++                                                </button>
++                                            </div>
+@@ -1383,5 +1347,4 @@
+-                                    </div>
+-                                </template>
+-
+-                                    <!-- Upload Local -->
+-                                    <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-gray-200 hover:border-orange-500/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-orange-50/20"
++                                    </template>
++
++                                    <!-- Upload from Local -->
++                                    <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-gray-200 hover:border-primary/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-orange-50/20"
+@@ -1398,2 +1361,2 @@
+-                                        <i data-lucide="image" class="text-[#e85d26] mb-1" size="20"></i>
+-                                        <span class="text-xs font-bold text-[#e85d26]">From Gallery</span>
++                                        <i data-lucide="image" class="text-primary mb-1" size="20"></i>
++                                        <span class="text-xs font-bold text-primary">From Gallery</span>
+@@ -1406,12 +1369,89 @@
+-                <!-- Footer Actions Panel -->
+-                <div class="flex items-center justify-between pt-8 border-t border-gray-100 mt-8">
+-                    <div></div> <!-- Spacer -->
+-                    <div class="flex items-center gap-3 ml-auto">
+-                        <a href="{{ url('/admin/packages') }}"
+-                            class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all">
+-                            Discard
+-                        </a>
+-                        <button type="submit"
+-                            class="px-8 py-3.5 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20"
+-                            style="background-color: #e85d26 !important; color: #ffffff !important;">
+-                            Update Package
++
++            </div>
++
++            <!-- Footer Actions Panel -->
++            <div class="flex items-center justify-between pt-8 border-t border-gray-100 mt-8">
++                <div></div> <!-- Spacer -->
++                <div class="flex items-center gap-3 ml-auto">
++                    <a href="{{ url('/admin/packages') }}"
++                        class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all">
++                        Discard
++                    </a>
++                    <button type="submit"
++                        class="px-8 py-3.5 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20"
++                        style="background-color: #e85d26 !important; color: #ffffff !important;">
++                        Save Package
++                    </button>
++                </div>
++            </div>
++
++            <!-- Gallery Modal -->
++            <div x-show="isGalleryModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" style="display: none;">
++                <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden" @click.away="isGalleryModalOpen = false">
++                    <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
++                        <h3 class="text-lg font-black text-gray-800 flex items-center gap-2">
++                            <i data-lucide="image" size="20" class="text-primary"></i>
++                            Select from Gallery
++                        </h3>
++                        <button type="button" @click="isGalleryModalOpen = false" class="p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
++                            <i data-lucide="x" size="20"></i>
++                        </button>
++                    </div>
++                    
++                    <!-- Breadcrumbs -->
++                    <div class="px-6 py-3 bg-white border-b border-gray-100 flex items-center gap-2 text-sm">
++                        <button type="button" @click="fetchGallery(null)" class="text-gray-500 hover:text-primary transition-colors font-semibold">
++                            <i data-lucide="home" size="16"></i>
++                        </button>
++                        <template x-for="crumb in galleryBreadcrumbs" :key="crumb.id">
++                            <div class="flex items-center gap-2">
++                                <i data-lucide="chevron-right" size="14" class="text-gray-400"></i>
++                                <button type="button" @click="fetchGallery(crumb.id)" class="text-gray-600 hover:text-primary transition-colors font-medium" x-text="crumb.name"></button>
++                            </div>
++                        </template>
++                    </div>
++
++                    <!-- Gallery Content -->
++                    <div class="p-6 overflow-y-auto flex-1 relative min-h-[300px]">
++                        <div x-show="galleryLoading" class="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
++                            <div class="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
++                        </div>
++
++                        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
++                            <!-- Folders -->
++                            <template x-for="folder in galleryFolders" :key="'folder_'+folder.id">
++                                <div @click="fetchGallery(folder.id)" class="aspect-square rounded-2xl bg-orange-50 border border-orange-100 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-orange-100 transition-colors group">
++                                    <i data-lucide="folder" size="32" class="text-orange-400 group-hover:text-orange-500 transition-colors"></i>
++                                    <span class="text-xs font-bold text-gray-700 text-center px-2 truncate w-full" x-text="folder.name"></span>
++                                </div>
++                            </template>
++
++                            <!-- Images -->
++                            <template x-for="image in galleryImages" :key="'image_'+image.id">
++                                <div class="relative aspect-square rounded-2xl border border-gray-200 overflow-hidden group cursor-pointer" @click="toggleGalleryImage(image)">
++                                    <img :src="'/' + image.file_path" class="w-full h-full object-cover" />
++                                    
++                                    <!-- Selection Overlay -->
++                                    <div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
++                                    </div>
++
++                                    <!-- Checkbox -->
++                                    <div class="absolute top-2 right-2 flex items-center justify-center">
++                                        <input type="checkbox" 
++                                               class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer pointer-events-none" 
++                                               :checked="galleryPreviews.some(p => p.id === image.id || p.url === '/' + image.file_path)">
++                                    </div>
++                                </div>
++                            </template>
++
++                            <!-- Empty State -->
++                            <div x-show="!galleryLoading && galleryFolders.length === 0 && galleryImages.length === 0" class="col-span-full py-12 flex flex-col items-center justify-center text-gray-400">
++                                <i data-lucide="image-off" size="48" class="mb-3 opacity-50"></i>
++                                <p class="text-sm font-medium">This folder is empty.</p>
++                            </div>
++                        </div>
++                    </div>
++                    
++                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
++                        <button type="button" @click="isGalleryModalOpen = false" class="px-6 py-2.5 bg-gray-800 text-white rounded-xl font-bold text-sm hover:bg-gray-700 transition-colors">
++                            Done
+@@ -1421,75 +1460,0 @@
+-
+-                <!-- Gallery Modal -->
+-                <div x-show="isGalleryModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" style="display: none;">
+-                    <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden" @click.away="isGalleryModalOpen = false">
+-                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+-                            <h3 class="text-lg font-black text-gray-800 flex items-center gap-2">
+-                                <i data-lucide="image" size="20" class="text-[#e85d26]"></i>
+-                                Select from Gallery
+-                            </h3>
+-                            <button type="button" @click="isGalleryModalOpen = false" class="p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
+-                                <i data-lucide="x" size="20"></i>
+-                            </button>
+-                        </div>
+-                        
+-                        <!-- Breadcrumbs -->
+-                        <div class="px-6 py-3 bg-white border-b border-gray-100 flex items-center gap-2 text-sm">
+-                            <button type="button" @click="fetchGallery(null)" class="text-gray-500 hover:text-[#e85d26] transition-colors font-semibold">
+-                                <i data-lucide="home" size="16"></i>
+-                            </button>
+-                            <template x-for="crumb in galleryBreadcrumbs" :key="crumb.id">
+-                                <div class="flex items-center gap-2">
+-                                    <i data-lucide="chevron-right" size="14" class="text-gray-400"></i>
+-                                    <button type="button" @click="fetchGallery(crumb.id)" class="text-gray-600 hover:text-[#e85d26] transition-colors font-medium" x-text="crumb.name"></button>
+-                                </div>
+-                            </template>
+-                        </div>
+-
+-                        <!-- Gallery Content -->
+-                        <div class="p-6 overflow-y-auto flex-1 relative min-h-[300px]">
+-                            <div x-show="galleryLoading" class="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
+-                                <div class="w-8 h-8 border-4 border-[#e85d26] border-t-transparent rounded-full animate-spin"></div>
+-                            </div>
+-
+-                            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+-                                <!-- Folders -->
+-                                <template x-for="folder in galleryFolders" :key="'folder_'+folder.id">
+-                                    <div @click="fetchGallery(folder.id)" class="aspect-square rounded-2xl bg-orange-50 border border-orange-100 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-orange-100 transition-colors group">
+-                                        <i data-lucide="folder" size="32" class="text-orange-400 group-hover:text-orange-500 transition-colors"></i>
+-                                        <span class="text-xs font-bold text-gray-700 text-center px-2 truncate w-full" x-text="folder.name"></span>
+-                                    </div>
+-                                </template>
+-
+-                                <!-- Images -->
+-                                <template x-for="image in galleryImages" :key="'image_'+image.id">
+-                                    <div class="relative aspect-square rounded-2xl border border-gray-200 overflow-hidden group cursor-pointer" @click="toggleGalleryImage(image)">
+-                                        <img :src="'/' + image.file_path" class="w-full h-full object-cover" />
+-                                        
+-                                        <!-- Selection Overlay -->
+-                                        <div class="absolute inset-0 bg-[#e85d26]/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+-                                        </div>
+-
+-                                        <!-- Checkbox -->
+-                                        <div class="absolute top-2 right-2 flex items-center justify-center">
+-                                            <input type="checkbox" 
+-                                                   class="w-5 h-5 rounded border-gray-300 text-[#e85d26] focus:ring-[#e85d26] cursor-pointer pointer-events-none" 
+-                                                   :checked="galleryPreviews.some(p => p.id === image.id || p.url === '/' + image.file_path)">
+-                                        </div>
+-                                    </div>
+-                                </template>
+-
+-                                <!-- Empty State -->
+-                                <div x-show="!galleryLoading && galleryFolders.length === 0 && galleryImages.length === 0" class="col-span-full py-12 flex flex-col items-center justify-center text-gray-400">
+-                                    <i data-lucide="image-off" size="48" class="mb-3 opacity-50"></i>
+-                                    <p class="text-sm font-medium">This folder is empty.</p>
+-                                </div>
+-                            </div>
+-                        </div>
+-                        
+-                        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+-                            <button type="button" @click="isGalleryModalOpen = false" class="px-6 py-2.5 bg-gray-800 text-white rounded-xl font-bold text-sm hover:bg-gray-700 transition-colors">
+-                                Done
+-                            </button>
+-                        </div>
+-                    </div>
+-                </div>
+@@ -1496,0 +1462 @@
++            
+@@ -1608,0 +1575,18 @@
++
++    <!-- TomSelect Library -->
++    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
++    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
++
++    <script>
++        document.addEventListener("DOMContentLoaded", function() {
++            new TomSelect("#agentSelect", {
++                create: false,
++                sortField: {
++                    field: "text",
++                    direction: "asc"
++                },
++                placeholder: "Search for an Agent...",
++                maxOptions: 50
++            });
++        });
++    </script>

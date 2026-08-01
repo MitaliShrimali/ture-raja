@@ -71,9 +71,10 @@
         previewUrl: {{ json_encode($pkg->image ? asset($pkg->image) : '') }}, 
         galleryPreviews: {{ json_encode(array_values(array_map(function ($url) {
         return [
-            'url' => asset($url),
+            'url' => '/' . ltrim($url, '/'),
             'name' => basename($url),
-            'size' => 'Existing'
+            'size' => 'Existing',
+            'is_existing' => true
         ];
     }, $galleryUrls))) }},
         brochureName: {{ json_encode($pkg->brochure ? basename($pkg->brochure) : '') }},
@@ -103,6 +104,14 @@
             }
         },
         removeKeyword(i) { this.keywords.splice(i, 1); },
+        customAmenities: {{ json_encode(array_values(array_diff(json_decode($pkg->amenities, true) ?: [], ['Free Wifi', 'Breakfast Included', 'Travel Insurance', 'Private Chef Included', 'Tour Manager Included']))) }},
+        newAmenity: '',
+        addAmenity() {
+            if (this.newAmenity.trim()) {
+                this.customAmenities.push(this.newAmenity.trim());
+                this.newAmenity = '';
+            }
+        },
         addInclusion() {
             if (this.newInclusion.trim()) {
                 this.inclusions.push(this.newInclusion.trim());
@@ -181,12 +190,59 @@
                     url: URL.createObjectURL(files[i]),
                     name: files[i].name,
                     size: (files[i].size / (1024 * 1024)).toFixed(1) + ' MB',
-                    file: files[i]
+                    file: files[i],
+                    is_existing: false
                 });
             }
         },
         removeGalleryPhoto(index) {
             this.galleryPreviews.splice(index, 1);
+        },
+        
+        // Gallery Modal State
+        isGalleryModalOpen: false,
+        galleryCurrentFolder: null,
+        galleryFolders: [],
+        galleryImages: [],
+        galleryBreadcrumbs: [],
+        galleryLoading: false,
+
+        fetchGallery(folderId = null) {
+            this.galleryLoading = true;
+            this.galleryCurrentFolder = folderId;
+            let url = '/admin/api/gallery';
+            if (folderId) url += '?folder=' + folderId;
+            
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    this.galleryFolders = data.folders;
+                    this.galleryImages = data.images;
+                    this.galleryBreadcrumbs = data.breadcrumbs;
+                    this.galleryLoading = false;
+                })
+                .catch(err => {
+                    console.error(err);
+                    this.galleryLoading = false;
+                });
+        },
+        openGalleryModal() {
+            this.isGalleryModalOpen = true;
+            this.fetchGallery();
+        },
+        toggleGalleryImage(image) {
+            const index = this.galleryPreviews.findIndex(p => p.id === image.id || p.url === '/' + image.file_path);
+            if (index === -1) {
+                this.galleryPreviews.push({
+                    id: image.id,
+                    url: '/' + image.file_path,
+                    name: image.name,
+                    size: 'From Gallery',
+                    is_existing: true
+                });
+            } else {
+                this.galleryPreviews.splice(index, 1);
+            }
         }
     }">
         <!-- Custom Style Tags for Step Track, Segmented Controls, and forced styled fields -->
@@ -748,34 +804,35 @@
                         <h3 class="text-lg font-black text-gray-800">Tags & Keywords</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                        <!-- Tag Name -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                        <!-- Tag Name (1 column) -->
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Tag Name
-                                (e.g. 25% Off, Popular)</label>
-                            <input type="text" name="badge" value="{{ old('badge', $pkg->badge ?? '') }}"
-                                placeholder="e.g. 25% Off"
+                                (e.g. 25% Off)</label>
+                            <input type="text" name="badge" value="{{ old('badge', $pkg->badge ?? '') }}" placeholder="e.g. 25% Off"
                                 class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-gray-800 text-sm" />
                         </div>
 
-                        <!-- Search Keywords -->
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Search
-                                Keywords (Helps travelers find you)</label>
-                            <div
-                                class="w-full bg-[#F5F5F5] rounded-2xl p-4 flex flex-wrap items-center gap-2 border border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-[#e85d26]/25 transition-all">
-                                <template x-for="(kw, idx) in keywords" :key="idx">
-                                    <span
-                                        class="px-3.5 py-1.5 bg-gray-200 text-gray-700 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
-                                        <span x-text="kw"></span>
-                                        <i class="cursor-pointer font-black text-xs leading-none text-gray-400 hover:text-gray-600"
-                                            @click="removeKeyword(idx)">&times;</i>
-                                    </span>
+                        <!-- Search Keywords (2 columns) -->
+                        <div class="space-y-4 md:col-span-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Trip Location/Search Keywords <span class="text-red-500">*</span></label>
+                            
+                            <!-- Tags Flex Container -->
+                            <div class="flex flex-wrap gap-3">
+                                <template x-for="(keyword, i) in keywords" :key="i">
+                                    <div class="flex items-center justify-between min-w-[140px] px-4 py-2.5 bg-white rounded-md border border-gray-200 shadow-sm">
+                                        <span class="text-xs font-medium text-gray-700" x-text="keyword"></span>
+                                        <button type="button" @click="removeKeyword(i)" class="text-gray-400 hover:text-red-500 ml-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        </button>
+                                    </div>
                                 </template>
-                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()"
-                                    @keydown.comma.prevent="addKeyword()" placeholder="Type keyword & enter/comma..."
-                                    class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0"
-                                    style="border: none !important; outline: none !important; box-shadow: none !important;" />
+                            </div>
+
+                            <!-- Add More Input & Button -->
+                            <div class="flex items-center gap-3">
+                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" placeholder="Type keyword..." class="w-48 bg-white border border-gray-200 rounded-md py-2.5 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-[#e85d26]/30 shadow-sm" />
+                                <button type="button" @click="addKeyword()" class="px-4 py-2.5 bg-orange-50 text-[#e85d26] rounded-md text-xs font-bold hover:bg-orange-100 transition-colors">Add more</button>
                                 <input type="hidden" name="keywords" :value="keywords.join(',')" />
                             </div>
                         </div>
@@ -867,12 +924,6 @@
                             @endif
                         </div>
                     </div>
-
-                    <!-- OR divider -->
-                    <div class="flex items-center justify-center shrink-0 px-2">
-                        <span class="text-xs font-black text-gray-400 uppercase tracking-widest">OR</span>
-                    </div>
-
                     <!-- Itinerary card  ~60% -->
                     <div
                         class="flex-1 bg-white rounded-[28px] border border-gray-100 p-6 space-y-3 shadow-sm flex flex-col transition-all duration-300" x-show="!brochureName">
@@ -1009,6 +1060,20 @@
                                                 style="background-color: #e85d26 !important; color: white !important;">+</button>
                                         </div>
                                     </div>
+                                </div>
+                                <!-- About Tours sub-card -->
+                                <div class="bg-gray-50 rounded-2xl p-5 space-y-3 border border-gray-100">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        </svg>
+                                        <span class="text-sm font-bold text-[#e85d26]">About Tours</span>
+                                    </div>
+                                    <textarea name="about_tours" rows="5"
+                                        class="w-full h-[calc(100%-2.5rem)] bg-[#E8E8E8] border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-700 outline-none focus:ring-2 focus:ring-[#e85d26]/20 resize-none"
+                                        placeholder="Brief overview about the tour...">{{ old('about_tours', $pkg->about_tours ?? '') }}</textarea>
                                 </div>
                             </div>
 
@@ -1298,44 +1363,47 @@
                                     <input type="checkbox" name="amenities[]" value="Tour Manager Included" {{ in_array('Tour Manager Included', $amenities) ? 'checked' : '' }}
                                         class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
                                 </label>
-                            </div>
-                        </div>
 
-                        <!-- Primary featured photo upload hidden input -->
-                        <div
-                            class="bg-gray-50 p-6 rounded-[32px] border border-gray-100 flex items-center justify-between gap-4 shadow-sm">
-                            <div class="space-y-1">
-                                <p class="text-sm font-black text-gray-800">Main Featured Image</p>
-                                <p class="text-[10px] text-muted-text font-medium">Select a single thumbnail banner for card
-                                    listing.</p>
-                                <template x-if="previewUrl">
-                                    <img :src="previewUrl"
-                                        class="h-16 w-16 object-cover rounded-xl mt-2 border border-gray-200">
+                                <div class="flex gap-2 pt-2">
+                                    <input type="text" x-model="newAmenity" @keydown.enter.prevent="addAmenity()" placeholder="Custom amenity..." class="flex-1 bg-white border border-gray-200 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary/50" />
+                                    <button type="button" @click="addAmenity()" class="px-3 py-2 bg-gray-800 text-white rounded-xl text-xs font-bold">+Amenity</button>
+                                </div>
+                                <template x-for="(am, idx) in customAmenities" :key="idx">
+                                    <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all mt-2">
+                                        <div class="flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            <span class="text-xs font-bold text-gray-700" x-text="am"></span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" name="amenities[]" :value="am" checked class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                            <button type="button" @click.prevent="customAmenities.splice(idx, 1)" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Remove amenity">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            </button>
+                                        </div>
+                                    </label>
                                 </template>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <button type="button"
-                                    class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs"
-                                    @click="$refs.mainImageInput.click()">
-                                    Choose File
-                                </button>
-                                <input type="file" name="image_file" x-ref="mainImageInput" class="hidden" accept="image/*"
-                                    @change="previewUrl = URL.createObjectURL($event.target.files[0])" />
-                                <span class="text-xs text-muted-text font-bold"
-                                    x-text="previewUrl ? 'Image Selected' : 'No file chosen'"></span>
-                            </div>
                         </div>
 
-                        <!-- Gallery Portfolio Card -->
-                        <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6 shadow-sm">
-                            <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Gallery Portfolio
-                            </h4>
+                        <!-- Media Uploads (Gallery) -->
+                        <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-8 shadow-sm">
+                            <div class="h-px w-full bg-gray-100"></div>
 
-                            <div class="grid grid-cols-2 gap-3">
+                            <!-- Gallery Portfolio Card -->
+                            <div class="space-y-4">
+                                <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Gallery
+                                    Portfolio</h4>
+                                <p class="text-[10px] text-gray-400 font-medium pl-1 -mt-3">Upload multiple photos for the
+                                    package gallery.</p>
+
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                                 <template x-for="(img, idx) in galleryPreviews" :key="idx">
                                     <div
-                                        class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100">
+                                        class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100 shadow-sm">
                                         <img :src="img.url" class="w-full h-full object-cover" />
+                                        <template x-if="img.is_existing">
+                                            <input type="hidden" name="existing_gallery_urls[]" :value="img.url.replace(/^\//, '')">
+                                        </template>
                                         <div
                                             class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                             <button type="button" @click="removeGalleryPhoto(idx)"
@@ -1351,13 +1419,21 @@
                                     </div>
                                 </template>
 
-                                <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-gray-200 hover:border-primary/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-orange-50/20"
-                                    @click="$refs.galleryFilesInput.click()">
-                                    <i data-lucide="plus" class="text-gray-400 mb-1" size="20"></i>
-                                    <span class="text-xs font-bold text-gray-800">Add More</span>
-                                    <span class="text-[9px] text-gray-400 font-semibold mt-1">Upload multiple photos</span>
-                                    <input type="file" name="gallery_files[]" x-ref="galleryFilesInput" multiple
-                                        class="hidden" accept="image/*" @change="handleGalleryChange($event)" />
+                                    <!-- Upload Local -->
+                                    <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-gray-200 hover:border-orange-500/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-orange-50/20"
+                                        @click="$refs.galleryFilesInput.click()">
+                                        <i data-lucide="upload-cloud" class="text-gray-400 mb-1" size="20"></i>
+                                        <span class="text-xs font-bold text-gray-800">Upload Local</span>
+                                        <input type="file" name="gallery_files[]" x-ref="galleryFilesInput" multiple
+                                            class="hidden" @change="handleGalleryChange($event)" />
+                                    </div>
+
+                                    <!-- Select from Gallery -->
+                                    <div class="aspect-[4/3] rounded-2xl border border-orange-200 hover:border-orange-300 transition-all flex flex-col items-center justify-center cursor-pointer bg-orange-50 hover:bg-orange-100 shadow-sm"
+                                        @click="openGalleryModal()">
+                                        <i data-lucide="image" class="text-[#e85d26] mb-1" size="20"></i>
+                                        <span class="text-xs font-bold text-[#e85d26]">From Gallery</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1374,8 +1450,83 @@
                         <button type="submit"
                             class="px-8 py-3.5 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20"
                             style="background-color: #e85d26 !important; color: #ffffff !important;">
-                            Save Package
+                            Update Package
                         </button>
+                    </div>
+                </div>
+
+                <!-- Gallery Modal -->
+                <div x-show="isGalleryModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" style="display: none;">
+                    <div class="bg-white rounded-3xl w-full max-w-4xl max-h-[85vh] flex flex-col shadow-2xl overflow-hidden" @click.away="isGalleryModalOpen = false">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                            <h3 class="text-lg font-black text-gray-800 flex items-center gap-2">
+                                <i data-lucide="image" size="20" class="text-[#e85d26]"></i>
+                                Select from Gallery
+                            </h3>
+                            <button type="button" @click="isGalleryModalOpen = false" class="p-2 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
+                                <i data-lucide="x" size="20"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Breadcrumbs -->
+                        <div class="px-6 py-3 bg-white border-b border-gray-100 flex items-center gap-2 text-sm">
+                            <button type="button" @click="fetchGallery(null)" class="text-gray-500 hover:text-[#e85d26] transition-colors font-semibold">
+                                <i data-lucide="home" size="16"></i>
+                            </button>
+                            <template x-for="crumb in galleryBreadcrumbs" :key="crumb.id">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="chevron-right" size="14" class="text-gray-400"></i>
+                                    <button type="button" @click="fetchGallery(crumb.id)" class="text-gray-600 hover:text-[#e85d26] transition-colors font-medium" x-text="crumb.name"></button>
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Gallery Content -->
+                        <div class="p-6 overflow-y-auto flex-1 relative min-h-[300px]">
+                            <div x-show="galleryLoading" class="absolute inset-0 bg-white/80 z-10 flex items-center justify-center">
+                                <div class="w-8 h-8 border-4 border-[#e85d26] border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+
+                            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                <!-- Folders -->
+                                <template x-for="folder in galleryFolders" :key="'folder_'+folder.id">
+                                    <div @click="fetchGallery(folder.id)" class="aspect-square rounded-2xl bg-orange-50 border border-orange-100 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-orange-100 transition-colors group">
+                                        <i data-lucide="folder" size="32" class="text-orange-400 group-hover:text-orange-500 transition-colors"></i>
+                                        <span class="text-xs font-bold text-gray-700 text-center px-2 truncate w-full" x-text="folder.name"></span>
+                                    </div>
+                                </template>
+
+                                <!-- Images -->
+                                <template x-for="image in galleryImages" :key="'image_'+image.id">
+                                    <div class="relative aspect-square rounded-2xl border border-gray-200 overflow-hidden group cursor-pointer" @click="toggleGalleryImage(image)">
+                                        <img :src="'/' + image.file_path" class="w-full h-full object-cover" />
+                                        
+                                        <!-- Selection Overlay -->
+                                        <div class="absolute inset-0 bg-[#e85d26]/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        </div>
+
+                                        <!-- Checkbox -->
+                                        <div class="absolute top-2 right-2 flex items-center justify-center">
+                                            <input type="checkbox" 
+                                                   class="w-5 h-5 rounded border-gray-300 text-[#e85d26] focus:ring-[#e85d26] cursor-pointer pointer-events-none" 
+                                                   :checked="galleryPreviews.some(p => p.id === image.id || p.url === '/' + image.file_path)">
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- Empty State -->
+                                <div x-show="!galleryLoading && galleryFolders.length === 0 && galleryImages.length === 0" class="col-span-full py-12 flex flex-col items-center justify-center text-gray-400">
+                                    <i data-lucide="image-off" size="48" class="mb-3 opacity-50"></i>
+                                    <p class="text-sm font-medium">This folder is empty.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+                            <button type="button" @click="isGalleryModalOpen = false" class="px-6 py-2.5 bg-gray-800 text-white rounded-xl font-bold text-sm hover:bg-gray-700 transition-colors">
+                                Done
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -87,6 +87,8 @@
         newCity: '',
         keywords: {{ json_encode($keywords) }},
         newKeyword: '',
+        customAmenities: {!! json_encode(array_values(array_diff(json_decode($pkg->amenities ?? '[]', true) ?: [], ['Free Wifi', 'Breakfast Included', 'Travel Insurance', 'Private Chef Included', 'Tour Manager Included']))) !!},
+        newAmenity: '',
         addCity() {
             if (this.newCity.trim()) {
                 this.cities.push(this.newCity.trim().replace(/,$/, ''));
@@ -232,24 +234,23 @@
                     this.currentGalleryFolder = folderId;
                 });
         },
-        selectGalleryImage(image) {
+        toggleGalleryImage(image) {
             const baseUrl = '{{ asset('') }}';
             const targetPath = '/' + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path);
             const fullUrl = baseUrl + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path);
             
-            if (this.galleryModalType === 'main') {
-                this.previewUrl = fullUrl;
-                const input = document.getElementById('image_url');
-                if (input) input.value = targetPath;
-            } else {
+            const index = this.galleryPreviews.findIndex(p => p.url === fullUrl);
+            if (index === -1) {
                 this.galleryPreviews.push({
                     url: fullUrl,
                     name: image.name,
                     is_gallery: true,
-                    path: targetPath
+                    path: targetPath,
+                    size: 'From Gallery'
                 });
+            } else {
+                this.galleryPreviews.splice(index, 1);
             }
-            this.closeGalleryModal();
         },
         previewPdf() {
             if (this.$refs.brochureInput && this.$refs.brochureInput.files && this.$refs.brochureInput.files[0]) {
@@ -401,7 +402,7 @@
                     <i data-lucide="arrow-left" size="20"></i>
                 </a>
                 <div>
-                    <h2 class="font-black text-gray-800 tracking-tight text-2xl">Edit Travel Package</h2>
+                    <h2 class="font-black text-gray-800 tracking-tight text-4xl">Edit Travel Package</h2>
                     <p class="text-gray-400 font-medium text-xs mt-0.5">Configure package details, upload brochures, and add
                         gallery portfolio.</p>
                 </div>
@@ -715,36 +716,37 @@
                         <h3 class="text-lg font-black text-gray-800">Tags & Keywords</h3>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-                        <!-- Tag Name -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                        <!-- Tag Name (1 column) -->
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Tag Name
-                                (e.g. 25% Off, Popular)</label>
-                            <input type="text" name="badge" value="{{ old('badge', $pkg->badge ?? '') }}"
-                                placeholder="e.g. 25% Off"
-                                class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
+                                (e.g. 25% Off)</label>
+                            <input type="text" name="badge" value="{{ old('badge', $pkg->badge ?? '') }}" placeholder="e.g. 25% Off"
+                                class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm" />
                         </div>
 
-                        <!-- Search Keywords -->
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Search
-                                Keywords (Helps travelers find you)</label>
-                            <div
-                                class="w-full bg-[#F5F5F5] rounded-2xl p-4 flex flex-wrap items-center gap-2 border border-transparent focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/25 transition-all">
-                                <template x-for="(kw, idx) in keywords" :key="idx">
-                                    <span
-                                        class="px-3.5 py-1.5 bg-gray-200 text-gray-700 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
-                                        <span x-text="kw"></span>
-                                        <i class="cursor-pointer font-black text-xs leading-none text-gray-400 hover:text-gray-600"
-                                            @click="removeKeyword(idx)">&times;</i>
-                                    </span>
+                        <!-- Search Keywords (2 columns) -->
+                        <div class="space-y-4 md:col-span-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Trip Location/Search Keywords <span class="text-red-500">*</span></label>
+                            
+                            <!-- Tags Flex Container -->
+                            <div class="flex flex-wrap gap-3">
+                                <template x-for="(keyword, i) in keywords" :key="i">
+                                    <div class="flex items-center justify-between min-w-[140px] px-4 py-2.5 bg-white rounded-md border border-gray-200 shadow-sm">
+                                        <span class="text-xs font-medium text-gray-700" x-text="keyword"></span>
+                                        <button type="button" @click="removeKeyword(i)" class="text-gray-400 hover:text-red-500 ml-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        </button>
+                                    </div>
                                 </template>
-                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()"
-                                    @keydown.comma.prevent="addKeyword()" placeholder="Type keyword & enter/comma..."
-                                    class="bg-transparent border-none outline-none text-xs font-bold text-gray-700 py-1 px-2 focus:ring-0"
-                                    style="border: none !important; outline: none !important; box-shadow: none !important;" />
-                                <input type="hidden" name="keywords" :value="keywords.join(',')" />
                             </div>
+
+                            <!-- Add More Input & Button -->
+                            <div class="flex items-center gap-3">
+                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" placeholder="Type keyword..." class="w-48 bg-white border border-gray-200 rounded-md py-2.5 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary/30 shadow-sm" />
+                                <button type="button" @click="addKeyword()" class="px-4 py-2.5 bg-[#EEF2FF] text-[#4F46E5] rounded-md text-xs font-bold hover:bg-[#E0E7FF] transition-colors">Add more</button>
+                            </div>
+                            <input type="hidden" name="keywords" :value="keywords.join(',')" />
                         </div>
                     </div>
                 </div>
@@ -835,10 +837,7 @@
                         </div>
                     </div>
 
-                    <!-- OR divider -->
-                    <div class="flex items-center justify-center shrink-0 px-2">
-                        <span class="text-xs font-black text-gray-400 uppercase tracking-widest">OR</span>
-                    </div>
+
 
                     <!-- Itinerary card  ~65% -->
                     <div
@@ -974,6 +973,21 @@
                                                 style="background-color: #e85d26 !important; color: white !important;">+</button>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- About Tours sub-card -->
+                                <div class="bg-gray-50 rounded-2xl p-5 space-y-3 border border-gray-100">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F0642F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        </svg>
+                                        <span class="text-sm font-bold text-red-500">About Tours</span>
+                                    </div>
+                                    <textarea name="about_tours" rows="5"
+                                        class="w-full h-[calc(100%-2.5rem)] bg-[#E8E8E8] border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-700 outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                                        placeholder="Brief overview about the tour...">{{ old('about_tours', $pkg->about_tours ?? '') }}</textarea>
                                 </div>
                             </div>
 
@@ -1157,93 +1171,61 @@
 
                         <!-- Essential Amenities -->
                         <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm transition-all duration-300" x-show="!brochureName">
-                            <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Essential Amenities
-                            </h4>
+                            <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Essential Amenities</h4>
 
                             <div class="space-y-4">
                                 @php
                                     $amenities = json_decode($pkg->amenities, true) ?: [];
                                 @endphp
-                                <label
-                                    class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
+                                <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
                                     <div class="flex items-center gap-3">
                                         <i data-lucide="wifi" class="text-gray-400" size="18"></i>
                                         <span class="text-xs font-bold text-gray-700">Free Wifi</span>
                                     </div>
-                                    <input type="checkbox" name="amenities[]" value="Free Wifi" {{ in_array('Free Wifi', $amenities) ? 'checked' : '' }}
-                                        class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                    <input type="checkbox" name="amenities[]" value="Free Wifi" {{ in_array('Free Wifi', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-[#e85d26] focus:ring-[#e85d26]/25 cursor-pointer" />
                                 </label>
 
-                                <label
-                                    class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
+                                <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
                                     <div class="flex items-center gap-3">
                                         <i data-lucide="coffee" class="text-gray-400" size="18"></i>
                                         <span class="text-xs font-bold text-gray-700">Breakfast Included</span>
                                     </div>
-                                    <input type="checkbox" name="amenities[]" value="Breakfast Included" {{ in_array('Breakfast Included', $amenities) ? 'checked' : '' }}
-                                        class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                    <input type="checkbox" name="amenities[]" value="Breakfast Included" {{ in_array('Breakfast Included', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-[#e85d26] focus:ring-[#e85d26]/25 cursor-pointer" />
                                 </label>
 
-                                <label
-                                    class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
+                                <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
                                     <div class="flex items-center gap-3">
                                         <i data-lucide="shield" class="text-gray-400" size="18"></i>
                                         <span class="text-xs font-bold text-gray-700">Travel Insurance</span>
                                     </div>
-                                    <input type="checkbox" name="amenities[]" value="Travel Insurance" {{ in_array('Travel Insurance', $amenities) ? 'checked' : '' }}
-                                        class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
-                                </label>
-                                <label
-                                    class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
-                                    <div class="flex items-center gap-3">
-                                        <i data-lucide="chef-hat" class="text-gray-400" size="18"></i>
-                                        <span class="text-xs font-bold text-gray-700">Private Chef Included</span>
-                                    </div>
-                                    <input type="checkbox" name="amenities[]" value="Private Chef Included" {{ in_array('Private Chef Included', $amenities) ? 'checked' : '' }}
-                                        class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                    <input type="checkbox" name="amenities[]" value="Travel Insurance" {{ in_array('Travel Insurance', $amenities) ? 'checked' : '' }} class="w-5 h-5 rounded border-gray-300 text-[#e85d26] focus:ring-[#e85d26]/25 cursor-pointer" />
                                 </label>
 
-                                <label
-                                    class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all">
-                                    <div class="flex items-center gap-3">
-                                        <i data-lucide="user-check" class="text-gray-400" size="18"></i>
-                                        <span class="text-xs font-bold text-gray-700">Tour Manager Included</span>
-                                    </div>
-                                    <input type="checkbox" name="amenities[]" value="Tour Manager Included" {{ in_array('Tour Manager Included', $amenities) ? 'checked' : '' }}
-                                        class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Primary featured photo upload hidden input -->
-                        <div
-                            class="bg-gray-50 p-6 rounded-[32px] border border-gray-100 flex items-center justify-between gap-4 shadow-sm">
-                            <div class="space-y-1">
-                                <p class="text-sm font-black text-gray-800">Main Featured Image</p>
-                                <p class="text-[10px] text-gray-400 font-medium">Select a single thumbnail banner for card
-                                    listing.</p>
-                                <template x-if="previewUrl">
-                                    <img :src="previewUrl"
-                                        class="h-16 w-16 object-cover rounded-xl mt-2 border border-gray-200">
+                                <!-- Custom Amenities Loop -->
+                                <template x-for="(amenity, index) in customAmenities" :key="index">
+                                    <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all group mt-2">
+                                        <div class="flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            <span class="text-xs font-bold text-gray-700" x-text="amenity"></span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" name="amenities[]" :value="amenity" checked class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
+                                            <button type="button" @click.prevent="customAmenities.splice(index, 1)" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Remove amenity">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                            </button>
+                                        </div>
+                                    </label>
                                 </template>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <button type="button"
-                                    class="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-xl font-bold text-xs shadow-sm transition-all"
-                                    @click="$refs.mainImageInput.click()">
-                                    Choose File
-                                </button>
-                                <input type="file" name="image_file" x-ref="mainImageInput" class="hidden" accept="image/*"
-                                    @change="previewUrl = URL.createObjectURL($event.target.files[0]); document.getElementById('image_url').value = '';" />
-                                <div class="text-[10px] text-gray-400 font-bold text-center">OR</div>
-                                <button type="button"
-                                    class="px-4 py-2 bg-orange-50 hover:bg-orange-100 text-primary border border-orange-200 rounded-xl font-bold text-xs shadow-sm transition-all"
-                                    @click="openGalleryModal('main')">
-                                    Choose from Gallery
-                                </button>
-                                <input type="hidden" name="image_url" id="image_url" />
-                                <span class="text-xs text-gray-400 font-bold"
-                                    x-text="previewUrl ? 'Image Selected' : 'No file chosen'"></span>
+
+                                <!-- Add Custom Amenity Input -->
+                                <div class="flex flex-col gap-2 pt-2">
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" x-model="newAmenity" @keydown.enter.prevent="if(newAmenity.trim()) { customAmenities.push(newAmenity.trim()); newAmenity = ''; }" placeholder="e.g. Private Chef Included" class="flex-1 bg-white border border-gray-200 rounded-xl py-3 px-4 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#e85d26]/20 transition-all shadow-sm" />
+                                        <button type="button" @click="if(newAmenity.trim()) { customAmenities.push(newAmenity.trim()); newAmenity = ''; }" class="px-4 py-3 bg-[#e85d26]/10 text-[#e85d26] rounded-xl text-xs font-bold hover:bg-[#e85d26]/20 transition-colors shadow-sm whitespace-nowrap border border-[#e85d26]/20">
+                                            + Amenity
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1252,7 +1234,7 @@
                             <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Gallery Portfolio
                             </h4>
 
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                                 <template x-for="(img, idx) in galleryPreviews" :key="idx">
                                     <div
                                         class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100">
@@ -1315,60 +1297,63 @@
         <template x-teleport="body">
             <div x-show="isGalleryModalOpen"
                 class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm" style="display: none;">
-            <div class="bg-white rounded-[32px] w-full max-w-4xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden"
-                @click.away="closeGalleryModal()">
-                <div class="flex items-center justify-between p-6 border-b border-gray-100">
-                    <h3 class="text-lg font-black text-gray-800">Select Image from Gallery</h3>
-                    <button type="button" @click="closeGalleryModal()"
-                        class="text-gray-400 hover:text-red-500 transition-colors">
-                        <i data-lucide="x" size="24"></i>
-                    </button>
-                </div>
-
-                <div class="p-6 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-                    <button type="button" @click="fetchGallery()"
-                        class="text-sm font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-1">
-                        <i data-lucide="home" size="16"></i> Home
-                    </button>
-                    <template x-for="(crumb, idx) in galleryBreadcrumbs" :key="idx">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="chevron-right" size="14" class="text-gray-400"></i>
-                            <button type="button" @click="fetchGallery(crumb.id)"
-                                class="text-sm font-bold text-gray-500 hover:text-primary transition-colors"
-                                x-text="crumb.name"></button>
+                <div class="bg-white rounded-[32px] w-full max-w-4xl max-h-[80vh] flex flex-col shadow-2xl overflow-hidden"
+                    @click.away="closeGalleryModal()">
+                    <div class="flex items-center justify-between p-6 border-b border-gray-100">
+                        <h3 class="text-lg font-black text-gray-800">Select Image from Gallery</h3>
+                        <div class="flex items-center gap-3">
+                            <button type="button" @click="closeGalleryModal()"
+                                class="px-6 py-2.5 bg-[#e85d26] text-white rounded-xl text-sm font-bold shadow-sm hover:bg-[#d45220] transition-colors">
+                                Done
+                            </button>
                         </div>
-                    </template>
-                </div>
+                    </div>
 
-                <div class="flex-1 overflow-y-auto p-6 bg-white">
-                    <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        <template x-for="folder in galleryFolders" :key="folder.id">
-                            <div class="group cursor-pointer" @click="fetchGallery(folder.id)">
-                                <div
-                                    class="aspect-square bg-gray-50 rounded-2xl border border-gray-100 flex flex-col items-center justify-center hover:bg-orange-50 hover:border-orange-200 transition-all">
-                                    <i data-lucide="folder" size="32" class="text-yellow-400 mb-2"></i>
-                                    <span class="text-xs font-bold text-gray-700 truncate w-full text-center px-2"
-                                        x-text="folder.name"></span>
-                                </div>
+                    <div class="p-6 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
+                        <button type="button" @click="fetchGallery()"
+                            class="text-sm font-bold text-gray-500 hover:text-primary transition-colors flex items-center gap-1">
+                            <i data-lucide="home" size="16"></i> Home
+                        </button>
+                        <template x-for="(crumb, idx) in galleryBreadcrumbs" :key="idx">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="chevron-right" size="14" class="text-gray-400"></i>
+                                <button type="button" @click="fetchGallery(crumb.id)"
+                                    class="text-sm font-bold text-gray-500 hover:text-primary transition-colors"
+                                    x-text="crumb.name"></button>
                             </div>
                         </template>
+                    </div>
 
-                        <template x-for="img in galleryImages" :key="img.id">
-                            <div class="group cursor-pointer relative aspect-square rounded-2xl overflow-hidden border border-gray-100 hover:border-primary transition-all"
-                                @click="selectGalleryImage(img)">
-                                <img :src="'{{ asset('') }}' + img.file_path" class="w-full h-full object-cover" />
-                                <div
-                                    class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <span
-                                        class="px-3 py-1 bg-white rounded-full text-xs font-bold text-gray-800">Select</span>
+                    <div class="flex-1 overflow-y-auto p-6 bg-white">
+                        <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                            <!-- Folders -->
+                            <template x-for="folder in galleryFolders" :key="folder.id">
+                                <div class="group cursor-pointer" @click="fetchGallery(folder.id)">
+                                    <div
+                                        class="aspect-square bg-gray-50 rounded-2xl border border-gray-100 flex flex-col items-center justify-center hover:bg-orange-50 hover:border-orange-200 transition-all">
+                                        <i data-lucide="folder" size="32" class="text-yellow-400 mb-2"></i>
+                                        <span class="text-xs font-bold text-gray-700 truncate w-full text-center px-2"
+                                            x-text="folder.name"></span>
+                                    </div>
                                 </div>
-                            </div>
-                        </template>
+                            </template>
 
-                        <div x-show="galleryFolders.length === 0 && galleryImages.length === 0"
-                            class="col-span-full py-12 text-center text-gray-400">
-                            <i data-lucide="image" size="48" class="mx-auto mb-3 opacity-20"></i>
-                            <p class="text-sm font-bold">This folder is empty.</p>
+                            <!-- Images -->
+                            <template x-for="img in galleryImages" :key="img.id">
+                                <label class="group cursor-pointer relative aspect-square rounded-2xl overflow-hidden border border-gray-100 hover:border-primary transition-all block">
+                                    <input type="checkbox" class="absolute top-3 right-3 z-10 w-5 h-5 rounded border-white shadow-sm text-[#e85d26] focus:ring-[#e85d26]/25 cursor-pointer"
+                                           :checked="galleryPreviews.some(p => p.url === '{{ asset('') }}' + (img.file_path.startsWith('/') ? img.file_path.substring(1) : img.file_path))"
+                                           @change="toggleGalleryImage(img)" />
+                                    <img :src="'{{ asset('') }}' + img.file_path" class="w-full h-full object-cover" />
+                                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors pointer-events-none"></div>
+                                </label>
+                            </template>
+
+                            <div x-show="galleryFolders.length === 0 && galleryImages.length === 0"
+                                class="col-span-full py-12 text-center text-gray-400">
+                                <i data-lucide="image" size="48" class="mx-auto mb-3 opacity-20"></i>
+                                <p class="text-sm font-bold">This folder is empty.</p>
+                            </div>
                         </div>
                     </div>
                 </div>

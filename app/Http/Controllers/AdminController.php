@@ -343,6 +343,12 @@ class AdminController extends Controller
 
         // Gallery Images Upload
         $galleryUrls = [];
+        
+        // Handle images selected from gallery
+        if ($request->has('existing_gallery_urls')) {
+            $galleryUrls = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
+        }
+        
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $file) {
                 if (!$file->isValid()) {
@@ -534,6 +540,16 @@ class AdminController extends Controller
 
             // Gallery Images Upload
             $galleryUrls = [];
+            
+            // Handle images selected from gallery
+            if ($request->has('existing_gallery_urls')) {
+                $galleryUrls = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
+            } else {
+                if ($oldPkg && $oldPkg->gallery) {
+                    $galleryUrls = json_decode($oldPkg->gallery, true) ?: [];
+                }
+            }
+            
             if ($request->hasFile('gallery_files')) {
                 foreach ($request->file('gallery_files') as $file) {
                     if (!$file->isValid()) {
@@ -542,10 +558,6 @@ class AdminController extends Controller
                     $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
                     $file->move(public_path('uploads/packages/gallery'), $fileName);
                     $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
-                }
-            } else {
-                if ($oldPkg && $oldPkg->gallery) {
-                    $galleryUrls = json_decode($oldPkg->gallery, true) ?: [];
                 }
             }
 
