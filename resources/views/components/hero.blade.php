@@ -24,7 +24,7 @@
   }
   @media (max-width: 767px) {
     .hero-search-divider {
-      border-bottom: 1px solid #e85d26;
+      /* Removed border-bottom for premium look */
     }
   }
 
@@ -162,35 +162,35 @@
     <div class="w-full max-w-7xl">
       <form action="{{ route('search') }}" method="GET">
         <div
-          style="background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid #e85d26; border-radius:8px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.15);"
-          class="flex flex-col md:flex-row items-center gap-0 overflow-visible">
+          style="background:rgba(255,255,255,0.9); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);"
+          class="flex flex-col md:flex-row items-center gap-0 overflow-visible p-1">
 
           {{-- Destination Field --}}
-          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 hero-search-divider">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2.5">
+          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 hero-search-divider transition-all hover:bg-gray-50/50 rounded-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg> 
             <input type="text" name="destination" placeholder="Where You Go !!!"
-              class="bg-transparent border-none focus:ring-0 text-[#e85d26] placeholder-[#e85d26] text-[15px] font-bold outline-none w-full orange-placeholder"
+              class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[15px] font-bold outline-none w-full"
               style="box-shadow: none;" value="{{ request('destination') }}">
           </div>
 
           {{-- Agent/City Field --}}
-          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e85d26" stroke-width="2.5">
+          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 transition-all hover:bg-gray-50/50 rounded-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
             <input type="text" name="from_city" placeholder="Search agent from your city/near by location"
-              class="bg-transparent border-none focus:ring-0 text-[#e85d26] placeholder-[#e85d26] text-[15px] font-bold outline-none w-full orange-placeholder"
+              class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[15px] font-bold outline-none w-full"
               style="box-shadow: none;" value="{{ request('from_city') }}">
           </div>
 
           {{-- Search Button --}}
-          <div class="px-4 py-3 md:px-2 md:py-2 flex-shrink-0 w-full md:w-auto">
-            <button type="submit" style="background:#e85d26;"
-              class="rounded-full px-8 py-3 text-white font-bold text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto">
+          <div class="px-2 py-2 flex-shrink-0 w-full md:w-auto">
+            <button type="submit" style="background:#ea580c;"
+              class="rounded-xl px-10 py-4 text-white font-black text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto shadow-md hover:shadow-lg">
               Search
             </button>
           </div>

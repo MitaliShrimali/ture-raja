@@ -40,4 +40,11 @@ return [
         'secret' => env('RAZORPAY_KEY_SECRET'),
     ],
 
+    'payu' => [
+        'merchant_key' => env('PAYU_MERCHANT_KEY'),
+        'merchant_salt' => env('PAYU_MERCHANT_SALT'),
+        'test_mode' => env('PAYU_TEST_MODE', false),
+        'base_url' => env('PAYU_BASE_URL', 'https://secure.payu.in/_payment'),
+    ],
+
 ];

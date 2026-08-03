@@ -94,10 +94,10 @@
                                 <td class="p-3 w-px whitespace-nowrap">
                                     <div class="flex justify-end items-center gap-1">
                                         <button class="text-slate-400 hover:text-[#ea580c] transition-colors p-2 rounded-full hover:bg-orange-50 flex items-center justify-center" onclick="openEditModal({{ $boost->id }}, '{{ addslashes($boost->name) }}', '{{ addslashes($boost->description) }}', {{ $boost->price }}, {{ $boost->duration_days ?? 'null' }})">
-                                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            <i data-lucide="edit-3" class="w-[18px] h-[18px]"></i>
                                         </button>
                                         <a href="{{ route('admin.payment-pricing.delete', $boost->id) }}" onclick="return confirm('Are you sure you want to delete this pricing?')" class="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-full hover:bg-rose-50 flex items-center justify-center">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            <i data-lucide="trash-2" class="w-5 h-5"></i>
                                         </a>
                                     </div>
                                 </td>
@@ -171,10 +171,10 @@
                                 <td class="p-3 w-px whitespace-nowrap">
                                     <div class="flex justify-end items-center gap-1">
                                         <button class="text-slate-400 hover:text-[#ea580c] transition-colors p-2 rounded-full hover:bg-orange-50 flex items-center justify-center" onclick="openEditModal({{ $ad->id }}, '{{ addslashes($ad->name) }}', '{{ addslashes($ad->description) }}', {{ $ad->price }}, {{ $ad->duration_days ?? 'null' }})">
-                                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            <i data-lucide="edit-3" class="w-[18px] h-[18px]"></i>
                                         </button>
                                         <a href="{{ route('admin.payment-pricing.delete', $ad->id) }}" onclick="return confirm('Are you sure you want to delete this pricing?')" class="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-full hover:bg-rose-50 flex items-center justify-center">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            <i data-lucide="trash-2" class="w-5 h-5"></i>
                                         </a>
                                     </div>
                                 </td>
@@ -248,10 +248,10 @@
                                 <td class="p-3 w-px whitespace-nowrap">
                                     <div class="flex justify-end items-center gap-1">
                                         <button class="text-slate-400 hover:text-[#ea580c] transition-colors p-2 rounded-full hover:bg-orange-50 flex items-center justify-center" onclick="openEditModal({{ $agentOpt->id }}, '{{ addslashes($agentOpt->name) }}', '{{ addslashes($agentOpt->description) }}', {{ $agentOpt->price }}, {{ $agentOpt->duration_days ?? 'null' }})">
-                                            <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                            <i data-lucide="edit-3" class="w-[18px] h-[18px]"></i>
                                         </button>
                                         <a href="{{ route('admin.payment-pricing.delete', $agentOpt->id) }}" onclick="return confirm('Are you sure you want to delete this pricing?')" class="text-slate-400 hover:text-rose-500 transition-colors p-2 rounded-full hover:bg-rose-50 flex items-center justify-center">
-                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                            <i data-lucide="trash-2" class="w-5 h-5"></i>
                                         </a>
                                     </div>
                                 </td>

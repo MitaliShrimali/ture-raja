@@ -52,8 +52,8 @@
                             type="text" 
                             name="search"
                             value="{{ request('search') }}"
-                            placeholder="Search agents..." 
-                            class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#ea580c]/10 transition-all font-medium text-sm"
+                            placeholder="Search agent by name, email, or firm..." 
+                            class="w-full bg-gray-50/80 border-0 rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#ea580c]/20 transition-all font-medium text-sm shadow-sm"
                         >
                     </div>
                     <button type="submit" class="bg-[#ea580c] hover:bg-orange-600 text-white p-3 rounded-2xl transition-colors shadow-sm shrink-0">

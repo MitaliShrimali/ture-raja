@@ -39,7 +39,7 @@
                         name="search"
                         value="{{ request('search') }}"
                         placeholder="Search user by name or email..." 
-                        class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#ea580c]/20 transition-all font-medium text-sm"
+                        class="w-full bg-gray-50/80 border-0 rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#ea580c]/20 transition-all font-medium text-sm shadow-sm"
                     >
                 </div>
                 <button type="submit" class="bg-[#ea580c] hover:bg-orange-600 text-white p-4 rounded-2xl transition-colors shadow-sm shrink-0">

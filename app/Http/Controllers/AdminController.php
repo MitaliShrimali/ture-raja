@@ -1320,8 +1320,9 @@ class AdminController extends Controller
 
         $activePlan = DB::table('plans')->where('id', $agent->plan_id ?? null)->first();
         $payments = DB::table('payments')->where('email', $agent->email)->orderBy('id', 'desc')->get();
+        $branches = DB::table('branches')->where('agent_id', $agent->id)->get();
 
-        return view('admin.agent-profile', compact('agent', 'activePlan', 'payments'));
+        return view('admin.agent-profile', compact('agent', 'activePlan', 'payments', 'branches'));
     }
 
     public function updateAgent(Request $request)

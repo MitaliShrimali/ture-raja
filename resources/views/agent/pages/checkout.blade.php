@@ -53,16 +53,28 @@
             <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
                 <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest mb-8">Payment Gateway</h3>
 
-                <form action="{{ route('agent.checkout.process') }}" method="POST" id="checkoutForm">
-                    @csrf
-                    <input type="hidden" name="type" value="{{ $type }}">
-                    <input type="hidden" name="id" value="{{ $id }}">
-                    <input type="hidden" name="amount" value="{{ $totalAmount }}">
-                    <input type="hidden" name="item_name" value="{{ $itemName }}">
-                    <!-- Razorpay Hidden Fields -->
-                    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
-                    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
-                    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+                <form action="{{ config('services.payu.test_mode') ? 'https://test.payu.in/_payment' : config('services.payu.base_url', 'https://secure.payu.in/_payment') }}" method="POST" id="checkoutForm">
+                    <input type="hidden" name="key" value="{{ $payuKey }}" />
+                    <input type="hidden" name="txnid" value="{{ $txnid }}" />
+                    <input type="hidden" name="productinfo" value="{{ $productinfo }}" />
+                    <input type="hidden" name="amount" value="{{ number_format($totalAmount, 2, '.', '') }}" />
+                    <input type="hidden" name="email" value="{{ $email }}" />
+                    <input type="hidden" name="firstname" value="{{ $firstname }}" />
+                    <input type="hidden" name="service_provider" value="payu_paisa" />
+                    <input type="hidden" name="surl" value="{{ $surl }}" />
+                    <input type="hidden" name="furl" value="{{ $furl }}" />
+                    <input type="hidden" name="phone" value="{{ $phone }}" />
+                    <input type="hidden" name="hash" value="{{ $hash }}" />
+                    <input type="hidden" name="udf1" value="{{ $udf1 ?? '' }}" />
+                    <input type="hidden" name="udf2" value="{{ $udf2 ?? '' }}" />
+                    <input type="hidden" name="udf3" value="{{ $udf3 ?? '' }}" />
+                    <input type="hidden" name="udf4" value="{{ $udf4 ?? '' }}" />
+                    <input type="hidden" name="udf5" value="{{ $udf5 ?? '' }}" />
+                    <input type="hidden" name="udf6" value="{{ $udf6 ?? '' }}" />
+                    <input type="hidden" name="udf7" value="{{ $udf7 ?? '' }}" />
+                    <input type="hidden" name="udf8" value="{{ $udf8 ?? '' }}" />
+                    <input type="hidden" name="udf9" value="{{ $udf9 ?? '' }}" />
+                    <input type="hidden" name="udf10" value="{{ $udf10 ?? '' }}" />
                     @if(request()->has('package_id'))
                         <input type="hidden" name="package_id" value="{{ request('package_id') }}">
                     @endif
@@ -106,55 +118,17 @@
 
                     <div class="flex items-center justify-between p-6 bg-orange-50 rounded-2xl border border-orange-100 mb-8">
                         <div>
-                            <h4 class="text-sm font-bold text-gray-900">Demo Environment</h4>
-                            <p class="text-xs text-gray-500 font-medium">Click the button to simulate a successful payment.</p>
+                            <h4 class="text-sm font-bold text-gray-900">Secure Payment</h4>
+                            <p class="text-xs text-gray-500 font-medium">You will be securely redirected to PayU to complete this payment.</p>
                         </div>
                         <i class="fas fa-shield-alt text-[#ea580c] text-2xl opacity-50"></i>
                     </div>
 
-                    @if(!isset($razorpayOrderId) && $amount > 0)
-                        <div class="p-4 mb-8 text-sm text-red-800 rounded-lg bg-red-50" role="alert">
-                            <span class="font-bold">Error:</span> Razorpay could not be initialized.<br>
-                            <strong>Details:</strong> {{ isset($razorpayError) ? $razorpayError : 'Unknown Error' }}
-                        </div>
-                    @else
-                        <button type="button" id="rzp-button1" class="w-full py-4 bg-[#ea580c] text-white font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center">
-                            <i class="fas fa-lock mr-2"></i> Complete Payment of ₹{{ number_format($totalAmount, 2) }}
-                        </button>
-                    @endif
+                    <button type="submit" class="w-full py-4 bg-[#ea580c] text-white font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex items-center justify-center">
+                        <i class="fas fa-lock mr-2"></i> Pay with PayU &#8377;{{ number_format($totalAmount, 2) }}
+                    </button>
                 </form>
             </div>
         </div>
     </div>
-
-    <!-- Razorpay Integration -->
-    @if(isset($razorpayOrderId))
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script>
-        var options = {
-            "key": "{{ config('services.razorpay.key') }}",
-            "amount": "{{ round($totalAmount * 100) }}", 
-            "currency": "INR",
-            "name": "Tour Raja",
-            "description": "{{ $itemName }}",
-            "image": "{{ asset('assets/images/logo.png') }}",
-            "order_id": "{{ $razorpayOrderId }}",
-            "handler": function (response){
-                document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
-                document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
-                document.getElementById('razorpay_signature').value = response.razorpay_signature;
-                document.getElementById('checkoutForm').submit();
-            },
-            "theme": {
-                "color": "#ea580c"
-            }
-        };
-        var rzp1 = new Razorpay(options);
-        document.getElementById('rzp-button1').onclick = function(e){
-            rzp1.open();
-            e.preventDefault();
-        }
-    </script>
-    @endif
-
 @endsection

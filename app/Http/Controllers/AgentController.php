@@ -1782,27 +1782,61 @@ class AgentController extends Controller
 
         $totalAmount = $amount * (1 + ($gst / 100));
 
-        // Razorpay Order Generation
-        $razorpayOrderId = null;
-        $razorpayError = null;
-        if ($totalAmount > 0) {
-            try {
-                if (!config('services.razorpay.key') || !config('services.razorpay.secret')) {
-                    throw new \Exception('Razorpay keys are missing from configuration. Did you clear the config cache?');
-                }
-                $api = new \Razorpay\Api\Api(config('services.razorpay.key'), config('services.razorpay.secret'));
-                $orderData = [
-                    'receipt'         => 'rcptid_' . time(),
-                    'amount'          => round($totalAmount * 100), // Amount in paise
-                    'currency'        => 'INR'
-                ];
-                $razorpayOrder = $api->order->create($orderData);
-                $razorpayOrderId = $razorpayOrder['id'];
-            } catch (\Throwable $e) {
-                \Log::error('Razorpay Error: ' . $e->getMessage());
-                $razorpayError = $e->getMessage();
-            }
-        }
+        // PayU Configuration
+        $payuService = new \App\Services\PayUService();
+        $payuKey = $payuService->getMerchantKey();
+        
+        $txnid = substr(hash('sha256', mt_rand() . microtime()), 0, 20);
+        
+        $agentId = session('agent_id');
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        $firstname = !empty(trim($agent->name ?? '')) ? str_replace('|', '', trim($agent->name)) : 'Agent';
+        $email = !empty(trim($agent->email ?? '')) ? str_replace('|', '', trim($agent->email)) : 'agent@tourraja.com';
+        $phone = $agent->phone ?? '9999999999';
+        
+        $productinfo = $type . '-' . $id;
+        $udf2 = str_replace('|', '', $itemName);
+        $payuAmount = number_format($totalAmount, 2, '.', '');
+        
+        $posted = [
+            'key' => $payuKey,
+            'txnid' => $txnid,
+            'amount' => $payuAmount,
+            'productinfo' => $productinfo,
+            'firstname' => $firstname,
+            'email' => $email,
+            'udf1' => '',
+            'udf2' => $udf2,
+            'udf3' => '',
+            'udf4' => '',
+            'udf5' => '',
+            'udf6' => '',
+            'udf7' => '',
+            'udf8' => '',
+            'udf9' => '',
+            'udf10' => ''
+        ];
+        
+        $hashData = $payuService->generatePaymentHash($posted);
+        $hash = $hashData['hash'];
+        $hashString = $hashData['hashString'];
+        
+        $surl = route('agent.payment.payu-success');
+        $furl = route('agent.payment.payu-failure');
+        $endpoint = $payuService->getBaseUrl();
+
+        // Log the complete POST payload exactly as it will be submitted (excluding Merchant Salt)
+        \Log::info('PayU Complete POST Payload (Before Submit):', [
+            'endpoint' => $endpoint,
+            'hash_string_used' => $hashString,
+            'payload' => array_merge($posted, [
+                'phone' => $phone,
+                'surl' => $surl,
+                'furl' => $furl,
+                'hash' => $hash,
+                'service_provider' => 'payu_paisa'
+            ])
+        ]);
 
         return view('agent.pages.checkout', [
             'page_title' => 'Checkout',
@@ -1813,50 +1847,75 @@ class AgentController extends Controller
             'gst' => $gst,
             'totalAmount' => $totalAmount,
             'itemName' => $itemName,
-            'razorpayOrderId' => $razorpayOrderId,
-            'razorpayError' => $razorpayError
+            'payuKey' => $payuKey,
+            'txnid' => $txnid,
+            'hash' => $hash,
+            'productinfo' => $productinfo,
+            'udf2' => $udf2,
+            'firstname' => $firstname,
+            'email' => $email,
+            'phone' => $phone,
+            'surl' => $surl,
+            'furl' => $furl,
+            'hash' => $hash,
+            'udf1' => $posted['udf1'],
+            'udf2' => $posted['udf2'],
+            'udf3' => $posted['udf3'],
+            'udf4' => $posted['udf4'],
+            'udf5' => $posted['udf5'],
+            'udf6' => $posted['udf6'],
+            'udf7' => $posted['udf7'],
+            'udf8' => $posted['udf8'],
+            'udf9' => $posted['udf9'],
+            'udf10' => $posted['udf10'],
         ]);
     }
 
-    public function processCheckout(Request $request)
+    public function payuSuccess(Request $request)
     {
-        $agentId = session('agent_id');
-        $type = $request->input('type');
-        $id = $request->input('id');
-        $amount = $request->input('amount');
-        $itemName = $request->input('item_name');
-
-        // Razorpay Verification
-        $razorpayPaymentId = $request->input('razorpay_payment_id');
-        $razorpayOrderId = $request->input('razorpay_order_id');
-        $razorpaySignature = $request->input('razorpay_signature');
-
-        if ($razorpayPaymentId && $razorpayOrderId && $razorpaySignature) {
-            try {
-                $api = new \Razorpay\Api\Api(config('services.razorpay.key'), config('services.razorpay.secret'));
-                $api->utility->verifyPaymentSignature(array(
-                    'razorpay_order_id' => $razorpayOrderId,
-                    'razorpay_payment_id' => $razorpayPaymentId,
-                    'razorpay_signature' => $razorpaySignature
-                ));
-            } catch(\Exception $e) {
-                return redirect()->route('agent.payment')->with('error', 'Payment verification failed: ' . $e->getMessage());
-            }
-        } else {
-            return redirect()->route('agent.payment')->with('error', 'Invalid payment details. Please try again.');
+        $payuService = new \App\Services\PayUService();
+        
+        if (!$payuService->verifyResponseHash($request->all())) {
+            return redirect()->route('payment')->with('error', 'Invalid Transaction Hash. Please try again');
         }
 
-        $gateway = 'Razorpay';
-        $sender = $request->input('sender_details', 'Razorpay Checkout');
-        $receiver = 'tourraja@upi';
+        $status = $request->input('status');
+        $txnid = $request->input('txnid');
+        $productinfo = $request->input('productinfo');
+        $email = $request->input('email');
+        $firstname = $request->input('firstname');
+        $amount = $request->input('amount');
+        $udf2 = $request->input('udf2');
+        $mihpayid = $request->input('mihpayid');
+        
+        if ($status !== 'success') {
+            return redirect()->route('payment')->with('error', 'Payment was not successful. Status: ' . $status);
+        }
 
-        $agent = DB::table('agents')->where('id', $agentId)->first();
-        $invoiceData = json_encode([
-            'gateway' => $gateway,
-            'sender' => $sender,
-            'receiver' => $receiver,
-            'item' => $itemName
-        ]);
+        $parts = explode('-', $productinfo);
+        $type = $parts[0] ?? '';
+        $id = $parts[1] ?? '';
+        $itemName = $udf2 ?? 'Payment';
+        
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            $agent = DB::table('agents')->where('email', $email)->first();
+            if($agent) {
+                $agentId = $agent->id;
+                session(['agent_id' => $agentId, 'agent_name' => $agent->name, 'agent_email' => $agent->email]);
+            }
+        } else {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+        }
+
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Session expired. Please login.');
+        }
+
+        $existing = DB::table('payments')->where('payment_id', $txnid)->first();
+        if ($existing) {
+            return redirect()->route('payment')->with('success', 'Payment was already processed!');
+        }
 
         if ($type == 'plan') {
             DB::table('agents')->where('id', $agentId)->update([
@@ -1871,16 +1930,15 @@ class AgentController extends Controller
                 'updated_at' => now()
             ]);
         } elseif ($type == 'ad') {
-            if ($id == 'blue_tick') {
+            if ($id == 'blue_tick' || strpos($itemName, 'Trusted Agent') !== false) {
                 DB::table('agents')->where('id', $agentId)->update([
                     'service_guaranteed' => 1,
                     'service_guaranteed_expires_at' => now()->addYear(),
                     'updated_at' => now()
                 ]);
             } else {
-                $packageId = $request->input('package_id');
-                if ($packageId) {
-                    DB::table('packages')->where('id', $packageId)->update([
+                if ($id) {
+                    DB::table('packages')->where('id', $id)->update([
                         'ad_placement' => $itemName,
                         'updated_at' => now()
                     ]);
@@ -1888,7 +1946,6 @@ class AgentController extends Controller
             }
         }
 
-        // Generate invoice number: PREFIX-YEAR-SEQUENCE (auto-increment per year)
         $invoiceSettings = DB::table('settings')->pluck('value', 'key')->toArray();
         $invPrefix   = rtrim($invoiceSettings['invoice_prefix'] ?? 'INV', '-') . '-';
         $invYear     = date('Y');
@@ -1896,22 +1953,45 @@ class AgentController extends Controller
         $invSequence = str_pad($invCount + 1, 2, '0', STR_PAD_LEFT);
         $invoiceNumber = $invPrefix . $invYear . '-' . $invSequence;
 
+        $invoiceData = json_encode([
+            'gateway' => 'PayU',
+            'sender' => $firstname,
+            'receiver' => 'Tour Raja',
+            'item' => $itemName,
+            'mihpayid' => $mihpayid
+        ]);
+
         DB::table('payments')->insert([
             'agent_id'       => $agentId,
-            'user_name'      => $agent->name ?? 'Agent',
-            'email'          => $agent->email ?? '',
+            'user_name'      => $firstname,
+            'email'          => $email,
             'plan_type'      => $itemName,
             'amount'         => $amount,
             'status'         => 'Success',
             'type'           => $type,
             'invoice_number' => $invoiceNumber,
-            'payment_id'     => 'PAY-' . strtoupper(uniqid()),
+            'payment_id'     => $txnid,
             'date'           => now()->toDateString(),
             'created_at'     => now(),
             'updated_at'     => now(),
             'invoice_data'   => $invoiceData
         ]);
 
-        return redirect()->route('agent.payment')->with('success', 'Payment successful for ' . $itemName . '!');
+        return redirect()->route('payment')->with('success', 'Payment successful for ' . $itemName . '!');
+    }
+
+    public function payuFailure(Request $request)
+    {
+        $payuService = new \App\Services\PayUService();
+        
+        if (!$payuService->verifyResponseHash($request->all())) {
+            return redirect()->route('payment')->with('error', 'Invalid Transaction Hash. Please try again');
+        }
+        
+        $txnid = $request->input('txnid');
+        $amount = $request->input('amount');
+        
+        \Log::warning('PayU Payment Failed. TxnID: ' . $txnid . ' Amount: ' . $amount);
+        return redirect()->route('payment')->with('error', 'Payment failed or was cancelled. Please try again.');
     }
 }

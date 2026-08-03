@@ -7,22 +7,29 @@
 <div class="space-y-10 pb-16 font-sans">
     
     <!-- Top Header Profile Section -->
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div class="space-y-3">
-            @if(!empty($agent->service_guaranteed))
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#FFF2EB] text-[#D35400] text-[10px] font-black uppercase tracking-wider rounded-full border border-[#FDEBD0]">
-                <i data-lucide="check-circle" size="14"></i> Trusted Agent
-            </span>
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-6">
+        <div class="flex items-center gap-5">
+            @if(!empty($agent->logo))
+            <div class="w-20 h-20 rounded-2xl border border-slate-200 overflow-hidden shrink-0 bg-white shadow-sm flex items-center justify-center p-1">
+                <img src="{{ str_starts_with($agent->logo, 'http') ? $agent->logo : asset($agent->logo) }}" alt="Logo" class="w-full h-full object-contain rounded-xl">
+            </div>
             @endif
-            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight uppercase flex items-center gap-2">
-                {{ $agent->name }}
+            <div class="space-y-3">
                 @if(!empty($agent->service_guaranteed))
-                    <i data-lucide="check-circle" class="text-blue-500" size="28" title="Trusted Agent"></i>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#FFF2EB] text-[#D35400] text-[10px] font-black uppercase tracking-wider rounded-full border border-[#FDEBD0]">
+                    <i data-lucide="check-circle" size="14"></i> Trusted Agent
+                </span>
                 @endif
-            </h1>
-            <p class="text-sm text-slate-500 font-medium max-w-2xl leading-relaxed">
-                Providing premium travel experiences across {{ $agent->state ?? 'Gujarat' }} and beyond since 2010. Your gateway to seamless journeys.
-            </p>
+                <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight uppercase flex items-center gap-2">
+                    {{ $agent->name }}
+                    @if(!empty($agent->service_guaranteed))
+                        <i data-lucide="check-circle" class="text-blue-500" size="28" title="Trusted Agent"></i>
+                    @endif
+                </h1>
+                <p class="text-sm text-slate-500 font-medium max-w-2xl leading-relaxed">
+                    Providing premium travel experiences across {{ $agent->state ?? 'Gujarat' }} and beyond since 2010. Your gateway to seamless journeys.
+                </p>
+            </div>
         </div>
         <div class="flex items-center gap-3 shrink-0">
             <a href="{{ url('/admin/agents/edit/' . $agent->id) }}" class="px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-slate-700 font-black text-xs uppercase tracking-widest rounded-2xl transition-all">
@@ -31,6 +38,37 @@
             <button onclick="window.location.reload()" style="background-color: #D35400 !important;" class="px-6 py-3.5 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg shadow-orange-500/10 hover:opacity-90 transition-all">
                 Verify changes
             </button>
+        </div>
+    </div>
+
+    <!-- Small Stats section for Pending/Approved Packages & Branches -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Pending Packages</span>
+                <span class="text-lg font-black text-slate-800">{{ $agent->pending ?? 0 }}</span>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-orange-50 text-[#D35400] flex items-center justify-center">
+                <i data-lucide="clock" size="16"></i>
+            </div>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Approved Packages</span>
+                <span class="text-lg font-black text-slate-800">{{ $agent->approved ?? 0 }}</span>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
+                <i data-lucide="check-circle-2" size="16"></i>
+            </div>
+        </div>
+        <div class="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Branches</span>
+                <span class="text-lg font-black text-slate-800">{{ $branches->count() ?? 0 }}</span>
+            </div>
+            <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center">
+                <i data-lucide="building-2" size="16"></i>
+            </div>
         </div>
     </div>
 
@@ -146,6 +184,123 @@
                 <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
                     <span class="absolute w-6 h-6 rounded-full bg-[#D35400] opacity-35 animate-ping"></span>
                     <span class="absolute w-3 h-3 rounded-full bg-[#D35400] border-2 border-white shadow-md"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Details Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-4">
+        <!-- Business & Legal Details -->
+        <div class="bg-white border border-slate-100 rounded-[32px] p-8 md:p-10 shadow-premium flex flex-col justify-between relative overflow-hidden">
+            <div class="space-y-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-orange-50 text-[#D35400] flex items-center justify-center">
+                            <i data-lucide="briefcase" size="18"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-900 tracking-tight">Business Details</h3>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-slate-100/50">
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">GST Number</span>
+                        <p class="text-sm font-extrabold text-slate-800">{{ $agent->gst_number ?? 'N/A' }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Established Since</span>
+                        <p class="text-sm font-extrabold text-slate-800">{{ $agent->since ?? 'N/A' }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Secondary Phone</span>
+                        <p class="text-sm font-extrabold text-slate-800">{{ $agent->secondary_phone ?? 'N/A' }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Website</span>
+                        <p class="text-sm font-extrabold text-slate-800">{{ $agent->website ?? 'N/A' }}</p>
+                    </div>
+                </div>
+                
+                <!-- Services -->
+                <div class="space-y-3 pt-6 border-t border-slate-100/50">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Services Offered</span>
+                    @php
+                        $servicesList = json_decode($agent->services, true);
+                    @endphp
+                    @if(is_array($servicesList))
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($servicesList as $service)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-50 text-slate-700 text-xs font-bold rounded-lg border border-slate-200">
+                                    <i class="{{ $service['icon'] ?? 'fas fa-check' }} text-[#D35400]"></i> {{ $service['name'] ?? '' }}
+                                </span>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="text-xs text-slate-700 font-bold leading-relaxed">
+                            {{ $agent->services ?? 'N/A' }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Media & Assets -->
+        <div class="bg-white border border-slate-100 rounded-[32px] p-8 md:p-10 shadow-premium flex flex-col justify-between relative overflow-hidden">
+            <div class="space-y-8">
+                <!-- Header -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-orange-50 text-[#D35400] flex items-center justify-center">
+                            <i data-lucide="link" size="18"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-slate-900 tracking-tight">Social & Assets</h3>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-slate-100/50">
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Facebook</span>
+                        <p class="text-sm font-extrabold text-slate-800 truncate">{{ $agent->facebook ?? 'N/A' }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Instagram</span>
+                        <p class="text-sm font-extrabold text-slate-800 truncate">{{ $agent->instagram ?? 'N/A' }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Twitter</span>
+                        <p class="text-sm font-extrabold text-slate-800 truncate">{{ $agent->twitter ?? 'N/A' }}</p>
+                    </div>
+                    <div class="space-y-1">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">LinkedIn</span>
+                        <p class="text-sm font-extrabold text-slate-800 truncate">{{ $agent->linkedin ?? 'N/A' }}</p>
+                    </div>
+                </div>
+
+                <!-- Business Cards -->
+                <div class="space-y-4 pt-6 border-t border-slate-100/50">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Business Cards</span>
+                    <div class="flex flex-wrap gap-4">
+                        @if(!empty($agent->business_card_front))
+                            <a href="{{ str_starts_with($agent->business_card_front, 'http') ? $agent->business_card_front : asset($agent->business_card_front) }}" target="_blank" class="block w-28 h-20 rounded-xl overflow-hidden border border-slate-200 hover:shadow-md hover:border-slate-300 transition-all">
+                                <img src="{{ str_starts_with($agent->business_card_front, 'http') ? $agent->business_card_front : asset($agent->business_card_front) }}" alt="Card Front" class="w-full h-full object-cover">
+                            </a>
+                        @endif
+                        @if(!empty($agent->business_card_back))
+                            <a href="{{ str_starts_with($agent->business_card_back, 'http') ? $agent->business_card_back : asset($agent->business_card_back) }}" target="_blank" class="block w-28 h-20 rounded-xl overflow-hidden border border-slate-200 hover:shadow-md hover:border-slate-300 transition-all">
+                                <img src="{{ str_starts_with($agent->business_card_back, 'http') ? $agent->business_card_back : asset($agent->business_card_back) }}" alt="Card Back" class="w-full h-full object-cover">
+                            </a>
+                        @elseif(!empty($agent->business_card))
+                            <a href="{{ str_starts_with($agent->business_card, 'http') ? $agent->business_card : asset($agent->business_card) }}" target="_blank" class="block w-28 h-20 rounded-xl overflow-hidden border border-slate-200 hover:shadow-md hover:border-slate-300 transition-all">
+                                <img src="{{ str_starts_with($agent->business_card, 'http') ? $agent->business_card : asset($agent->business_card) }}" alt="Business Card" class="w-full h-full object-cover">
+                            </a>
+                        @else
+                            <p class="text-xs text-slate-500 font-medium">No business cards uploaded.</p>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

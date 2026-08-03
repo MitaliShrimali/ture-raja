@@ -785,14 +785,14 @@
                     });
                 }
 
-                // Dynamic typing search input with 400ms debounce
+                // Dynamic typing search input with 200ms debounce
                 let searchTimeout;
                 form.querySelectorAll('input[type="text"]').forEach(input => {
                     input.addEventListener('input', () => {
                         clearTimeout(searchTimeout);
                         searchTimeout = setTimeout(() => {
                             handleFilterUpdate();
-                        }, 400);
+                        }, 200);
                     });
                 });
             });
