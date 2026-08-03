@@ -81,126 +81,20 @@
         <!-- Search Fields in Sidebar -->
         <div class="space-y-4 mb-6">
             <!-- Travel Destination -->
-            <div x-data="{
-                open: false,
-                query: '{{ request('search') }}',
-                results: [],
-                loading: false,
-                init() {
-                    this.$watch('query', value => {
-                        this.loading = true;
-                        fetch(`/api/search-suggestions?q=${encodeURIComponent(value)}&type=destination`)
-                            .then(res => res.json())
-                            .then(data => {
-                                this.results = data;
-                                this.loading = false;
-                            })
-                            .catch(() => { this.loading = false; });
-                    });
-                    
-                    // Initial load if open is true
-                    this.$watch('open', value => {
-                        if (value && this.results.length === 0) {
-                            this.loading = true;
-                            fetch(`/api/search-suggestions?q=${encodeURIComponent(this.query)}&type=destination`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    this.results = data;
-                                    this.loading = false;
-                                })
-                                .catch(() => { this.loading = false; });
-                        }
-                    });
-                },
-                selectOption(text) {
-                    this.query = text;
-                    this.open = false;
-                }
-            }" class="relative" @click.away="open = false">
+            <div class="relative mb-4">
                 <label class="block text-base font-bold text-gray-900 mb-1.5">Travel Destination</label>
                 <div class="relative">
-                    <input type="text" name="search" x-model.debounce.300ms="query" @focus="open = true" autocomplete="new-password" placeholder="Search travel destination..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
+                    <input type="text" name="search" value="{{ request('search') }}" autocomplete="off" placeholder="Search travel destination..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
                     <i data-lucide="search" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
-                </div>
-                
-                <div x-show="open" x-transition.opacity.duration.200ms class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg" x-cloak>
-                    <div class="text-sm text-gray-700 py-1 max-h-48 overflow-y-auto custom-sidebar-scroll">
-                        <template x-if="loading">
-                            <div class="text-gray-600 px-3 py-2">Loading...</div>
-                        </template>
-                        <template x-if="!loading">
-                            <div>
-                                <template x-for="item in results" :key="item.text">
-                                    <div @click.prevent.stop="selectOption(item.text)" class="cursor-pointer hover:bg-[#e85d26] hover:text-white px-3 py-2 transition-colors" x-text="item.text"></div>
-                                </template>
-                                <template x-if="results.length === 0">
-                                    <div class="text-gray-500 px-3 py-2">No results found for '<span x-text="query"></span>'</div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
                 </div>
             </div>
             
             <!-- Travel Agent Location -->
-            <div x-data="{
-                open: false,
-                query: '{{ is_array(request('city')) ? implode(', ', request('city')) : request('city') }}',
-                results: [],
-                loading: false,
-                init() {
-                    this.$watch('query', value => {
-                        this.loading = true;
-                        fetch(`/api/search-suggestions?q=${encodeURIComponent(value)}&type=agent_location`)
-                            .then(res => res.json())
-                            .then(data => {
-                                this.results = data;
-                                this.loading = false;
-                            })
-                            .catch(() => { this.loading = false; });
-                    });
-                    
-                    // Initial load if open is true
-                    this.$watch('open', value => {
-                        if (value && this.results.length === 0) {
-                            this.loading = true;
-                            fetch(`/api/search-suggestions?q=${encodeURIComponent(this.query)}&type=agent_location`)
-                                .then(res => res.json())
-                                .then(data => {
-                                    this.results = data;
-                                    this.loading = false;
-                                })
-                                .catch(() => { this.loading = false; });
-                        }
-                    });
-                },
-                selectOption(text) {
-                    this.query = text;
-                    this.open = false;
-                }
-            }" class="relative" @click.away="open = false">
+            <div class="relative mb-4">
                 <label class="block text-base font-bold text-gray-900 mb-1.5">Travel Agent Location</label>
                 <div class="relative">
-                    <input type="text" name="city" x-model.debounce.300ms="query" @focus="open = true" autocomplete="new-password" placeholder="Search agent location..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
+                    <input type="text" name="city" value="{{ is_array(request('city')) ? implode(', ', request('city')) : request('city') }}" autocomplete="off" placeholder="Search agent location..." class="w-full bg-white border border-gray-300 rounded-lg py-2.5 px-3.5 pr-10 text-sm font-medium text-gray-800 focus:outline-none focus:border-primary transition-all placeholder:text-gray-400 text-ellipsis overflow-hidden">
                     <i data-lucide="search" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size="16"></i>
-                </div>
-                
-                <div x-show="open" x-transition.opacity.duration.200ms class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg" x-cloak>
-                    <div class="text-sm text-gray-700 py-1 max-h-48 overflow-y-auto custom-sidebar-scroll">
-                        <template x-if="loading">
-                            <div class="text-gray-600 px-3 py-2">Loading...</div>
-                        </template>
-                        <template x-if="!loading">
-                            <div>
-                                <template x-for="item in results" :key="item.text">
-                                    <div @click.prevent.stop="selectOption(item.text)" class="cursor-pointer hover:bg-[#e85d26] hover:text-white px-3 py-2 transition-colors" x-text="item.text"></div>
-                                </template>
-                                <template x-if="results.length === 0">
-                                    <div class="text-gray-500 px-3 py-2">No results found for '<span x-text="query"></span>'</div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
                 </div>
             </div>
 

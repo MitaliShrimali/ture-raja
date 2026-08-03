@@ -823,95 +823,7 @@
                                     <div class="flex items-center justify-between min-w-[140px] px-4 py-2.5 bg-white rounded-md border border-gray-200 shadow-sm">
                                         <span class="text-xs font-medium text-gray-700" x-text="keyword"></span>
                                         <button type="button" @click="removeKeyword(i)" class="text-gray-400 hover:text-red-500 ml-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        </button>
-                                    </div>
-                                </template>
-                            </div>
-
-                            <!-- Add More Input & Button -->
-                            <div class="flex items-center gap-3">
-                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" placeholder="Type keyword..." class="w-48 bg-white border border-gray-200 rounded-md py-2.5 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-[#e85d26]/30 shadow-sm" />
-                                <button type="button" @click="addKeyword()" class="px-4 py-2.5 bg-orange-50 text-[#e85d26] rounded-md text-xs font-bold hover:bg-orange-100 transition-colors">Add more</button>
-                                <input type="hidden" name="keywords" :value="keywords.join(',')" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ==================== STEP 2: ITINERARY, MEALS & PHOTOS ==================== -->
-            <div class="space-y-8 mt-8">
-
-                <!-- ── Full-width row: Upload Brochure  OR  Itinerary (Day-by-Day Plan) ── -->
-                <div class="flex flex-col md:flex-row gap-4 items-stretch">
-
-                    <!-- Brochure card  ~40% -->
-                    <div
-                        class="md:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="brochureName || !itineraryContent">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
-                                <i data-lucide="file-text" size="16" class="text-[#e85d26]"></i>
-                            </div>
-                            <h4 class="text-sm font-bold text-gray-800">Upload Brochure</h4>
-                        </div>
-                        <div class="flex-1 w-full rounded-2xl p-5 border-2 border-dashed border-red-200 text-center cursor-pointer hover:bg-orange-50/30 transition-all flex flex-col items-center justify-center min-h-[200px]"
-                            @click="if(!brochureName) $refs.brochureInput.click()">
-                            <template x-if="!brochureName">
-                                <div class="flex flex-col items-center justify-center">
-                                    <div class="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center mb-3">
-                                        <i data-lucide="upload-cloud" class="text-primary" size="22"></i>
-                                    </div>
-                                    <span class="text-sm font-bold text-gray-800">Drop your brochure here</span>
-                                    <span class="text-xs text-gray-400 font-medium mt-1">Or click to browse from your
-                                        computer</span>
-                                    <button type="button"
-                                        class="mt-3 px-5 py-2 border border-gray-200 bg-white rounded-full text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all">Choose
-                                        File</button>
-                                    <span class="text-[10px] text-gray-400 font-medium mt-2 uppercase tracking-wide">PDF
-                                        FORMAT ONLY &bull; MAX 5MB</span>
-                                </div>
-                            </template>
-                            <template x-if="brochureName">
-                                <div class="flex flex-col items-center justify-center w-full space-y-4">
-                                    <div
-                                        class="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 shadow-sm">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                            stroke-linejoin="round">
-                                            <path
-                                                d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                                            <polyline points="14 2 14 8 20 8" />
-                                        </svg>
-                                    </div>
-                                    <div class="text-center px-4 w-full">
-                                        <p class="text-sm font-black text-gray-800 truncate max-w-[220px] mx-auto"
-                                            x-text="brochureName"></p>
-                                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-                                            Brochure Selected</p>
-                                    </div>
-                                    <div class="flex items-center gap-3">
-                                        <button type="button" @click.stop="previewPdf()"
-                                            class="w-10 h-10 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-100 transition-colors shadow-sm"
-                                            title="Preview PDF">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                                <circle cx="12" cy="12" r="3" />
-                                            </svg>
-                                        </button>
-                                        <button type="button" @click.stop="clearPdf()"
-                                            class="w-10 h-10 bg-red-50 text-red-600 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors shadow-sm"
-                                            title="Delete PDF">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                stroke-linecap="round" stroke-linejoin="round">
-                                                <polyline points="3 6 5 6 21 6"></polyline>
-                                                <path
-                                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
-                                                </path>
-                                            </svg>
+                                            <i data-lucide="trash-2" size="20"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -940,14 +852,7 @@
                             <button type="button"
                                 @click="if(tinymce.get('itinerary-textarea')) { tinymce.get('itinerary-textarea').setContent(''); window.dispatchEvent(new CustomEvent('itinerary-updated', { detail: '' })); }"
                                 class="text-xs text-red-500 hover:text-red-700 font-bold flex items-center gap-1.5 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path
-                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
-                                    </path>
-                                </svg>
+                                <i data-lucide="trash-2" size="20"></i>
                                 Clear All Written
                             </button>
                         </div>
@@ -1371,49 +1276,7 @@
                                 <template x-for="(am, idx) in customAmenities" :key="idx">
                                     <label class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl cursor-pointer hover:bg-gray-100/60 transition-all mt-2">
                                         <div class="flex items-center gap-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                                            <span class="text-xs font-bold text-gray-700" x-text="am"></span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <input type="checkbox" name="amenities[]" :value="am" checked class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
-                                            <button type="button" @click.prevent="customAmenities.splice(idx, 1)" class="text-gray-400 hover:text-red-500 transition-colors p-1" title="Remove amenity">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                            </button>
-                                        </div>
-                                    </label>
-                                </template>
-                            </div>
-                        </div>
-
-                        <!-- Media Uploads (Gallery) -->
-                        <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-8 shadow-sm">
-                            <div class="h-px w-full bg-gray-100"></div>
-
-                            <!-- Gallery Portfolio Card -->
-                            <div class="space-y-4">
-                                <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Gallery
-                                    Portfolio</h4>
-                                <p class="text-[10px] text-gray-400 font-medium pl-1 -mt-3">Upload multiple photos for the
-                                    package gallery.</p>
-
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                <template x-for="(img, idx) in galleryPreviews" :key="idx">
-                                    <div
-                                        class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100 shadow-sm">
-                                        <img :src="img.url" class="w-full h-full object-cover" />
-                                        <template x-if="img.is_existing">
-                                            <input type="hidden" name="existing_gallery_urls[]" :value="img.url.replace(/^\//, '')">
-                                        </template>
-                                        <div
-                                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                            <button type="button" @click="removeGalleryPhoto(idx)"
-                                                class="p-2 bg-white/20 hover:bg-white/40 text-white rounded-full backdrop-blur-sm transition-all">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    <line x1="10" y1="11" x2="10" y2="17"></line>
-    <line x1="14" y1="11" x2="14" y2="17"></line>
-</svg>
+                                            <i data-lucide="trash-2" size="20"></i>
                                             </button>
                                         </div>
                                     </div>

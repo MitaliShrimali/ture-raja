@@ -192,12 +192,7 @@ function doDeleteLoc(id, name) {
                                             onclick="return confirm('Are you sure you want to delete this application?');"
                                             class="p-2 text-muted-text hover:text-red-500 transition-all"
                                         >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    <line x1="10" y1="11" x2="10" y2="17"></line>
-    <line x1="14" y1="11" x2="14" y2="17"></line>
-</svg>
+                                            <i data-lucide="trash-2" size="20"></i>
                                         </a>
                                     </div>
                                 </td>
@@ -275,12 +270,7 @@ function doDeleteLoc(id, name) {
                                             onclick="return confirm('Are you sure you want to delete this open position?');"
                                             class="p-2 text-muted-text hover:text-red-500 transition-all"
                                         >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    <line x1="10" y1="11" x2="10" y2="17"></line>
-    <line x1="14" y1="11" x2="14" y2="17"></line>
-</svg>
+                                            <i data-lucide="trash-2" size="20"></i>
                                         </a>
                                     </div>
                                 </td>
@@ -400,12 +390,7 @@ function doDeleteLoc(id, name) {
                                 <input type="hidden" name="career_custom_fields[]" value="{{ $fKey }}:{{ $fLabel }}">
                                 
                                 <button type="button" @click="document.getElementById('custom-field-row-{{ $fKey }}').remove();" class="text-red-500 hover:text-red-700 p-0.5 opacity-0 group-hover/custom:opacity-100 transition-all">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    <line x1="10" y1="11" x2="10" y2="17"></line>
-    <line x1="14" y1="11" x2="14" y2="17"></line>
-</svg>
+                                    <i data-lucide="trash-2" size="20"></i>
                                 </button>
                             </div>
                         @endforeach
@@ -599,12 +584,7 @@ function doDeleteLoc(id, name) {
                                     onclick="event.preventDefault(); event.stopPropagation(); deleteDept('{{ $dept->id }}', '{{ addslashes($dept->name) }}', 'dept-dd-row-{{ $dept->id }}');"
                                     class="text-red-500 hover:text-red-700 p-1 opacity-80 hover:opacity-100 transition-all flex-shrink-0"
                                     style="line-height:0;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    <line x1="10" y1="11" x2="10" y2="17"></line>
-    <line x1="14" y1="11" x2="14" y2="17"></line>
-</svg>
+                                    <i data-lucide="trash-2" size="20"></i>
                                 </a>
                             </div>
                             @endforeach
@@ -659,12 +639,7 @@ function doDeleteLoc(id, name) {
                                     onclick="event.preventDefault(); event.stopPropagation(); deleteLoc('{{ $loc->id }}', '{{ addslashes($loc->name) }}', 'loc-row-{{ $loc->id }}');"
                                     class="text-red-500 hover:text-red-700 p-0.5 opacity-80 hover:opacity-100 transition-all"
                                     style="line-height:0;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <polyline points="3 6 5 6 21 6"></polyline>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-    <line x1="10" y1="11" x2="10" y2="17"></line>
-    <line x1="14" y1="11" x2="14" y2="17"></line>
-</svg>
+                                    <i data-lucide="trash-2" size="20"></i>
                                 </a>
                             </div>
                         @endforeach

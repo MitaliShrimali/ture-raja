@@ -81,6 +81,12 @@ Route::prefix('admin')->group(function () {
         Route::get('/packages/pending', [AdminController::class, 'pendingPackages'])->name('admin.packages.pending');
         Route::get('/packages/view/{id}', [AdminController::class, 'viewPackage'])->name('admin.packages.view');
         
+        // Payment Pricing Settings
+        Route::get('/payment-pricing', [AdminController::class, 'paymentPricing'])->name('admin.payment-pricing');
+        Route::post('/payment-pricing/store', [AdminController::class, 'storeAddon'])->name('admin.payment-pricing.store');
+        Route::post('/payment-pricing/update/{id}', [AdminController::class, 'updateAddon'])->name('admin.payment-pricing.update');
+        Route::get('/payment-pricing/delete/{id}', [AdminController::class, 'deleteAddon'])->name('admin.payment-pricing.delete');
+        
         // Inventory & Stays
         Route::get('/packages', [AdminController::class, 'packages'])->name('admin.packages');
         Route::get('/packages/international', [AdminController::class, 'internationalPackages']);
@@ -118,6 +124,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/paid-users', [AdminController::class, 'paidUsers']);
         Route::get('/paid-users/create', [AdminController::class, 'createPaidUser']);
         Route::get('/payments', [AdminController::class, 'payments']);
+        Route::get('/payment-pricing', [AdminController::class, 'paymentPricing']);
         Route::get('/ads', [AdminController::class, 'ads']);
         Route::get('/plans', [AdminController::class, 'plans']);
         Route::get('/reviews', [AdminController::class, 'reviews']);

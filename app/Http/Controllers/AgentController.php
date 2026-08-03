@@ -1457,6 +1457,12 @@ class AgentController extends Controller
                 || (isset($agentData['name']) && $agentData['name'] === $agentName);
         })->values();
 
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        $addonPricings = \App\Models\AddonPricing::all();
+        $boosts = $addonPricings->where('type', 'boost');
+        $ads = $addonPricings->where('type', 'ad');
+        $trustedAgents = $addonPricings->where('type', 'trusted_agent');
+
         return view('agent.pages.payment', [
             'page_title' => 'Payment & Billing',
             'page_breadcrumb' => 'Pages / Payment',
@@ -1464,7 +1470,11 @@ class AgentController extends Controller
             'activePlan' => $activePlan,
             'plans' => $plans,
             'payments' => $payments,
-            'agentPackages' => $agentPackages
+            'agentPackages' => $agentPackages,
+            'settings' => $settings,
+            'boosts' => $boosts,
+            'ads' => $ads,
+            'trustedAgents' => $trustedAgents
         ]);
     }
 
@@ -1733,23 +1743,41 @@ class AgentController extends Controller
             $names = $request->query('name');
             if (is_array($names)) {
                 $amount = 0;
-                $prices = [
-                    'Home Hero Banner' => 999,
-                    'Package Sidebar' => 499,
-                    'Footer Banner' => 399,
-                    'Under Domestic Packages' => 599,
-                ];
-                foreach ($names as $n) {
-                    $amount += $prices[$n] ?? 499;
+                $addonPricings = \App\Models\AddonPricing::where('type', 'ad')->pluck('price', 'name')->toArray();
+                foreach ($names as $name) {
+                    if (isset($addonPricings[$name])) {
+                        $amount += $addonPricings[$name];
+                    }
                 }
-                $itemName = implode(', ', $names);
+                $itemName = 'AD Placements: ' . implode(', ', $names);
             } else {
-                $amount = $request->query('amount', 499);
-                $itemName = $names ?? 'Ad Subscription';
+                // Check if it's a trusted agent purchase
+                $names = $request->query('name');
+                if ($names) {
+                    $taPricing = \App\Models\AddonPricing::where('type', 'trusted_agent')->where('name', $names)->first();
+                    if ($taPricing) {
+                        $amount = $taPricing->price;
+                    } else {
+                        $amount = $request->query('amount') ?? 0;
+                    }
+                } else {
+                    $amount = $request->query('amount') ?? 0;
+                }
+                $itemName = $request->query('name') ?? 'AD Placement';
             }
         } elseif ($type == 'boost') {
-            $amount = 12.50; // Daily boost rate mock
-            $itemName = 'Boost Tour Package';
+            $boostId = $request->query('boost_id'); // We need to fetch by boost ID now or fall back
+            if ($boostId) {
+                $boostPricing = \App\Models\AddonPricing::where('type', 'boost')->where('id', $boostId)->first();
+                $pricePerDay = $boostPricing ? $boostPricing->price : 12.50;
+            } else {
+                $pricePerDay = \App\Models\AddonPricing::where('type', 'boost')->value('price') ?? 12.50;
+            }
+            $days = $request->query('days', 1);
+            $pkgId = $request->query('id') ?? $request->query('package_id');
+            $amount = $pricePerDay * $days;
+            $pkgName = DB::table('packages')->where('id', $pkgId)->value('title') ?? DB::table('packages')->where('id', $pkgId)->value('name');
+            $itemName = 'Boost Tour: ' . $pkgName . ' (' . $days . ' days)';
         }
 
         $totalAmount = $amount * (1 + ($gst / 100));

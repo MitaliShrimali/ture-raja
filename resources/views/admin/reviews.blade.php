@@ -72,7 +72,7 @@
                                 {{ $review->status === 'Active' ? 'Pause' : 'Activate' }}
                             </a>
                             <a href="{{ url('/admin/reviews/delete/'.$review->id) }}" onclick="return confirm('Delete this review?')" class="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition-colors shrink-0">
-                                <i data-lucide="trash-2" size="14"></i>
+                                <i data-lucide="trash-2" size="20"></i>
                             </a>
                         </div>
                     </div>

@@ -104,6 +104,7 @@
                             'label' => 'FINANCIAL REPORTS',
                             'items' => [
                                 ['name' => 'Payment', 'icon' => 'credit-card', 'href' => '/admin/payments'],
+                                ['name' => 'Payment Pricing', 'icon' => 'tag', 'href' => '/admin/payment-pricing'],
                             ]
                         ],
                         [

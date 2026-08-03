@@ -114,12 +114,18 @@
                     <div class="flex items-center space-x-6">
                         <div class="text-right">
                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Price</p>
+                            @if($boosts->isNotEmpty())
+                            <p class="text-sm font-black text-[#ea580c]">₹{{ number_format($boosts->first()->price, 2) }}<span class="text-[10px] text-gray-400 font-medium">/{{ $boosts->first()->duration_days ?? 1 }} day(s)</span></p>
+                            @else
                             <p class="text-sm font-black text-[#ea580c]">₹12.50<span class="text-[10px] text-gray-400 font-medium">/day</span></p>
+                            @endif
                         </div>
                         @if($pkg->is_boosted ?? false)
                             <button class="bg-orange-100 text-[#ea580c] font-bold text-xs px-6 py-2.5 rounded-full cursor-default inline-block border border-orange-200" disabled>Active</button>
                         @else
-                            <a href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id]) }}" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 inline-block shadow-lg shadow-orange-500/40 hover:scale-105 border border-orange-300">Boost <i class="fas fa-rocket ml-1"></i></a>
+                            @if($boosts->isNotEmpty())
+                            <a href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id, 'boost_id' => $boosts->first()->id]) }}" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 inline-block shadow-lg shadow-orange-500/40 hover:scale-105 border border-orange-300">Boost <i class="fas fa-rocket ml-1"></i></a>
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -137,6 +143,7 @@
             </div>
             
             <!-- Trusted Agent -->
+            @foreach($trustedAgents as $taOpt)
             <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-[2rem] border-2 border-blue-400 shadow-xl shadow-blue-500/30 p-8 mb-6 transform scale-105 transition-all duration-300 relative overflow-hidden">
                 <style>
                     @keyframes shine {
@@ -149,16 +156,17 @@
                 </style>
                 <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/60 to-transparent animate-shine pointer-events-none"></div>
                 <div class="flex justify-between items-start mb-4 relative z-10">
-                    <h4 class="text-xl font-black text-blue-900">Trusted Agent</h4>
+                    <h4 class="text-xl font-black text-blue-900">{{ $taOpt->name }}</h4>
                     <i class="fas fa-check-circle text-blue-500 text-2xl drop-shadow-md"></i>
                 </div>
-                <p class="text-sm text-blue-700 font-medium mb-4 leading-relaxed relative z-10">Stand out with a Blue Tick and Service Guaranteed badge.</p>
+                <p class="text-sm text-blue-700 font-medium mb-4 leading-relaxed relative z-10">{{ $taOpt->description ?? 'Stand out with a Blue Tick and Service Guaranteed badge.' }}</p>
                 @if(isset($agent) && $agent->service_guaranteed)
                     <button class="w-full bg-blue-200 text-blue-800 font-bold text-sm py-4 rounded-xl cursor-default border border-blue-300 block text-center relative z-10">Active - Trusted Agent</button>
                 @else
-                    <a href="{{ route('agent.checkout', ['type' => 'ad', 'id' => 'blue_tick', 'name' => 'Trusted Agent Verification', 'amount' => 1499]) }}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-sm py-4 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg block text-center shadow-blue-500/50 relative z-10">Get Verified - ₹1499</a>
+                    <a href="{{ route('agent.checkout', ['type' => 'ad', 'id' => 'blue_tick', 'name' => $taOpt->name, 'amount' => $taOpt->price]) }}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-sm py-4 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg block text-center shadow-blue-500/50 relative z-10">Get Verified - ₹{{ number_format($taOpt->price, 2) }} @if($taOpt->duration_days) ({{ $taOpt->duration_days }} Days) @endif</a>
                 @endif
             </div>
+            @endforeach
 
             <div class="bg-[#f8fafc] rounded-[2rem] border border-gray-100 shadow-sm p-6">
                 <div class="flex justify-between items-start mb-4">
@@ -181,53 +189,18 @@
                     </div>
 
                     <div class="space-y-3 mb-6">
-                        <!-- Option 1 -->
+                        @foreach($ads as $ad)
                         <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
                             <div class="flex items-center">
-                                <input type="checkbox" name="name[]" value="Home Hero Banner" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" required onchange="validateAdCheckboxes()">
+                                <input type="checkbox" name="name[]" value="{{ $ad->name }}" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" onchange="validateAdCheckboxes()">
                                 <div class="ml-3">
-                                    <p class="text-sm font-bold text-gray-900">Home Hero Banner</p>
-                                    <p class="text-[10px] text-gray-400">Main spotlight visibility</p>
+                                    <p class="text-sm font-bold text-gray-900">{{ $ad->name }}</p>
+                                    <p class="text-[10px] text-gray-400">{{ $ad->description ?? 'Targeted placement' }}</p>
                                 </div>
                             </div>
-                            <span class="text-sm font-black text-[#ea580c]">₹999</span>
+                            <span class="text-sm font-black text-[#ea580c]">₹{{ number_format($ad->price, 2) }}</span>
                         </label>
-
-                        <!-- Option 2 -->
-                        <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
-                            <div class="flex items-center">
-                                <input type="checkbox" name="name[]" value="Package Sidebar" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" onchange="validateAdCheckboxes()">
-                                <div class="ml-3">
-                                    <p class="text-sm font-bold text-gray-900">Package Sidebar</p>
-                                    <p class="text-[10px] text-gray-400">Targeted placement</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-black text-[#ea580c]">₹499</span>
-                        </label>
-
-                        <!-- Option 3 -->
-                        <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
-                            <div class="flex items-center">
-                                <input type="checkbox" name="name[]" value="Footer Banner" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" onchange="validateAdCheckboxes()">
-                                <div class="ml-3">
-                                    <p class="text-sm font-bold text-gray-900">Footer Banner</p>
-                                    <p class="text-[10px] text-gray-400">Persistent site-wide visibility</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-black text-[#ea580c]">₹399</span>
-                        </label>
-                        
-                        <!-- Option 4 -->
-                        <label class="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl cursor-pointer hover:border-orange-300 transition-colors">
-                            <div class="flex items-center">
-                                <input type="checkbox" name="name[]" value="Under Domestic Packages" class="w-4 h-4 text-[#ea580c] focus:ring-[#ea580c] rounded" onchange="validateAdCheckboxes()">
-                                <div class="ml-3">
-                                    <p class="text-sm font-bold text-gray-900">Under Domestic Packages</p>
-                                    <p class="text-[10px] text-gray-400">High intent placement</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-black text-[#ea580c]">₹599</span>
-                        </label>
+                        @endforeach
                     </div>
 
                     <button type="submit" class="w-full bg-[#1e293b] text-white font-bold text-sm py-4 rounded-xl hover:bg-black transition-colors shadow-lg">Purchase Placement</button>

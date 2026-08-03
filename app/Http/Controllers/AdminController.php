@@ -4796,6 +4796,54 @@ class AdminController extends Controller
         $item->delete();
     }
 
+    public function paymentPricing(Request $request)
+    {
+        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
+        $boosts = \App\Models\AddonPricing::where('type', 'boost')->get();
+        $ads = \App\Models\AddonPricing::where('type', 'ad')->get();
+        $trustedAgents = \App\Models\AddonPricing::where('type', 'trusted_agent')->get();
+        
+        return view('admin.payment-pricing', compact('settings', 'boosts', 'ads', 'trustedAgents'));
+    }
+
+    public function storeAddon(Request $request)
+    {
+        $request->validate([
+            'type' => 'required|in:boost,ad,trusted_agent',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'duration_days' => 'nullable|integer|min:1',
+        ]);
+
+        \App\Models\AddonPricing::create($request->only(['type', 'name', 'description', 'price', 'duration_days']));
+
+        return redirect()->back()->with('success', 'Pricing added successfully.');
+    }
+
+    public function updateAddon(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'duration_days' => 'nullable|integer|min:1',
+        ]);
+
+        $addon = \App\Models\AddonPricing::findOrFail($id);
+        $addon->update($request->only(['name', 'description', 'price', 'duration_days']));
+
+        return redirect()->back()->with('success', 'Pricing updated successfully.');
+    }
+
+    public function deleteAddon($id)
+    {
+        $addon = \App\Models\AddonPricing::findOrFail($id);
+        $addon->delete();
+
+        return redirect()->back()->with('success', 'Pricing deleted successfully.');
+    }
+
 }
 
 // Reusable custom timing function for activity feed

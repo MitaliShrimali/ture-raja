@@ -30,7 +30,11 @@
     </script>
     <style>
         html {
-            font-size: 18px;
+            font-size: 20px; /* 1 size larger than the original 18px */
+        }
+        th {
+            color: #374151 !important; /* Keep table headers darker/visible */
+            font-weight: 700 !important;
         }
         .bg-pattern {
             background: linear-gradient(135deg, #F0642F 0%, #FF8A50 100%);

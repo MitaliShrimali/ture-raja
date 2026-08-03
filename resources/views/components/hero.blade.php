@@ -69,10 +69,10 @@
   }
 </style>
 
-<section class="relative overflow-hidden" style="height:55vh; min-height:400px; max-height:550px;">
+<section class="relative overflow-visible" style="height:55vh; min-height:400px; max-height:550px; z-index: 50;">
 
   {{-- ── Background Slider ── --}}
-  <div class="absolute inset-0 z-0 bg-[#1A1A24]">
+  <div class="absolute inset-0 z-0 bg-[#1A1A24] overflow-hidden">
     <div id="heroSlider"
       style="display:flex; width:100%; height:100%; transition:transform 1.2s cubic-bezier(0.65,0,0.35,1); will-change:transform;">
       @php
@@ -163,7 +163,7 @@
       <form action="{{ route('search') }}" method="GET">
         <div
           style="background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid #e85d26; border-radius:8px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.15);"
-          class="flex flex-col md:flex-row items-center gap-0 overflow-hidden">
+          class="flex flex-col md:flex-row items-center gap-0 overflow-visible">
 
           {{-- Destination Field --}}
           <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 hero-search-divider">
@@ -302,7 +302,7 @@
 
   {{-- Bottom fade blur: image fades into white below --}}
   <div class="absolute bottom-0 left-0 right-0 z-10 pointer-events-none"
-    style="height:60px; background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 60%, #ffffff 100%); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px);">
+    style="height:60px; background:linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.6) 60%, #ffffff 100%);">
   </div>
 </section>
 
