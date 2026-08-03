@@ -6,6 +6,7 @@ use App\Http\Controllers\ListingController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\OtpController;
 use Illuminate\Support\Facades\Route;
 
 // ─── PUBLIC / USER ROUTES ────────────────────────────────────────────────────
@@ -61,8 +62,12 @@ Route::get('/signup', [UserController::class, 'signup'])->name('signup');
 
 Route::post('/signup/submit', [UserController::class, 'signupSubmit'])->name('signup.submit');
 
+// OTP API
+Route::post('/api/otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
+Route::post('/api/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
+
 Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('login.submit');
-Route::get('/logout', [UserController::class, 'logout'])->name('logout');
+Route::match(['GET', 'POST'], '/logout', [UserController::class, 'logout'])->name('logout');
 
 // ─── ADMIN ROUTES ────────────────────────────────────────────────────────────
 Route::prefix('admin')->group(function () {
@@ -372,7 +377,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::post('/login', [AgentController::class, 'loginSubmit'])->name('login.submit');
     Route::get('/signup',  [AgentController::class, 'signup'])->name('signup');
     Route::post('/signup', [AgentController::class, 'signupSubmit'])->name('signup.submit');
-    Route::get('/logout',  [AgentController::class, 'logout'])->name('logout');
+    Route::match(['GET', 'POST'], '/logout',  [AgentController::class, 'logout'])->name('logout');
 
     // --- Protected agent pages ---
     Route::middleware(['agent.auth', 'agent.profile_complete'])->group(function () {

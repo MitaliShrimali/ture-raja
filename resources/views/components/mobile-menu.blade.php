@@ -97,18 +97,7 @@
                     </div>
                     Sign In
                 </a>
-                <a href="{{ url('/login') }}?tab=agent" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-foreground hover:bg-gray-50 transition-colors">
-                    <div class="w-12 h-12 bg-foreground/5 rounded-full flex items-center justify-center text-foreground">
-                        <i data-lucide="briefcase" size="24"></i>
-                    </div>
-                    Agent Portal
-                </a>
-                <a href="{{ url('/admin/login') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-foreground text-white shadow-premium font-bold hover:bg-black transition-all">
-                    <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-white">
-                        <i data-lucide="shield" size="24"></i>
-                    </div>
-                    Admin Login
-                </a>
+                <!-- Removed Agent Portal and Admin Login as requested -->
             @endauth
         </div>
 

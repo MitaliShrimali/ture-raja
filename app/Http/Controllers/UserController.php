@@ -711,7 +711,9 @@ class UserController extends Controller
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8'
+            'phone' => 'required|string',
+            'country_code' => 'required|string',
+            'password' => 'required|min:8|confirmed'
         ]);
 
         $name = $request->first_name . ' ' . $request->last_name;
@@ -729,10 +731,13 @@ class UserController extends Controller
             'updated_at' => now()
         ]);
 
+        $fullPhone = $request->country_code . ' ' . $request->phone;
+
         // Create empty profile
         DB::table('user_profiles')->insert([
             'user_id' => $userId,
             'username' => strtolower($request->first_name . '_' . $request->last_name),
+            'phone' => $fullPhone,
             'avatar' => $avatar,
             'created_at' => now(),
             'updated_at' => now()

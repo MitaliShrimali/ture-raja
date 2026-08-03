@@ -1,6 +1,6 @@
 <nav 
     :class="(isScrolled || !isHome) ? 'bg-white shadow-sm py-5 lg:py-6' : 'bg-transparent py-8'"
-    class="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+    class="fixed top-0 left-0 right-0 z-[100] transition-all duration-500"
 >
 
     <div class="container-custom flex items-center justify-between relative w-full">
@@ -142,9 +142,19 @@
                         </div>
                     </div>
                 </div>
+                
+                <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2 overflow-hidden">
+                    @php
+                        $navProfile = DB::table('user_profiles')->where('user_id', Auth::id())->first();
+                        $navAvatarUrl = ($navProfile && $navProfile->avatar)
+                            ? asset($navProfile->avatar)
+                            : asset('images/default-avatar.svg');
+                    @endphp
+                    <img src="{{ $navAvatarUrl }}" class="w-full h-full object-cover">
+                </a>
             @else
                 <!-- Wishlist (Not Logged In -> Triggers Modal) -->
-                <div class="relative hidden lg:block">
+                <div class="relative hidden lg:block mr-2">
                     <button 
                         @click="$dispatch('open-login-modal')"
                         class="relative flex items-center gap-2.5 text-left group"
@@ -158,18 +168,25 @@
                         </div>
                     </button>
                 </div>
-            @endif
 
-            @if(Auth::check() && Auth::user()->role === 'Customer')
-                <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2 overflow-hidden">
-                    @php
-                        $navProfile = DB::table('user_profiles')->where('user_id', Auth::id())->first();
-                        $navAvatarUrl = ($navProfile && $navProfile->avatar)
-                            ? asset($navProfile->avatar)
-                            : asset('images/default-avatar.svg');
-                    @endphp
-                    <img src="{{ $navAvatarUrl }}" class="w-full h-full object-cover">
-                </a>
+                <div class="hidden md:flex items-center gap-4 border-l border-white/20 pl-4 ml-2 transition-colors duration-300" :class="(isScrolled || !isHome) ? 'border-gray-200' : 'border-white/20'">
+                    @if(Auth::check())
+                        @if(Auth::user()->role === 'Agent')
+                            <a href="{{ url('/agent/dashboard') }}" :class="(isScrolled || !isHome) ? 'text-text-main hover:text-primary' : 'text-white/90 hover:text-white'" class="text-sm font-bold transition-colors">
+                                Dashboard
+                            </a>
+                        @elseif(Auth::user()->role === 'Admin')
+                            <a href="{{ url('/admin/dashboard') }}" :class="(isScrolled || !isHome) ? 'text-text-main hover:text-primary' : 'text-white/90 hover:text-white'" class="text-sm font-bold transition-colors">
+                                Admin
+                            </a>
+                        @endif
+                        <a href="{{ route('logout') }}" :class="(isScrolled || !isHome) ? 'text-red-500 hover:text-red-600' : 'text-red-300 hover:text-red-400'" class="text-sm font-bold transition-colors">
+                            Logout
+                        </a>
+                    @else
+                        <!-- Removed Agent Login, Admin, and Profile Icon as requested -->
+                    @endif
+                </div>
             @endif
 
 
