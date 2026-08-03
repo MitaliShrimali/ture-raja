@@ -45,16 +45,20 @@
                     <a href="{{ url('/admin/registered-agents') }}" class="text-muted-text hover:text-primary transition-colors text-sm font-bold px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-xl w-full md:w-auto text-center">Clear</a>
                 </div>
                 
-                <div class="relative group w-full md:w-80">
-                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
-                    <input 
-                        type="text" 
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Search agents..." 
-                        class="w-full bg-gray-50 border-none rounded-2xl py-3 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
-                    >
-                    <button type="submit" class="hidden"></button>
+                <div class="flex items-center gap-2 w-full md:w-80">
+                    <div class="relative group w-full">
+                        <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors pointer-events-none" size="18"></i>
+                        <input 
+                            type="text" 
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Search agents..." 
+                            class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-3 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#ea580c]/10 transition-all font-medium text-sm"
+                        >
+                    </div>
+                    <button type="submit" class="bg-[#ea580c] hover:bg-orange-600 text-white p-3 rounded-2xl transition-colors shadow-sm shrink-0">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                    </button>
                 </div>
             </div>
         </form>

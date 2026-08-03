@@ -27,15 +27,20 @@
             <!-- Search & Filter Form -->
             <form method="GET" action="{{ url('/admin/leads') }}" class="flex flex-col md:flex-row items-center gap-4 w-full">
                 <!-- Search -->
-                <div class="relative group flex-1 w-full">
-                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
-                    <input 
-                        type="text" 
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Search leads by name, email, agent..." 
-                        class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
-                    >
+                <div class="flex items-center gap-2 flex-1 w-full">
+                    <div class="relative group w-full">
+                        <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors pointer-events-none" size="18"></i>
+                        <input 
+                            type="text" 
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Search leads by name, email, agent..." 
+                            class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#ea580c]/10 transition-all font-medium text-sm"
+                        >
+                    </div>
+                    <button type="submit" class="bg-[#ea580c] hover:bg-orange-600 text-white p-4 rounded-2xl transition-colors shadow-sm shrink-0">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                    </button>
                 </div>
 
                 <!-- Date Range Filters -->

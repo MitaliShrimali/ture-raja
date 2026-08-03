@@ -31,15 +31,20 @@
             </div>
 
             <!-- Search Form -->
-            <form method="GET" action="{{ url('/admin/users') }}" class="relative group w-full md:w-96">
-                <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors" size="18"></i>
-                <input 
-                    type="text" 
-                    name="search"
-                    value="{{ $search ?? '' }}"
-                    placeholder="Search user by name or email..." 
-                    class="w-full bg-gray-50 border-none rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-primary/10 transition-all font-medium text-sm"
-                >
+            <form method="GET" action="{{ url('/admin/users') }}" class="flex items-center gap-2 w-full md:w-96">
+                <div class="relative w-full">
+                    <i data-lucide="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors pointer-events-none" size="18"></i>
+                    <input 
+                        type="text" 
+                        name="search"
+                        value="{{ request('search') }}"
+                        placeholder="Search user by name or email..." 
+                        class="w-full bg-gray-50 border border-gray-100 rounded-2xl py-4 pl-14 pr-6 outline-none focus:ring-2 focus:ring-[#ea580c]/20 transition-all font-medium text-sm"
+                    >
+                </div>
+                <button type="submit" class="bg-[#ea580c] hover:bg-orange-600 text-white p-4 rounded-2xl transition-colors shadow-sm shrink-0">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </button>
             </form>
         </div>
 

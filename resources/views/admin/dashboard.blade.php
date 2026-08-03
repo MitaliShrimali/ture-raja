@@ -41,14 +41,29 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Recent Subscriptions Table -->
         <div class="lg:col-span-2 bg-white rounded-[32px] shadow-soft p-8 space-y-6">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border-soft pb-4">
                 <div>
                     <h3 class="text-2xl font-black text-foreground">Recent Registered Agents</h3>
-                    <p class="text-sm text-muted-text font-medium">Tracking the latest 5 agent registrations</p>
+                    <p class="text-sm text-muted-text font-medium">Tracking agent registrations</p>
                 </div>
-                <a href="{{ url('/admin/registered-agents') }}" class="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest hover:gap-3 transition-all">
-                    View All <i data-lucide="arrow-up-right" size="14"></i>
-                </a>
+                
+                <div class="flex items-center gap-4">
+                    <form id="agentSearchForm" action="{{ url('/admin') }}" method="GET" class="flex items-center gap-2">
+                        <div class="relative">
+                            <input type="text" id="agentSearchInput" name="search" value="{{ request('search') }}" placeholder="Search agents..." autocomplete="off" class="w-full sm:w-64 pl-10 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-sm focus:ring-2 focus:ring-[#ea580c]/20 focus:border-[#ea580c] transition-all placeholder:text-gray-400">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                            <button type="button" id="clearSearchBtn" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-rose-500 transition-colors {{ request('search') ? '' : 'hidden' }}">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <button type="submit" id="searchSubmitBtn" class="bg-[#ea580c] hover:bg-orange-600 text-white p-2 rounded-xl transition-colors shadow-sm shrink-0">
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                    <a href="{{ url('/admin/registered-agents') }}" class="hidden sm:flex items-center gap-2 text-xs font-bold text-[#ea580c] uppercase tracking-widest hover:gap-3 transition-all shrink-0">
+                        View All <i data-lucide="arrow-up-right" size="14"></i>
+                    </a>
+                </div>
             </div>
 
             <div class="admin-table-container">
@@ -62,7 +77,7 @@
                             <th class="pb-4 text-[10px] font-black text-muted-text uppercase tracking-widest">Date</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-border-soft">
+                    <tbody class="divide-y divide-border-soft" id="agentsTableBody">
                         @forelse($recentAgents as $agent)
                             <tr class="group hover:bg-gray-50/50 transition-colors">
                                 <td class="py-5">
@@ -155,4 +170,67 @@
 
 
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('agentSearchInput');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        const tableBody = document.getElementById('agentsTableBody');
+        let debounceTimer;
+
+        function performSearch(query) {
+            // Update URL without reloading
+            const newUrl = new URL(window.location.href);
+            if (query) {
+                newUrl.searchParams.set('search', query);
+                clearBtn.classList.remove('hidden');
+            } else {
+                newUrl.searchParams.delete('search');
+                clearBtn.classList.add('hidden');
+            }
+            window.history.replaceState({}, '', newUrl);
+
+            // Visual feedback
+            tableBody.style.opacity = '0.5';
+
+            fetch(newUrl.toString())
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newTableBody = doc.getElementById('agentsTableBody');
+                    
+                    if (newTableBody) {
+                        tableBody.innerHTML = newTableBody.innerHTML;
+                        // Re-initialize lucide icons for new content if needed
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
+                    }
+                })
+                .catch(error => console.error('Search error:', error))
+                .finally(() => {
+                    tableBody.style.opacity = '1';
+                });
+        }
+
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                performSearch(e.target.value.trim());
+            }, 300); // 300ms debounce
+        });
+
+        document.getElementById('agentSearchForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent standard page reload
+            clearTimeout(debounceTimer);
+            performSearch(searchInput.value.trim());
+        });
+
+        clearBtn.addEventListener('click', function() {
+            searchInput.value = '';
+            performSearch('');
+        });
+    });
+</script>
 @endsection

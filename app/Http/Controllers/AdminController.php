@@ -59,12 +59,24 @@ class AdminController extends Controller
         // Fallback recentActivities removed as per requirement
 
         // Fetch recent registered agents for dashboard table
-        $recentAgents = DB::table('agents')
+        $agentQuery = DB::table('agents')
             ->leftJoin('plans', 'agents.plan_id', '=', 'plans.id')
             ->select('agents.*', 'plans.name as plan_name')
-            ->orderBy('agents.id', 'desc')
-            ->limit(5)
-            ->get();
+            ->orderBy('agents.id', 'desc');
+
+        if (request()->has('search') && !empty(request('search'))) {
+            $search = request('search');
+            $agentQuery->where(function($q) use ($search) {
+                $q->where('agents.name', 'like', "%{$search}%")
+                  ->orWhere('agents.email', 'like', "%{$search}%")
+                  ->orWhere('agents.phone', 'like', "%{$search}%");
+            });
+            $recentAgents = $agentQuery->limit(50)->get();
+        } else {
+            $recentAgents = $agentQuery->limit(5)->get();
+        }
+
+        $pendingPackagesCount = DB::table('packages')->where('status', 'Draft')->count();
 
         // Fetch packages pending approval (status = Pending)
         $pendingPackages = DB::table('packages')
