@@ -79,7 +79,7 @@ Route::prefix('admin')->group(function () {
     });
     Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('admin.login.submit');
 
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'admin.permission'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
         Route::get('/packages/approve/{id}', [AdminController::class, 'approvePackage'])->name('admin.package.approve');
         Route::get('/packages/decline/{id}', [AdminController::class, 'declinePackage'])->name('admin.package.decline');

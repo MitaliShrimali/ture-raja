@@ -144,154 +144,107 @@
                 <h3 class="text-lg font-black text-foreground">Permission Matrix</h3>
             </div>
 
-            <!-- Matrix Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- GENERAL -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">General</h4>
-                    <div class="flex flex-col gap-3">
-                        @foreach(['Role List', 'Role Create', 'Role Edit', 'Role Delete'] as $item)
-                        @php $snake = Str::snake($item); @endphp
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="permissions[general][{{ $snake }}]" value="1" {{ isset($user->permissions['general'][$snake]) && $user->permissions['general'][$snake] == '1' ? 'checked' : '' }} class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- AGENTS & USERS -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">Agents & Users</h4>
-                    <div class="flex flex-col gap-3">
-                        @foreach(['Travel Agent List', 'Travel Agent Create', 'Travel Agent Edit', 'Travel Agent Leads', 'Userlist List'] as $item)
-                        @php $snake = Str::snake($item); @endphp
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="permissions[agents_users][{{ $snake }}]" value="1" {{ isset($user->permissions['agents_users'][$snake]) && $user->permissions['agents_users'][$snake] == '1' ? 'checked' : '' }} class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- PACKAGES -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">Packages</h4>
-                    <div class="flex flex-col gap-3">
-                        @foreach(['Package List', 'Plan List', 'Plan Create', 'Advertisement List', 'Banner List'] as $item)
-                        @php $snake = Str::snake($item); @endphp
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="permissions[packages][{{ $snake }}]" value="1" {{ isset($user->permissions['packages'][$snake]) && $user->permissions['packages'][$snake] == '1' ? 'checked' : '' }} class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- MANAGEMENT -->
-                <div class="space-y-4">
-                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">Management</h4>
-                    <div class="flex flex-col gap-3">
-                        @foreach(['Contact Message', 'Lead Message', 'Mail Setup', 'Whatsapp Template', 'General Settings'] as $item)
-                        @php $snake = Str::snake($item); @endphp
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="checkbox" name="permissions[management][{{ $snake }}]" value="1" {{ isset($user->permissions['management'][$snake]) && $user->permissions['management'][$snake] == '1' ? 'checked' : '' }} class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-
-            <!-- MASTERS & GEOGRAPHY -->
-            <div class="space-y-6 pt-6 border-t border-border-soft">
-                <h4 class="text-xs font-black uppercase tracking-widest" style="color: #b13c0b !important;">Masters & Geography</h4>
+            @php
+                $userPerms = is_string($user->permissions) ? json_decode($user->permissions, true) : ($user->permissions ?? []);
+                if(!is_array($userPerms)) $userPerms = [];
                 
-                <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 24px; width: 100%;">
-                    <!-- AMENITIES -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Amenities</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'Edit'] as $item)
-                            @php $lower = Str::lower($item); @endphp
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][amenities][{{ $lower }}]" value="1" {{ isset($user->permissions['masters_geography']['amenities'][$lower]) && $user->permissions['masters_geography']['amenities'][$lower] == '1' ? 'checked' : '' }} class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
+                $matrix = [
+                    'Admin Users' => [
+                        'admin_users.view' => 'View Admin Users',
+                        'admin_users.create' => 'Create Admin User',
+                        'admin_users.edit' => 'Edit Admin User',
+                        'admin_users.delete' => 'Delete Admin User',
+                        'roles.view' => 'View Roles',
+                        'roles.create' => 'Create Roles',
+                        'roles.edit' => 'Edit Roles',
+                        'roles.delete' => 'Delete Roles',
+                    ],
+                    'Agent Management' => [
+                        'paid_users.view' => 'View Paid Users',
+                        'paid_users.create' => 'Create Paid Users',
+                        'paid_users.edit' => 'Edit Paid Users',
+                        'paid_users.delete' => 'Delete Paid Users',
+                    ],
+                    'Gallery' => [
+                        'gallery.view' => 'View Gallery',
+                        'gallery.upload' => 'Upload Gallery',
+                        'gallery.edit' => 'Edit Gallery',
+                        'gallery.delete' => 'Delete Gallery',
+                    ],
+                    'Tour Packages' => [
+                        'packages.view' => 'View Packages',
+                        'packages.create' => 'Create Package',
+                        'packages.edit' => 'Edit Package',
+                        'packages.delete' => 'Delete Package',
+                        'packages.approve' => 'Approve Package',
+                        'packages.reject' => 'Reject Package',
+                        'packages.view_domestic' => 'View Domestic',
+                        'packages.view_international' => 'View International',
+                    ],
+                    'Manage Advertisement' => [
+                        'ads.campaigns' => 'Advertisement Campaigns',
+                        'ads.banners' => 'Manage Banners',
+                        'ads.background_music' => 'Background Music',
+                        'ads.offer_stickers' => 'Manage Offer Stickers',
+                        'ads.client_reviews' => 'Manage Client Reviews',
+                        'ads.lead_records' => 'Manage Lead Records',
+                        'ads.contact_inquiries' => 'Manage Contact Inquiries',
+                        'ads.subscribers' => 'Manage Subscriber Management',
+                    ],
+                    'Plans' => [
+                        'plans.view' => 'View Plans',
+                        'plans.create' => 'Create Plans',
+                        'plans.edit' => 'Edit Plans',
+                        'plans.delete' => 'Delete Plans',
+                    ],
+                    'Financial Reports' => [
+                        'payments.view' => 'View Payments',
+                        'payments.edit' => 'Edit Payments',
+                        'payments.export' => 'Export Payments',
+                        'payments.pricing' => 'Set Payment Pricing',
+                    ],
+                    'Notifications' => [
+                        'notifications.view' => 'View Notifications',
+                        'notifications.send' => 'Send Notifications',
+                        'notifications.delete' => 'Delete Notifications',
+                        'notifications.cms_manage' => 'CMS Manage',
+                    ],
+                    'Careers' => [
+                        'careers.view' => 'View Careers',
+                        'careers.create' => 'Create Careers',
+                        'careers.edit' => 'Edit Careers',
+                        'careers.delete' => 'Delete Careers',
+                        'careers.job_openings' => 'Manage Job Openings',
+                        'careers.form_fields' => 'Edit Application Form Fields',
+                    ],
+                    'Settings' => [
+                        'settings.general' => 'General Settings',
+                        'settings.preference' => 'Preferences (Amenities)',
+                        'settings.holiday_type' => 'Holiday Type',
+                        'settings.activity' => 'Activity',
+                        'settings.transit' => 'Transit',
+                        'settings.duration' => 'Duration',
+                        'settings.theme' => 'Theme',
+                        'settings.geography' => 'Manage Country, State and City',
+                    ]
+                ];
+            @endphp
 
-                    <!-- HOLIDAY -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Holiday</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'Delete'] as $item)
-                            @php $lower = Str::lower($item); @endphp
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][holiday][{{ $lower }}]" value="1" {{ isset($user->permissions['masters_geography']['holiday'][$lower]) && $user->permissions['masters_geography']['holiday'][$lower] == '1' ? 'checked' : '' }} class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- ACTIVITY -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Activity</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Edit', 'Transit'] as $item)
-                            @php $lower = Str::lower($item); @endphp
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][activity][{{ $lower }}]" value="1" {{ isset($user->permissions['masters_geography']['activity'][$lower]) && $user->permissions['masters_geography']['activity'][$lower] == '1' ? 'checked' : '' }} class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- COUNTRY -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Country</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'State'] as $item)
-                            @php $lower = Str::lower($item); @endphp
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][country][{{ $lower }}]" value="1" {{ isset($user->permissions['masters_geography']['country'][$lower]) && $user->permissions['masters_geography']['country'][$lower] == '1' ? 'checked' : '' }} class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- CITY -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">City</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'Delete'] as $item)
-                            @php $lower = Str::lower($item); @endphp
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][city][{{ $lower }}]" value="1" {{ isset($user->permissions['masters_geography']['city'][$lower]) && $user->permissions['masters_geography']['city'][$lower] == '1' ? 'checked' : '' }} class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <!-- THEME -->
-                    <div class="space-y-3">
-                        <span class="text-[10px] font-black text-muted-text uppercase tracking-wider block">Theme</span>
-                        <div class="flex flex-col gap-2">
-                            @foreach(['List', 'Create', 'Duration'] as $item)
-                            @php $lower = Str::lower($item); @endphp
-                            <label class="flex items-center gap-2.5 cursor-pointer group">
-                                <input type="checkbox" name="permissions[masters_geography][theme][{{ $lower }}]" value="1" {{ isset($user->permissions['masters_geography']['theme'][$lower]) && $user->permissions['masters_geography']['theme'][$lower] == '1' ? 'checked' : '' }} class="w-4.5 h-4.5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
-                                <span class="text-xs font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $item }}</span>
-                            </label>
-                            @endforeach
-                        </div>
+            <!-- Matrix Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
+                @foreach($matrix as $groupName => $perms)
+                <div class="space-y-4">
+                    <h4 class="text-xs font-black uppercase tracking-widest border-b border-border-soft pb-2" style="color: #b13c0b !important;">{{ $groupName }}</h4>
+                    <div class="flex flex-col gap-3">
+                        @foreach($perms as $key => $label)
+                        <label class="flex items-center gap-3 cursor-pointer group">
+                            <input type="checkbox" name="permissions[]" value="{{ $key }}" {{ in_array($key, $userPerms) ? 'checked' : '' }} class="w-5 h-5 rounded-full border border-gray-300 text-[#b13c0b] focus:ring-[#b13c0b]/20 focus:ring-offset-0 focus:outline-none transition-all">
+                            <span class="text-sm font-bold text-muted-text group-hover:text-foreground transition-colors">{{ $label }}</span>
+                        </label>
+                        @endforeach
                     </div>
                 </div>
+                @endforeach
             </div>
         </div>
 

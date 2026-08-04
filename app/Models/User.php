@@ -29,4 +29,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Check if the user has a specific admin permission.
+     */
+    public function hasAdminPermission($permission)
+    {
+        if (strtoupper($this->role) === 'SUPER ADMIN') {
+            return true;
+        }
+
+        $permissions = is_string($this->permissions) ? json_decode($this->permissions, true) : ($this->permissions ?? []);
+        if (!is_array($permissions)) {
+            $permissions = [];
+        }
+
+        return in_array($permission, $permissions);
+    }
 }

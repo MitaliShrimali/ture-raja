@@ -19,6 +19,7 @@ $app = Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'agent.auth' => \App\Http\Middleware\AgentAuthenticate::class,
             'agent.profile_complete' => \App\Http\Middleware\CheckAgentProfileCompletion::class,
+            'admin.permission' => \App\Http\Middleware\CheckAdminPermission::class,
         ]);
 
         // For any remaining routes still using the built-in 'auth' middleware,
