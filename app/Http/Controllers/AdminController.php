@@ -275,7 +275,13 @@ class AdminController extends Controller
         if ($request->input('filter') === 'expiring') {
             $query->where(function($q) {
                 $q->whereNotNull('expiry_date')
+                  ->whereDate('expiry_date', '>=', now())
                   ->whereDate('expiry_date', '<=', now()->addDays(7));
+            });
+        } elseif ($request->input('filter') === 'expired') {
+            $query->where(function($q) {
+                $q->whereNotNull('expiry_date')
+                  ->whereDate('expiry_date', '<', now());
             });
         } elseif ($request->input('filter') === 'active') {
             $query->where('status', 'Active');
@@ -1209,7 +1215,15 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
+            'phone' => 'required',
+            'email' => 'required|email|unique:agents,email',
+            'password' => 'required|min:6|confirmed',
+            'country' => 'required',
+            'state' => 'required',
+            'city' => 'required',
+            'pincode' => 'required',
+            'website' => 'required|url',
+            'tier' => 'required',
             'logo' => 'nullable|image|max:2048'
         ]);
 
@@ -1243,6 +1257,7 @@ class AdminController extends Controller
             'name' => $request->name,
             'logo' => $logoUrl,
             'email' => $request->email,
+            'password' => \Illuminate\Support\Facades\Hash::make($request->password),
             'phone' => $request->phone,
             'secondary_phone' => $request->secondary_phone,
             'landline' => $request->landline,
@@ -1330,7 +1345,15 @@ class AdminController extends Controller
         $request->validate([
             'id' => 'required',
             'name' => 'required',
-            'email' => 'required|email',
+            'phone' => 'required',
+            'email' => 'required|email|unique:agents,email,'.$request->id,
+            'password' => 'nullable|min:6|confirmed',
+            'country' => 'required',
+            'state' => 'required',
+            'city' => 'required',
+            'pincode' => 'required',
+            'website' => 'required|url',
+            'tier' => 'required',
         ]);
 
         $agent = DB::table('agents')->where('id', $request->id)->first();
@@ -1364,7 +1387,7 @@ class AdminController extends Controller
             $plan_id = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
         }
 
-        DB::table('agents')->where('id', $request->id)->update([
+        $updateData = [
             'name' => $request->name,
             'logo' => $logoUrl,
             'email' => $request->email,
@@ -1388,14 +1411,19 @@ class AdminController extends Controller
             'region' => $request->region ?? 'Asia Pacific',
             'tier' => $request->tier ?? 'Premium',
             'plan_id' => $plan_id,
-            'status' => $request->status ?? 'Active',
             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
             'generate_bill' => $request->has('generate_bill') ? true : false,
             'api_access' => $request->has('api_access') ? true : false,
             'pending' => $request->pending ?? 0,
             'approved' => $request->approved ?? 0,
             'updated_at' => now(),
-        ]);
+        ];
+
+        if ($request->filled('password')) {
+            $updateData['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
+        DB::table('agents')->where('id', $request->id)->update($updateData);
 
         return redirect('/admin/registered-agents')->with('success', 'Travel Agent updated successfully!');
     }

@@ -121,16 +121,16 @@
 
                     <div class="space-y-5">
                         <div class="space-y-1.5">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Company Name</label>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Company Name <span class="text-red-500">*</span></label>
                             <input required type="text" name="name" placeholder="Ascent Global Ventures" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Primary Mobile *</label>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Primary Mobile <span class="text-red-500">*</span></label>
                                 <div class="flex gap-2 items-center">
-                                    <div class="relative w-28 shrink-0">
-                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-3 outline-none text-xs font-medium">
+                                    <div class="relative w-24 shrink-0">
+                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-2 outline-none text-xs font-medium">
                                             <option value="+91" data-len="10" selected>🇮🇳 +91</option>
                                             <option value="+1" data-len="10">🇺🇸 +1</option>
                                             <option value="+44" data-len="10">🇬🇧 +44</option>
@@ -143,7 +143,7 @@
                                         </select>
                                     </div>
                                     <div class="relative flex-grow">
-                                        <input type="tel" required placeholder="Primary Mobile *"
+                                        <input type="tel" required placeholder="Primary Mobile"
                                             class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                                     </div>
                                     <input type="hidden" class="phone-full-val" name="phone">
@@ -152,8 +152,8 @@
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Secondary Mobile</label>
                                 <div class="flex gap-2 items-center">
-                                    <div class="relative w-28 shrink-0">
-                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-3 outline-none text-xs font-medium">
+                                    <div class="relative w-24 shrink-0">
+                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-2 outline-none text-xs font-medium">
                                             <option value="+91" data-len="10" selected>🇮🇳 +91</option>
                                             <option value="+1" data-len="10">🇺🇸 +1</option>
                                             <option value="+44" data-len="10">🇬🇧 +44</option>
@@ -179,29 +179,83 @@
                         </div>
 
                         <div class="space-y-1.5">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Official Email</label>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Official Email <span class="text-red-500">*</span></label>
                             <input required type="email" name="email" placeholder="admin@company.com" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Country</label>
-                                <input type="text" name="country" placeholder="United States" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Password <span class="text-red-500">*</span></label>
+                                <input required type="password" name="password" placeholder="Enter password" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                             <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">State/Province</label>
-                                <input type="text" name="state" placeholder="California" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Confirm Password <span class="text-red-500">*</span></label>
+                                <input required type="password" name="password_confirmation" placeholder="Confirm password" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">City</label>
-                                <input type="text" name="city" placeholder="San Francisco" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                        <div x-data="{
+                            query: '',
+                            suggestions: [],
+                            loading: false,
+                            showSuggestions: false,
+                            city: '',
+                            state: '',
+                            country: '',
+                            async fetchSuggestions() {
+                                if(this.city.length < 2) {
+                                    this.suggestions = [];
+                                    this.showSuggestions = false;
+                                    return;
+                                }
+                                this.loading = true;
+                                try {
+                                    const response = await fetch('https://photon.komoot.io/api/?q=' + encodeURIComponent(this.city) + '&layer=city&limit=5');
+                                    const data = await response.json();
+                                    this.suggestions = data.features;
+                                    this.showSuggestions = true;
+                                } catch(e) {}
+                                this.loading = false;
+                            },
+                            selectPlace(place) {
+                                this.city = place.properties.name || '';
+                                this.state = place.properties.state || '';
+                                this.country = place.properties.country || '';
+                                this.showSuggestions = false;
+                            }
+                        }" @click.away="showSuggestions = false" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1.5 relative">
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">City <span class="text-red-500">*</span></label>
+                                    <input required type="text" name="city" x-model="city" @input.debounce.300ms="fetchSuggestions()" @focus="if(suggestions.length > 0) showSuggestions = true" placeholder="Start typing city..." autocomplete="off" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                    
+                                    <div x-show="showSuggestions && suggestions.length > 0" class="absolute z-10 w-full bg-white mt-1 border border-gray-100 rounded-xl shadow-lg max-h-60 overflow-y-auto" style="display: none;">
+                                        <template x-for="place in suggestions" :key="place.properties.osm_id">
+                                            <div @click="selectPlace(place)" class="px-4 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0">
+                                                <div class="font-bold text-sm text-gray-800" x-text="place.properties.name"></div>
+                                                <div class="text-xs text-gray-500">
+                                                    <span x-show="place.properties.state" x-text="place.properties.state + ', '"></span>
+                                                    <span x-text="place.properties.country"></span>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">State/Province <span class="text-red-500">*</span></label>
+                                    <input required type="text" name="state" x-model="state" placeholder="State" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                </div>
                             </div>
-                            <div class="space-y-1.5">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Pincode/Zip</label>
-                                <input type="text" name="pincode" placeholder="94105" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Country <span class="text-red-500">*</span></label>
+                                    <input required type="text" name="country" x-model="country" placeholder="Country" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                </div>
+                                <div class="space-y-1.5">
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Pincode/Zip <span class="text-red-500">*</span></label>
+                                    <input required type="text" name="pincode" placeholder="94105" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                </div>
                             </div>
                         </div>
 
@@ -271,12 +325,12 @@
                         </div>
 
                         <div class="space-y-1.5">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Website URL</label>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Website URL <span class="text-red-500">*</span></label>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="globe" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="website" placeholder="https://www.example.com" class="w-full border border-gray-200 rounded-2xl py-3.5 pl-11 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm">
+                                <input required type="text" name="website" placeholder="https://www.example.com" class="w-full border border-gray-200 rounded-2xl py-3.5 pl-11 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm">
                             </div>
                         </div>
                     </div>
@@ -284,7 +338,7 @@
 
                 <!-- Tier Selection Card -->
                 <div class="bg-white rounded-[32px] border border-border-soft p-8 space-y-6">
-                    <h3 class="text-lg font-black text-gray-800 pl-1">Tier Selection</h3>
+                    <h3 class="text-lg font-black text-gray-800 pl-1">Tier Selection <span class="text-red-500">*</span></h3>
                     <div class="space-y-3">
                         @foreach($plans as $plan)
                             <button type="button" @click="tier = '{{ $plan->name }}'" :class="tier === '{{ $plan->name }}' ? 'border-primary bg-primary/5 ring-2 ring-primary/20' : 'border-gray-200 bg-white'" class="w-full p-4 rounded-2xl text-left border transition-all flex flex-col">

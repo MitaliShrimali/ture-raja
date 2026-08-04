@@ -41,10 +41,10 @@
         </div>
         <div class="p-8 rounded-[32px] shadow-premium space-y-4 relative overflow-hidden text-white" style="background-color: #af3a03;">
             <div class="absolute right-0 bottom-0 opacity-10 translate-x-4 translate-y-4">
-                <i data-lucide="clock" class="w-32 h-32"></i>
+                <i data-lucide="clock" class="w-32 h-32 text-white"></i>
             </div>
-            <p class="text-xs font-black uppercase tracking-widest opacity-80">Review Queue</p>
-            <h3 class="text-4xl font-syne font-black">{{ $pendingCount > 0 ? 'Action Needed' : 'All Clear!' }}</h3>
+            <p class="text-xs font-black uppercase tracking-widest opacity-80" style="color: white !important;">Review Queue</p>
+            <h3 class="text-4xl font-syne font-black" style="color: white !important;">{{ $pendingCount > 0 ? 'Action Needed' : 'All Clear!' }}</h3>
         </div>
     </div>
 

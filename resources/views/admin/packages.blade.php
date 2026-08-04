@@ -7,11 +7,13 @@
     $activeListings = DB::table('packages')->where('status', 'Active')->count();
     
     $expiredPackages = DB::table('packages')
+        ->where('status', '!=', 'Pending')
         ->whereNotNull('expiry_date')
         ->whereDate('expiry_date', '<', now())
         ->count();
     
     $expiringSoon = DB::table('packages')
+        ->where('status', '!=', 'Pending')
         ->whereNotNull('expiry_date')
         ->whereDate('expiry_date', '>=', now())
         ->whereDate('expiry_date', '<=', now()->addDays(7))
@@ -81,9 +83,9 @@
                 <i data-lucide="ticket" class="w-32 h-32"></i>
             </div>
             <div class="flex items-center justify-between">
-                <p class="text-xs font-black uppercase tracking-widest opacity-80">Total Revenue</p>
+                <p class="text-xs font-black uppercase tracking-widest opacity-80" style="color: white !important;">Total Revenue</p>
             </div>
-            <h3 class="text-4xl font-white font-syne">{{ $totalRevenueFormatted }}</h3>
+            <h3 class="text-4xl font-syne font-black" style="color: white !important;">{{ $totalRevenueFormatted }}</h3>
         </a>
     </div>
 
