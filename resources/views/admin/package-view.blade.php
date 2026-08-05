@@ -9,7 +9,7 @@
             <p class="text-xs font-bold text-primary uppercase tracking-widest">Package Review</p>
             <h2 class="font-black text-foreground tracking-tight text-3xl">{{ $pkg->title }}</h2>
             <div class="flex items-center gap-3 mt-2">
-                <span class="text-xs font-bold text-muted-text bg-gray-100 rounded-full px-3 py-1"><i data-lucide="map-pin" size="14" class="inline mr-1 text-primary"></i> {{ $pkg->location }}</span>
+                <span class="text-xs font-bold text-muted-text bg-gray-100 rounded-full px-3 py-1"><i data-lucide="map-pin" size="14" class="inline mr-1 text-primary"></i> {{ !empty($pkg->departure_city) ? $pkg->departure_city : $pkg->location }}</span>
                 <span class="text-xs font-bold {{ $pkg->status === 'Pending' ? 'text-orange-600 bg-orange-50 border-orange-100' : ($pkg->status === 'Active' ? 'text-green-600 bg-green-50 border-green-100' : 'text-gray-600 bg-gray-50 border-gray-100') }} rounded-full px-3 py-1 border">{{ $pkg->status }}</span>
             </div>
         </div>
@@ -43,17 +43,68 @@
                     </div>
                     <div class="p-4 bg-gray-50 rounded-2xl">
                         <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Price</p>
-                        <p class="text-sm font-black text-primary">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price, 2) }}</p>
+                        <p class="text-sm font-black text-primary">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price, 2) }}
+                            @if(!empty($pkg->old_price))
+                                <span class="text-xs text-gray-400 line-through ml-1">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->old_price, 2) }}</span>
+                            @endif
+                        </p>
                     </div>
                     <div class="p-4 bg-gray-50 rounded-2xl">
-                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Group Size</p>
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Transit Type</p>
                         <p class="text-sm font-black text-foreground">{{ $pkg->group_size }}</p>
                     </div>
                     <div class="p-4 bg-gray-50 rounded-2xl">
-                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Category</p>
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Dest. Type</p>
                         <p class="text-sm font-black text-foreground">{{ $pkg->category }}</p>
                     </div>
+                    <div class="p-4 bg-gray-50 rounded-2xl">
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Theme</p>
+                        <p class="text-sm font-black text-foreground">{{ $pkg->theme ?? 'N/A' }}</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-2xl">
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Holiday Type</p>
+                        <p class="text-sm font-black text-foreground">{{ $pkg->holiday_type ?? 'N/A' }}</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-2xl">
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Departure State</p>
+                        <p class="text-sm font-black text-foreground">{{ $pkg->departure_state ?? 'N/A' }}</p>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-2xl">
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-1">Departure Country</p>
+                        <p class="text-sm font-black text-foreground">{{ $pkg->departure_country ?? 'N/A' }}</p>
+                    </div>
                 </div>
+
+                @php
+                    $categoriesList = json_decode($pkg->categories_list, true) ?: [];
+                    $keywords = !empty($pkg->keywords) ? explode(',', $pkg->keywords) : [];
+                @endphp
+                
+                @if(count($categoriesList) > 0 || count($keywords) > 0 || !empty($pkg->badge))
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-gray-50 rounded-2xl">
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-2">Categories & Tag</p>
+                        <div class="flex flex-wrap gap-2">
+                            @if(!empty($pkg->badge))
+                                <span class="text-xs font-bold bg-primary text-white px-2 py-1 rounded-md">{{ $pkg->badge }}</span>
+                            @endif
+                            @foreach($categoriesList as $cat)
+                                <span class="text-xs font-medium bg-orange-100 text-orange-800 px-2 py-1 rounded-md">{{ $cat }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                    <div class="p-4 bg-gray-50 rounded-2xl">
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-2">Keywords</p>
+                        <div class="flex flex-wrap gap-2">
+                            @forelse($keywords as $kw)
+                                <span class="text-xs font-medium bg-gray-200 text-gray-700 px-2 py-1 rounded-md">{{ trim($kw) }}</span>
+                            @empty
+                                <span class="text-xs font-medium text-gray-400">None</span>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+                @endif
 
                 @if($pkg->editorial_itinerary)
                 <div>

@@ -56,6 +56,11 @@
                 <p class="text-[9px] font-bold text-gray-400 uppercase mr-2 tracking-widest w-full sm:w-auto mb-2 sm:mb-0 hidden" id="selection-count-text">
                     <span id="selected-count">0</span> Items Selected 
                     <span class="text-primary ml-2 cursor-pointer" onclick="clearSelection()">Clear Selection</span>
+                    <span class="text-gray-500 ml-2">|</span>
+                    <label class="inline-flex items-center ml-2 cursor-pointer text-gray-500 hover:text-primary">
+                        <input type="checkbox" id="selectAllCheckbox" class="w-3 h-3 mr-1 rounded border-gray-300 text-primary focus:ring-primary/20" onchange="toggleSelectAll(this)">
+                        Select All
+                    </label>
                 </p>
                 
                 <div class="relative group hidden" id="move-dropdown">
@@ -97,6 +102,14 @@
                     + Add Image
                 </button>
             </div>
+        </div>
+
+        <!-- Select All Option for empty state or when no selection is made yet -->
+        <div class="flex items-center mb-4 px-2" id="initial-select-all-container">
+            <label class="inline-flex items-center cursor-pointer text-xs font-bold text-gray-500 hover:text-primary">
+                <input type="checkbox" id="initialSelectAllCheckbox" class="w-4 h-4 mr-2 rounded border-gray-300 text-primary focus:ring-primary/20" onchange="toggleSelectAll(this)">
+                Select All Items
+            </label>
         </div>
 
         <!-- Gallery Grid -->
@@ -205,28 +218,48 @@
 
         function updateSelection() {
             const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-            const count = checkboxes.length;
+            const selectedCount = checkboxes.length;
             
-            const countText = document.getElementById('selection-count-text');
-            const moveDropdown = document.getElementById('move-dropdown');
+            const btnMove = document.getElementById('move-dropdown');
             const btnDelete = document.getElementById('btn-delete');
+            const selectionText = document.getElementById('selection-count-text');
             const countDisplay = document.getElementById('selected-count');
-
-            if (count > 0) {
-                countDisplay.innerText = count;
-                countText.classList.remove('hidden');
-                moveDropdown.classList.remove('hidden');
-                btnDelete.classList.remove('hidden');
+            const initialSelectAll = document.getElementById('initial-select-all-container');
+            
+            if (selectedCount > 0) {
+                if (btnMove) btnMove.classList.remove('hidden');
+                if (btnDelete) btnDelete.classList.remove('hidden');
+                if (selectionText) selectionText.classList.remove('hidden');
+                if (countDisplay) countDisplay.textContent = selectedCount;
+                if (initialSelectAll) initialSelectAll.classList.add('hidden');
             } else {
-                countText.classList.add('hidden');
-                moveDropdown.classList.add('hidden');
-                btnDelete.classList.add('hidden');
+                if (btnMove) btnMove.classList.add('hidden');
+                if (btnDelete) btnDelete.classList.add('hidden');
+                if (selectionText) selectionText.classList.add('hidden');
+                if (initialSelectAll) initialSelectAll.classList.remove('hidden');
             }
         }
 
         function clearSelection() {
             const checkboxes = document.querySelectorAll('.item-checkbox');
             checkboxes.forEach(cb => cb.checked = false);
+            document.getElementById('selectAllCheckbox').checked = false;
+            document.getElementById('initialSelectAllCheckbox').checked = false;
+            updateSelection();
+        }
+
+        function toggleSelectAll(source) {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(cb => {
+                // Only select visible items
+                const item = cb.closest('.gallery-item');
+                if (item && item.style.display !== 'none') {
+                    cb.checked = source.checked;
+                }
+            });
+            // Keep both select all checkboxes in sync
+            document.getElementById('selectAllCheckbox').checked = source.checked;
+            document.getElementById('initialSelectAllCheckbox').checked = source.checked;
             updateSelection();
         }
 
@@ -238,7 +271,29 @@
         }
 
         function deleteSelected() {
-            if(confirm("Are you sure you want to delete the selected items? (Folders will be deleted with all their contents)")) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: '<h2 style="font-size: 1.75rem; font-weight: 800; color: #1f2937; margin-bottom: 12px;">Are you sure?</h2>',
+                    html: '<p style="font-size: 1rem; color: #6b7280; font-weight: 500;">Are you sure you want to delete the selected items? (Folders will be deleted with all their contents)</p>',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, proceed',
+                    cancelButtonText: 'Cancel',
+                    buttonsStyling: false,
+                    customClass: {
+                        popup: 'custom-swal-popup',
+                        confirmButton: 'custom-swal-confirm',
+                        cancelButton: 'custom-swal-cancel',
+                        actions: 'custom-swal-actions'
+                    },
+                    width: '450px',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const form = document.getElementById('gallery-form');
+                        form.action = "{{ route('admin.gallery.delete') }}";
+                        form.submit();
+                    }
+                });
+            } else {
                 const form = document.getElementById('gallery-form');
                 form.action = "{{ route('admin.gallery.delete') }}";
                 form.submit();

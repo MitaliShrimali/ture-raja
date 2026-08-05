@@ -19,7 +19,7 @@ class AdminController extends Controller
         $activeAgentsCount = DB::table('agents')->count();
         $activePackagesCount = DB::table('packages')->where('status', 'Active')->count();
         $totalSubsCount = DB::table('subscribers')->count();
-        $expiredPackagesCount = DB::table('packages')->whereNotNull('expiry_date')->where('expiry_date', '<', now())->count();
+        $expiredPackagesCount = DB::table('packages')->whereNotNull('expiry_date')->where('expiry_date', '<', now()->format('Y-m-d'))->count();
         $pendingPackagesCount = DB::table('packages')->where('status', 'Pending')->count();
 
         $data = [
@@ -132,6 +132,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Package added successfully!');
         return redirect()->back()->with('success', 'Package added successfully!');
     }
 
@@ -157,12 +158,14 @@ class AdminController extends Controller
 
         DB::table('home_packages')->where('id', $request->id)->update($data);
 
+        $this->logActivity('Platform Action', 'Package updated successfully!');
         return redirect()->back()->with('success', 'Package updated successfully!');
     }
 
     public function deleteHomePackage($id)
     {
         DB::table('home_packages')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Package removed!');
         return redirect()->back()->with('success', 'Package removed!');
     }
 
@@ -173,6 +176,7 @@ class AdminController extends Controller
             $newStatus = $pkg->status === 'Live' ? 'Drafting' : 'Live';
             DB::table('home_packages')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Package status updated!');
         return redirect()->back()->with('success', 'Package status updated!');
     }
 
@@ -209,6 +213,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Offer Sticker added successfully!');
         return redirect()->back()->with('success', 'Offer Sticker added successfully!');
     }
 
@@ -233,12 +238,14 @@ class AdminController extends Controller
         }
 
         DB::table('offer_stickers')->where('id', $request->id)->update($data);
+        $this->logActivity('Platform Action', 'Offer Sticker updated successfully!');
         return redirect()->back()->with('success', 'Offer Sticker updated successfully!');
     }
 
     public function deleteOfferSticker($id)
     {
         DB::table('offer_stickers')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Offer Sticker removed!');
         return redirect()->back()->with('success', 'Offer Sticker removed!');
     }
 
@@ -249,6 +256,7 @@ class AdminController extends Controller
             $newStatus = $sticker->status === 'Live' ? 'Drafting' : 'Live';
             DB::table('offer_stickers')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Sticker status updated!');
         return redirect()->back()->with('success', 'Sticker status updated!');
     }
 
@@ -275,13 +283,13 @@ class AdminController extends Controller
         if ($request->input('filter') === 'expiring') {
             $query->where(function($q) {
                 $q->whereNotNull('expiry_date')
-                  ->whereDate('expiry_date', '>=', now())
-                  ->whereDate('expiry_date', '<=', now()->addDays(7));
+                  ->where('expiry_date', '>=', now()->format('Y-m-d'))
+                  ->where('expiry_date', '<=', now()->addDays(7)->format('Y-m-d'));
             });
         } elseif ($request->input('filter') === 'expired') {
             $query->where(function($q) {
                 $q->whereNotNull('expiry_date')
-                  ->whereDate('expiry_date', '<', now());
+                  ->where('expiry_date', '<', now()->format('Y-m-d'));
             });
         } elseif ($request->input('filter') === 'active') {
             $query->where('status', 'Active');
@@ -328,7 +336,8 @@ class AdminController extends Controller
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
-        return view('admin.packages-create', compact('agents', 'themes', 'holidayTypes', 'category'));
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('id', 'asc')->get();
+        return view('admin.packages-create', compact('agents', 'themes', 'holidayTypes', 'category', 'transits'));
     }
 
     public function editPackage($id)
@@ -340,7 +349,8 @@ class AdminController extends Controller
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
-        return view('admin.packages-edit', compact('pkg', 'agents', 'themes', 'holidayTypes'));
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('id', 'asc')->get();
+        return view('admin.packages-edit', compact('pkg', 'agents', 'themes', 'holidayTypes', 'transits'));
     }
 
     public function storePackage(Request $request)
@@ -376,6 +386,10 @@ class AdminController extends Controller
                 $file->move(public_path('uploads/packages/gallery'), $fileName);
                 $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
             }
+        }
+
+        if (count($galleryUrls) > 0) {
+            $imageUrl = $galleryUrls[0];
         }
 
         // Brochure Upload
@@ -502,6 +516,8 @@ class AdminController extends Controller
             'reviews' => $request->reviews ?? 10,
             'duration' => $request->duration ?? '3 Days',
             'group_size' => $request->group_size ?? '4-6 guest',
+            'hide_price' => $request->has('hide_price') ? 1 : 0,
+            'about_tours' => $request->about_tours ?? null,
             'image' => $imageUrl ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
             'category' => $request->category ?? 'domestic',
             'categories_list' => is_array($request->categories_list) ? json_encode($request->categories_list) : null,
@@ -529,6 +545,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Added Package', 'Package: ' . $request->title);
         return redirect('/admin/packages')->with('success', 'Package created successfully!');
     }
 
@@ -563,7 +580,9 @@ class AdminController extends Controller
             if ($request->has('existing_gallery_urls')) {
                 $galleryUrls = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
             } else {
-                if ($oldPkg && $oldPkg->gallery) {
+                if ($request->has('title')) {
+                    $galleryUrls = []; // Form submitted but no gallery images left
+                } else if ($oldPkg && $oldPkg->gallery) {
                     $galleryUrls = json_decode($oldPkg->gallery, true) ?: [];
                 }
             }
@@ -577,6 +596,10 @@ class AdminController extends Controller
                     $file->move(public_path('uploads/packages/gallery'), $fileName);
                     $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
                 }
+            }
+
+            if (count($galleryUrls) > 0) {
+                $imageUrl = $galleryUrls[0];
             }
 
             // Brochure Upload
@@ -720,6 +743,8 @@ class AdminController extends Controller
                 'reviews' => $request->reviews ?? 10,
                 'duration' => $request->duration ?? $oldPkg->duration ?? '3 Days',
                 'group_size' => $request->group_size ?? '4-6 guest',
+                'hide_price' => $request->has('hide_price') ? 1 : 0,
+                'about_tours' => $request->about_tours ?? null,
                 'image' => $imageUrl,
                 'category' => $request->category ?? 'domestic',
                 'categories_list' => is_array($request->categories_list) ? json_encode($request->categories_list) : null,
@@ -746,6 +771,7 @@ class AdminController extends Controller
                 'updated_at' => now(),
             ]);
 
+            $this->logActivity('Updated Package', 'Package: ' . $request->title);
             return redirect('/admin/packages')->with('success', 'Package updated successfully!');
         } catch (\Throwable $e) {
             dd([
@@ -759,7 +785,11 @@ class AdminController extends Controller
 
     public function deletePackage($id)
     {
-        DB::table('packages')->where('id', $id)->delete();
+        $pkg = DB::table('packages')->where('id', $id)->first();
+        if ($pkg) {
+            $this->logActivity('Deleted Package', 'Package: ' . $pkg->title);
+            DB::table('packages')->where('id', $id)->delete();
+        }
         return redirect()->back()->with('success', 'Package deleted successfully!');
     }
 
@@ -770,19 +800,28 @@ class AdminController extends Controller
             // Only toggle between Active and Inactive (not Pending)
             $newStatus = $pkg->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('packages')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
+            $this->logActivity('Status Updated', 'Package: ' . $pkg->title . ' set to ' . $newStatus);
         }
         return redirect()->back()->with('success', 'Package status updated!');
     }
 
     public function approvePackage($id)
     {
+        $pkg = DB::table('packages')->where('id', $id)->first();
         DB::table('packages')->where('id', $id)->update(['status' => 'Active', 'updated_at' => now()]);
+        if ($pkg) {
+            $this->logActivity('Approved Package', 'Package: ' . $pkg->title);
+        }
         return redirect('/admin/packages/pending')->with('success', 'Package approved and is now live on the customer site!');
     }
 
     public function declinePackage($id)
     {
+        $pkg = DB::table('packages')->where('id', $id)->first();
         DB::table('packages')->where('id', $id)->update(['status' => 'Inactive', 'updated_at' => now()]);
+        if ($pkg) {
+            $this->logActivity('Declined Package', 'Package: ' . $pkg->title);
+        }
         return redirect('/admin/packages/pending')->with('success', 'Package declined and hidden from customer site.');
     }
 
@@ -815,6 +854,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Hotel onboarded successfully!');
         return redirect()->back()->with('success', 'Hotel onboarded successfully!');
     }
 
@@ -831,12 +871,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Hotel details updated!');
         return redirect()->back()->with('success', 'Hotel details updated!');
     }
 
     public function deleteHotel($id)
     {
         DB::table('hotels')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Hotel removed successfully!');
         return redirect()->back()->with('success', 'Hotel removed successfully!');
     }
 
@@ -847,6 +889,7 @@ class AdminController extends Controller
             $newStatus = $hotel->status === 'Published' ? 'Draft' : 'Published';
             DB::table('hotels')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Hotel status toggled!');
         return redirect()->back()->with('success', 'Hotel status toggled!');
     }
 
@@ -868,6 +911,7 @@ class AdminController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $this->logActivity('Platform Action', 'Amenity created successfully!');
         return redirect()->back()->with('success', 'Amenity created successfully!');
     }
 
@@ -881,12 +925,14 @@ class AdminController extends Controller
             'status' => $request->status ?? 'Active',
             'updated_at' => now(),
         ]);
+        $this->logActivity('Platform Action', 'Amenity updated!');
         return redirect()->back()->with('success', 'Amenity updated!');
     }
 
     public function deleteAmenity($id)
     {
         DB::table('amenities')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Amenity removed!');
         return redirect()->back()->with('success', 'Amenity removed!');
     }
 
@@ -897,6 +943,7 @@ class AdminController extends Controller
             $newStatus = $item->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('amenities')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Amenity status toggled!');
         return redirect()->back()->with('success', 'Amenity status toggled!');
     }
 
@@ -917,6 +964,7 @@ class AdminController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $this->logActivity('Platform Action', 'Holiday type added!');
         return redirect()->back()->with('success', 'Holiday type added!');
     }
 
@@ -929,12 +977,14 @@ class AdminController extends Controller
             'status' => $request->status ?? 'Active',
             'updated_at' => now(),
         ]);
+        $this->logActivity('Platform Action', 'Holiday type updated!');
         return redirect()->back()->with('success', 'Holiday type updated!');
     }
 
     public function deleteHolidayType($id)
     {
         DB::table('holiday_types')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Holiday type deleted!');
         return redirect()->back()->with('success', 'Holiday type deleted!');
     }
 
@@ -945,6 +995,7 @@ class AdminController extends Controller
             $newStatus = $item->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('holiday_types')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Holiday type status toggled!');
         return redirect()->back()->with('success', 'Holiday type status toggled!');
     }
 
@@ -976,6 +1027,7 @@ class AdminController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        $this->logActivity('Platform Action', 'Activity added successfully!');
         return redirect()->back()->with('success', 'Activity added successfully!');
     }
 
@@ -990,12 +1042,14 @@ class AdminController extends Controller
             'status' => $request->status ?? 'Active',
             'updated_at' => now(),
         ]);
+        $this->logActivity('Platform Action', 'Activity updated!');
         return redirect()->back()->with('success', 'Activity updated!');
     }
 
     public function deleteActivity($id)
     {
         DB::table('activities')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Activity removed!');
         return redirect()->back()->with('success', 'Activity removed!');
     }
 
@@ -1006,6 +1060,7 @@ class AdminController extends Controller
             $newStatus = $item->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('activities')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Activity status toggled!');
         return redirect()->back()->with('success', 'Activity status toggled!');
     }
 
@@ -1068,6 +1123,7 @@ class AdminController extends Controller
     public function deleteCustomer($id)
     {
         DB::table('users')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Customer account removed!');
         return redirect()->back()->with('success', 'Customer account removed!');
     }
 
@@ -1094,6 +1150,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Admin user created!');
         return redirect('/admin/users')->with('success', 'Admin user created!');
     }
 
@@ -1142,6 +1199,7 @@ class AdminController extends Controller
 
         DB::table('users')->where('id', $request->id)->update($updateData);
 
+        $this->logActivity('Platform Action', 'Admin user details updated!');
         return redirect('/admin/users')->with('success', 'Admin user details updated!');
     }
 
@@ -1152,12 +1210,14 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Cannot delete primary Super Admin!');
         }
         DB::table('users')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Admin user removed!');
         return redirect()->back()->with('success', 'Admin user removed!');
     }
 
     public function toggleUser($id)
     {
         // Just custom logic if needed or standard feedback
+        $this->logActivity('Platform Action', 'Admin permissions audited successfully!');
         return redirect()->back()->with('success', 'Admin permissions audited successfully!');
     }
 
@@ -1289,6 +1349,7 @@ class AdminController extends Controller
         ]);
 
 
+        $this->logActivity('Platform Action', 'New Travel Agent onboarded successfully!');
         return redirect('/admin/registered-agents')->with('success', 'New Travel Agent onboarded successfully!');
     }
 
@@ -1425,12 +1486,14 @@ class AdminController extends Controller
 
         DB::table('agents')->where('id', $request->id)->update($updateData);
 
+        $this->logActivity('Platform Action', 'Travel Agent updated successfully!');
         return redirect('/admin/registered-agents')->with('success', 'Travel Agent updated successfully!');
     }
 
     public function deleteAgent($id)
     {
         DB::table('agents')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Agent removed successfully!');
         return redirect()->back()->with('success', 'Agent removed successfully!');
     }
 
@@ -1441,6 +1504,7 @@ class AdminController extends Controller
             $newStatus = strtolower($agent->status) === 'active' ? 'Inactive' : 'Active';
             DB::table('agents')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Agent status toggled!');
         return redirect('/admin/registered-agents')->with('success', 'Agent status toggled!');
     }
 
@@ -1547,6 +1611,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Lead record created!');
         return redirect()->back()->with('success', 'Lead record created!');
     }
 
@@ -1606,12 +1671,14 @@ class AdminController extends Controller
             }
         }
 
+        $this->logActivity('Platform Action', 'Lead record updated and customer booking synced!');
         return redirect()->back()->with('success', 'Lead record updated and customer booking synced!');
     }
 
     public function deleteLead($id)
     {
         DB::table('leads')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Lead record deleted!');
         return redirect()->back()->with('success', 'Lead record deleted!');
     }
 
@@ -1654,6 +1721,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Paid user added!');
         return redirect()->back()->with('success', 'Paid user added!');
     }
 
@@ -1670,12 +1738,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Paid user updated!');
         return redirect()->back()->with('success', 'Paid user updated!');
     }
 
     public function deletePaidUser($id)
     {
         DB::table('paid_users')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Paid user removed!');
         return redirect()->back()->with('success', 'Paid user removed!');
     }
 
@@ -1686,6 +1756,7 @@ class AdminController extends Controller
             $newStatus = $user->status === 'Active' ? 'Suspended' : 'Active';
             DB::table('paid_users')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Paid user status updated!');
         return redirect()->back()->with('success', 'Paid user status updated!');
     }
 
@@ -2039,6 +2110,7 @@ class AdminController extends Controller
             'updated_at' => now()
         ]);
 
+        $this->logActivity('Platform Action', 'Invoice details updated successfully!');
         return redirect()->back()->with('success', 'Invoice details updated successfully!');
     }
 
@@ -2067,6 +2139,7 @@ class AdminController extends Controller
             ]);
         }
 
+        $this->logActivity('Added Payment', 'Payment for: ' . $request->user_name . ' (' . ($request->plan_type ?? 'Standard') . ')');
         return redirect()->back()->with('success', 'Payment log entered successfully!');
     }
 
@@ -2101,12 +2174,17 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Updated Payment', 'Payment ID: ' . $request->payment_id . ' (' . $request->status . ')');
         return redirect()->back()->with('success', 'Payment status updated!');
     }
 
     public function deletePayment($id)
     {
-        DB::table('payments')->where('id', $id)->delete();
+        $payment = DB::table('payments')->where('id', $id)->first();
+        if ($payment) {
+            $this->logActivity('Deleted Payment', 'Payment ID: ' . $payment->payment_id);
+            DB::table('payments')->where('id', $id)->delete();
+        }
         return redirect()->back()->with('success', 'Payment record deleted!');
     }
 
@@ -2148,6 +2226,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Advertisement campaign added!');
         return redirect()->back()->with('success', 'Advertisement campaign added!');
     }
 
@@ -2174,12 +2253,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Ad campaign updated!');
         return redirect()->back()->with('success', 'Ad campaign updated!');
     }
 
     public function deleteAd($id)
     {
         DB::table('ads')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Ad campaign deleted!');
         return redirect()->back()->with('success', 'Ad campaign deleted!');
     }
 
@@ -2190,6 +2271,7 @@ class AdminController extends Controller
             $newStatus = $ad->status === 'Active' ? 'Paused' : 'Active';
             DB::table('ads')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Ad campaign status updated!');
         return redirect()->back()->with('success', 'Ad campaign status updated!');
     }
 
@@ -2246,6 +2328,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Plan created successfully!');
         return redirect('/admin/plans')->with('success', 'Plan created successfully!');
     }
 
@@ -2287,12 +2370,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Plan updated successfully!');
         return redirect('/admin/plans')->with('success', 'Plan updated successfully!');
     }
 
     public function deletePlan($id)
     {
         DB::table('plans')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Plan deleted!');
         return redirect()->back()->with('success', 'Plan deleted!');
     }
 
@@ -2316,6 +2401,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Plan duplicated successfully!');
         return redirect('/admin/plans')->with('success', 'Plan duplicated successfully!');
     }
 
@@ -2442,6 +2528,7 @@ class AdminController extends Controller
             $newStatus = $plan->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('plans')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Plan status updated!');
         return redirect()->back()->with('success', 'Plan status updated!');
     }
 
@@ -2453,30 +2540,7 @@ class AdminController extends Controller
     public function homeEditor(Request $request)
     {
         $banners = DB::table('banners')->orderBy('id', 'desc')->paginate(5);
-        $dbTransits = DB::table('transits')->where('status', 'Active')->get();
-        $transits = $dbTransits->sortBy(function($t) {
-            $name = strtolower(trim($t->name));
-            $orderMap = [
-                'land' => 1,
-                'bullet' => 2,
-                'flight' => 3,
-                'train' => 4,
-                'bus' => 5,
-                'cruise' => 6,
-                'tracking' => 7,
-                'helicopter' => 8,
-            ];
-            $norm = $name;
-            if (str_contains($name, 'land') || str_contains($name, 'custom')) $norm = 'land';
-            elseif (str_contains($name, 'bullet') || str_contains($name, 'bike')) $norm = 'bullet';
-            elseif (str_contains($name, 'flight') || str_contains($name, 'air')) $norm = 'flight';
-            elseif (str_contains($name, 'train') || str_contains($name, 'rail')) $norm = 'train';
-            elseif (str_contains($name, 'bus') || str_contains($name, 'coach')) $norm = 'bus';
-            elseif (str_contains($name, 'cruise') || str_contains($name, 'ship') || str_contains($name, 'boat')) $norm = 'cruise';
-            elseif (str_contains($name, 'track') || str_contains($name, 'hike') || str_contains($name, 'trek')) $norm = 'tracking';
-            elseif (str_contains($name, 'helicopter') || str_contains($name, 'sky')) $norm = 'helicopter';
-            return $orderMap[$norm] ?? 999;
-        })->values();
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('id', 'asc')->get();
         $transitMusics = DB::table('transit_music')->orderBy('id', 'desc')->get();
         return view('admin.banners', compact('banners', 'transits', 'transitMusics'));
     }
@@ -2504,6 +2568,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Marketing banner created!');
         return redirect()->back()->with('success', 'Marketing banner created!');
     }
 
@@ -2529,12 +2594,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Banner updated!');
         return redirect()->back()->with('success', 'Banner updated!');
     }
 
     public function deleteBanner($id)
     {
         DB::table('banners')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Banner removed!');
         return redirect()->back()->with('success', 'Banner removed!');
     }
 
@@ -2545,6 +2612,7 @@ class AdminController extends Controller
             $newStatus = $banner->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('banners')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Banner status toggled!');
         return redirect()->back()->with('success', 'Banner status toggled!');
     }
 
@@ -2557,6 +2625,7 @@ class AdminController extends Controller
         if ($request->hasFile('music_file')) {
             $file = $request->file('music_file');
             $file->move(public_path('audio'), 'bg_music.mp3');
+            $this->logActivity('Platform Action', 'Background music updated successfully!');
             return redirect()->back()->with('success', 'Background music updated successfully!');
         }
 
@@ -2587,6 +2656,7 @@ class AdminController extends Controller
             'updated_at'   => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Transit music added for \' . $request->transit_name . \'!');
         return redirect()->back()->with('success', 'Transit music added for ' . $request->transit_name . '!');
     }
 
@@ -2600,6 +2670,7 @@ class AdminController extends Controller
             }
             DB::table('transit_music')->where('id', $id)->delete();
         }
+        $this->logActivity('Platform Action', 'Transit music deleted!');
         return redirect()->back()->with('success', 'Transit music deleted!');
     }
 
@@ -2726,6 +2797,7 @@ class AdminController extends Controller
     public function deleteNotification($id)
     {
         DB::table('notifications')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Notification cleared!');
         return redirect()->back()->with('success', 'Notification cleared!');
     }
 
@@ -2750,6 +2822,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'CMS static page created!');
         return redirect()->back()->with('success', 'CMS static page created!');
     }
 
@@ -2765,12 +2838,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'CMS static page updated!');
         return redirect()->back()->with('success', 'CMS static page updated!');
     }
 
     public function deleteCmsPage($id)
     {
         DB::table('cms_pages')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Static page removed!');
         return redirect()->back()->with('success', 'Static page removed!');
     }
 
@@ -2781,6 +2856,7 @@ class AdminController extends Controller
             $newStatus = $page->status === 'Published' ? 'Draft' : 'Published';
             DB::table('cms_pages')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'CMS page status toggled!');
         return redirect()->back()->with('success', 'CMS page status toggled!');
     }
 
@@ -2818,12 +2894,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Thank you! Your message was submitted successfully.');
         return redirect()->back()->with('success', 'Thank you! Your message was submitted successfully.');
     }
 
     public function deleteContact($id)
     {
         DB::table('contacts')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Contact message cleared!');
         return redirect()->back()->with('success', 'Contact message cleared!');
     }
 
@@ -2834,6 +2912,7 @@ class AdminController extends Controller
             $newStatus = $item->status === 'Pending' ? 'Resolved' : 'Pending';
             DB::table('contacts')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Contact message status toggled!');
         return redirect()->back()->with('success', 'Contact message status toggled!');
     }
 
@@ -2849,6 +2928,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Contact status updated successfully!');
         return redirect()->back()->with('success', 'Contact status updated successfully!');
     }
 
@@ -2870,12 +2950,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Newsletter subscription active!');
         return redirect()->back()->with('success', 'Newsletter subscription active!');
     }
 
     public function deleteSubscriber($id)
     {
         DB::table('subscribers')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Subscriber removed successfully!');
         return redirect()->back()->with('success', 'Subscriber removed successfully!');
     }
 
@@ -2886,6 +2968,7 @@ class AdminController extends Controller
             $newStatus = $sub->status === 'Subscribed' ? 'Unsubscribed' : 'Subscribed';
             DB::table('subscribers')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Subscriber status toggled!');
         return redirect()->back()->with('success', 'Subscriber status toggled!');
     }
 
@@ -2922,6 +3005,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Review added successfully!');
         return redirect()->back()->with('success', 'Review added successfully!');
     }
 
@@ -2951,12 +3035,14 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Review updated successfully!');
         return redirect()->back()->with('success', 'Review updated successfully!');
     }
 
     public function deleteReview($id)
     {
         DB::table('reviews')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Review deleted!');
         return redirect()->back()->with('success', 'Review deleted!');
     }
 
@@ -2967,15 +3053,20 @@ class AdminController extends Controller
             $newStatus = $review->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('reviews')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Review status updated!');
         return redirect()->back()->with('success', 'Review status updated!');
     }
 
     private function logActivity($activity, $details = null)
     {
         try {
-            $userName = Auth::check() ? Auth::user()->name : 'System/Admin';
+            $user = Auth::user();
+            $userName = $user ? $user->name : 'System/Admin';
+            $role = $user ? ($user->role ?? 'Admin') : 'System';
+            $userNameWithRole = "{$role} ({$userName})";
+
             DB::table('activity_logs')->insert([
-                'user_name' => $userName,
+                'user_name' => $userNameWithRole,
                 'activity' => $activity,
                 'details' => $details,
                 'ip_address' => request()->ip(),
@@ -3079,6 +3170,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Hotel Category created successfully!');
         return redirect()->back()->with('success', 'Hotel Category created successfully!');
     }
 
@@ -3097,6 +3189,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Hotel Category updated successfully!');
         return redirect()->back()->with('success', 'Hotel Category updated successfully!');
     }
 
@@ -3111,12 +3204,14 @@ class AdminController extends Controller
             ]);
         }
 
+        $this->logActivity('Platform Action', 'Hotel Category status updated!');
         return redirect()->back()->with('success', 'Hotel Category status updated!');
     }
 
     public function deleteHotelCategory($id)
     {
         DB::table('hotel_categories')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Hotel Category deleted successfully!');
         return redirect()->back()->with('success', 'Hotel Category deleted successfully!');
     }
 
@@ -3396,6 +3491,7 @@ class AdminController extends Controller
 
         $application->delete();
 
+        $this->logActivity('Platform Action', 'Career application deleted successfully.');
         return redirect()->back()->with('success', 'Career application deleted successfully.');
     }
 
@@ -3424,12 +3520,14 @@ class AdminController extends Controller
             ]
         );
 
+        $this->logActivity('Platform Action', 'Job position saved successfully.');
         return redirect()->back()->with('success', 'Job position saved successfully.');
     }
 
     public function deletePosition($id)
     {
         \App\Models\OpenPosition::findOrFail($id)->delete();
+        $this->logActivity('Platform Action', 'Job position deleted successfully.');
         return redirect()->back()->with('success', 'Job position deleted successfully.');
     }
 
@@ -3472,6 +3570,7 @@ class AdminController extends Controller
             );
         }
 
+        $this->logActivity('Platform Action', 'Career form settings saved successfully.');
         return redirect()->back()->with('success', 'Career form settings saved successfully.');
     }
 
@@ -3483,6 +3582,7 @@ class AdminController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true, 'id' => $dept->id, 'name' => $dept->name]);
         }
+        $this->logActivity('Platform Action', 'Department added successfully.');
         return redirect()->back()->with('success', 'Department added successfully.');
     }
 
@@ -3494,6 +3594,7 @@ class AdminController extends Controller
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => true, 'id' => $loc->id, 'name' => $loc->name]);
         }
+        $this->logActivity('Platform Action', 'Location added successfully.');
         return redirect()->back()->with('success', 'Location added successfully.');
     }
 
@@ -3506,6 +3607,7 @@ class AdminController extends Controller
             if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
                 return response()->json(['success' => true]);
             }
+            $this->logActivity('Platform Action', 'Department deleted successfully.');
             return redirect('/admin/careers')->with('success', 'Department deleted successfully.');
         } catch (\Exception $e) {
             if (request()->ajax() || request()->wantsJson()) {
@@ -3523,6 +3625,7 @@ class AdminController extends Controller
             if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
                 return response()->json(['success' => true]);
             }
+            $this->logActivity('Platform Action', 'Location deleted successfully.');
             return redirect('/admin/careers')->with('success', 'Location deleted successfully.');
         } catch (\Exception $e) {
             if (request()->ajax() || request()->wantsJson()) {
@@ -3604,30 +3707,7 @@ class AdminController extends Controller
                 ],
             ]);
         }
-        $dbTransits = DB::table('transits')->get();
-        $sortedTransits = $dbTransits->sortBy(function($t) {
-            $name = strtolower(trim($t->name));
-            $orderMap = [
-                'land' => 1,
-                'bullet' => 2,
-                'flight' => 3,
-                'train' => 4,
-                'bus' => 5,
-                'cruise' => 6,
-                'tracking' => 7,
-                'helicopter' => 8,
-            ];
-            $norm = $name;
-            if (str_contains($name, 'land') || str_contains($name, 'custom')) $norm = 'land';
-            elseif (str_contains($name, 'bullet') || str_contains($name, 'bike')) $norm = 'bullet';
-            elseif (str_contains($name, 'flight') || str_contains($name, 'air')) $norm = 'flight';
-            elseif (str_contains($name, 'train') || str_contains($name, 'rail')) $norm = 'train';
-            elseif (str_contains($name, 'bus') || str_contains($name, 'coach')) $norm = 'bus';
-            elseif (str_contains($name, 'cruise') || str_contains($name, 'ship') || str_contains($name, 'boat')) $norm = 'cruise';
-            elseif (str_contains($name, 'track') || str_contains($name, 'hike') || str_contains($name, 'trek')) $norm = 'tracking';
-            elseif (str_contains($name, 'helicopter') || str_contains($name, 'sky')) $norm = 'helicopter';
-            return $orderMap[$norm] ?? 999;
-        })->values();
+        $sortedTransits = DB::table('transits')->orderBy('id', 'asc')->get();
 
         $page = request()->get('page', 1);
         $perPage = 10;
@@ -3674,6 +3754,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Transit package added successfully!');
         return redirect()->back()->with('success', 'Transit package added successfully!');
     }
 
@@ -3708,12 +3789,14 @@ class AdminController extends Controller
 
         DB::table('transits')->where('id', $request->id)->update($data);
 
+        $this->logActivity('Platform Action', 'Transit package updated successfully!');
         return redirect()->back()->with('success', 'Transit package updated successfully!');
     }
 
     public function deleteTransit($id)
     {
         DB::table('transits')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Transit package deleted successfully.');
         return redirect()->back()->with('success', 'Transit package deleted successfully.');
     }
 
@@ -3724,6 +3807,7 @@ class AdminController extends Controller
             $newStatus = $transit->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('transits')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Transit status updated!');
         return redirect()->back()->with('success', 'Transit status updated!');
     }
 
@@ -3755,6 +3839,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Duration added successfully!');
         return redirect()->back()->with('success', 'Duration added successfully!');
     }
 
@@ -3774,6 +3859,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Duration updated successfully!');
         return redirect()->back()->with('success', 'Duration updated successfully!');
     }
 
@@ -3784,12 +3870,14 @@ class AdminController extends Controller
             $newStatus = $duration->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('durations')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Duration status updated!');
         return redirect()->back()->with('success', 'Duration status updated!');
     }
 
     public function deleteDuration($id)
     {
         DB::table('durations')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Duration deleted successfully.');
         return redirect()->back()->with('success', 'Duration deleted successfully.');
     }
 
@@ -3897,6 +3985,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Theme added successfully!');
         return redirect()->back()->with('success', 'Theme added successfully!');
     }
 
@@ -3923,6 +4012,7 @@ class AdminController extends Controller
 
         DB::table('themes')->where('id', $request->id)->update($data);
 
+        $this->logActivity('Platform Action', 'Theme updated successfully!');
         return redirect()->back()->with('success', 'Theme updated successfully!');
     }
 
@@ -3933,12 +4023,14 @@ class AdminController extends Controller
             $newStatus = $theme->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('themes')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Theme status updated!');
         return redirect()->back()->with('success', 'Theme status updated!');
     }
 
     public function deleteTheme($id)
     {
         DB::table('themes')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Theme deleted successfully.');
         return redirect()->back()->with('success', 'Theme deleted successfully.');
     }
 
@@ -4026,6 +4118,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'Country added successfully!');
         return redirect()->back()->with('success', 'Country added successfully!');
     }
 
@@ -4053,6 +4146,7 @@ class AdminController extends Controller
 
         DB::table('countries')->where('id', $request->id)->update($data);
 
+        $this->logActivity('Platform Action', 'Country updated successfully!');
         return redirect()->back()->with('success', 'Country updated successfully!');
     }
 
@@ -4063,12 +4157,14 @@ class AdminController extends Controller
             $newStatus = $country->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('countries')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'Country status updated!');
         return redirect()->back()->with('success', 'Country status updated!');
     }
 
     public function deleteCountry($id)
     {
         DB::table('countries')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'Country deleted successfully.');
         return redirect()->back()->with('success', 'Country deleted successfully.');
     }
 
@@ -4158,6 +4254,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'State added successfully!');
         return redirect()->back()->with('success', 'State added successfully!');
     }
 
@@ -4185,6 +4282,7 @@ class AdminController extends Controller
 
         DB::table('states')->where('id', $request->id)->update($data);
 
+        $this->logActivity('Platform Action', 'State updated successfully!');
         return redirect()->back()->with('success', 'State updated successfully!');
     }
 
@@ -4195,12 +4293,14 @@ class AdminController extends Controller
             $newStatus = $state->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('states')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'State status updated!');
         return redirect()->back()->with('success', 'State status updated!');
     }
 
     public function deleteState($id)
     {
         DB::table('states')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'State deleted successfully.');
         return redirect()->back()->with('success', 'State deleted successfully.');
     }
 
@@ -4291,6 +4391,7 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $this->logActivity('Platform Action', 'City added successfully!');
         return redirect()->back()->with('success', 'City added successfully!');
     }
 
@@ -4320,6 +4421,7 @@ class AdminController extends Controller
 
         DB::table('cities')->where('id', $request->id)->update($data);
 
+        $this->logActivity('Platform Action', 'City updated successfully!');
         return redirect()->back()->with('success', 'City updated successfully!');
     }
 
@@ -4330,12 +4432,14 @@ class AdminController extends Controller
             $newStatus = $city->status === 'Active' ? 'Inactive' : 'Active';
             DB::table('cities')->where('id', $id)->update(['status' => $newStatus, 'updated_at' => now()]);
         }
+        $this->logActivity('Platform Action', 'City status updated!');
         return redirect()->back()->with('success', 'City status updated!');
     }
 
     public function deleteCity($id)
     {
         DB::table('cities')->where('id', $id)->delete();
+        $this->logActivity('Platform Action', 'City deleted successfully.');
         return redirect()->back()->with('success', 'City deleted successfully.');
     }
 
@@ -4356,6 +4460,7 @@ class AdminController extends Controller
                 ['value' => $value, 'updated_at' => now()]
             );
         }
+        $this->logActivity('Platform Action', 'Mail settings updated successfully!');
         return redirect()->back()->with('success', 'Mail settings updated successfully!');
     }
 
@@ -4573,6 +4678,7 @@ class AdminController extends Controller
                 ['value' => $value, 'updated_at' => now()]
             );
         }
+        $this->logActivity('Platform Action', 'Payment gateway configurations updated successfully!');
         return redirect()->back()->with('success', 'Payment gateway configurations updated successfully!');
     }
 
@@ -4593,6 +4699,7 @@ class AdminController extends Controller
                 ['value' => $value, 'updated_at' => now()]
             );
         }
+        $this->logActivity('Platform Action', 'WhatsApp template saved successfully!');
         return redirect()->back()->with('success', 'WhatsApp template saved successfully!');
     }
 
@@ -4613,6 +4720,7 @@ class AdminController extends Controller
                 ['value' => $value, 'updated_at' => now()]
             );
         }
+        $this->logActivity('Platform Action', 'Email template saved successfully!');
         return redirect()->back()->with('success', 'Email template saved successfully!');
     }
 
@@ -4727,6 +4835,7 @@ class AdminController extends Controller
             'parent_id' => $request->parent_id,
         ]);
 
+        $this->logActivity('Created Gallery Folder', 'Folder Name: ' . $request->name);
         return redirect()->back()->with('success', 'Folder created successfully!');
     }
 
@@ -4774,6 +4883,19 @@ class AdminController extends Controller
             }
         }
 
+        if ($request->hasFile('files')) {
+            $fileNames = [];
+            foreach ($request->file('files') as $file) {
+                if ($file->isValid()) {
+                    $fileNames[] = $file->getClientOriginalName();
+                }
+            }
+            $namesStr = implode(', ', $fileNames);
+            if (strlen($namesStr) > 50) {
+                $namesStr = substr($namesStr, 0, 50) . '...';
+            }
+            $this->logActivity('Uploaded Gallery Media', 'Uploaded ' . count($request->file('files')) . ' file(s) (' . $namesStr . ') to gallery');
+        }
         return redirect()->back()->with('success', 'Images uploaded successfully!');
     }
 
@@ -4799,6 +4921,7 @@ class AdminController extends Controller
             
             ->update(['parent_id' => $targetId]);
 
+        $this->logActivity('Moved Gallery Media', 'Moved ' . count($request->selected_ids) . ' item(s)');
         return redirect()->back()->with('success', 'Items moved successfully!');
     }
 
@@ -4814,10 +4937,18 @@ class AdminController extends Controller
             
             ->get();
 
+        $deletedNames = [];
         foreach ($items as $item) {
+            $deletedNames[] = $item->name;
             $this->deleteMediaItemRecursively($item);
         }
 
+        $namesStr = implode(', ', $deletedNames);
+        if (strlen($namesStr) > 50) {
+            $namesStr = substr($namesStr, 0, 50) . '...';
+        }
+
+        $this->logActivity('Deleted Gallery Media', 'Deleted ' . count($request->selected_ids) . ' item(s) (' . $namesStr . ') from gallery');
         return redirect()->back()->with('success', 'Selected items deleted successfully!');
     }
 
@@ -4833,6 +4964,33 @@ class AdminController extends Controller
             if (File::exists($filePath)) {
                 File::delete($filePath);
             }
+            
+            // Cleanup references in other tables
+            $url = '/' . ltrim($item->file_path, '/');
+            
+            // Remove from packages gallery array
+            $packages = \Illuminate\Support\Facades\DB::table('packages')
+                ->where('gallery', 'like', '%' . $url . '%')
+                ->get();
+            foreach ($packages as $pkg) {
+                $gallery = json_decode($pkg->gallery, true) ?: [];
+                $gallery = array_filter($gallery, function ($v) use ($url) {
+                    return $v !== $url;
+                });
+                \Illuminate\Support\Facades\DB::table('packages')
+                    ->where('id', $pkg->id)
+                    ->update(['gallery' => json_encode(array_values($gallery))]);
+            }
+            
+            // Remove from package image (image column is not nullable)
+            \Illuminate\Support\Facades\DB::table('packages')->where('image', $url)->update(['image' => '']);
+            
+            // Remove from themes, countries, states, cities, transits
+            \Illuminate\Support\Facades\DB::table('themes')->where('image', $url)->update(['image' => null]);
+            \Illuminate\Support\Facades\DB::table('countries')->where('image', $url)->update(['image' => null]);
+            \Illuminate\Support\Facades\DB::table('states')->where('image', $url)->update(['image' => null]);
+            \Illuminate\Support\Facades\DB::table('cities')->where('image', $url)->update(['image' => null]);
+            \Illuminate\Support\Facades\DB::table('transits')->where('image', $url)->update(['image' => null]);
         }
         $item->delete();
     }
@@ -4859,6 +5017,7 @@ class AdminController extends Controller
 
         \App\Models\AddonPricing::create($request->only(['type', 'name', 'description', 'price', 'duration_days']));
 
+        $this->logActivity('Platform Action', 'Pricing added successfully.');
         return redirect()->back()->with('success', 'Pricing added successfully.');
     }
 
@@ -4874,6 +5033,7 @@ class AdminController extends Controller
         $addon = \App\Models\AddonPricing::findOrFail($id);
         $addon->update($request->only(['name', 'description', 'price', 'duration_days']));
 
+        $this->logActivity('Platform Action', 'Pricing updated successfully.');
         return redirect()->back()->with('success', 'Pricing updated successfully.');
     }
 
@@ -4882,6 +5042,7 @@ class AdminController extends Controller
         $addon = \App\Models\AddonPricing::findOrFail($id);
         $addon->delete();
 
+        $this->logActivity('Platform Action', 'Pricing deleted successfully.');
         return redirect()->back()->with('success', 'Pricing deleted successfully.');
     }
 

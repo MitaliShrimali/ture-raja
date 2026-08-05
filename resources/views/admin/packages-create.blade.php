@@ -557,38 +557,13 @@
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Transit
                                 Type</label>
-                            @php
-                                $dbTransits = DB::table('transits')->where('status', 'Active')->get();
-                                $dbTransits = $dbTransits->sortBy(function($t) {
-                                    $name = strtolower(trim($t->name));
-                                    $orderMap = [
-                                        'land' => 1,
-                                        'bullet' => 2,
-                                        'flight' => 3,
-                                        'train' => 4,
-                                        'bus' => 5,
-                                        'cruise' => 6,
-                                        'tracking' => 7,
-                                        'helicopter' => 8,
-                                    ];
-                                    $norm = $name;
-                                    if (str_contains($name, 'land') || str_contains($name, 'custom')) $norm = 'land';
-                                    elseif (str_contains($name, 'bullet') || str_contains($name, 'bike')) $norm = 'bullet';
-                                    elseif (str_contains($name, 'flight') || str_contains($name, 'air')) $norm = 'flight';
-                                    elseif (str_contains($name, 'train') || str_contains($name, 'rail')) $norm = 'train';
-                                    elseif (str_contains($name, 'bus') || str_contains($name, 'coach')) $norm = 'bus';
-                                    elseif (str_contains($name, 'cruise') || str_contains($name, 'ship') || str_contains($name, 'boat')) $norm = 'cruise';
-                                    elseif (str_contains($name, 'track') || str_contains($name, 'hike') || str_contains($name, 'trek')) $norm = 'tracking';
-                                    elseif (str_contains($name, 'helicopter') || str_contains($name, 'sky')) $norm = 'helicopter';
-                                    return $orderMap[$norm] ?? 999;
-                                });
-                            @endphp
+
                             <select name="group_size" x-model="group_size"
                                 class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#e85d26]/25 transition-all font-bold text-foreground text-sm">
-                                @foreach($dbTransits as $t)
+                                @foreach($transits as $t)
                                     <option value="{{ $t->name }}">{{ $t->name }}</option>
                                 @endforeach
-                                @if($dbTransits->isEmpty())
+                                @if($transits->isEmpty())
                                     <option value="Direct Flight">Direct Flight</option>
                                     <option value="Connecting Flight">Connecting Flight</option>
                                     <option value="Cruise Liner">Cruise Liner</option>

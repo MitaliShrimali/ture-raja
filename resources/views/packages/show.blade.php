@@ -1,51 +1,4 @@
-    @php
-        if (!function_exists('parseTextItinerary')) {
-            function parseTextItinerary($text)
-            {
-                if (empty($text))
-                    return [];
-                $text = str_replace("\r", "", $text);
-                $parts = preg_split('/•\s*/u', $text);
-                $days = [];
-                foreach ($parts as $part) {
-                    $part = trim($part);
-                    if (empty($part))
-                        continue;
-                    $lines = explode("\n", $part);
-                    $titleLine = trim($lines[0]);
-                    $descLines = array_slice($lines, 1);
-                    $desc = implode("\n", $descLines);
-                    $desc = trim($desc);
-
-                    if (preg_match('/Day\s+\d+/i', $titleLine) || preg_match('/Day\s+/i', $titleLine)) {
-                        $days[] = [
-                            'title' => $titleLine,
-                            'desc' => $desc
-                        ];
-                    } else {
-                        if (count($days) > 0) {
-                            $days[count($days) - 1]['desc'] .= "\n\n• " . $part;
-                        }
-                    }
-                }
-
-                foreach ($days as &$day) {
-                    $desc = e($day['desc']);
-                    $desc = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $desc);
-                    $desc = preg_replace('/_(.*?)_/', '<em>$1</em>', $desc);
-                    $desc = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2" target="_blank" class="text-orange-600 hover:underline font-bold">$1</a>', $desc);
-                    $desc = nl2br($desc);
-                    $day['desc_html'] = $desc;
-                }
-                return $days;
-            }
-        }
-
-        $parsedItinerary = [];
-        if (!empty($package['editorial_itinerary'])) {
-            $parsedItinerary = parseTextItinerary($package['editorial_itinerary']);
-        }
-
+@php
         // Combine both sources of sightseeing details
         $sightseeingPills = [];
         if (!empty($package['sightseeing'])) {
@@ -94,14 +47,16 @@
         $navSections = [
             ['id' => 'overview', 'title' => 'Overview']
         ];
-        if (count($parsedItinerary) > 0)
+        if (!empty($package['editorial_itinerary']))
             $navSections[] = ['id' => 'itinerary', 'title' => 'Itinerary'];
         if (count($sightseeingPills) > 0)
             $navSections[] = ['id' => 'sightseeing', 'title' => 'Sightseeing'];
         if (!empty($package['hotels']))
             $navSections[] = ['id' => 'hotels', 'title' => 'Hotels'];
+        if (!empty($package['about_tours']))
+            $navSections[] = ['id' => 'about-tours', 'title' => 'About Tours'];
         if (!empty($package['terms']))
-            $navSections[] = ['id' => 'terms', 'title' => 'Tour Info'];
+            $navSections[] = ['id' => 'terms', 'title' => 'Terms & Conditions'];
         $navSections[] = ['id' => 'faq', 'title' => 'FAQ'];
     @endphp
     @extends('layouts.app')
@@ -480,14 +435,14 @@
                                     {{-- Transit / Tour Type --}}
                                     @if(!empty($package['tour_type']))
                                         <span class="inline-flex items-center px-3 py-1.5 rounded border border-gray-300 text-gray-700 text-[11px] font-semibold bg-white">
-                                            Transit wise ({{ $package['tour_type'] }})
+                                            {{ $package['tour_type'] }}
                                         </span>
                                     @endif
 
                                     {{-- Theme --}}
                                     @if(!empty($package['theme']))
                                         <span class="inline-flex items-center px-3 py-1.5 rounded border border-gray-300 text-gray-700 text-[11px] font-semibold bg-white">
-                                            Theme wise
+                                            {{ $package['theme'] }}
                                         </span>
                                     @endif
 
@@ -554,7 +509,7 @@
                                             <i data-lucide="map" class="w-4 h-4"></i> Overview
                                         </a>
                                     @endif
-                                    @if(count($parsedItinerary) > 0)
+                                    @if(!empty($package['editorial_itinerary']))
                                         <a href="#itinerary"
                                             class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
                                             <i data-lucide="list" class="w-4 h-4"></i> Itinerary
@@ -667,55 +622,45 @@
                         @endif
 
                         {{-- Itinerary Timeline --}}
-                        @if(count($parsedItinerary) > 0)
-                            <div id="itinerary" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" x-data="{ expandedItinerary: false }">
+                        @if(!empty($package['editorial_itinerary']))
+                            <div id="itinerary" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
                                 <h2 class="font-black text-gray-900 mb-8 section-heading text-xl">Itinerary</h2>
                                 <div class="relative">
-                                    <div class="relative pl-2 transition-all duration-500 overflow-hidden"
-                                         :class="expandedItinerary ? 'max-h-[5000px]' : 'max-h-[380px]'">
-                                        @foreach($parsedItinerary as $idx => $day)
-                                            <div class="relative flex gap-6 pb-8 last:pb-2">
-                                                @if(!$loop->last)
-                                                    <div class="absolute left-[11px] top-6 bottom-0"
-                                                        style="border-left: 2px dashed #e85d26 !important;"></div>
-                                                @endif
-                                                <div class="relative z-10 shrink-0">
-                                                    @if($loop->first || $loop->last)
-                                                        <div class="w-6 h-6 rounded-full shadow-sm flex items-center justify-center text-[10px] font-bold text-white"
-                                                            style="background-color: #e85d26 !important; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.2);">
-                                                            {{ $idx + 1 }}</div>
-                                                    @else
-                                                        <div class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-[10px] font-bold"
-                                                            style="border: 4px solid #e85d26 !important; color: #e85d26; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.12);">
-                                                            {{ $idx + 1 }}</div>
-                                                    @endif
-                                                </div>
-                                                <div class="-mt-1 flex-1">
-                                                    <h4 class="font-black text-gray-800"
-                                                        style="font-family: 'Poppins', sans-serif; font-size: 16px;">{{ $day['title'] }}</h4>
-                                                    @if(!empty($day['desc']))
-                                                        <p class="standard-body-text mt-2 max-w-3xl">{!! $day['desc_html'] !!}</p>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        @endforeach
+                                    <div id="itinerary-content" class="relative transition-all duration-500 overflow-hidden" style="max-height: 380px;">
+                                        <div class="prose max-w-none standard-body-text">
+                                            {!! $package['editorial_itinerary'] !!}
+                                        </div>
                                         
                                         {{-- Blurred overlay inside the clipped container --}}
-                                        @if(count($parsedItinerary) > 1) 
-                                            <div x-show="!expandedItinerary" class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none"></div>
-                                        @endif
+                                        <div id="itinerary-overlay" class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-white via-white/90 to-transparent pointer-events-none"></div>
                                     </div>
                                     
-                                    @if(count($parsedItinerary) > 1) 
                                     <div class="mt-4 flex justify-center relative z-10">
-                                        <button @click="expandedItinerary = !expandedItinerary" 
+                                        <button type="button" id="itinerary-toggle-btn"
+                                            onclick="toggleItinerary()"
                                             class="inline-flex items-center justify-center px-6 py-2.5 rounded-lg text-white text-sm font-bold tracking-wide transition-all hover:opacity-90 shadow-sm"
                                             style="background-color: #e85d26;">
-                                            <span x-text="expandedItinerary ? 'Show Less ↑' : 'Expand Full Itinerary ↓'"></span>
+                                            <span>Expand Full Itinerary &darr;</span>
                                         </button>
                                     </div>
-                                    @endif
                                 </div>
+                                <script>
+                                    function toggleItinerary() {
+                                        const content = document.getElementById('itinerary-content');
+                                        const overlay = document.getElementById('itinerary-overlay');
+                                        const btnSpan = document.querySelector('#itinerary-toggle-btn span');
+                                        
+                                        if (content.style.maxHeight === '380px') {
+                                            content.style.maxHeight = '5000px';
+                                            overlay.style.display = 'none';
+                                            btnSpan.innerHTML = 'Show Less &uarr;';
+                                        } else {
+                                            content.style.maxHeight = '380px';
+                                            overlay.style.display = 'block';
+                                            btnSpan.innerHTML = 'Expand Full Itinerary &darr;';
+                                        }
+                                    }
+                                </script>
                             </div>
                         @endif
                         
@@ -832,11 +777,21 @@
 
 
 
+                        {{-- About Tours --}}
+                        @if(!empty($package['about_tours']) && trim(strip_tags(str_replace('&nbsp;', '', $package['about_tours']))) !== '')
+                            <div id="about-tours" class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                                <h2 class="font-black text-gray-900 mb-6 section-heading text-xl">About Tours</h2>
+                                <div class="prose max-w-none standard-body-text text-sm text-gray-600 leading-relaxed">
+                                    {!! $package['about_tours'] !!}
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Terms & Conditions --}}
                         @if(!empty($package['terms']) && trim(strip_tags(str_replace('&nbsp;', '', $package['terms']))) !== '')
                             <div id="terms" class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
                                 <div class="flex items-center gap-3 mb-6">
-                                    <h2 class="font-black text-gray-900 section-heading !mb-0 text-xl pb-2">Tour Info / Terms & Conditions</h2>
+                                    <h2 class="font-black text-gray-900 section-heading !mb-0 text-xl pb-2">Terms & Conditions</h2>
                                 </div>
                                 <div class="text-sm text-gray-600 leading-relaxed mt-4">
                                     {!! nl2br(e($package['terms'])) !!}

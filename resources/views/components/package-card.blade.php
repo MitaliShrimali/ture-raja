@@ -51,13 +51,14 @@
     }
 
     // ── Tour type & category ─────────────────────────────────────────────
-    $tourTypeVal  = $pkgArr['tour_type'] ?? '';
+    $transitVal   = $pkgArr['group_size'] ?? '';
     $categoryVal  = $pkgArr['category']  ?? '';
     $themeVal     = $pkgArr['theme']     ?? '';
+    $holidayVal   = $pkgArr['holiday_type'] ?? '';
 
     // Icon per transit type
     $transportIcon = 'plane';
-    $typeLower = strtolower($tourTypeVal);
+    $typeLower = strtolower($transitVal);
     if (str_contains($typeLower, 'bus'))       $transportIcon = 'bus';
     elseif (str_contains($typeLower, 'train')) $transportIcon = 'train';
     elseif (str_contains($typeLower, 'cruise') || str_contains($typeLower, 'boat')) $transportIcon = 'ship';
@@ -157,19 +158,33 @@
             @endif
         </div>
 
-        {{-- Row 2: Tour Type + Theme --}}
+        {{-- Row 2: Properties --}}
         <div class="flex items-center gap-2 flex-wrap">
-            @if($tourTypeVal)
+            @if($categoryVal)
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-100 text-[11px] font-bold text-blue-600">
+                    <i data-lucide="map" size="12"></i>
+                    {{ ucfirst($categoryVal) }}
+                </span>
+            @endif
+
+            @if($transitVal)
                 <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-100 text-[11px] font-bold text-orange-600">
                     <i data-lucide="{{ $transportIcon }}" size="12"></i>
-                    {{ $tourTypeVal }}
+                    {{ $transitVal }}
                 </span>
             @endif
 
             @if($themeVal)
                 <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-50 border border-violet-100 text-[11px] font-bold text-violet-600">
-                    <i data-lucide="users" size="12"></i>
+                    <i data-lucide="palette" size="12"></i>
                     {{ $themeVal }}
+                </span>
+            @endif
+
+            @if($holidayVal)
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-50 border border-green-100 text-[11px] font-bold text-green-600">
+                    <i data-lucide="calendar-heart" size="12"></i>
+                    {{ $holidayVal }}
                 </span>
             @endif
         </div>

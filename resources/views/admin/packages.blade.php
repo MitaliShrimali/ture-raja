@@ -9,14 +9,14 @@
     $expiredPackages = DB::table('packages')
         ->where('status', '!=', 'Pending')
         ->whereNotNull('expiry_date')
-        ->whereDate('expiry_date', '<', now())
+        ->where('expiry_date', '<', now()->format('Y-m-d'))
         ->count();
     
     $expiringSoon = DB::table('packages')
         ->where('status', '!=', 'Pending')
         ->whereNotNull('expiry_date')
-        ->whereDate('expiry_date', '>=', now())
-        ->whereDate('expiry_date', '<=', now()->addDays(7))
+        ->where('expiry_date', '>=', now()->format('Y-m-d'))
+        ->where('expiry_date', '<=', now()->addDays(7)->format('Y-m-d'))
         ->count();
 
     $pendingPackages = DB::table('packages')->where('status', 'Pending')->count();

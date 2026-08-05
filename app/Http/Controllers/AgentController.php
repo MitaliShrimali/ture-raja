@@ -331,13 +331,15 @@ class AgentController extends Controller
         $hotels = DB::table('hotels')->orderBy('name', 'asc')->get();
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('id', 'asc')->get();
         return view('agent.pages.create-package', [
             'page_title' => 'Create Package',
             'page_breadcrumb' => 'Pages / Create Package',
             'agents' => $agents,
             'hotels' => $hotels,
             'themes' => $themes,
-            'holidayTypes' => $holidayTypes
+            'holidayTypes' => $holidayTypes,
+            'transits' => $transits
         ]);
     }
 
@@ -366,6 +368,7 @@ class AgentController extends Controller
         $hotels = DB::table('hotels')->orderBy('name', 'asc')->get();
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('id', 'asc')->get();
         return view('agent.pages.edit-package', [
             'page_title' => 'Edit Package',
             'page_breadcrumb' => 'Pages / Edit Package',
@@ -373,7 +376,8 @@ class AgentController extends Controller
             'agents' => $agents,
             'hotels' => $hotels,
             'themes' => $themes,
-            'holidayTypes' => $holidayTypes
+            'holidayTypes' => $holidayTypes,
+            'transits' => $transits
         ]);
     }
 
@@ -415,10 +419,15 @@ class AgentController extends Controller
             $imageUrl = 'uploads/packages/' . $fileName;
         }
 
-        // Gallery Images Upload
-        $galleryUrls = json_decode($pkg->gallery, true) ?: [];
-        if ($request->has('gallery_urls') && is_array($request->gallery_urls)) {
-            $galleryUrls = array_merge($galleryUrls, $request->gallery_urls);
+        $galleryUrls = [];
+        if ($request->has('gallery_urls')) {
+            $galleryUrls = is_array($request->gallery_urls) ? $request->gallery_urls : [];
+        } else {
+            if ($request->has('title')) {
+                $galleryUrls = []; // Form submitted but no gallery images left
+            } else {
+                $galleryUrls = json_decode($pkg->gallery, true) ?: []; // Fallback
+            }
         }
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $file) {
@@ -428,6 +437,10 @@ class AgentController extends Controller
                     $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
                 }
             }
+        }
+
+        if (count($galleryUrls) > 0) {
+            $imageUrl = $galleryUrls[0];
         }
 
         // Brochure Upload
@@ -518,6 +531,8 @@ class AgentController extends Controller
             'old_price'  => $request->old_price ?: null,
             'duration'   => $request->duration ?? '3 Days',
             'group_size' => $request->group_size ?? 'Direct Flight',
+            'hide_price' => $request->has('hide_price') ? 1 : 0,
+            'about_tours' => $request->about_tours ?? null,
             'image'      => $imageUrl,
             'theme'      => $request->theme ?? '',
             'holiday_type' => $request->holiday_type ?? '',
@@ -604,6 +619,10 @@ class AgentController extends Controller
                 $file->move(public_path('uploads/packages/gallery'), $fileName);
                 $galleryUrls[] = '/uploads/packages/gallery/' . $fileName;
             }
+        }
+
+        if (count($galleryUrls) > 0) {
+            $imageUrl = $galleryUrls[0];
         }
 
         // Brochure Upload
@@ -720,6 +739,8 @@ class AgentController extends Controller
             'reviews'    => 0,
             'duration'   => $request->duration ?? '3 Days',
             'group_size' => $request->group_size ?? 'Direct Flight',
+            'hide_price' => $request->has('hide_price') ? 1 : 0,
+            'about_tours' => $request->about_tours ?? null,
             'image'      => $imageUrl ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
             'category'   => $request->category ?? 'domestic',
             'categories_list' => is_array($request->categories_list) ? json_encode($request->categories_list) : null,

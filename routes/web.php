@@ -702,10 +702,12 @@ Route::get('/packages/{slug}', function ($slug) {
             'currency'   => property_exists($dbPkg, 'currency') && $dbPkg->currency ? $dbPkg->currency : 'INR',
             'badge'      => $dbPkg->badge,
             'category'   => $dbPkg->category,
-            'tour_type'  => 'Flight Package',
+            'tour_type'  => property_exists($dbPkg, 'group_size') ? $dbPkg->group_size : null,
             'city'       => $dbPkg->location,
-            'theme'      => property_exists($dbPkg, 'theme') && $dbPkg->theme ? $dbPkg->theme : 'Adventure',
+            'theme'      => property_exists($dbPkg, 'theme') ? $dbPkg->theme : null,
             'holiday_type'=> property_exists($dbPkg, 'holiday_type') ? $dbPkg->holiday_type : null,
+            'departure_city' => property_exists($dbPkg, 'departure_city') ? $dbPkg->departure_city : null,
+            'departure_state'=> property_exists($dbPkg, 'departure_state') ? $dbPkg->departure_state : null,
             'activities' => [],
             'overview'   => "Experience the incredible beauty and culture of {$dbPkg->title}. This package offers an unforgettable journey filled with stunning landscapes, historic sites, and amazing local cuisine.",
             'highlights' => [
@@ -729,6 +731,7 @@ Route::get('/packages/{slug}', function ($slug) {
             'transfers'  => json_decode($dbPkg->transfers, true) ?: [],
             'keywords'   => json_decode($dbPkg->keywords, true) ?: [],
             'editorial_itinerary' => property_exists($dbPkg, 'editorial_itinerary') ? $dbPkg->editorial_itinerary : null,
+            'about_tours' => property_exists($dbPkg, 'about_tours') ? $dbPkg->about_tours : null,
             'terms' => property_exists($dbPkg, 'terms') ? $dbPkg->terms : null,
         ];
 

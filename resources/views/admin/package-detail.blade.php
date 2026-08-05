@@ -1,49 +1,4 @@
 @php
-    if (!function_exists('parseTextItinerary')) {
-        function parseTextItinerary($text) {
-            if (empty($text)) return [];
-            $text = str_replace("\r", "", $text);
-            $parts = preg_split('/•\s*/u', $text);
-            $days = [];
-            foreach ($parts as $part) {
-                $part = trim($part);
-                if (empty($part)) continue;
-                $lines = explode("\n", $part);
-                $titleLine = trim($lines[0]);
-                $descLines = array_slice($lines, 1);
-                $desc = implode("\n", $descLines);
-                $desc = trim($desc);
-                
-                if (preg_match('/Day\s+\d+/i', $titleLine) || preg_match('/Day\s+/i', $titleLine)) {
-                    $days[] = [
-                        'title' => $titleLine,
-                        'desc' => $desc
-                    ];
-                } else {
-                    if (count($days) > 0) {
-                        $days[count($days) - 1]['desc'] .= "\n\n• " . $part;
-                    }
-                }
-            }
-            
-            foreach ($days as &$day) {
-                $desc = e($day['desc']);
-                $desc = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $desc);
-                $desc = preg_replace('/_(.*?)_/', '<em>$1</em>', $desc);
-                $desc = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2" target="_blank" class="text-orange-600 hover:underline font-bold">$1</a>', $desc);
-                $desc = nl2br($desc);
-                $day['desc_html'] = $desc;
-            }
-            return $days;
-        }
-    }
-    
-    $parsedItinerary = [];
-    if (!empty($pkg->editorial_itinerary)) {
-        $parsedItinerary = parseTextItinerary($pkg->editorial_itinerary);
-    }
-    
-    // Combine sightseeing sources
     $itinerary = $pkg->itinerary ? (json_decode($pkg->itinerary, true) ?: []) : [];
     $sightseeingPills = [];
     if (!empty($pkg->sightseeing)) {
@@ -170,35 +125,58 @@
                         </p>
                     </div>
                     <div class="space-y-1">
-                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Location</p>
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Departure City</p>
                         <p class="text-sm font-bold text-foreground flex items-center gap-1">
                             <i data-lucide="map-pin" size="14" class="text-primary"></i>
-                            {{ $pkg->location ?? '—' }}
+                            {{ !empty($pkg->departure_city) ? $pkg->departure_city : ($pkg->location ?? '—') }}
                         </p>
                     </div>
                     <div class="space-y-1">
-                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Category</p>
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Destination Type</p>
                         <p class="text-sm font-bold text-foreground">{{ ucfirst($pkg->category ?? '—') }}</p>
                     </div>
                     <div class="space-y-1">
-                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Group Size</p>
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Transit Type</p>
                         <p class="text-sm font-bold text-foreground flex items-center gap-1">
-                            <i data-lucide="users" size="14" class="text-primary"></i>
+                            <i data-lucide="car" size="14" class="text-primary"></i>
                             {{ $pkg->group_size ?? '—' }}
                         </p>
                     </div>
+
                     <div class="space-y-1">
-                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Availability</p>
-                        <p class="text-sm font-bold text-foreground">{{ $pkg->stock ?? '—' }}</p>
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Departure State</p>
+                        <p class="text-sm font-bold text-foreground flex items-center gap-1">
+                            {{ $pkg->departure_state ?? '—' }}
+                        </p>
                     </div>
                     <div class="space-y-1">
-                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Rating</p>
+                        <p class="text-[10px] font-black text-muted-text uppercase tracking-widest">Departure Country</p>
                         <p class="text-sm font-bold text-foreground flex items-center gap-1">
-                            <i data-lucide="star" size="14" class="text-yellow-400"></i>
-                            {{ $pkg->rating ?? '4.8' }} ({{ $pkg->reviews ?? 0 }} reviews)
+                            {{ $pkg->departure_country ?? '—' }}
                         </p>
                     </div>
                 </div>
+
+                @php
+                    $categoriesList = json_decode($pkg->categories_list, true) ?: [];
+                    $keywords = !empty($pkg->keywords) ? explode(',', $pkg->keywords) : [];
+                @endphp
+                
+                @if(count($categoriesList) > 0 || !empty($pkg->badge))
+                <div class="grid grid-cols-1 gap-4 mt-6 pt-6 border-t border-border-soft">
+                    <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                        <p class="text-[10px] font-bold text-muted-text uppercase tracking-widest mb-2">Categories & Tag</p>
+                        <div class="flex flex-wrap gap-2">
+                            @if(!empty($pkg->badge))
+                                <span class="text-xs font-bold bg-primary text-white px-2 py-1 rounded-md">{{ $pkg->badge }}</span>
+                            @endif
+                            @foreach($categoriesList as $cat)
+                                <span class="text-xs font-medium bg-orange-100 text-orange-800 px-2 py-1 rounded-md">{{ $cat }}</span>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
 
             {{-- Inclusions & Exclusions --}}
@@ -291,6 +269,18 @@
             </div>
             @endif
 
+            {{-- About Tours --}}
+            @if(!empty($pkg->about_tours))
+            <div class="bg-[#F8F9FA] rounded-[32px] p-8 border border-gray-200 shadow-soft mb-6">
+                <div class="flex items-center gap-2 mb-5">
+                    <h3 class="text-lg font-black text-foreground">About Tours</h3>
+                </div>
+                <div class="prose max-w-none text-sm text-gray-600 leading-relaxed mt-2">
+                    {!! $pkg->about_tours !!}
+                </div>
+            </div>
+            @endif
+
             {{-- Terms & Conditions --}}
             @if(!empty($pkg->terms))
             <div class="bg-[#F8F9FA] rounded-[32px] p-8 border border-gray-200 shadow-soft mb-6">
@@ -307,30 +297,11 @@
             @endif
 
             {{-- Itinerary Timeline --}}
-            @if(count($parsedItinerary) > 0)
+            @if(!empty($pkg->editorial_itinerary))
             <div class="bg-white rounded-[32px] p-8 border border-border-soft shadow-soft mb-6">
                 <h3 class="text-lg font-black text-foreground mb-6">Itinerary</h3>
-                <div class="relative pl-2">
-                    @foreach($parsedItinerary as $idx => $day)
-                        <div class="relative flex gap-6 pb-8 last:pb-2">
-                            @if(!$loop->last)
-                                <div class="absolute left-[11px] top-6 bottom-0" style="border-left: 2px dashed #e85d26 !important;"></div>
-                            @endif
-                            <div class="relative z-10 shrink-0">
-                                @if($loop->first || $loop->last)
-                                    <div class="w-6 h-6 rounded-full shadow-sm flex items-center justify-center text-[10px] font-bold text-white" style="background-color: #e85d26 !important; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.2);">{{ $idx + 1 }}</div>
-                                @else
-                                    <div class="w-6 h-6 rounded-full bg-white shadow-sm flex items-center justify-center text-[10px] font-bold" style="border: 4px solid #e85d26 !important; color: #e85d26; box-shadow: 0 0 0 4px rgba(232, 93, 38, 0.12);">{{ $idx + 1 }}</div>
-                                @endif
-                            </div>
-                            <div class="-mt-1 flex-1">
-                                <h4 class="font-bold text-gray-800 text-base">{{ $day['title'] }}</h4>
-                                @if(!empty($day['desc']))
-                                    <p class="text-sm text-gray-600 mt-2">{!! $day['desc_html'] !!}</p>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
+                <div class="prose max-w-none text-sm text-gray-600 leading-relaxed">
+                    {!! $pkg->editorial_itinerary !!}
                 </div>
             </div>
             @endif
@@ -429,12 +400,7 @@
                         <span class="font-bold text-foreground">{{ $pkg->holiday_type }}</span>
                     </div>
                 @endif
-                @if(!empty($pkg->stock))
-                    <div class="flex items-center justify-between pb-4 border-b border-gray-50">
-                        <span class="text-muted-text">Availability</span>
-                        <span class="font-bold text-foreground">{{ $pkg->stock }}</span>
-                    </div>
-                    @endif
+
                     @if(!empty($pkg->validity))
                     <div class="flex items-center justify-between pb-4 border-b border-gray-50">
                         <span class="text-muted-text">Validity</span>

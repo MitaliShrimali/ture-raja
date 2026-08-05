@@ -73,7 +73,9 @@
         return [
             'url' => asset($url),
             'name' => basename($url),
-            'size' => 'Existing'
+            'size' => 'Existing',
+            'is_gallery' => true,
+            'path' => $url
         ];
     }, $galleryUrls))) }},
         brochureName: {{ json_encode($pkg->brochure ? basename($pkg->brochure) : '') }},
@@ -87,7 +89,7 @@
         newCity: '',
         keywords: {{ json_encode($keywords) }},
         newKeyword: '',
-        customAmenities: {!! json_encode(array_values(array_diff(json_decode($pkg->amenities ?? '[]', true) ?: [], ['Free Wifi', 'Breakfast Included', 'Travel Insurance', 'Private Chef Included', 'Tour Manager Included']))) !!},
+        customAmenities: {{ json_encode(array_values(array_diff(json_decode($pkg->amenities ?? '[]', true) ?: [], ['Free Wifi', 'Breakfast Included', 'Travel Insurance', 'Private Chef Included', 'Tour Manager Included']))) }},
         newAmenity: '',
         addCity() {
             if (this.newCity.trim()) {
@@ -524,10 +526,15 @@
                                 Type</label>
                             <select name="group_size" x-model="group_size"
                                 class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm">
-                                <option value="Direct Flight">Direct Flight</option>
-                                <option value="Connecting Flight">Connecting Flight</option>
-                                <option value="Cruise Liner">Cruise Liner</option>
-                                <option value="Luxury Bus">Luxury Bus</option>
+                                @foreach($transits as $t)
+                                    <option value="{{ $t->name }}">{{ $t->name }}</option>
+                                @endforeach
+                                @if($transits->isEmpty())
+                                    <option value="Direct Flight">Direct Flight</option>
+                                    <option value="Connecting Flight">Connecting Flight</option>
+                                    <option value="Cruise Liner">Cruise Liner</option>
+                                    <option value="Luxury Bus">Luxury Bus</option>
+                                @endif
                             </select>
                         </div>
                     </div>
