@@ -13,7 +13,7 @@
         
         <div class="container-custom relative z-20">
             <div class="flex flex-row items-center justify-between mb-0 md:mb-2 gap-2 md:gap-3">
-                <h2 class="font-bold text-[#1a1a1a] m-0 text-[18px] md:text-[34px] leading-tight">
+                <h2 class="font-bold text-[#1a1a1a] m-0 text-[16px] md:text-[28px] leading-tight">
                     Top International Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=international') }}"
@@ -100,7 +100,7 @@
         
         <div class="container-custom relative z-20">
             <div class="flex flex-row items-center justify-between mb-0 md:mb-2 gap-2 md:gap-3">
-                <h2 class="font-bold text-[#1a1a1a] m-0 text-[18px] md:text-[34px] leading-tight">
+                <h2 class="font-bold text-[#1a1a1a] m-0 text-[16px] md:text-[28px] leading-tight">
                     Top Domestic Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=domestic') }}"
@@ -564,7 +564,7 @@
             <!-- Header with Filters -->
             <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-4" style="z-index: 40; position: relative;">
                 <div class="space-y-2">
-                    <h2 class="text-3xl md:text-5xl font-black text-foreground tracking-tight font-heading">
+                    <h2 class="text-2xl md:text-4xl font-black text-foreground tracking-tight font-heading">
                         Featured Travel Packages
                     </h2>
                     <p class="text-text-muted font-medium text-lg">
@@ -853,7 +853,7 @@
             <!-- Header -->
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
                 <div class="space-y-1">
-                    <h2 class="text-2xl md:text-[40px] font-black text-foreground tracking-tight leading-tight">Top Categories Packages</h2>
+                    <h2 class="text-xl md:text-[32px] font-black text-foreground tracking-tight leading-tight">Top Categories Packages</h2>
                     <p class="text-gray-500 text-sm md:text-base">Favorite destinations based on customer reviews</p>
                 </div>
                 <a href="{{ url('/discover') }}" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-200 text-[10px] font-bold hover:bg-gray-300 transition-colors self-start md:self-auto mt-2 md:mt-0">

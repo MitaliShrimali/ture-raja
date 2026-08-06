@@ -192,17 +192,17 @@
 
             /* IMMEDIATE NAVBAR ALIGNMENT */
             main {
-                padding-top: 80px !important;
+                padding-top: 72px !important; /* Navbar height on mobile */
             }
 
             @media (min-width: 1024px) {
                 main {
-                    padding-top: 90px !important;
+                    padding-top: 96px !important; /* Navbar height on desktop */
                 }
             }
         </style>
 
-        <div class="bg-[#F8F9FA] min-h-screen pt-4 lg:pt-6"
+        <div class="bg-[#F8F9FA] min-h-screen"
             x-data='{ showBookingModal: false, slides: @json($gallerySlides), sections: @json($navSections) }'>
             {{-- Breadcrumb --}}
             <div>
@@ -586,7 +586,7 @@
                                 </div>
 
                                 <div class="mt-4 transition-all duration-500 ease-in-out relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50"
-                                     :style="documentExpanded ? 'height: 700px;' : 'height: 200px;'">
+                                     :style="documentExpanded ? 'height: 800px;' : 'height: 120px;'">
                                      
                                     <!-- Gradient Overlay when collapsed -->
                                     <div x-show="!documentExpanded" 

@@ -45,6 +45,13 @@
     }
   }
 
+  @media (min-width: 768px) {
+    .hero-mobile-title {
+      font-size: 28px !important;
+      line-height: 1.3 !important;
+    }
+  }
+
   .hero-ad-container {
     width: 375px;
     height: 98px;
@@ -118,22 +125,22 @@
     <audio id="heroBgMusic" src="{{ asset('audio/bg_music.mp3') }}?v={{ time() }}" loop></audio>
   </div>
 
-  <div class="absolute bottom-2 right-4 md:bottom-8 md:right-8 z-40 select-none hero-sound-toggle-wrapper">
+  <div class="absolute right-4 bottom-24 md:right-8 md:bottom-8 z-40 select-none hero-sound-toggle-wrapper">
     <button type="button" onclick="toggleHeroSound()" id="heroSoundToggle"
-      class="w-8 h-8 rounded-full bg-[#e85d26] hover:bg-orange-600 flex items-center justify-center text-white transition-all shadow-md focus:outline-none"
-      style="box-shadow: 0 0 10px rgba(232, 93, 38, 0.4);">
+      class="w-6 h-6 md:w-8 md:h-8 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-[#e85d26] flex items-center justify-center text-white transition-all shadow-lg focus:outline-none"
+      style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);">
       <!-- Music On Icon -->
-      <svg id="musicOnIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+      <svg id="musicOnIcon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-        class="w-4 h-4 text-white">
+        class="w-3 h-3 text-white">
         <path d="M9 18V5l12-2v13"></path>
         <circle cx="6" cy="18" r="3"></circle>
         <circle cx="18" cy="16" r="3"></circle>
       </svg>
       <!-- Music Off Icon (hidden by default) -->
-      <svg id="musicOffIcon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+      <svg id="musicOffIcon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-        class="w-4 h-4 text-white hidden">
+        class="w-3 h-3 text-white hidden">
         <line x1="2" y1="2" x2="22" y2="22"></line>
         <path d="M9 13V5l12-2v9"></path>
         <circle cx="6" cy="18" r="3"></circle>
