@@ -163,32 +163,18 @@
         </div>
 
         {{-- Row 2: Properties --}}
-        <div class="flex items-center gap-2 flex-wrap">
-            @if($categoryVal)
-                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-100 text-[11px] font-bold text-blue-600">
-                    <i data-lucide="map" size="12"></i>
-                    {{ ucfirst($categoryVal) }}
-                </span>
-            @endif
-
+        <div class="flex flex-col items-start gap-2">
             @if($transitVal)
-                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-100 text-[11px] font-bold text-orange-600">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-100 text-[11px] font-bold text-orange-600">
                     <i data-lucide="{{ $transportIcon }}" size="12"></i>
                     {{ $transitVal }}
                 </span>
             @endif
 
             @if($themeVal)
-                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-50 border border-violet-100 text-[11px] font-bold text-violet-600">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-50 border border-violet-100 text-[11px] font-bold text-violet-600">
                     <i data-lucide="palette" size="12"></i>
                     {{ $themeVal }}
-                </span>
-            @endif
-
-            @if($holidayVal)
-                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-50 border border-green-100 text-[11px] font-bold text-green-600">
-                    <i data-lucide="calendar-heart" size="12"></i>
-                    {{ $holidayVal }}
                 </span>
             @endif
         </div>

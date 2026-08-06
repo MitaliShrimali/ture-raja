@@ -67,6 +67,26 @@ class ListingController extends Controller
                 }
                 $pkg['city'] = $city;
             }
+
+            if (empty($pkg['tour_type'])) {
+                if (!empty($pkg['group_size']) && $pkg['group_size'] !== 'Any') {
+                    $pkg['tour_type'] = $pkg['group_size'];
+                } else {
+                    $title = strtolower((string)($pkg['title'] ?? ''));
+                    if (str_contains($title, 'flight') || str_contains($title, 'air')) {
+                        $pkg['tour_type'] = 'Flight Package';
+                    } elseif (str_contains($title, 'train') || str_contains($title, 'rail')) {
+                        $pkg['tour_type'] = 'Train Package';
+                    } elseif (str_contains($title, 'bus') || str_contains($title, 'coach')) {
+                        $pkg['tour_type'] = 'Bus Package';
+                    } elseif (str_contains($title, 'cruise') || str_contains($title, 'boat')) {
+                        $pkg['tour_type'] = 'Cruise Package';
+                    } else {
+                        $pkg['tour_type'] = 'Land/Customised Packages';
+                    }
+                }
+            }
+
             return $pkg;
         }, $dbPackages);
 
@@ -433,9 +453,32 @@ class ListingController extends Controller
         // ── Tour Type filter ───────────────────────────────────────
         if ($request->filled('tour_type')) {
             $types = array_map('strtolower', (array) $request->tour_type);
-            $packages = $packages->filter(function($pkg) use ($types) {
+            $normalizedTypes = array_map(function($t) {
+                if (str_contains($t, 'land') || str_contains($t, 'custom')) return 'land';
+                if (str_contains($t, 'bullet') || str_contains($t, 'bike')) return 'bullet';
+                if (str_contains($t, 'flight') || str_contains($t, 'air')) return 'flight';
+                if (str_contains($t, 'train') || str_contains($t, 'rail')) return 'train';
+                if (str_contains($t, 'bus') || str_contains($t, 'coach')) return 'bus';
+                if (str_contains($t, 'cruise') || str_contains($t, 'ship') || str_contains($t, 'boat')) return 'cruise';
+                if (str_contains($t, 'track') || str_contains($t, 'hike') || str_contains($t, 'trek')) return 'tracking';
+                if (str_contains($t, 'helicopter') || str_contains($t, 'sky')) return 'helicopter';
+                return $t;
+            }, $types);
+
+            $packages = $packages->filter(function($pkg) use ($normalizedTypes) {
                 $pkg = (array) $pkg;
-                return in_array(strtolower($pkg['tour_type'] ?? ''), $types);
+                $t = strtolower($pkg['tour_type'] ?? '');
+                $normT = $t;
+                if (str_contains($t, 'land') || str_contains($t, 'custom')) $normT = 'land';
+                elseif (str_contains($t, 'bullet') || str_contains($t, 'bike')) $normT = 'bullet';
+                elseif (str_contains($t, 'flight') || str_contains($t, 'air')) $normT = 'flight';
+                elseif (str_contains($t, 'train') || str_contains($t, 'rail')) $normT = 'train';
+                elseif (str_contains($t, 'bus') || str_contains($t, 'coach')) $normT = 'bus';
+                elseif (str_contains($t, 'cruise') || str_contains($t, 'ship') || str_contains($t, 'boat')) $normT = 'cruise';
+                elseif (str_contains($t, 'track') || str_contains($t, 'hike') || str_contains($t, 'trek')) $normT = 'tracking';
+                elseif (str_contains($t, 'helicopter') || str_contains($t, 'sky')) $normT = 'helicopter';
+
+                return in_array($normT, $normalizedTypes);
             });
         }
 
@@ -788,9 +831,19 @@ class ListingController extends Controller
             // --- Compute Filter Counts ---
             // Tour Type
             $tt = strtolower(trim($pkgArray['tour_type'] ?? ''));
-            $tt = rtrim($tt, 's'); // normalize trailing s
-            if ($tt) {
-                $filterCounts['tour_type'][$tt] = ($filterCounts['tour_type'][$tt] ?? 0) + 1;
+            $normTt = $tt;
+            if (str_contains($tt, 'land') || str_contains($tt, 'custom')) $normTt = 'land';
+            elseif (str_contains($tt, 'bullet') || str_contains($tt, 'bike')) $normTt = 'bullet';
+            elseif (str_contains($tt, 'flight') || str_contains($tt, 'air')) $normTt = 'flight';
+            elseif (str_contains($tt, 'train') || str_contains($tt, 'rail')) $normTt = 'train';
+            elseif (str_contains($tt, 'bus') || str_contains($tt, 'coach')) $normTt = 'bus';
+            elseif (str_contains($tt, 'cruise') || str_contains($tt, 'ship') || str_contains($tt, 'boat')) $normTt = 'cruise';
+            elseif (str_contains($tt, 'track') || str_contains($tt, 'hike') || str_contains($tt, 'trek')) $normTt = 'tracking';
+            elseif (str_contains($tt, 'helicopter') || str_contains($tt, 'sky')) $normTt = 'helicopter';
+            else $normTt = rtrim($tt, 's');
+
+            if ($normTt) {
+                $filterCounts['tour_type'][$normTt] = ($filterCounts['tour_type'][$normTt] ?? 0) + 1;
             }
 
             // Destination Type (Category)

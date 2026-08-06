@@ -190,17 +190,41 @@
             @endphp
             <div class="space-y-2">
                 @foreach($visibleTypes as $type)
+                    @php
+                        $nt = strtolower(trim($type));
+                        if (str_contains($nt, 'land') || str_contains($nt, 'custom')) $nt = 'land';
+                        elseif (str_contains($nt, 'bullet') || str_contains($nt, 'bike')) $nt = 'bullet';
+                        elseif (str_contains($nt, 'flight') || str_contains($nt, 'air')) $nt = 'flight';
+                        elseif (str_contains($nt, 'train') || str_contains($nt, 'rail')) $nt = 'train';
+                        elseif (str_contains($nt, 'bus') || str_contains($nt, 'coach')) $nt = 'bus';
+                        elseif (str_contains($nt, 'cruise') || str_contains($nt, 'ship') || str_contains($nt, 'boat')) $nt = 'cruise';
+                        elseif (str_contains($nt, 'track') || str_contains($nt, 'hike') || str_contains($nt, 'trek')) $nt = 'tracking';
+                        elseif (str_contains($nt, 'helicopter') || str_contains($nt, 'sky')) $nt = 'helicopter';
+                        else $nt = rtrim($nt, 's');
+                    @endphp
                     <label class="flex items-center gap-2 cursor-pointer group">
                         <input type="checkbox" name="tour_type[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                        <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ rtrim(strtolower($type), 's') }}">{{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }}</span>)</span>
+                        <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ $nt }}">{{ $filterCounts['tour_type'][$nt] ?? 0 }}</span>)</span>
                     </label>
                 @endforeach
                 
                 <div x-show="expanded" x-transition.opacity class="space-y-2 pt-2">
                     @foreach($hiddenTypes as $type)
+                        @php
+                            $nt = strtolower(trim($type));
+                            if (str_contains($nt, 'land') || str_contains($nt, 'custom')) $nt = 'land';
+                            elseif (str_contains($nt, 'bullet') || str_contains($nt, 'bike')) $nt = 'bullet';
+                            elseif (str_contains($nt, 'flight') || str_contains($nt, 'air')) $nt = 'flight';
+                            elseif (str_contains($nt, 'train') || str_contains($nt, 'rail')) $nt = 'train';
+                            elseif (str_contains($nt, 'bus') || str_contains($nt, 'coach')) $nt = 'bus';
+                            elseif (str_contains($nt, 'cruise') || str_contains($nt, 'ship') || str_contains($nt, 'boat')) $nt = 'cruise';
+                            elseif (str_contains($nt, 'track') || str_contains($nt, 'hike') || str_contains($nt, 'trek')) $nt = 'tracking';
+                            elseif (str_contains($nt, 'helicopter') || str_contains($nt, 'sky')) $nt = 'helicopter';
+                            else $nt = rtrim($nt, 's');
+                        @endphp
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input type="checkbox" name="tour_type[]" value="{{ $type }}" {{ in_array($type, $selectedTypes) ? 'checked' : '' }} class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 cursor-pointer">
-                            <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ rtrim(strtolower($type), 's') }}">{{ $filterCounts['tour_type'][rtrim(strtolower($type), 's')] ?? 0 }}</span>)</span>
+                            <span class="text-gray-600 text-base font-semibold group-hover:text-primary transition-colors">{{ $type }} (<span data-filter-count="tour_type.{{ $nt }}">{{ $filterCounts['tour_type'][$nt] ?? 0 }}</span>)</span>
                         </label>
                     @endforeach
                 </div>
