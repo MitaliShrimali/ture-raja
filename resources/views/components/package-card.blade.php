@@ -19,7 +19,11 @@
     $agentObj = null;
     $pkgArr   = [];
     if ($pkg) {
-        $pkgArr   = (array) $pkg;
+        if (is_object($pkg) && method_exists($pkg, 'toArray')) {
+            $pkgArr = $pkg->toArray();
+        } else {
+            $pkgArr = (array) $pkg;
+        }
         $title    = $pkgArr['title']    ?? $title;
         $image    = $pkgArr['image']    ?? $image;
         $duration = $pkgArr['duration'] ?? $duration;

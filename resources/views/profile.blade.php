@@ -365,7 +365,7 @@
         </div>
 
         @if(isset($viewedPackages) && $viewedPackages->isNotEmpty())
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4" id="history-package-grid">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-4" id="history-package-grid">
                 @foreach($viewedPackages as $pkg)
                     <x-package-card 
                         :pkg="$pkg" 
@@ -392,29 +392,7 @@
         @endif
       </section>
 
-      {{-- ── Booking History List ── --}}
-      <section class="pf-section">
-        <h2 class="pf-sec-h">Booking History</h2>
-        @forelse($bookingItems as $bk)
-        <div class="pf-bk-card">
-          <div class="pf-bk-img">
-            <img src="{{ asset($bk->package_image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=400&q=80') }}"
-                 alt="{{ $bk->package_title }}">
-          </div>
-          <div class="pf-bk-info">
-            <h4>{{ $bk->package_title }}</h4>
-            <p>{{ $bk->guests }} Guest(s) &middot; {{ $bk->package_currency ?? '₹' }}{{ number_format($bk->package_price) }}</p>
-            <span class="pf-badge pf-badge--{{ strtolower($bk->status) }}">{{ $bk->status }}</span>
-          </div>
-          <a href="{{ route('discover', ['search' => $bk->package_title]) }}" class="pf-bk-link">View →</a>
-        </div>
-        @empty
-        <div class="pf-empty">
-          <p>No bookings yet. Start exploring!</p>
-          <a href="{{ route('discover') }}" class="pf-empty-btn">Browse Packages</a>
-        </div>
-        @endforelse
-      </section>
+
 
     </div>
 
