@@ -1171,8 +1171,8 @@
                                         placeholder="Add inclusion..."
                                         class="flex-1 bg-white border-none rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-green-300" />
                                     <button type="button" @click="addInclusion()"
-                                        class="px-3 py-2 bg-[#2f9e44] text-white rounded-xl text-xs font-bold"
-                                        style="background-color: #2f9e44 !important;">+</button>
+                                        class="px-4 py-2 bg-[#2f9e44] text-white rounded-xl text-xs font-bold"
+                                        style="background-color: #2f9e44 !important;">Add</button>
                                 </div>
                                 <template x-for="(inc, i) in inclusions" :key="i">
                                     <input type="hidden" name="included[]" :value="inc">
@@ -1241,7 +1241,7 @@
                                         placeholder="Add exclusion..."
                                         class="flex-1 bg-white border-none rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-red-300" />
                                     <button type="button" @click="addExclusion()"
-                                        class="px-3 py-2 bg-[#FFF0F0] text-red-500 rounded-xl text-xs font-bold hover:bg-red-50 hover:text-red-600 transition-colors">+</button>
+                                        class="px-4 py-2 bg-[#FFF0F0] text-red-500 rounded-xl text-xs font-bold hover:bg-red-50 hover:text-red-600 transition-colors">Add</button>
                                 </div>
                                 <template x-for="(exc, i) in exclusions" :key="i">
                                     <input type="hidden" name="excluded[]" :value="exc">
