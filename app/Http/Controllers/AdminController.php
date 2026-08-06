@@ -551,6 +551,7 @@ class AdminController extends Controller
 
     public function updatePackage(Request $request)
     {
+        \Log::info('updatePackage payload:', $request->all());
         try {
             $request->validate(['id' => 'required', 'title' => 'required', 'price' => 'required|numeric']);
 

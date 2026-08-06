@@ -476,8 +476,8 @@ class AgentController extends Controller
 
         // Main Image Upload
         $imageUrl = $pkg->image;
-        if ($request->has('image_url') && !empty($request->image_url)) {
-            $imageUrl = $request->image_url;
+        if ($request->has('image') && !empty($request->image)) {
+            $imageUrl = $request->image;
         }
         if ($request->hasFile('image_file')) {
             $file = $request->file('image_file');
@@ -490,8 +490,8 @@ class AgentController extends Controller
         }
 
         $galleryUrls = [];
-        if ($request->has('gallery_urls')) {
-            $galleryUrls = is_array($request->gallery_urls) ? $request->gallery_urls : [];
+        if ($request->has('existing_gallery_urls')) {
+            $galleryUrls = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
         } else {
             if ($request->has('title')) {
                 $galleryUrls = []; // Form submitted but no gallery images left
