@@ -163,10 +163,19 @@
                 Bookings</a>
             @endauth
           </li>
-          <li style="padding:1px 0;"><a href="#"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Saved
-              Agent</a></li>
+          <li style="padding:1px 0;">
+            @auth
+              <a href="{{ url('/profile?tab=saved-agent') }}"
+                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Saved
+                Agent</a>
+            @else
+              <a href="javascript:void(0)" @click="$dispatch('open-login-modal')"
+                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Saved
+                Agent</a>
+            @endauth
+          </li>
           <li style="padding:1px 0;">
             @auth
               <a href="{{ url('/profile') }}" style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
@@ -179,10 +188,19 @@
                 Account</a>
             @endauth
           </li>
-          <li style="padding:1px 0;"><a href="#"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
-              Reviews</a></li>
+          <li style="padding:1px 0;">
+            @auth
+              <a href="{{ url('/profile?tab=reviews') }}"
+                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
+                Reviews</a>
+            @else
+              <a href="javascript:void(0)" @click="$dispatch('open-login-modal')"
+                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
+                Reviews</a>
+            @endauth
+          </li>
           <li style="padding:1px 0;"><a href="{{ url('/admin/login') }}"
               style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
               onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Admin

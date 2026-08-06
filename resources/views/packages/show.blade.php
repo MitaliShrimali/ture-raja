@@ -561,27 +561,42 @@
 
                         @if(!empty($package['brochure']))
                             {{-- Document / Brochure PDF Preview Section --}}
-                            <div id="document" class="bg-white rounded-lg border border-gray-150 p-6 shadow-sm mb-6">
+                            <div id="document" class="bg-white rounded-lg border border-gray-150 p-6 shadow-sm mb-6" x-data="{ documentExpanded: false }">
                                 <div class="flex items-center gap-3 mb-4">
                                     <div class="w-1.5 h-6 rounded-full" style="background-color: #e85d26;"></div>
                                     <h2 class="font-black text-gray-900 text-xl">Document</h2>
                                 </div>
 
-                                <a href="{{ asset($package['brochure']) }}" target="_blank"
-                                    class="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-sm font-semibold hover:underline mb-4 transition-colors">
-                                    View PDF Document
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                        <polyline points="15 3 21 3 21 9"></polyline>
-                                        <line x1="10" y1="14" x2="21" y2="3"></line>
-                                    </svg>
-                                </a>
+                                <div class="flex items-center gap-6 mb-4">
+                                    <a href="{{ asset($package['brochure']) }}" target="_blank"
+                                        class="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-800 text-sm font-semibold hover:underline transition-colors">
+                                        View PDF Document
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                                            <polyline points="15 3 21 3 21 9"></polyline>
+                                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                                        </svg>
+                                    </a>
+                                    <button @click="documentExpanded = !documentExpanded" type="button" class="text-sm font-semibold text-gray-600 hover:text-[#e85d26] flex items-center gap-1 transition-colors bg-gray-100 hover:bg-orange-50 px-3 py-1.5 rounded-md">
+                                        <span x-text="documentExpanded ? 'Collapse Preview' : 'Expand Preview'"></span>
+                                        <svg class="w-4 h-4 transition-transform duration-200" :class="documentExpanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                </div>
 
-                                <div class="relative w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-50"
-                                    style="height: 700px; min-height: 700px;">
+                                <div class="mt-4 transition-all duration-500 ease-in-out relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50"
+                                     :style="documentExpanded ? 'height: 700px;' : 'height: 200px;'">
+                                     
+                                    <!-- Gradient Overlay when collapsed -->
+                                    <div x-show="!documentExpanded" 
+                                         class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-gray-50 to-transparent z-10 pointer-events-none">
+                                    </div>
+
+                                    <div class="relative w-full h-full">
                                     <!-- PDF Viewer -->
                                     <iframe src="{{ asset($package['brochure']) }}#page=1&view=FitH" width="100%" height="100%"
-                                        style="height: 100%; min-height: 700px;" class="w-full h-full border-0"></iframe>
+                                        class="w-full h-full border-0"></iframe>
 
                                     <!-- Top-Right Expand Icon -->
                                     <a href="{{ asset($package['brochure']) }}" target="_blank"
@@ -594,8 +609,9 @@
                                             <line x1="10" y1="14" x2="21" y2="3"></line>
                                         </svg>
                                     </a>
-                                </div>
-                            </div>
+                                </div> <!-- end of relative w-full -->
+                                </div> <!-- end of documentExpanded wrapper -->
+                            </div> <!-- end of #document -->
                         @else
 
                         @if(!empty($package['overview']) && trim(strip_tags(str_replace('&nbsp;', '', $package['overview']))) !== '')
@@ -837,7 +853,8 @@
 
                             $serviceGuaranteed = $dbAgent->service_guaranteed ?? false;
 
-                            $agentRedirectUrl = url('/listing/holiday-list?agent_id=' . $agentId);
+                            $agentPackagesUrl = url('/listing/holiday-list?agent_id=' . $agentId . '&tab=packages');
+                            $agentProfileUrl  = url('/listing/holiday-list?agent_id=' . $agentId . '&tab=profile');
                         @endphp
                         <!-- FontAwesome CDN for social media icons -->
                         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1006,10 +1023,10 @@
                                     <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                                         <i data-lucide="mail" class="w-4 h-4"></i> Send Email
                                     </a>
-                                    <a href="{{ $agentRedirectUrl }}" class="flex items-center justify-center gap-1.5 bg-[#e85d26] hover:bg-[#d0501f] text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
+                                    <a href="{{ $agentPackagesUrl }}" class="flex items-center justify-center gap-1.5 bg-[#e85d26] hover:bg-[#d0501f] text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
                                         <i data-lucide="package" class="w-4 h-4"></i> Packages
                                     </a>
-                                    <a href="{{ $agentRedirectUrl }}" class="flex items-center justify-center gap-1.5 bg-gray-900 hover:bg-black text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
+                                    <a href="{{ $agentProfileUrl }}" class="flex items-center justify-center gap-1.5 bg-gray-900 hover:bg-black text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
                                         <i data-lucide="user" class="w-4 h-4"></i> Profile
                                     </a>
                                 </div>

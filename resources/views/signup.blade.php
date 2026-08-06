@@ -374,6 +374,7 @@
                     
                     let phone = document.querySelector('input[name="phone"]').value;
                     let countryCode = document.querySelector('select[name="country_code"]').value;
+                    let email = document.querySelector('input[name="email"]').value;
                     
                     if(!phone) return;
                     
@@ -386,7 +387,7 @@
                             'Content-Type': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
                         },
-                        body: JSON.stringify({ phone: countryCode + phone })
+                        body: JSON.stringify({ phone: countryCode + phone, email: email })
                     }).then(res => res.json())
                     .then(data => {
                         this.loading = false;

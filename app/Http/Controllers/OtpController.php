@@ -27,40 +27,24 @@ class OtpController extends Controller
         // Generate a random 6-digit OTP
         $otp = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
         
+        $email = $request->email;
+        
         try {
-            $authKey = env('MSGCLUB_AUTH_KEY', 'f0ceeb95f5a928c3814bc3b3ee962b');
-            $senderId = env('MSGCLUB_SENDER_ID', 'TBTSGN');
-            $routeId = env('MSGCLUB_ROUTE_ID', '8');
-
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-            ])->post('http://msg.msgclub.net/rest/services/sendSMS/sendGroupSms?AUTH_KEY=' . $authKey, [
-                'smsContent' => "Your TourRaja verification OTP is {$otp}. Valid for 5 minutes.",
-                'groupId' => '0',
-                'routeId' => $routeId,
-                'mobileNumbers' => $cleanPhone,
-                'senderId' => $senderId,
-                'smsContentType' => 'ENGLISH',
-                'concentFailoverId' => '30'
-            ]);
-
-            if ($response->failed()) {
-                Log::error("MSGClub API HTTP error", ['response' => $response->body()]);
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Failed to send OTP.'
-                ], 500);
-            }
+            // TEMPORARY: Send OTP via email instead of SMS
+            \Illuminate\Support\Facades\Mail::raw("Your TourRaja verification OTP for phone {$phone} is {$otp}. Valid for 5 minutes.", function ($message) use ($email) {
+                // If email is missing for some reason, fallback to a default so it doesn't crash
+                $targetEmail = $email ?: 'tourraja@emperorsmartsolutions.com';
+                $message->to($targetEmail)
+                        ->subject('TourRaja OTP Verification');
+            });
             
-            $resData = $response->json();
-            // If the API returns a specific error format, log it
-            Log::info("MSGClub API response", ['response' => $resData]);
-            
+            Log::info("Sent OTP via Email to {$email}", ['otp' => $otp, 'phone' => $phone]);
+
         } catch (\Exception $e) {
-            Log::error("MSGClub Exception", ['error' => $e->getMessage()]);
+            Log::error("Email OTP Exception", ['error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to connect to SMS service.'
+                'message' => 'Failed to connect to Mail service.'
             ], 500);
         }
 

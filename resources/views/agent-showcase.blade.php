@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<div x-data="{ activeTab: new URLSearchParams(window.location.search).get('tab') || 'both' }">
     <!-- FontAwesome CDN for social media icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom styling to match the reference design perfectly -->
@@ -14,8 +15,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 80px;
-            /* offset navbar */
         }
 
         .agent-hero-title {
@@ -337,7 +336,7 @@
     </div>
 
     <!-- Agent Profile details section precisely matched to image layout -->
-    <div class="agent-profile-section">
+    <div class="agent-profile-section" x-show="activeTab === 'profile' || activeTab === 'both'" x-cloak>
         <div class="container-custom">
             <div class="flex flex-col lg:flex-row gap-8 items-start lg:items-center">
                 <!-- White Logo Card overlapping hero -->
@@ -537,7 +536,7 @@
     </div>
 
     <!-- Featured Tour Packages Showcase Grid -->
-    <div class="bg-[#FAFAFA] py-12">
+    <div class="bg-[#FAFAFA] py-12" x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak>
         <div class="container-custom">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @php $adIndex = 0; @endphp
@@ -584,4 +583,5 @@
             </div>
         </div>
     </div>
+</div>
 @endsection

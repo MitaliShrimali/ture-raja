@@ -320,13 +320,13 @@
     </style>
 
     <div class="container-custom pt-8 pb-16"
-        x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tourraja_view_style') || 'grid'" }}, mobileFiltersOpen: false, stateModalOpen: false, expandedStates: {} }"
+        x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tourraja_view_style') || 'grid'" }}, mobileFiltersOpen: false, stateModalOpen: false, expandedStates: {}, activeTab: new URLSearchParams(window.location.search).get('tab') || 'both' }"
         x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
 
         <form id="filter-form" action="{{ url('/listing') }}" method="GET"
             class="flex flex-col lg:flex-row gap-12 w-full items-start">
             <!-- Sidebar Wrapper (Responsive: Slide-over Drawer on Mobile, Sticky Column on Desktop) -->
-            <div :class="mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+            <div x-show="activeTab === 'packages' || activeTab === 'both'" :class="mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
                 class="desktop-sidebar-reset fixed inset-y-0 left-0 w-[85vw] sm:w-[400px] lg:w-1/4 lg:sticky lg:top-[90px] lg:max-h-[calc(100vh-100px)] bg-white lg:bg-transparent z-50 lg:z-0 shadow-2xl lg:shadow-none p-6 lg:p-0 transition-transform duration-300 overflow-y-auto shrink-0">
                 <!-- Mobile Drawer Header -->
                 <div class="flex items-center justify-between lg:hidden border-b border-gray-100 pb-4 mb-6">
@@ -362,7 +362,7 @@
             <!-- Main Content -->
             <div class="flex-1 space-y-8">
                 @if(isset($agent))
-                    <div
+                    <div x-show="activeTab === 'profile' || activeTab === 'both'" x-cloak
                         class="bg-gradient-to-r from-orange-600 via-primary to-orange-500 rounded-[40px] p-8 md:p-10 shadow-premium border border-primary/20 text-white flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden animate-in fade-in slide-in-from-top-6 duration-500">
                         <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
                         <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -ml-20 -mb-20"></div>
@@ -428,6 +428,7 @@
                     </div>
                 @endif
 
+                <div x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak class="space-y-8">
                 <!-- Mobile Search Input (Visible only on mobile/tablet) -->
                 <div class="relative group lg:hidden w-full">
                     <input type="text" name="mobile_search" placeholder="Search destination or package..."
@@ -579,6 +580,8 @@
                         </div>
                     @endif
                 </div>
+
+                </div> <!-- End of packages wrapper -->
 
                 <!-- Modal placeholder (moved to root for relative viewport alignment) -->
         </form>

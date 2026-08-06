@@ -68,11 +68,8 @@
         <div class="w-full lg:w-[45%] flex flex-col justify-center px-8 md:px-16 lg:px-24 py-12 pt-28">
             <div class="max-w-md w-full mx-auto space-y-8">
                 <div class="space-y-2">
-                    <h2 class="font-black tracking-tight font-heading text-4xl" style="color: #e85d26;"
-                        x-text="showForgotPassword ? 'Reset Password' : '{{ $title }}'">{{ $title }}</h2>
-                    <p class="text-xs font-bold text-gray-400"
-                        x-text="showForgotPassword ? 'Enter your email to receive a password reset link.' : 'Enter your email and password to sign in!'">
-                        Enter your email and password to sign in!</p>
+                    <h2 class="font-black tracking-tight font-heading text-4xl" style="color: #e85d26;">{{ $title }}</h2>
+                    <p class="text-xs font-bold text-gray-400">Enter your email and password to sign in!</p>
                 </div>
 
                 <!-- Google Sign In Removed -->
@@ -118,9 +115,7 @@
                 @endif
 
                 <!-- Main Form -->
-                <form
-                    x-on:submit="if (showForgotPassword) { $event.preventDefault(); loading = true; forgotEmailSent = false; setTimeout(() => { loading = false; forgotEmailSent = true; }, 1000); }"
-                    action="{{ $actionUrl }}" method="POST" class="space-y-6">
+                <form action="{{ $actionUrl }}" method="POST" class="space-y-6">
                     @csrf
 
                     <div class="space-y-2">
@@ -131,11 +126,11 @@
                             class="w-full bg-white border border-gray-200 rounded-2xl py-4 px-6 outline-none focus:border-[#e85d26]/50 transition-all font-medium text-foreground placeholder:text-gray-400 text-sm shadow-sm" />
                     </div>
 
-                    <div class="space-y-2" x-show="!showForgotPassword" x-transition>
+                    <div class="space-y-2">
                         <label class="text-xs font-bold text-gray-700 pl-1">Password<span
                                 style="color: #e85d26;">*</span></label>
                         <div class="relative">
-                            <input :required="!showForgotPassword" :type="showPassword ? 'text' : 'password'"
+                            <input required :type="showPassword ? 'text' : 'password'"
                                 name="password" placeholder="Min. 8 characters"
                                 class="w-full bg-white border border-gray-200 rounded-2xl py-4 px-6 pr-14 outline-none focus:border-[#e85d26]/50 transition-all font-medium text-foreground placeholder:text-gray-400 text-sm shadow-sm" />
                             <button @click="showPassword = !showPassword" type="button"
@@ -147,7 +142,7 @@
                     </div>
 
                     <div class="flex items-center justify-between pt-2">
-                        <label class="flex items-center gap-3 cursor-pointer group" x-show="!showForgotPassword">
+                        <label class="flex items-center gap-3 cursor-pointer group">
                             <input type="checkbox" name="remember"
                                 class="w-5 h-5 rounded-lg border-gray-300 focus:ring-[#e85d26]/20 transition-all"
                                 style="accent-color: #e85d26;" checked />
@@ -155,9 +150,8 @@
                                 class="text-xs font-bold text-gray-500 group-hover:text-foreground transition-colors">Keep
                                 me logged in</span>
                         </label>
-                        <a href="#" @click.prevent="showForgotPassword = !showForgotPassword; forgotEmailSent = false"
-                            class="text-xs font-bold hover:underline" style="color: #e85d26;"
-                            x-text="showForgotPassword ? 'Back to Sign In' : 'Forget password?'">Forget password?</a>
+                        <a href="{{ route('agent.forgot-password') }}"
+                            class="text-xs font-bold hover:underline" style="color: #e85d26;">Forget password?</a>
                     </div>
 
                     <button type="submit"
@@ -167,8 +161,7 @@
                         onmouseout="this.style.backgroundColor='#e85d26'">
                         <span x-show="loading"
                             class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-                        <span
-                            x-text="showForgotPassword ? (loading ? 'Sending...' : 'Send Reset Link') : '{{ $btnText }}'">{{ $btnText }}</span>
+                        <span>{{ $btnText }}</span>
                     </button>
 
                     <p class="text-xs font-bold text-gray-400 text-center mt-6">

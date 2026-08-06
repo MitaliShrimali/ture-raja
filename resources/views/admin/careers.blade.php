@@ -407,6 +407,7 @@ function doDeleteLoc(id, name) {
     <!-- ================= MODALS ================= -->
 
     <!-- Modal 1: View Application Modal -->
+    <template x-teleport="body">
     <div 
         x-show="showViewModal" 
         class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
@@ -488,8 +489,10 @@ function doDeleteLoc(id, name) {
             </div>
         </div>
     </div>
+    </template>
 
     <!-- Modal 2: Create / Edit Open Position Modal -->
+    <template x-teleport="body">
     <div 
         x-show="showPositionModal" 
         class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
@@ -724,6 +727,7 @@ function doDeleteLoc(id, name) {
             </form>
         </div>
     </div>
+    </template>
 
 </div>
 @endsection

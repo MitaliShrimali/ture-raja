@@ -104,7 +104,7 @@
                 @endif
             </div>
             
-            @if(Auth::check() && Auth::user()->role === 'Customer')
+            @if(Auth::check())
                 <!-- Wishlist (Logged In) -->
                 <div class="relative hidden lg:block" x-data="{ open: false }" @click.away="open = false">
                     <button 
@@ -167,25 +167,6 @@
                             <span class="text-[10px] font-bold opacity-80 leading-tight">Save favourites</span>
                         </div>
                     </button>
-                </div>
-
-                <div class="hidden md:flex items-center gap-4 border-l border-white/20 pl-4 ml-2 transition-colors duration-300" :class="(isScrolled || !isHome) ? 'border-gray-200' : 'border-white/20'">
-                    @if(Auth::check())
-                        @if(Auth::user()->role === 'Agent')
-                            <a href="{{ url('/agent/dashboard') }}" :class="(isScrolled || !isHome) ? 'text-text-main hover:text-primary' : 'text-white/90 hover:text-white'" class="text-sm font-bold transition-colors">
-                                Dashboard
-                            </a>
-                        @elseif(Auth::user()->role === 'Admin')
-                            <a href="{{ url('/admin/dashboard') }}" :class="(isScrolled || !isHome) ? 'text-text-main hover:text-primary' : 'text-white/90 hover:text-white'" class="text-sm font-bold transition-colors">
-                                Admin
-                            </a>
-                        @endif
-                        <a href="{{ route('logout') }}" :class="(isScrolled || !isHome) ? 'text-red-500 hover:text-red-600' : 'text-red-300 hover:text-red-400'" class="text-sm font-bold transition-colors">
-                            Logout
-                        </a>
-                    @else
-                        <!-- Removed Agent Login, Admin, and Profile Icon as requested -->
-                    @endif
                 </div>
             @endif
 

@@ -223,6 +223,7 @@
     </div>
 
     {{-- ===== ADD MODAL ===== --}}
+    <template x-teleport="body">
     <div x-show="showAddModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
@@ -288,11 +289,7 @@
                     </div>
                 </div>
 
-                {{-- Description --}}
-                <div class="space-y-2">
-                    <label class="text-xs font-black text-muted-text pl-1">Description</label>
-                    <textarea name="description" placeholder="Describe the transit details, capacity, and amenities..." rows="4" class="w-full bg-[#FFF5F2]/40 border border-border-soft rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground leading-relaxed"></textarea>
-                </div>
+
 
                 {{-- Status --}}
                 <div class="space-y-2">
@@ -311,8 +308,10 @@
             </form>
         </div>
     </div>
+    </template>
 
     {{-- ===== EDIT MODAL ===== --}}
+    <template x-teleport="body">
     <div x-show="showEditModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
@@ -379,11 +378,7 @@
                     </div>
                 </div>
 
-                {{-- Description --}}
-                <div class="space-y-2">
-                    <label class="text-xs font-black text-muted-text pl-1">Description</label>
-                    <textarea name="description" x-model="editItem.description" placeholder="Describe the transit details, capacity, and amenities..." rows="4" class="w-full bg-[#FFF5F2]/40 border border-border-soft rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground leading-relaxed"></textarea>
-                </div>
+
 
                 {{-- Status --}}
                 <div class="space-y-2">
@@ -402,5 +397,6 @@
             </form>
         </div>
     </div>
+    </template>
 </div>
 @endsection

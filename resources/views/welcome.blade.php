@@ -6,40 +6,25 @@
     {{-- Popular Transits is now inside the hero component --}}
 
     <!-- Section 4: International Packages — small card grid (Image 1 style) -->
-    <section class="py-10 bg-white relative overflow-hidden">
+    <section class="py-3 md:py-10 bg-white relative overflow-hidden">
         <!-- Floating Decorations -->
-        <img src="{{ asset('images/weather.gif') }}" alt="Weather" class="absolute top-2 -left-4 md:left-4 w-16 h-16 md:w-24 md:h-24 z-10 pointer-events-none animate-[pulse_3s_ease-in-out_infinite]" style="opacity: 0.9;" />
-        <img src="{{ asset('images/hot-air-balloon.gif') }}" alt="Balloon" class="absolute top-4 -right-4 md:right-8 w-14 h-14 md:w-20 md:h-20 z-10 pointer-events-none animate-[bounce_4s_ease-in-out_infinite]" style="opacity: 0.9;" />
+        <img src="{{ asset('images/weather.gif') }}" alt="Weather" class="absolute -top-4 md:top-2 -left-4 md:left-4 w-12 h-12 md:w-24 md:h-24 z-10 pointer-events-none animate-[pulse_3s_ease-in-out_infinite] opacity-30 md:opacity-90" />
+        <img src="{{ asset('images/hot-air-balloon.gif') }}" alt="Balloon" class="absolute -top-2 md:top-4 -right-2 md:right-8 w-10 h-10 md:w-20 md:h-20 z-10 pointer-events-none animate-[bounce_4s_ease-in-out_infinite] opacity-30 md:opacity-90" />
         
         <div class="container-custom relative z-20">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-3">
-                <h2 class="font-bold text-[#1a1a1a] m-0" style="font-size: 34px;">
+            <div class="flex flex-row items-center justify-between mb-0 md:mb-2 gap-2 md:gap-3">
+                <h2 class="font-bold text-[#1a1a1a] m-0 text-[18px] md:text-[34px] leading-tight">
                     Top International Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=international') }}"
-                   class="inline-flex items-center gap-1 text-[10px] font-bold text-gray-700 border border-gray-300 rounded-full px-3 py-1 hover:border-primary hover:text-primary transition-all self-start md:self-auto">
+                   class="inline-flex items-center gap-1 text-[10px] md:text-[12px] font-bold text-gray-700 border border-gray-300 rounded-full px-2 py-1 md:px-3 hover:border-primary hover:text-primary transition-all flex-shrink-0">
                     View More
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
             </div>
 
-            <style>
-                @keyframes scrollRight {
-                    0% { transform: translateX(-50%); }
-                    100% { transform: translateX(0); }
-                }
-                .animate-scroll-right-intl {
-                    display: flex;
-                    width: max-content;
-                    animation: scrollRight 300s linear infinite;
-                }
-                .animate-scroll-right-dom {
-                    display: flex;
-                    width: max-content;
-                    animation: scrollRight 350s linear infinite;
-                }
-            </style>
-            <div class="overflow-hidden relative w-full pt-2 pb-4">
+
+            <div class="overflow-hidden relative w-full pt-1 pb-2 md:pt-2 md:pb-4">
                 @php
                     if(isset($homeInternational) && $homeInternational->count() > 0) {
                         $intl = $homeInternational->map(function($pkg) {
@@ -65,7 +50,7 @@
                     // Calculate exact duration to maintain a constant, identical speed for any number of cards
                     $intlDuration = count($intl) * 8;
                 @endphp
-                <div class="animate-scroll-right-intl gap-5" style="animation-duration: {{ $intlDuration }}s;">
+                <div id="intl-slider" class="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-5 pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
                 @foreach($scrollingIntl as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
                    class="relative rounded-xl overflow-hidden block group" style="height:150px; width: 260px; flex-shrink: 0;">
@@ -81,28 +66,52 @@
                 </div>
             </div>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const slider = document.getElementById('intl-slider');
+                if (slider) {
+                    let isHovered = false;
+                    slider.addEventListener('mousedown', () => isHovered = true);
+                    slider.addEventListener('mouseup', () => isHovered = false);
+                    slider.addEventListener('mouseleave', () => isHovered = false);
+                    slider.addEventListener('touchstart', () => isHovered = true);
+                    slider.addEventListener('touchend', () => isHovered = false);
+                    
+                    function autoScroll() {
+                        if (!isHovered) {
+                            slider.scrollLeft += 1;
+                            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1) {
+                                slider.scrollLeft = 0;
+                            }
+                        }
+                        requestAnimationFrame(autoScroll);
+                    }
+                    requestAnimationFrame(autoScroll);
+                }
+            });
+        </script>
     </section>
 
     <!-- Section 5: Domestic Packages — small card grid (Image 1 style) -->
-    <section class="py-10 bg-white border-t border-gray-100 relative overflow-hidden">
+    <section class="py-3 md:py-10 bg-white border-t border-gray-100 relative overflow-hidden">
         <!-- Floating Decorations -->
-        <img src="{{ asset('images/small-banner-decoration-3.png') }}" alt="Decoration 3" class="absolute top-2 -left-4 md:left-4 w-12 h-12 md:w-20 md:h-20 z-10 pointer-events-none animate-[pulse_3s_ease-in-out_infinite]" style="opacity: 0.9;" />
-        <img src="{{ asset('images/small-banner-decoration-4.png') }}" alt="Decoration 4" class="absolute top-4 -right-4 md:right-8 w-12 h-12 md:w-20 md:h-20 z-10 pointer-events-none animate-[bounce_4s_ease-in-out_infinite]" style="opacity: 0.9;" />
+        <img src="{{ asset('images/small-banner-decoration-3.png') }}" alt="Decoration 3" class="absolute -top-4 md:top-2 -left-4 md:left-4 w-10 h-10 md:w-20 md:h-20 z-10 pointer-events-none animate-[pulse_3s_ease-in-out_infinite] opacity-30 md:opacity-90" />
+        <img src="{{ asset('images/small-banner-decoration-4.png') }}" alt="Decoration 4" class="absolute -top-2 md:top-4 -right-2 md:right-8 w-10 h-10 md:w-20 md:h-20 z-10 pointer-events-none animate-[bounce_4s_ease-in-out_infinite] opacity-30 md:opacity-90" />
         
         <div class="container-custom relative z-20">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-2 gap-3">
-                <h2 class="font-bold text-[#1a1a1a] m-0" style="font-size: 34px;">
+            <div class="flex flex-row items-center justify-between mb-0 md:mb-2 gap-2 md:gap-3">
+                <h2 class="font-bold text-[#1a1a1a] m-0 text-[18px] md:text-[34px] leading-tight">
                     Top Domestic Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=domestic') }}"
-                   class="inline-flex items-center gap-1 text-[10px] font-bold text-gray-700 border border-gray-300 rounded-full px-3 py-1 hover:border-primary hover:text-primary transition-all self-start md:self-auto">
+                   class="inline-flex items-center gap-1 text-[10px] md:text-[12px] font-bold text-gray-700 border border-gray-300 rounded-full px-2 py-1 md:px-3 hover:border-primary hover:text-primary transition-all flex-shrink-0">
                     View More
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                 </a>
             </div>
 
             {{-- 6 small cards auto-scroll --}}
-            <div class="overflow-hidden relative w-full pt-2 pb-4">
+            <div class="overflow-hidden relative w-full pt-1 pb-2 md:pt-2 md:pb-4">
                 @php
                     if(isset($homeDomestic) && $homeDomestic->count() > 0) {
                         $dom = $homeDomestic->map(function($pkg) {
@@ -127,7 +136,7 @@
                     // Calculate exact duration to maintain a constant, identical speed for any number of cards
                     $domDuration = count($dom) * 8;
                 @endphp
-                <div class="animate-scroll-right-dom gap-5" style="animation-duration: {{ $domDuration }}s;">
+                <div id="dom-slider" class="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-5 pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
                 @foreach($scrollingDom as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
                    class="relative rounded-xl overflow-hidden block group" style="height:150px; width: 260px; flex-shrink: 0;">
@@ -143,6 +152,30 @@
                 </div>
             </div>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const slider = document.getElementById('dom-slider');
+                if (slider) {
+                    let isHovered = false;
+                    slider.addEventListener('mousedown', () => isHovered = true);
+                    slider.addEventListener('mouseup', () => isHovered = false);
+                    slider.addEventListener('mouseleave', () => isHovered = false);
+                    slider.addEventListener('touchstart', () => isHovered = true);
+                    slider.addEventListener('touchend', () => isHovered = false);
+                    
+                    function autoScroll() {
+                        if (!isHovered) {
+                            slider.scrollLeft += 1;
+                            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1) {
+                                slider.scrollLeft = 0;
+                            }
+                        }
+                        requestAnimationFrame(autoScroll);
+                    }
+                    requestAnimationFrame(autoScroll);
+                }
+            });
+        </script>
     </section>
 
     @if(isset($domesticAds) && $domesticAds->count() > 0)
@@ -150,19 +183,19 @@
     <section class="py-10 bg-gray-50/40 border-t border-b border-gray-100 relative group">
         <div class="container-custom relative flex items-center justify-between">
             <!-- Prev Button -->
-            <button type="button" class="w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex-shrink-0 items-center justify-center text-gray-600 hover:text-primary transition-colors hidden md:flex mr-4 md:mr-6" onclick="document.getElementById('ads-slider').scrollBy({left: -document.getElementById('ads-slider').clientWidth, behavior: 'smooth'})">
+            <button type="button" class="w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex-shrink-0 items-center justify-center text-gray-600 hover:text-primary transition-colors hidden md:flex mr-4 md:mr-6" onclick="document.getElementById('domestic-ads-slider').scrollBy({left: -document.getElementById('domestic-ads-slider').clientWidth, behavior: 'smooth'})">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
 
             <!-- Scrollable Ads Row -->
             <style>
-                .ad-card-custom { flex-shrink: 0; width: 280px; }
-                @media (min-width: 768px) { .ad-card-custom { width: calc(50% - 12px); } }
-                @media (min-width: 1024px) { .ad-card-custom { width: calc(25% - 18px); } }
+                .ad-card-custom { flex-shrink: 0; width: 85vw; max-width: 300px; }
+                @media (min-width: 768px) { .ad-card-custom { width: calc(50% - 12px); max-width: none; } }
+                @media (min-width: 1024px) { .ad-card-custom { width: calc(25% - 18px); max-width: none; } }
             </style>
-            <div id="ads-slider" class="flex-1 min-w-0 flex flex-nowrap gap-6 overflow-x-auto hide-scrollbar pb-2 snap-x snap-mandatory scroll-smooth {{ $domesticAds->count() < 4 ? 'lg:justify-center' : '' }}">
+            <div id="domestic-ads-slider" class="flex-1 min-w-0 flex flex-row flex-nowrap gap-4 md:gap-6 overflow-x-auto hide-scrollbar pb-2 snap-x snap-mandatory scroll-smooth {{ $domesticAds->count() < 4 ? 'lg:justify-center' : '' }}" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; scroll-snap-type: x mandatory !important;">
                 @foreach($domesticAds as $ad)
-                <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 24px; box-shadow: 0 8px 24px -8px rgba(0,0,0,0.06); padding: 12px; display: flex; gap: 12px; box-sizing: border-box; transition: shadow 0.3s;" class="group hover:shadow-md relative snap-start ad-card-custom">
+                <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 24px; box-shadow: 0 8px 24px -8px rgba(0,0,0,0.06); padding: 12px; display: flex; gap: 12px; box-sizing: border-box; transition: shadow 0.3s; scroll-snap-align: start !important;" class="group hover:shadow-md relative snap-start ad-card-custom">
                     <!-- Left: Ad Image -->
                     <div style="width: 100px; height: 100px; border-radius: 16px; overflow: hidden; flex-shrink: 0; position: relative;">
                         <img src="{{ asset($ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300') }}" 
@@ -207,39 +240,32 @@
             </div>
 
             <!-- Next Button -->
-            <button type="button" class="w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex-shrink-0 items-center justify-center text-gray-600 hover:text-primary transition-colors hidden md:flex ml-4 md:ml-6" onclick="document.getElementById('ads-slider').scrollBy({left: document.getElementById('ads-slider').clientWidth, behavior: 'smooth'})">
+            <button type="button" class="w-10 h-10 bg-white rounded-full shadow-md border border-gray-100 flex-shrink-0 items-center justify-center text-gray-600 hover:text-primary transition-colors hidden md:flex ml-4 md:ml-6" onclick="document.getElementById('domestic-ads-slider').scrollBy({left: document.getElementById('domestic-ads-slider').clientWidth, behavior: 'smooth'})">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const slider = document.getElementById('domestic-ads-slider');
+                if (slider) {
+                    setInterval(() => {
+                        let cardWidth = slider.children.length > 0 ? slider.children[0].offsetWidth : 300;
+                        if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
+                            slider.scrollTo({left: 0, behavior: 'smooth'});
+                        } else {
+                            slider.scrollBy({left: cardWidth, behavior: 'smooth'});
+                        }
+                    }, 2000); // Scroll every 2s for readability
+                }
+            });
+        </script>
     </section>
     @endif
 
     <!-- Section 7: Offer Stickers -->
-    <section class="pt-5 md:pt-10 pb-2 md:pb-4 relative" style="background-color: #FFF4CE;">
+    <section class="pt-2 md:pt-10 pb-1 md:pb-4 relative" style="background-color: #FFF4CE;">
         <div class="container-custom">
-            <div class="px-4 py-8 md:px-8 md:py-10 relative flex items-center justify-between w-full" x-data="{
-                scrollAmount: 0,
-                scrollSpeed: 1,
-                animationFrame: null,
-                startAutoScroll() {
-                    let slider = document.getElementById('promo-slider');
-                    if (!slider) return;
-                    let scroll = () => {
-                        this.scrollAmount += this.scrollSpeed;
-                        if (this.scrollAmount >= slider.scrollWidth / 2) {
-                            this.scrollAmount = 0;
-                        }
-                        slider.scrollLeft = this.scrollAmount;
-                        this.animationFrame = requestAnimationFrame(scroll);
-                    };
-                    this.animationFrame = requestAnimationFrame(scroll);
-                },
-                stopAutoScroll() {
-                    cancelAnimationFrame(this.animationFrame);
-                    let slider = document.getElementById('promo-slider');
-                    if (slider) this.scrollAmount = slider.scrollLeft;
-                }
-            }" x-init="startAutoScroll()">
+            <div class="px-2 py-4 md:px-8 md:py-10 relative flex items-center justify-between w-full">
                 
                 <!-- SVG Airplane Path Left -->
                 <div class="absolute -top-12 -left-8 md:-top-16 md:-left-16 hidden md:block w-64 h-32 pointer-events-none z-20">
@@ -273,7 +299,7 @@
                     @media (min-width: 768px) { .sticker-card-custom { width: calc(50% - 12px); } }
                     @media (min-width: 1024px) { .sticker-card-custom { width: calc(25% - 18px); } }
                 </style>
-                <div id="promo-slider" class="flex-1 min-w-0 flex items-center justify-start overflow-x-hidden hide-scrollbar z-10 relative pb-4">
+                <div id="promo-slider" class="flex-1 min-w-0 flex items-center justify-start overflow-x-auto hide-scrollbar z-10 relative pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
                             @if(isset($offerStickers) && $offerStickers->count() > 0)
                                 {{-- Dynamic stickers from admin --}}
                                 @php
@@ -385,6 +411,30 @@
                 </div>
             </div>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const slider = document.getElementById('promo-slider');
+                if (slider) {
+                    let isHovered = false;
+                    slider.addEventListener('mousedown', () => isHovered = true);
+                    slider.addEventListener('mouseup', () => isHovered = false);
+                    slider.addEventListener('mouseleave', () => isHovered = false);
+                    slider.addEventListener('touchstart', () => isHovered = true);
+                    slider.addEventListener('touchend', () => isHovered = false);
+                    
+                    function autoScroll() {
+                        if (!isHovered) {
+                            slider.scrollLeft += 1;
+                            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1) {
+                                slider.scrollLeft = 0;
+                            }
+                        }
+                        requestAnimationFrame(autoScroll);
+                    }
+                    requestAnimationFrame(autoScroll);
+                }
+            });
+        </script>
     </section>
 
     <!-- Section 3: Why Travel With TourRaja -->
@@ -447,10 +497,10 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
 
-                <div id="theme-slider" class="flex overflow-x-auto gap-4 lg:gap-8 items-start w-full hide-scrollbar scroll-smooth pb-4 px-2">
+                <div id="theme-slider" class="flex flex-row flex-nowrap overflow-x-auto gap-4 lg:gap-8 items-start w-full hide-scrollbar scroll-smooth pb-4 px-2 snap-x snap-mandatory" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; scroll-snap-type: x mandatory !important;">
                     @if(isset($themes) && !$themes->isEmpty())
                         @foreach($themes as $theme)
-                            <a href="{{ url('/discover?theme=' . urlencode($theme->name)) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer shrink-0 w-24 md:w-28 lg:w-32 animate-hover">
+                            <a href="{{ url('/discover?theme=' . urlencode($theme->name)) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer shrink-0 w-24 md:w-28 lg:w-32 animate-hover snap-start" style="scroll-snap-align: start !important;">
                                 <div class="w-full aspect-square rounded-lg overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
                                     <img src="{{ asset($theme->image) }}" alt="{{ $theme->name }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                                 </div>
@@ -473,7 +523,7 @@
                             ];
                         @endphp
                         @foreach($fallbackThemes as $theme)
-                            <a href="{{ url('/discover?theme=' . urlencode($theme['label'])) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer shrink-0 w-24 md:w-28 lg:w-32">
+                            <a href="{{ url('/discover?theme=' . urlencode($theme['label'])) }}" class="group flex flex-col items-center text-center space-y-2 cursor-pointer shrink-0 w-24 md:w-28 lg:w-32 snap-start" style="scroll-snap-align: start !important;">
                                 <div class="w-full aspect-square rounded-lg overflow-hidden shadow-soft transition-all duration-500 group-hover:scale-105 group-hover:shadow-premium">
                                     <img src="{{ asset($theme['image']) }}" alt="{{ $theme['label'] }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                                 </div>
@@ -491,6 +541,21 @@
                 </button>
             </div>
         </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const themeSlider = document.getElementById('theme-slider');
+                if (themeSlider) {
+                    setInterval(() => {
+                        let cardWidth = themeSlider.children.length > 0 ? themeSlider.children[0].offsetWidth : 100;
+                        if (themeSlider.scrollLeft + themeSlider.clientWidth >= themeSlider.scrollWidth - 10) {
+                            themeSlider.scrollTo({left: 0, behavior: 'smooth'});
+                        } else {
+                            themeSlider.scrollBy({left: cardWidth, behavior: 'smooth'});
+                        }
+                    }, 2000); // Scroll every 2s for readability
+                }
+            });
+        </script>
     </section>
 
     <!-- Section 2: Featured Travel Packages -->

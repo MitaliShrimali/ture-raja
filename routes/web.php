@@ -62,9 +62,13 @@ Route::get('/signup', [UserController::class, 'signup'])->name('signup');
 
 Route::post('/signup/submit', [UserController::class, 'signupSubmit'])->name('signup.submit');
 
-// OTP API
 Route::post('/api/otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
 Route::post('/api/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
+// Forgot & Reset Password
+Route::get('/forgot-password', [UserController::class, 'forgotPassword'])->name('forgot-password');
+Route::post('/forgot-password', [UserController::class, 'forgotPasswordSubmit']);
+Route::get('/reset-password/{token}', [UserController::class, 'resetPassword'])->name('reset-password');
+Route::post('/reset-password', [UserController::class, 'resetPasswordSubmit']);
 
 Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('login.submit');
 Route::match(['GET', 'POST'], '/logout', [UserController::class, 'logout'])->name('logout');
@@ -378,6 +382,11 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/signup',  [AgentController::class, 'signup'])->name('signup');
     Route::post('/signup', [AgentController::class, 'signupSubmit'])->name('signup.submit');
     Route::match(['GET', 'POST'], '/logout',  [AgentController::class, 'logout'])->name('logout');
+
+    Route::get('/forgot-password', [AgentController::class, 'forgotPassword'])->name('forgot-password');
+    Route::post('/forgot-password', [AgentController::class, 'forgotPasswordSubmit'])->name('forgot-password.submit');
+    Route::get('/reset-password/{token}', [AgentController::class, 'resetPassword'])->name('reset-password');
+    Route::post('/reset-password', [AgentController::class, 'resetPasswordSubmit'])->name('reset-password.submit');
 
     // --- Protected agent pages ---
     Route::middleware(['agent.auth', 'agent.profile_complete'])->group(function () {

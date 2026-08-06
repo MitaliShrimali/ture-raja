@@ -120,6 +120,7 @@
     <!-- ================= MODALS ================= -->
 
     <!-- Add Holiday Type Modal -->
+    <template x-teleport="body">
     <div 
         x-show="showAddModal" 
         class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
@@ -220,8 +221,10 @@
             </form>
         </div>
     </div>
+    </template>
 
     <!-- Edit Holiday Type Modal -->
+    <template x-teleport="body">
     <div 
         x-show="showEditModal" 
         class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
@@ -323,6 +326,7 @@
             </form>
         </div>
     </div>
+    </template>
 </div>
 @endsection
 

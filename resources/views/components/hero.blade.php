@@ -155,7 +155,7 @@
 
     {{-- Main Headline --}}
     <h1 class="font-black leading-snug w-full mb-2 md:mb-4 hero-mobile-title"
-      style="color:#ffffff !important; text-shadow:0 2px 12px rgba(0,0,0,0.5); font-size: 36px !important;">
+      style="color:#ffffff !important; text-shadow:0 2px 12px rgba(0,0,0,0.5);">
       Discover Exclusive Travel Packages from <br class="hidden sm:block">Local Agents Near You!
     </h1><br>
 
@@ -166,31 +166,31 @@
           class="flex flex-col md:flex-row items-center gap-0 overflow-visible p-1">
 
           {{-- Destination Field --}}
-          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 hero-search-divider transition-all hover:bg-gray-50/50 rounded-lg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
+          <div class="flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-3 py-2 md:px-6 md:py-4 hero-search-divider transition-all hover:bg-gray-50/50 rounded-lg">
+            <svg class="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg> 
             <input type="text" name="destination" placeholder="Where You Go !!!"
-              class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[15px] font-bold outline-none w-full"
+              class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
               style="box-shadow: none;" value="{{ request('destination') }}">
           </div>
 
           {{-- Agent/City Field --}}
-          <div class="flex items-center gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 transition-all hover:bg-gray-50/50 rounded-lg">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
+          <div class="flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-3 py-2 md:px-6 md:py-4 transition-all hover:bg-gray-50/50 rounded-lg">
+            <svg class="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
             <input type="text" name="from_city" placeholder="Search agent from your city/near by location"
-              class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[15px] font-bold outline-none w-full"
+              class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
               style="box-shadow: none;" value="{{ request('from_city') }}">
           </div>
 
           {{-- Search Button --}}
           <div class="px-2 py-2 flex-shrink-0 w-full md:w-auto">
             <button type="submit" style="background:#ea580c;"
-              class="rounded-xl px-10 py-4 text-white font-black text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto shadow-md hover:shadow-lg">
+              class="rounded-xl px-4 py-2.5 md:px-10 md:py-4 text-white font-black text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto shadow-md hover:shadow-lg">
               Search
             </button>
           </div>
@@ -312,7 +312,7 @@
     <h2 class="font-black text-foreground tracking-tight font-heading mb-2 md:mb-4 text-center"
       style="font-size: 28px;">Popular Transits</h2>
     <div
-      class="flex flex-nowrap justify-center items-start gap-2 md:gap-6 lg:gap-8 pb-4 md:pb-0 px-2 mx-auto w-full overflow-hidden">
+      class="flex flex-nowrap justify-center items-start gap-1 md:gap-6 lg:gap-8 pb-4 md:pb-0 px-1 md:px-2 mx-auto w-full overflow-hidden">
       @php
         try {
           $dbTransits = DB::table('transits')->where('status', 'Active')->get();
@@ -410,12 +410,12 @@
         @endphp
         <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
           class="group flex-1 min-w-0 max-w-[85px] md:max-w-[105px] lg:max-w-[125px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
-          <div class="w-14 h-14 md:w-16 md:h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex items-center justify-center">
+          <div class="w-10 h-10 md:w-16 md:h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex items-center justify-center">
             <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}"
               class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
           </div>
           <span
-            class="text-center text-[12px] md:text-[14px] lg:text-[15px] font-bold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
+            class="text-center text-[9px] md:text-[14px] lg:text-[15px] font-bold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
         </a>
       @endforeach
     </div>

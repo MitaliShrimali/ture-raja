@@ -221,6 +221,76 @@ class AgentController extends Controller
         return redirect()->route('agent.branch')->with('success', 'Branch created successfully!');
     }
 
+    // ─── FORGOT & RESET PASSWORD ──────────────────────────────────────────
+    public function forgotPassword()
+    {
+        return view('agent.auth.forgot-password');
+    }
+
+    public function forgotPasswordSubmit(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        
+        $agent = DB::table('agents')->where('email', $request->email)->first();
+        if (!$agent) {
+            return back()->with('error', 'No agent account found with this email.');
+        }
+
+        $token = \Illuminate\Support\Str::random(64);
+        $tokenHash = 'agent_' . $token;
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            ['token' => $tokenHash, 'created_at' => now()]
+        );
+
+        $resetUrl = url("/agent/reset-password/{$tokenHash}");
+
+        try {
+            \Illuminate\Support\Facades\Mail::send('emails.reset-password', ['resetUrl' => $resetUrl], function($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Reset Your TourRaja Agent Password');
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to send reset link. Please check email configuration.');
+        }
+
+        return back()->with('success', 'We have emailed your password reset link!');
+    }
+
+    public function resetPassword($token)
+    {
+        return view('agent.auth.reset-password', ['token' => $token]);
+    }
+
+    public function resetPasswordSubmit(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $reset = DB::table('password_reset_tokens')->where('token', $request->token)->first();
+
+        if (!$reset) {
+            return back()->with('error', 'Invalid or expired password reset token.');
+        }
+
+        $agent = DB::table('agents')->where('email', $reset->email)->first();
+        if (!$agent) {
+            return back()->with('error', 'Agent not found.');
+        }
+
+        DB::table('agents')->where('email', $reset->email)->update([
+            'password' => Hash::make($request->password),
+            'updated_at' => now()
+        ]);
+
+        DB::table('password_reset_tokens')->where('email', $reset->email)->delete();
+
+        return redirect()->route('agent.login')->with('success', 'Password reset successfully! You can now log in.');
+    }
+
     public function updateBranch(Request $request, $id)
     {
         $agentId = session('agent_id');

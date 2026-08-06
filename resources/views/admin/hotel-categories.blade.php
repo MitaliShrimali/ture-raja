@@ -236,6 +236,8 @@
     <!-- ========================================== -->
     <!-- ADD CATEGORY MODAL REPLICA (3rd Image) -->
     <!-- ========================================== -->
+    <template x-teleport="body">
+    <template x-teleport="body">
     <div x-show="showAddModal" 
         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" 
         style="display: none;">
@@ -366,11 +368,15 @@
             </div>
         </div>
     </div>
+    </template>
+    </template>
 
 
     <!-- ========================================== -->
     <!-- EDIT CATEGORY MODAL REPLICA (Same UI) -->
     <!-- ========================================== -->
+    <template x-teleport="body">
+    <template x-teleport="body">
     <div x-show="showEditModal" 
         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" 
         style="display: none;">
@@ -502,6 +508,8 @@
             </div>
         </div>
     </div>
+    </template>
+    </template>
 
 </div>
 @endsection

@@ -136,9 +136,10 @@
     <!-- ================= MODALS ================= -->
 
     <!-- Add Ad Modal -->
-    <div 
-        x-show="showAddModal" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+    <template x-teleport="body">
+        <div 
+            x-show="showAddModal" 
+            class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100"
@@ -233,76 +234,11 @@
                     </div>
                 </form>
             </div>
-        </div>
     </div>
+    </template>
 
     <!-- Edit Ad Modal -->
-    <div 
-        x-show="showEditModal" 
-        class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 scale-100"
-        x-transition:leave-end="opacity-0 scale-95"
-        style="display: none;"
-    >
-        <div @click.away="showEditModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-3xl w-full mx-auto max-h-[90vh] flex flex-col overflow-hidden">
-            <div class="flex items-center justify-between border-b border-border-soft p-6 md:px-10 md:pt-10 md:pb-6 shrink-0">
-                <div class="space-y-1">
-                    <h3 class="text-xl font-black text-foreground">Edit Campaign</h3>
-                        <input required type="text" name="campaign_name" placeholder="E.g. Summer Expedition Promo" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Placement Position</label>
-                        <select name="position" x-model="addPosition" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                            <option value="Home Hero">Home Hero</option>
-                            <option value="Package Sidebar">Package Sidebar</option>
-                            <option value="Footer Banner">Footer Banner</option>
-                            <option value="Under Domestic Packages">Under Domestic Packages</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Conditional fields for Under Domestic Packages -->
-                    <div class="col-span-1 md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in" x-show="addPosition === 'Under Domestic Packages'" style="display: none;">
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Subtitle / Slogan</label>
-                            <input type="text" name="subtitle" placeholder="E.g. Stop Searching, Start Traveling" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Select Agent (For Logo display)</label>
-                            <select name="agent_id" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                                <option value="">-- No Agent Logo --</option>
-                                @foreach($agents as $agent)
-                                    <option value="{{ $agent->id }}">{{ $agent->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Click Target URL</label>
-                        <input type="text" name="link" placeholder="E.g. /discover" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
-                        <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
-                            <option value="Active">Active</option>
-                            <option value="Paused">Paused</option>
-                        </select>
-                    </div>
-                    
-                    <div class="col-span-1 md:col-span-2 flex items-center justify-end gap-4 pt-4 mt-2 border-t border-border-soft">
-                        <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
-                        <button type="submit" class="px-6 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Save Campaign</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Ad Modal -->
+    <template x-teleport="body">
     <div 
         x-show="showEditModal" 
         class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
@@ -404,5 +340,6 @@
             </div>
         </div>
     </div>
+    </template>
 </div>
 @endsection

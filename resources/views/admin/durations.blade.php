@@ -227,6 +227,8 @@
     </div>
 
     {{-- ===== ADD MODAL ===== --}}
+    <template x-teleport="body">
+    <template x-teleport="body">
     <div x-show="showAddModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
@@ -269,8 +271,12 @@
             </form>
         </div>
     </div>
+    </template>
+    </template>
 
     {{-- ===== EDIT MODAL ===== --}}
+    <template x-teleport="body">
+    <template x-teleport="body">
     <div x-show="showEditModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
@@ -314,5 +320,7 @@
             </form>
         </div>
     </div>
+    </template>
+    </template>
 </div>
 @endsection

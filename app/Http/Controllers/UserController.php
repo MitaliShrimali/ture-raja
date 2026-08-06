@@ -800,6 +800,76 @@ class UserController extends Controller
         return redirect()->back()->with('error', 'Invalid password. Please try again.')->withInput();
     }
 
+    // ─── FORGOT & RESET PASSWORD ──────────────────────────────────────────
+    public function forgotPassword()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function forgotPasswordSubmit(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+        
+        $user = DB::table('users')->where('email', $request->email)->first();
+        if (!$user) {
+            return back()->with('error', 'No account found with this email.');
+        }
+
+        $token = \Illuminate\Support\Str::random(64);
+        $tokenHash = 'user_' . $token;
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            ['token' => $tokenHash, 'created_at' => now()]
+        );
+
+        $resetUrl = url("/reset-password/{$tokenHash}");
+
+        try {
+            \Illuminate\Support\Facades\Mail::send('emails.reset-password', ['resetUrl' => $resetUrl], function($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Reset Your TourRaja Password');
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', 'Failed to send reset link. Please check email configuration.');
+        }
+
+        return back()->with('success', 'We have emailed your password reset link!');
+    }
+
+    public function resetPassword($token)
+    {
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    public function resetPasswordSubmit(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'password' => 'required|min:8|confirmed',
+        ]);
+
+        $reset = DB::table('password_reset_tokens')->where('token', $request->token)->first();
+
+        if (!$reset) {
+            return back()->with('error', 'Invalid or expired password reset token.');
+        }
+
+        $user = DB::table('users')->where('email', $reset->email)->first();
+        if (!$user) {
+            return back()->with('error', 'User not found.');
+        }
+
+        DB::table('users')->where('email', $reset->email)->update([
+            'password' => Hash::make($request->password),
+            'updated_at' => now()
+        ]);
+
+        DB::table('password_reset_tokens')->where('email', $reset->email)->delete();
+
+        return redirect('/login')->with('success', 'Password reset successfully! You can now log in.');
+    }
+
     public function logout()
     {
         // Capture role before logging out
