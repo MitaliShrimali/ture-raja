@@ -1075,7 +1075,7 @@
                         <span class="inline-block px-4 py-1.5 rounded-full bg-primary text-white text-[10px] font-black uppercase tracking-widest shadow-glow">
                             Join our newsletter
                         </span>
-                        <h2 class="font-black text-foreground leading-[1.1] tracking-tight font-heading" style="font-size: 38px;">
+                        <h2 class="font-black text-foreground leading-[1.1] tracking-tight font-heading text-[28px] md:text-[38px]">
                             Subscribe to see secret deals prices drop the moment you sign up!
                         </h2>
                         
