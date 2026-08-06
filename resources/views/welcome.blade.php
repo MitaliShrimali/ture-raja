@@ -422,11 +422,16 @@
                     slider.addEventListener('touchstart', () => isHovered = true);
                     slider.addEventListener('touchend', () => isHovered = false);
                     
+                    // Start in the middle so we can seamlessly scroll left
+                    setTimeout(() => {
+                        slider.scrollLeft = slider.scrollWidth / 2;
+                    }, 50);
+
                     function autoScroll() {
                         if (!isHovered) {
-                            slider.scrollLeft += 1;
-                            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1) {
-                                slider.scrollLeft = 0;
+                            slider.scrollLeft -= 1;
+                            if (slider.scrollLeft <= 0) {
+                                slider.scrollLeft = slider.scrollWidth / 2;
                             }
                         }
                         requestAnimationFrame(autoScroll);

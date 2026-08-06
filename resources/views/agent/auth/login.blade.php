@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" href="{{ \Illuminate\Support\Facades\DB::table('settings')->where('key', 'favicon')->value('value') ?? asset('favicon.ico') }}">
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
