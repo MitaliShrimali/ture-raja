@@ -517,6 +517,22 @@
                     </div>
                 @endif
 
+                @if(isset($agent))
+                {{-- Fixed floating tab switcher — always visible in bottom-right corner --}}
+                <div class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 items-end">
+                    <button type="button" @click="activeTab = 'profile'"
+                        x-show="activeTab !== 'profile'"
+                        class="flex items-center gap-2 px-4 py-2.5 bg-white border-2 border-[#e85d26] text-[#e85d26] hover:bg-[#e85d26] hover:text-white rounded-full text-xs font-black uppercase tracking-wider transition-all shadow-xl">
+                        <i data-lucide="user" size="14"></i> Agent Profile
+                    </button>
+                    <button type="button" @click="activeTab = 'packages'"
+                        x-show="activeTab !== 'packages'"
+                        class="flex items-center gap-2 px-4 py-2.5 bg-[#e85d26] text-white hover:bg-orange-600 rounded-full text-xs font-black uppercase tracking-wider transition-all shadow-xl shadow-orange-400/30">
+                        <i data-lucide="package" size="14"></i> View Packages
+                    </button>
+                </div>
+                @endif
+
                 <div x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak class="space-y-8">
                 <!-- Mobile Search Input (Visible only on mobile/tablet) -->
                 <div class="relative group hidden w-full">

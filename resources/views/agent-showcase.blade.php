@@ -333,6 +333,22 @@
                 @endif
             </div>
         </div>
+
+        <!-- Tab Navigation embedded at the bottom of the banner -->
+        <div class="absolute bottom-0 left-0 w-full bg-black/40 backdrop-blur-sm border-t border-white/20 z-20">
+            <div class="container-custom flex justify-end gap-2 sm:gap-6">
+                <button type="button" @click="activeTab = 'profile'; window.history.pushState({}, '', '?agent_id={{ $agent->id }}&tab=profile');"
+                    class="py-3 px-4 sm:px-6 border-b-[3px] font-black text-xs sm:text-sm uppercase tracking-wider transition-colors"
+                    :class="activeTab === 'profile' || activeTab === 'both' ? 'border-[#e85d26] text-white bg-black/20' : 'border-transparent text-gray-300 hover:text-white hover:bg-white/10'">
+                    <i class="fas fa-user mr-2"></i> Profile
+                </button>
+                <button type="button" @click="activeTab = 'packages'; window.history.pushState({}, '', '?agent_id={{ $agent->id }}&tab=packages');"
+                    class="py-3 px-4 sm:px-6 border-b-[3px] font-black text-xs sm:text-sm uppercase tracking-wider transition-colors"
+                    :class="activeTab === 'packages' ? 'border-[#e85d26] text-white bg-black/20' : 'border-transparent text-gray-300 hover:text-white hover:bg-white/10'">
+                    <i class="fas fa-box-open mr-2"></i> Packages
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Agent Profile details section precisely matched to image layout -->
@@ -479,23 +495,23 @@
                         @if(isset($branches) && count($branches) > 0)
                             <div
                                 class="agent-info-item lg:col-span-2 mt-4 pt-4 border-t border-gray-100 flex flex-col items-start gap-2">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Branches</span>
+                                <span class="text-sm font-black text-gray-400 uppercase tracking-widest">Branches</span>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full mt-2">
                                     @foreach($branches as $b)
                                         <div
-                                            class="p-4 rounded-2xl bg-gray-50/70 border border-gray-100/50 flex flex-col gap-1 w-full">
+                                            class="p-4 rounded-2xl bg-gray-50/70 border border-gray-100/50 flex flex-col gap-2 w-full">
                                             <div class="flex items-center justify-between">
-                                                <span class="text-[11px] font-bold text-gray-800">{{ $b->agency_name }}</span>
+                                                <span class="text-base font-bold text-gray-800">{{ $b->agency_name }}</span>
                                                 <span
-                                                    class="px-2 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-wider {{ $b->status == 'Online' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                                                    class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider {{ $b->status == 'Online' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                                                     {{ $b->status }}
                                                 </span>
                                             </div>
-                                            <div class="text-[10px] text-gray-500 font-medium flex items-start gap-1.5 mt-1">
-                                                <i class="fas fa-map-marker-alt text-primary/70 mt-0.5"></i>
+                                            <div class="text-sm text-gray-500 font-medium flex items-start gap-2 mt-1">
+                                                <i class="fas fa-map-marker-alt text-primary/70 mt-1"></i>
                                                 <span>{{ $b->location }} - {{ $b->address }}</span>
                                             </div>
-                                            <div class="text-[10px] text-gray-500 font-medium flex items-center gap-1.5">
+                                            <div class="text-sm text-gray-500 font-medium flex items-center gap-2">
                                                 <i class="fas fa-phone-alt text-primary/70"></i>
                                                 <span>{{ $b->phone }}</span>
                                             </div>
