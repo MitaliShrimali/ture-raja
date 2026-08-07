@@ -54,101 +54,190 @@
     </div>
 
     <style>
-        /* MOBILE LIST VIEW FIXES */
+        /* =====================================================
+           MOBILE LIST VIEW — all phones (max 767px)
+           Goal: image left (small) + content right, no overflow
+           ===================================================== */
         @media (max-width: 767px) {
-            body .list-view-wrapper .package-card-inner {
-                flex-direction: row !important;
-                display: flex !important;
-                height: auto !important;
-                min-height: 150px !important;
-                padding: 8px !important;
-                align-items: center !important;
-                gap: 0 !important;
-                background: white !important;
+
+            /* Ensure the page itself doesn't overflow */
+            body {
+                overflow-x: hidden !important;
             }
 
-            body .list-view-wrapper .package-image-container {
-                width: 120px !important;
-                height: 120px !important;
-                flex-shrink: 0 !important;
-                aspect-ratio: 1/1 !important;
-                margin: 0 !important;
-                border-radius: 12px !important;
+            /* Package list container: take full width */
+            #packages-list-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow-x: hidden !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Each individual card wrapper */
+            body .list-view-wrapper .package-item {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
                 overflow: hidden !important;
             }
 
+            /* The card itself — horizontal row, image left + content right */
+            body .list-view-wrapper .package-card-inner {
+                flex-direction: row !important;
+                display: flex !important;
+                align-items: stretch !important;
+                height: auto !important;
+                min-height: 130px !important;
+                padding: 8px !important;
+                gap: 0 !important;
+                background: white !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Thumbnail image — fixed small size, never shrinks below this */
+            body .list-view-wrapper .package-image-container {
+                width: 90px !important;
+                min-width: 90px !important;
+                max-width: 90px !important;
+                height: 110px !important;
+                flex-shrink: 0 !important;
+                aspect-ratio: auto !important;
+                margin: 0 !important;
+                border-radius: 10px !important;
+                overflow: hidden !important;
+                align-self: center !important;
+            }
+
+            /* Content area — takes remaining space, clips overflow */
             body .list-view-wrapper .package-content {
-                padding: 10px 10px 10px 12px !important;
-                flex-grow: 1 !important;
+                padding: 6px 8px 6px 10px !important;
+                flex: 1 1 0% !important;
+                min-width: 0 !important;
+                max-width: calc(100% - 90px) !important;
                 flex-direction: column !important;
                 justify-content: center !important;
                 display: flex !important;
                 height: auto !important;
                 gap: 4px !important;
+                overflow: hidden !important;
+                box-sizing: border-box !important;
             }
 
-            body .list-view-wrapper .package-content h3 {
-                font-size: 0.85rem !important;
-                line-height: 1.2 !important;
+            /* Title — clamp to 2 lines */
+            body .list-view-wrapper .package-content h3,
+            body .list-view-wrapper .package-content > div:first-child h3 {
+                font-size: 0.82rem !important;
+                line-height: 1.25 !important;
                 min-height: 0 !important;
                 margin-bottom: 2px !important;
                 display: -webkit-box !important;
                 -webkit-line-clamp: 2 !important;
                 -webkit-box-orient: vertical !important;
                 overflow: hidden !important;
+                white-space: normal !important;
+                word-break: break-word !important;
             }
 
+            /* Tags row (Luxury Bus, Spring) — wrap and clip */
+            body .list-view-wrapper .package-content .flex.flex-wrap {
+                flex-wrap: wrap !important;
+                gap: 3px !important;
+                overflow: hidden !important;
+                max-height: 52px !important;
+            }
+
+            body .list-view-wrapper .package-content .flex.flex-wrap span,
+            body .list-view-wrapper .package-content .flex.flex-wrap a {
+                font-size: 9px !important;
+                padding: 2px 6px !important;
+                white-space: nowrap !important;
+            }
+
+            /* Agent row — clip text */
+            body .list-view-wrapper .package-content .flex.items-center.gap-2\.5 {
+                max-width: 100% !important;
+                overflow: hidden !important;
+            }
+
+            body .list-view-wrapper .package-content .flex.items-center.gap-2\.5 p {
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                white-space: nowrap !important;
+                max-width: 100% !important;
+                font-size: 10px !important;
+            }
+
+            /* Agent avatar smaller */
+            body .list-view-wrapper .package-content .w-9.h-9 {
+                width: 26px !important;
+                height: 26px !important;
+                min-width: 26px !important;
+            }
+
+            /* Price + Search Now row */
             body .list-view-wrapper .package-action {
-                border-top: none !important;
-                padding-top: 0 !important;
+                border-top: 1px solid #f3f4f6 !important;
+                padding-top: 4px !important;
                 margin-top: 4px !important;
                 flex-direction: row !important;
                 align-items: center !important;
                 justify-content: space-between !important;
                 width: 100% !important;
                 display: flex !important;
+                gap: 4px !important;
             }
 
             body .list-view-wrapper .package-action span.text-2xl {
-                font-size: 1.1rem !important;
+                font-size: 0.95rem !important;
+                white-space: nowrap !important;
             }
 
             body .list-view-wrapper .package-action a {
-                padding: 4px 12px !important;
-                font-size: 10px !important;
+                padding: 4px 10px !important;
+                font-size: 9px !important;
                 width: auto !important;
+                white-space: nowrap !important;
+                border-radius: 20px !important;
             }
 
-            body .list-view-wrapper .package-info,
-            body .list-view-wrapper .package-content .flex.items-start.justify-between>div:last-child {
-                display: none !important;
+            /* Duration badge on title row */
+            body .list-view-wrapper .package-content > div:first-child {
+                display: flex !important;
+                align-items: flex-start !important;
+                justify-content: space-between !important;
+                gap: 4px !important;
             }
 
-            body .list-view-wrapper .package-image-container .absolute.top-4 {
-                top: 6px !important;
+            body .list-view-wrapper .package-content > div:first-child > div.shrink-0 {
+                font-size: 9px !important;
+                padding: 2px 5px !important;
             }
 
-            body .list-view-wrapper .package-image-container .absolute.left-4 {
-                left: 6px !important;
-            }
-
-            body .list-view-wrapper .package-image-container .absolute.right-4 {
-                right: 6px !important;
-            }
-
-            body .list-view-wrapper .package-image-container span.px-4 {
-                padding: 2px 6px !important;
-                font-size: 7px !important;
-            }
-
+            /* Wishlist button inside image */
             body .list-view-wrapper .wishlist-btn {
-                width: 26px !important;
-                height: 26px !important;
+                width: 24px !important;
+                height: 24px !important;
+                top: 4px !important;
+                right: 4px !important;
             }
 
             body .list-view-wrapper .wishlist-btn svg {
-                width: 12px !important;
-                height: 12px !important;
+                width: 11px !important;
+                height: 11px !important;
+            }
+
+            /* Badge inside image */
+            body .list-view-wrapper .package-image-container .absolute.top-3 {
+                top: 4px !important;
+                left: 4px !important;
+            }
+
+            body .list-view-wrapper .package-image-container span.px-4 {
+                padding: 1px 5px !important;
+                font-size: 7px !important;
             }
         }
 
@@ -157,8 +246,8 @@
             body .list-view-wrapper .package-card-inner {
                 flex-direction: row !important;
                 display: flex !important;
-                height: 180px !important;
-                padding: 0.5rem !important;
+                height: 200px !important;
+                padding: 0.75rem !important;
                 max-width: 100% !important;
             }
 
@@ -178,7 +267,7 @@
                 column-gap: 1.5rem !important;
                 align-items: center !important;
                 flex-grow: 1 !important;
-                padding: 0.85rem 1.5rem !important;
+                padding: 0.5rem 1.5rem 1.1rem 1.5rem !important;
             }
 
             /* Row 1: Title (left) + Rating (right) */
@@ -430,7 +519,7 @@
 
                 <div x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak class="space-y-8">
                 <!-- Mobile Search Input (Visible only on mobile/tablet) -->
-                <div class="relative group lg:hidden w-full">
+                <div class="relative group hidden w-full">
                     <input type="text" name="mobile_search" placeholder="Search destination or package..."
                         value="{{ request('search') ?: request('mobile_search') }}"
                         class="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 shadow-soft focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-bold text-foreground placeholder:text-muted-text/40 text-sm">
@@ -439,30 +528,69 @@
                         size="18"></i>
                 </div>
                 <!-- Top Bar -->
-                <div
-                    class="bg-white rounded-lg py-3 px-5 shadow-soft flex flex-col md:flex-row items-center md:items-center justify-between gap-4">
-                    <div class="text-center md:text-left flex items-center flex-wrap gap-3">
-                        <!-- Dropdown Pill replacing 'Packages' text -->
+                <div class="bg-white rounded-lg shadow-soft w-full overflow-hidden">
+                    <!-- Single-row on mobile, flex on desktop -->
+                    <div class="flex items-center gap-1.5 px-2 py-2 md:hidden">
+                        <!-- 1. Package Count Pill -->
                         <button type="button" @click="stateModalOpen = true"
-                            class="flex items-center justify-between min-w-[90px] px-4 py-2 bg-white border border-[#e85d26] rounded-md text-base font-black text-foreground transition-all shadow-sm shrink-0 hover:bg-orange-50">
-                            <span>
-                                (<span id="results-count">{{ $packages->count() }}</span>)
-                            </span>
-                            <i data-lucide="chevron-down" size="18" class="text-[#e85d26] ml-3"></i>
+                            class="flex items-center gap-0.5 px-2 py-1.5 bg-white border border-[#e85d26] rounded-md text-xs font-black text-foreground shadow-sm hover:bg-orange-50 shrink-0">
+                            <span>(<span id="results-count">{{ $packages->count() }}</span>)</span>
+                            <i data-lucide="chevron-down" size="12" class="text-[#e85d26]"></i>
                         </button>
-                    </div>
-
-                    <div
-                        class="flex flex-row items-center justify-between gap-3 w-full md:w-auto border-t border-gray-50 pt-5 md:border-none md:pt-0">
-                        <!-- Filters Trigger (Mobile only, static/non-floating) -->
+                        <!-- 2. Filters Button -->
                         <button type="button" @click="mobileFiltersOpen = true"
-                            class="lg:hidden flex items-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2.5 rounded-2xl text-[12px] font-black transition-all shrink-0">
-                            <i data-lucide="sliders-horizontal" size="14"></i>
+                            class="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1.5 rounded-md text-xs font-black shrink-0">
+                            <i data-lucide="sliders-horizontal" size="12"></i>
                             Filters
                         </button>
-
-                        <!-- Sort Dropdown: Constrained on mobile -->
-                        <div class="relative mobile-sort-select-wrapper w-full md:w-48 flex-1 md:flex-none">
+                        <!-- 3. Sort By (flex-1 to take remaining space) -->
+                        <div class="relative flex-1 min-w-0">
+                            <select name="sort"
+                                class="w-full bg-white border border-[#e85d26] rounded-md py-1.5 pl-2 pr-5 text-xs font-semibold focus:outline-none appearance-none cursor-pointer text-[#e85d26] truncate">
+                                <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
+                                <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' ? 'selected' : '' }}>Guaranteed</option>
+                                <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' ? 'selected' : '' }}>Price ↑</option>
+                                <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' ? 'selected' : '' }}>Price ↓</option>
+                                <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' ? 'selected' : '' }}>Duration ↑</option>
+                                <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' ? 'selected' : '' }}>Duration ↓</option>
+                            </select>
+                            <i data-lucide="chevron-down" class="absolute right-1 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="11"></i>
+                        </div>
+                        @if(!isset($agent))
+                        <!-- 4. Grid Icon — at the end -->
+                        <button @click="viewStyle = 'grid'" type="button"
+                            :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400'"
+                            class="p-0.5 transition-all duration-300 shrink-0">
+                            <i data-lucide="layout-grid" size="16"></i>
+                        </button>
+                        <!-- 5. List Icon — at the end -->
+                        <button @click="viewStyle = 'list'" type="button"
+                            :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400'"
+                            class="p-0.5 transition-all duration-300 shrink-0">
+                            <i data-lucide="list" size="16"></i>
+                        </button>
+                        @endif
+                    </div>
+                    <!-- Desktop layout (unchanged) -->
+                    <div class="hidden md:flex md:flex-row md:items-center md:justify-between px-4 py-3 gap-4">
+                        <!-- Left: Package Count -->
+                        <div class="flex items-center">
+                            <button type="button" @click="stateModalOpen = true"
+                                class="flex items-center justify-between w-auto min-w-[90px] px-4 py-2 bg-white border border-[#e85d26] rounded-md text-base font-black text-foreground transition-all shadow-sm hover:bg-orange-50">
+                                <span>(<span>{{ $packages->count() }}</span>)</span>
+                                <i data-lucide="chevron-down" size="18" class="text-[#e85d26] ml-3"></i>
+                            </button>
+                        </div>
+                        <!-- Middle: Filters -->
+                        <div class="flex items-center">
+                            <button type="button" @click="mobileFiltersOpen = true"
+                                class="lg:hidden flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2.5 rounded-md text-[12px] font-black transition-all">
+                                <i data-lucide="sliders-horizontal" size="14"></i>
+                                Filters
+                            </button>
+                        </div>
+                        <!-- Middle-Right: Sort By -->
+                        <div class="relative w-48">
                             <select name="sort"
                                 class="w-full bg-white border border-[#e85d26] rounded-md py-2 pl-4 pr-10 text-sm font-semibold focus:outline-none appearance-none cursor-pointer hover:bg-orange-50 transition-all text-[#e85d26]">
                                 <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
@@ -472,25 +600,22 @@
                                 <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' || request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>Duration (Low to High)</option>
                                 <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' || request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>Duration (High to Low)</option>
                             </select>
-                            <i data-lucide="chevron-down"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none"
-                                size="18"></i>
+                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="18"></i>
                         </div>
-
-                        <!-- View Toggle Buttons -->
+                        <!-- Far Right: View Toggle -->
                         @if(!isset($agent))
-                            <div class="flex items-center gap-1 shrink-0 ml-2">
-                                <button @click="viewStyle = 'grid'" type="button"
-                                    :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
-                                    class="p-1.5 transition-all duration-300">
-                                    <i data-lucide="layout-grid" size="24"></i>
-                                </button>
-                                <button @click="viewStyle = 'list'" type="button"
-                                    :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
-                                    class="p-1.5 transition-all duration-300">
-                                    <i data-lucide="list" size="24"></i>
-                                </button>
-                            </div>
+                        <div class="flex items-center gap-1 shrink-0">
+                            <button @click="viewStyle = 'grid'" type="button"
+                                :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
+                                class="p-1.5 transition-all duration-300">
+                                <i data-lucide="layout-grid" size="24"></i>
+                            </button>
+                            <button @click="viewStyle = 'list'" type="button"
+                                :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
+                                class="p-1.5 transition-all duration-300">
+                                <i data-lucide="list" size="24"></i>
+                            </button>
+                        </div>
                         @endif
                     </div>
                 </div>

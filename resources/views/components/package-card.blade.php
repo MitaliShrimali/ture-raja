@@ -163,7 +163,7 @@
         </div>
 
         {{-- Row 2: Properties --}}
-        <div class="flex flex-col items-start gap-2">
+        <div class="flex flex-wrap items-center gap-2">
             @if($transitVal)
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-100 text-[11px] font-bold text-orange-600">
                     <i data-lucide="{{ $transportIcon }}" size="12"></i>
@@ -199,7 +199,7 @@
                 @endif
             </div>
             {{-- Agent Name + Location --}}
-            <div class="min-w-0">
+            <div class="min-w-0 flex-1">
                 <p class="text-xs font-bold text-gray-800 truncate">{{ $agentName }}</p>
                 @if($agentLocation)
                     <p class="text-[10px] text-gray-500 font-medium flex items-center gap-0.5 mt-0.5">
@@ -212,7 +212,7 @@
         @endif
 
         {{-- Row 5: Price + Search Now --}}
-        <div class="pt-3 border-t border-border-soft/50 flex items-end justify-between mt-auto package-action">
+        <div class="pt-3 border-t border-border-soft/50 flex flex-col gap-3 mt-auto package-action">
             <div class="flex flex-col">
                 <span class="text-2xl font-black text-foreground tracking-tight font-heading">{{ $currency ?? '₹' }}{{ number_format($price) }}</span>
                 @if($oldPrice)
@@ -221,7 +221,7 @@
             </div>
 
             <a href="{{ $detailUrl }}" target="_blank" onclick="event.stopPropagation()"
-               class="px-5 py-2.5 rounded-full bg-primary text-white text-xs font-black shadow-glow hover:bg-primary/90 transition-all duration-300 inline-block whitespace-nowrap shrink-0 text-center">
+               class="w-full px-5 py-2.5 rounded-full bg-primary text-white text-xs font-black shadow-glow hover:bg-primary/90 transition-all duration-300 inline-block whitespace-nowrap text-center">
                 Search Now
             </a>
         </div>
