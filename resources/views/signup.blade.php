@@ -386,6 +386,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
                         },
                         body: JSON.stringify({ phone: countryCode + phone, email: email })
@@ -430,6 +431,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json',
                             'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
                         },
                         body: JSON.stringify({ phone: phone, otp: this.otp })

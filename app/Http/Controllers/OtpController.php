@@ -40,7 +40,7 @@ class OtpController extends Controller
             
             Log::info("Sent OTP via Email to {$email}", ['otp' => $otp, 'phone' => $phone]);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error("Email OTP Exception", ['error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
