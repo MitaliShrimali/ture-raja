@@ -445,7 +445,7 @@
                     this.loading = true;
                     this.errorMsg = '';
                     
-                    fetch('/api/otp/send', {
+                    fetch('{{ url('/api/otp/send') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -490,7 +490,7 @@
                     this.loading = true;
                     let phone = document.querySelector('.phone-full-val').value;
                     
-                    fetch('/api/otp/verify', {
+                    fetch('{{ url('/api/otp/verify') }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
