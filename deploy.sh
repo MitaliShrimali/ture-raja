@@ -8,7 +8,8 @@ php artisan down || true
 
 # 📥 Pulling latest code
 echo "📥 Pulling latest code..."
-git pull origin main
+git fetch origin main
+git reset --hard origin/main
 
 # 📦 Installing composer dependencies
 echo "📦 Installing composer dependencies..."
