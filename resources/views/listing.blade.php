@@ -173,12 +173,12 @@
             }
 
             /* Agent row — clip text */
-            body .list-view-wrapper .package-content .flex.items-center.gap-2\.5 {
+            body .list-view-wrapper .package-content .pc-row-agent {
                 max-width: 100% !important;
                 overflow: hidden !important;
             }
 
-            body .list-view-wrapper .package-content .flex.items-center.gap-2\.5 p {
+            body .list-view-wrapper .package-content .pc-row-agent p {
                 overflow: hidden !important;
                 text-overflow: ellipsis !important;
                 white-space: nowrap !important;
@@ -194,7 +194,7 @@
             }
 
             /* Price + Search Now row */
-            body .list-view-wrapper .package-action {
+            body .list-view-wrapper .pc-row-action {
                 border-top: 1px solid #f3f4f6 !important;
                 padding-top: 4px !important;
                 margin-top: 4px !important;
@@ -206,12 +206,12 @@
                 gap: 4px !important;
             }
 
-            body .list-view-wrapper .package-action span.text-2xl {
+            body .list-view-wrapper .pc-row-action span.text-2xl {
                 font-size: 0.95rem !important;
                 white-space: nowrap !important;
             }
 
-            body .list-view-wrapper .package-action a {
+            body .list-view-wrapper .pc-row-action a {
                 padding: 4px 10px !important;
                 font-size: 9px !important;
                 width: auto !important;
@@ -220,14 +220,14 @@
             }
 
             /* Duration badge on title row */
-            body .list-view-wrapper .package-content > div:first-child {
+            body .list-view-wrapper .package-content > .pc-row-title {
                 display: flex !important;
                 align-items: flex-start !important;
                 justify-content: space-between !important;
                 gap: 4px !important;
             }
 
-            body .list-view-wrapper .package-content > div:first-child > div.shrink-0 {
+            body .list-view-wrapper .package-content > .pc-row-title > div.shrink-0 {
                 font-size: 9px !important;
                 padding: 2px 5px !important;
             }
