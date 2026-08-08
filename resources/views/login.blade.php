@@ -126,7 +126,7 @@
                     <x-logo white="true" class="h-20 sm:h-28 w-auto" />
                 </div>
                 <h3 class="text-3xl font-bold tracking-tight" style="color: #E8460A;">Welcome Back!</h3>
-                <p class="max-w-md mx-auto" style="color: #E8460A;">Explore the world with TourRaja – your gateway to
+                <p class="max-w-md mx-auto" style="color: #E8460A;">newwww the world with TourRaja – your gateway to
                     unforgettable journeys.</p>
             </div>
         </div>
