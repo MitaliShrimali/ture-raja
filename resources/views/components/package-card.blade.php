@@ -1,3 +1,4 @@
+<!-- Cache-bust deploy -->
 @props([
     'pkg' => null,
     'title' => null,
