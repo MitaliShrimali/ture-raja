@@ -25,6 +25,36 @@
             font-family: 'Poppins', sans-serif;
             text-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
             letter-spacing: -1px;
+            padding: 0 1rem;
+        }
+
+        @media (max-width: 767px) {
+            .agent-hero {
+                height: 280px;
+            }
+            .agent-hero-title {
+                font-size: 1.75rem !important;
+            }
+            .agent-logo-container {
+                width: 100px !important;
+                height: 100px !important;
+                margin-top: -50px !important;
+                padding: 6px !important;
+            }
+            .mobile-grid-2 {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+            .feedback-card {
+                width: 280px !important;
+                min-width: 280px !important;
+                max-width: 280px !important;
+            }
+            /* Make tabs text smaller to fit */
+            .mobile-tab-text {
+                font-size: 11px !important;
+                padding-left: 8px !important;
+                padding-right: 8px !important;
+            }
         }
 
         .agent-profile-section {
@@ -338,12 +368,12 @@
         <div class="absolute bottom-0 left-0 w-full bg-black/40 backdrop-blur-sm border-t border-white/20 z-20">
             <div class="container-custom flex justify-end gap-1 sm:gap-6 overflow-x-auto pb-1 sm:pb-0">
                 <button type="button" @click="activeTab = 'profile'; window.history.pushState({}, '', '?agent_id={{ $agent->id }}&tab=profile');"
-                    class="py-3 px-3 sm:px-6 border-b-[3px] font-black text-[13px] sm:text-base uppercase tracking-wider transition-colors whitespace-nowrap"
+                    class="mobile-tab-text py-3 px-3 sm:px-6 border-b-[3px] font-black text-[13px] sm:text-base uppercase tracking-wider transition-colors whitespace-nowrap"
                     :class="activeTab === 'profile' || activeTab === 'both' ? 'border-[#e85d26] text-white bg-black/40' : 'border-transparent text-gray-200 hover:text-white hover:bg-white/10'">
                     <i class="fas fa-user mr-1 sm:mr-2"></i> Profile
                 </button>
                 <button type="button" @click="activeTab = 'packages'; window.history.pushState({}, '', '?agent_id={{ $agent->id }}&tab=packages');"
-                    class="py-3 px-3 sm:px-6 border-b-[3px] font-black text-[13px] sm:text-base uppercase tracking-wider transition-colors whitespace-nowrap"
+                    class="mobile-tab-text py-3 px-3 sm:px-6 border-b-[3px] font-black text-[13px] sm:text-base uppercase tracking-wider transition-colors whitespace-nowrap"
                     :class="activeTab === 'packages' ? 'border-[#e85d26] text-white bg-black/40' : 'border-transparent text-gray-200 hover:text-white hover:bg-white/10'">
                     <i class="fas fa-box-open mr-1 sm:mr-2"></i> Packages
                 </button>
@@ -524,6 +554,7 @@
             <!-- Branches -->
             @if(isset($branches) && count($branches) > 0)
                 <div class="mt-8 pt-6 pb-6 border-t border-b border-gray-100 flex flex-col items-start gap-4">
+                    <h3 class="text-3xl font-extrabold text-[#1f2937]">Branches</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                         @foreach($branches as $index => $b)
                             @php
@@ -551,7 +582,7 @@
             @if(isset($profile_images) && count($profile_images) > 0)
                 <div class="mt-4 pt-6 pb-6 border-b border-gray-100 flex flex-col items-start gap-4">
                     <h3 class="text-3xl font-extrabold text-[#1f2937] mb-6">Gallery</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full mobile-grid-2">
                         @foreach($profile_images as $img)
                             <div class="rounded-xl overflow-hidden aspect-square border border-gray-100 shadow-sm transition-transform hover:scale-105 duration-300">
                                 <img src="{{ asset($img->image_path) }}" alt="Gallery Image" class="w-full h-full object-cover">
@@ -565,54 +596,109 @@
             @if(isset($feedbacks) && $feedbacks->count() > 0)
                 <div class="mt-8 border-b border-gray-100 pb-6"
                      x-data="{ 
+                        currentIndex: 0,
+                        totalItems: {{ $feedbacks->count() }},
                         intervalId: null,
                         startScroll() {
                             this.intervalId = setInterval(() => {
-                                let container = this.$refs.feedbackCarousel;
-                                if (!container) return;
-                                let maxScroll = container.scrollWidth - container.clientWidth;
-                                if (container.scrollLeft >= maxScroll - 10) {
-                                    container.scrollTo({ left: 0, behavior: 'smooth' });
-                                } else {
-                                    // Try to get width of first child, fallback to 300
-                                    let cardWidth = container.children.length > 0 ? container.children[0].offsetWidth : 300;
-                                    container.scrollBy({ left: cardWidth + 24, behavior: 'smooth' });
-                                }
-                            }, 3000);
+                                this.next();
+                            }, 4000);
                         },
                         stopScroll() {
                             if (this.intervalId) clearInterval(this.intervalId);
+                        },
+                        next() {
+                            this.currentIndex = (this.currentIndex < this.totalItems - 1) ? this.currentIndex + 1 : 0;
+                            this.scrollToCurrent();
+                        },
+                        prev() {
+                            this.currentIndex = (this.currentIndex > 0) ? this.currentIndex - 1 : this.totalItems - 1;
+                            this.scrollToCurrent();
+                        },
+                        goTo(index) {
+                            this.currentIndex = index;
+                            this.scrollToCurrent();
+                        },
+                        scrollToCurrent() {
+                            let container = this.$refs.feedbackCarousel;
+                            if (!container || !container.children[this.currentIndex]) return;
+                            let card = container.children[this.currentIndex];
+                            container.scrollTo({ left: card.offsetLeft - container.offsetLeft, behavior: 'smooth' });
+                        },
+                        onScroll() {
+                            let container = this.$refs.feedbackCarousel;
+                            if (!container) return;
+                            let scrollLeft = container.scrollLeft;
+                            let cardWidth = container.children[0].offsetWidth + 24;
+                            let index = Math.round(scrollLeft / cardWidth);
+                            if (index >= 0 && index < this.totalItems && this.currentIndex !== index) {
+                                this.currentIndex = index;
+                            }
                         }
                      }"
                      x-init="startScroll()"
                      @mouseenter="stopScroll()"
                      @mouseleave="startScroll()">
                      
-                    <h3 class="text-3xl font-extrabold text-[#1f2937] mb-6">Customer Feedback</h3>
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-3xl font-extrabold text-[#1f2937]">Customer Feedback</h3>
+                        
+                        <!-- Desktop Navigation Buttons -->
+                        <div class="hidden sm:flex items-center gap-3">
+                            <button @click="prev()" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-[#e85d26] hover:text-white flex items-center justify-center transition-colors focus:outline-none">
+                                <i class="fas fa-chevron-left text-sm"></i>
+                            </button>
+                            <div class="flex gap-1.5 px-2">
+                                <template x-for="i in totalItems" :key="i">
+                                    <button @click="goTo(i-1)" 
+                                            :class="currentIndex === (i-1) ? 'w-4 bg-[#e85d26]' : 'w-2 bg-gray-300'"
+                                            class="h-2 rounded-full transition-all duration-300 focus:outline-none"></button>
+                                </template>
+                            </div>
+                            <button @click="next()" class="w-10 h-10 rounded-full bg-gray-100 hover:bg-[#e85d26] hover:text-white flex items-center justify-center transition-colors focus:outline-none">
+                                <i class="fas fa-chevron-right text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
                     
-                    <div x-ref="feedbackCarousel" class="flex overflow-x-auto gap-6 snap-x snap-mandatory pb-4 hide-scrollbar" style="scrollbar-width: none;">
+                    <!-- Mobile Navigation Dots & Buttons -->
+                    <div class="flex sm:hidden items-center justify-center gap-1.5 mb-6">
+                        <button @click="prev()" class="w-8 h-8 mr-2 rounded-full bg-gray-100 hover:bg-[#e85d26] hover:text-white flex items-center justify-center transition-colors focus:outline-none">
+                            <i class="fas fa-chevron-left text-xs"></i>
+                        </button>
+                        <template x-for="i in totalItems" :key="i">
+                            <button @click="goTo(i-1)" 
+                                    :class="currentIndex === (i-1) ? 'w-4 bg-[#e85d26]' : 'w-2 bg-gray-300'"
+                                    class="h-2 rounded-full transition-all duration-300 focus:outline-none"></button>
+                        </template>
+                        <button @click="next()" class="w-8 h-8 ml-2 rounded-full bg-gray-100 hover:bg-[#e85d26] hover:text-white flex items-center justify-center transition-colors focus:outline-none">
+                            <i class="fas fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                    
+                    <div x-ref="feedbackCarousel" @scroll.passive="onScroll" class="gap-6 snap-x snap-mandatory pb-4 hide-scrollbar" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; scrollbar-width: none; -webkit-overflow-scrolling: touch; width: 100%;">
                         @foreach($feedbacks as $feedback)
                             <div x-data="{ showModal: false }" 
-                                 class="flex-shrink-0 bg-white border border-gray-200 rounded-xl shadow-sm snap-start flex flex-col hover:shadow-md transition-shadow overflow-hidden"
-                                 style="height: 420px; width: 320px; min-width: 320px; max-width: 320px;">
+                                 class="feedback-card bg-white border border-gray-200 rounded-xl shadow-sm snap-start overflow-hidden"
+                                 style="display: flex !important; flex-direction: column !important; height: 420px; width: 320px; min-width: 320px; max-width: 320px; flex: 0 0 auto !important;">
                                  
                                 @if($feedback->image_path)
-                                    <div class="w-full h-44 bg-gray-100 shrink-0 border-b border-gray-100">
+                                    <div class="w-full h-44 bg-gray-100 shrink-0 border-b border-gray-100" style="flex-shrink: 0 !important;">
                                         <img src="{{ asset($feedback->image_path) }}" alt="Customer Photo" class="w-full h-full object-cover">
                                     </div>
                                 @else
-                                    <div class="w-full h-44 shrink-0 border-b border-gray-100">
+                                    <div class="w-full h-44 shrink-0 border-b border-gray-100" style="flex-shrink: 0 !important;">
                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($feedback->customer_name) }}&size=400&font-size=0.4" alt="Customer Initials" class="w-full h-full object-cover">
                                     </div>
                                 @endif
                                 
-                                <div class="p-5 flex flex-col flex-grow">
-                                    <div class="flex text-yellow-400 text-[11px] mb-3">
+                                <div class="p-5 flex-grow" style="display: flex !important; flex-direction: column !important; flex-grow: 1 !important;">
+                                    <div class="flex text-yellow-400 text-[11px] mb-3" style="display: flex !important; gap: 2px;">
                                         @for($i=0; $i<$feedback->rating; $i++) <i class="fas fa-star"></i> @endfor
                                         @for($i=$feedback->rating; $i<5; $i++) <i class="text-gray-200 fas fa-star"></i> @endfor
                                     </div>
 
-                                    <div class="relative mb-4 flex-grow flex flex-col overflow-hidden">
+                                    <div class="relative mb-4 flex-grow overflow-hidden" style="display: flex !important; flex-direction: column !important; flex-grow: 1 !important;">
                                         @php
                                             $text = $feedback->message;
                                         @endphp
@@ -633,10 +719,10 @@
                                         </div>
 
                                         <!-- Full Review Modal -->
-                                        <div x-show="showModal" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                                            <div @click.away="showModal = false" class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col relative" style="animation: modalPop 0.3s ease-out;">
+                                        <div x-show="showModal" x-cloak class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm p-4" style="display: flex !important; align-items: center; justify-content: center;">
+                                            <div @click.away="showModal = false" class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] relative" style="display: flex !important; flex-direction: column !important; animation: modalPop 0.3s ease-out;">
                                                 <!-- Header -->
-                                                <div class="flex items-center justify-between p-5 border-b border-gray-100">
+                                                <div class="p-5 border-b border-gray-100" style="display: flex !important; align-items: center; justify-content: space-between;">
                                                     <h2 class="text-xl font-bold text-gray-900">{{ $feedback->customer_name }}</h2>
                                                     <button @click="showModal = false" class="text-gray-400 hover:text-gray-600 transition-colors focus:outline-none">
                                                         <i class="fas fa-times text-xl"></i>
@@ -652,11 +738,11 @@
 
                                     <div class="border-t border-gray-100 my-2"></div>
                                     
-                                    <div class="mt-auto pt-2 flex items-center gap-3">
+                                    <div class="pt-2 gap-3" style="display: flex !important; align-items: center !important; margin-top: auto !important;">
                                         <img src="https://ui-avatars.com/api/?name={{ urlencode($feedback->customer_name) }}&color=fff" class="w-10 h-10 rounded-full object-cover border border-gray-100 shrink-0">
                                         <div>
-                                            <h4 class="font-extrabold text-[#111827] text-[15px] capitalize">{{ $feedback->customer_name }}</h4>
-                                            <span class="text-[12px] text-gray-500 block">{{ $feedback->created_at->format('F Y') }}</span>
+                                            <h4 class="font-extrabold text-[#111827] text-[15px] capitalize m-0">{{ $feedback->customer_name }}</h4>
+                                            <span class="text-[12px] text-gray-500 block m-0">{{ $feedback->created_at->format('F Y') }}</span>
                                         </div>
                                     </div>
                                 </div>
