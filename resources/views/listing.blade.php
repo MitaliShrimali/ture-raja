@@ -211,14 +211,18 @@
                 white-space: nowrap !important;
             }
 
+            /* GLOBAL FIX for Search Now button missing bg color on live site */
+            body .package-action a {
+                background-color: #e85d26 !important;
+                color: #ffffff !important;
+            }
+
             body .list-view-wrapper .package-action a {
                 padding: 4px 10px !important;
                 font-size: 9px !important;
                 width: auto !important;
                 white-space: nowrap !important;
                 border-radius: 20px !important;
-                background-color: #e85d26 !important;
-                color: #ffffff !important;
                 display: block !important;
             }
 
