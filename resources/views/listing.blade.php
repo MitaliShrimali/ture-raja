@@ -230,7 +230,7 @@
             }
 
             /* Badge inside image */
-            body .list-view-wrapper .package-image-container .absolute.top-3 {
+            body .list-view-wrapper .package-image-container .absolute.top-3.left-3 {
                 top: 4px !important;
                 left: 4px !important;
             }
@@ -605,34 +605,37 @@
                                 Filters
                             </button>
                         </div>
-                        <!-- Middle-Right: Sort By -->
-                        <div class="relative w-48">
-                            <select name="sort"
-                                class="w-full bg-white border border-[#e85d26] rounded-md py-2 pl-4 pr-10 text-sm font-semibold focus:outline-none appearance-none cursor-pointer hover:bg-orange-50 transition-all text-[#e85d26]">
-                                <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
-                                <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' || request('sort') == 'Recommended' || request('sort') == 'GUARANTEED SERVICE' ? 'selected' : '' }}>Guaranteed Service</option>
-                                <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' || request('sort') == 'PRICE (LOW TO HIGH)' ? 'selected' : '' }}>Price (Low to High)</option>
-                                <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' || request('sort') == 'PRICE (HIGH TO LOW)' ? 'selected' : '' }}>Price (High to Low)</option>
-                                <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' || request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>Duration (Low to High)</option>
-                                <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' || request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>Duration (High to Low)</option>
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="18"></i>
+                        <!-- Right Side: Sort By & View Toggle -->
+                        <div class="flex items-center gap-4 ml-auto">
+                            <!-- Sort By -->
+                            <div class="relative w-48">
+                                <select name="sort"
+                                    class="w-full bg-white border border-[#e85d26] rounded-md py-2 pl-4 pr-10 text-sm font-semibold focus:outline-none appearance-none cursor-pointer hover:bg-orange-50 transition-all text-[#e85d26]">
+                                    <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
+                                    <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' || request('sort') == 'Recommended' || request('sort') == 'GUARANTEED SERVICE' ? 'selected' : '' }}>Guaranteed Service</option>
+                                    <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' || request('sort') == 'PRICE (LOW TO HIGH)' ? 'selected' : '' }}>Price (Low to High)</option>
+                                    <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' || request('sort') == 'PRICE (HIGH TO LOW)' ? 'selected' : '' }}>Price (High to Low)</option>
+                                    <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' || request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>Duration (Low to High)</option>
+                                    <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' || request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>Duration (High to Low)</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="18"></i>
+                            </div>
+                            <!-- View Toggle -->
+                            @if(!isset($agent))
+                            <div class="flex items-center gap-1 shrink-0">
+                                <button @click="viewStyle = 'grid'" type="button"
+                                    :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
+                                    class="p-1.5 transition-all duration-300">
+                                    <i data-lucide="layout-grid" size="24"></i>
+                                </button>
+                                <button @click="viewStyle = 'list'" type="button"
+                                    :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
+                                    class="p-1.5 transition-all duration-300">
+                                    <i data-lucide="list" size="24"></i>
+                                </button>
+                            </div>
+                            @endif
                         </div>
-                        <!-- Far Right: View Toggle -->
-                        @if(!isset($agent))
-                        <div class="flex items-center gap-1 shrink-0">
-                            <button @click="viewStyle = 'grid'" type="button"
-                                :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
-                                class="p-1.5 transition-all duration-300">
-                                <i data-lucide="layout-grid" size="24"></i>
-                            </button>
-                            <button @click="viewStyle = 'list'" type="button"
-                                :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
-                                class="p-1.5 transition-all duration-300">
-                                <i data-lucide="list" size="24"></i>
-                            </button>
-                        </div>
-                        @endif
                     </div>
                 </div>
 
