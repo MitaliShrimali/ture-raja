@@ -887,14 +887,25 @@ class AgentController extends Controller
         $request->validate([
             'customer_name' => 'required',
             'message' => 'required',
-            'rating' => 'required|integer|min:1|max:5'
+            'rating' => 'required|integer|min:1|max:5',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/feedback'), $imageName);
+            $imagePath = 'uploads/feedback/' . $imageName;
+        }
 
         AgentFeedback::create([
             'agent_id' => session('agent_id'),
             'customer_name' => $request->customer_name,
             'rating' => $request->rating,
-            'message' => $request->message
+            'message' => $request->message,
+            'image_path' => $imagePath,
+            'package_id' => $request->package_id
         ]);
 
         return redirect()->back()->with('success', 'Feedback added successfully.');
@@ -905,14 +916,31 @@ class AgentController extends Controller
         $request->validate([
             'customer_name' => 'required',
             'message' => 'required',
-            'rating' => 'required|integer|min:1|max:5'
+            'rating' => 'required|integer|min:1|max:5',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $feedback = AgentFeedback::where('agent_id', session('agent_id'))->findOrFail($id);
+
+        $imagePath = $feedback->image_path;
+        if ($request->hasFile('image')) {
+            // Optionally delete old image here
+            if ($imagePath && file_exists(public_path($imagePath))) {
+                unlink(public_path($imagePath));
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/feedback'), $imageName);
+            $imagePath = 'uploads/feedback/' . $imageName;
+        }
+
         $feedback->update([
             'customer_name' => $request->customer_name,
             'rating' => $request->rating,
-            'message' => $request->message
+            'message' => $request->message,
+            'image_path' => $imagePath,
+            'package_id' => $request->package_id ?? $feedback->package_id
         ]);
 
         return redirect()->back()->with('success', 'Feedback updated successfully.');
@@ -1692,6 +1720,7 @@ class AgentController extends Controller
             'city' => $request->input('city'),
             'country' => $request->input('country'),
             'pincode' => $request->input('pincode'),
+            'why_us' => $request->input('why_us'),
             'website' => $request->input('website'),
             'gst_number' => $request->input('gst_number'),
             'about' => $request->input('about'),
@@ -1729,6 +1758,13 @@ class AgentController extends Controller
                 @unlink(public_path($agent->business_card_back));
             }
             $data['business_card_back'] = null;
+        }
+
+        if ($request->input('delete_banner') == '1') {
+            if ($agent && $agent->banner && file_exists(public_path($agent->banner))) {
+                @unlink(public_path($agent->banner));
+            }
+            $data['banner'] = null;
         }
 
         if ($request->hasFile('logo_file')) {
@@ -1770,6 +1806,19 @@ class AgentController extends Controller
             }
         }
 
+        if ($request->hasFile('banner_file')) {
+            $file = $request->file('banner_file');
+            if ($file->isValid()) {
+                // Delete old banner
+                if ($agent && $agent->banner && file_exists(public_path($agent->banner))) {
+                    @unlink(public_path($agent->banner));
+                }
+                $fileName = time() . '_banner_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/agents'), $fileName);
+                $data['banner'] = '/uploads/agents/' . $fileName;
+            }
+        }
+
         DB::table('agents')->where('id', $agentId)->update($data);
 
         // Update session name if changed
@@ -1779,6 +1828,71 @@ class AgentController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Profile settings updated successfully!');
+    }
+
+    public function profileImages()
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please login first.');
+        }
+
+        $images = \DB::table('agent_profile_images')->where('agent_id', $agentId)->get();
+
+        return view('agent.pages.profile_images', [
+            'page_title' => 'Profile Images',
+            'page_breadcrumb' => 'Pages / Profile Images',
+            'images' => $images
+        ]);
+    }
+
+    public function storeProfileImage(Request $request)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please login first.');
+        }
+
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:10240'
+        ]);
+
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            if ($file->isValid()) {
+                $fileName = time() . '_profile_' . $file->getClientOriginalName();
+                $file->move(public_path('uploads/agents/profile'), $fileName);
+                $imagePath = '/uploads/agents/profile/' . $fileName;
+
+                \DB::table('agent_profile_images')->insert([
+                    'agent_id' => $agentId,
+                    'image_path' => $imagePath,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+                return redirect()->back()->with('success', 'Image uploaded successfully.');
+            }
+        }
+        return redirect()->back()->with('error', 'Failed to upload image.');
+    }
+
+    public function deleteProfileImage($id)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please login first.');
+        }
+
+        $image = \DB::table('agent_profile_images')->where('id', $id)->where('agent_id', $agentId)->first();
+        if ($image) {
+            if (file_exists(public_path($image->image_path))) {
+                @unlink(public_path($image->image_path));
+            }
+            \DB::table('agent_profile_images')->where('id', $id)->delete();
+            return redirect()->back()->with('success', 'Image deleted successfully.');
+        }
+        return redirect()->back()->with('error', 'Image not found.');
     }
 
     public function updatePassword(Request $request)

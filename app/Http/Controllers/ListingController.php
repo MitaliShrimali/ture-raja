@@ -1151,6 +1151,12 @@ class ListingController extends Controller
                 })
                 ->get();
 
+            $profile_images = \DB::table('agent_profile_images')
+                ->where('agent_id', $agent->id)
+                ->get();
+
+            $feedbacks = \App\Models\AgentFeedback::where('agent_id', $agent->id)->latest()->get();
+
             return view('agent-showcase', [
                 'packages' => $packages->values(),
                 'suggestedPackages' => $suggestedPackages,
@@ -1158,7 +1164,9 @@ class ListingController extends Controller
                 'sidebarAds' => $sidebarAds,
                 'locationCatalog' => $locationCatalog,
                 'filterCounts' => $filterCounts,
-                'branches' => $branches
+                'branches' => $branches,
+                'profile_images' => $profile_images,
+                'feedbacks' => $feedbacks
             ]);
         }
 

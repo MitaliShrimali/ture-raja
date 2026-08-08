@@ -41,6 +41,9 @@ Route::post('/contact/submit', [UserController::class, 'submitContact'])->name('
 // Package booking request
 Route::post('/package/book', [UserController::class, 'bookPackage'])->name('package.book');
 
+// Public feedback submission
+Route::post('/package/feedback/store', [UserController::class, 'storePackageFeedback'])->name('package.feedback.store');
+
 // Wishlist toggle (AJAX + form fallback)
 Route::post('/wishlist/toggle', [UserController::class, 'toggleWishlist'])->name('wishlist.toggle');
 Route::get('/wishlist/remove/{packageId}', [UserController::class, 'removeWishlist'])->name('wishlist.remove');
@@ -444,6 +447,9 @@ Route::prefix('agent')->name('agent.')->group(function () {
         Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
         Route::post('/settings/update', [AgentController::class, 'updateSettings'])->name('settings.update');
         Route::post('/settings/password', [AgentController::class, 'updatePassword'])->name('settings.password');
+        Route::get('/settings/profile-images', [AgentController::class, 'profileImages'])->name('profile-images');
+        Route::post('/settings/profile-images', [AgentController::class, 'storeProfileImage'])->name('profile-images.store');
+        Route::get('/settings/profile-images/{id}/delete', [AgentController::class, 'deleteProfileImage'])->name('profile-images.delete');
     });
 });
 
@@ -699,6 +705,7 @@ Route::get('/packages/{slug}', function ($slug) {
         }
 
         $package = [
+            'id'         => $dbPkg->id,
             'slug'       => $slug,
             'title'      => $dbPkg->title,
             'image'      => $dbPkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',

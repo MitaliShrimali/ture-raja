@@ -28,8 +28,12 @@
             @forelse($feedbacks as $feedback)
             <div class="feedback-item bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-gray-200/50 transition-all group">
                 <div class="flex items-center mb-6">
-                    <div class="relative">
-                        <img src="https://ui-avatars.com/api/?name={{ urlencode($feedback->customer_name) }}&background=random" class="w-14 h-14 rounded-2xl object-cover border-2 border-orange-50">
+                    <div class="relative flex-shrink-0">
+                        @if($feedback->image_path)
+                            <img src="{{ asset($feedback->image_path) }}" class="w-14 h-14 rounded-2xl object-cover border-2 border-orange-50">
+                        @else
+                            <img src="https://ui-avatars.com/api/?name={{ urlencode($feedback->customer_name) }}&background=random" class="w-14 h-14 rounded-2xl object-cover border-2 border-orange-50">
+                        @endif
                         <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                     </div>
                     <div class="ml-4">
@@ -66,7 +70,7 @@
                 </button>
                 <h3 class="text-xl font-black text-gray-800 mb-6" x-text="isEditing ? 'Edit Feedback' : 'Add Feedback'"></h3>
                 
-                <form :action="isEditing ? '{{ route('agent.feedback.store') }}'.replace('store', 'update/' + editId) : '{{ route('agent.feedback.store') }}'" method="POST">
+                <form :action="isEditing ? '{{ route('agent.feedback.store') }}'.replace('store', 'update/' + editId) : '{{ route('agent.feedback.store') }}'" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="space-y-4">
                         <div>
@@ -80,6 +84,10 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-700 mb-1">Message</label>
                             <textarea name="message" x-model="form.message" rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary" required></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Image (Optional)</label>
+                            <input type="file" name="image" accept="image/*" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-primary">
                         </div>
                     </div>
                     <div class="mt-8 flex justify-end gap-3">

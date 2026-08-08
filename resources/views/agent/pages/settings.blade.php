@@ -187,6 +187,11 @@
                                                 <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PINCODE <span class="text-red-500">*</span></label>
                                                 <input type="text" name="pincode" value="{{ $agent->pincode ?? '' }}" required pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
+                                            
+                                            <div>
+                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Why Us (Showcase)</label>
+                                                <textarea name="why_us" rows="4" placeholder="Tell customers why they should choose you..." class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ $agent->why_us ?? '' }}</textarea>
+                                            </div>
                                         </div>
                                     </div>
 
@@ -272,8 +277,32 @@
                                 <div class="lg:col-span-4 space-y-8">
                                     <!-- Agency Branding -->
                                     <div class="bg-white p-2 rounded-[32px] shadow-sm border border-gray-100 overflow-hidden relative group">
-                                        <div class="bg-orange-100 h-28 rounded-t-[30px] relative">
-                                            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-20 h-20 bg-orange-800 rounded-xl flex items-center justify-center text-white shadow-xl overflow-hidden cursor-pointer border-4 border-white" onclick="document.getElementById('logo_file').click()">
+                                        <!-- Hero Banner Upload -->
+                                        <div class="bg-orange-100 h-28 rounded-t-[30px] relative cursor-pointer group/banner" onclick="document.getElementById('banner_file').click()">
+                                            @if($agent && $agent->banner)
+                                                <img id="banner_preview" src="{{ asset($agent->banner) }}" class="w-full h-full object-cover rounded-t-[30px]">
+                                            @else
+                                                <img id="banner_preview" class="hidden w-full h-full object-cover rounded-t-[30px]">
+                                                <div id="banner_placeholder" class="w-full h-full flex flex-col items-center justify-center text-orange-800/50">
+                                                    <i class="fas fa-image text-2xl mb-1"></i>
+                                                    <span class="text-[8px] font-bold uppercase tracking-widest">Upload Banner</span>
+                                                </div>
+                                            @endif
+                                            <!-- Overlay on hover -->
+                                            <div class="absolute inset-0 bg-black/30 rounded-t-[30px] opacity-0 group-hover/banner:opacity-100 transition-opacity flex items-center justify-center">
+                                                <span class="text-white text-xs font-bold shadow-sm">Change Banner</span>
+                                            </div>
+                                            
+                                            <!-- Delete Banner Button -->
+                                            <button type="button" id="delete_banner_btn" onclick="deleteBanner(event)" class="{{ ($agent && $agent->banner) ? '' : 'hidden' }} absolute top-2 right-2 w-6 h-6 bg-red-500/80 hover:bg-red-500 text-white rounded-full flex items-center justify-center transition-all z-10" title="Remove Banner">
+                                                <i class="fas fa-times text-xs"></i>
+                                            </button>
+                                            
+                                            <input type="file" name="banner_file" id="banner_file" class="hidden" accept="image/*" onchange="previewBanner(this)">
+                                            <input type="hidden" name="delete_banner" id="delete_banner" value="0">
+
+                                            <!-- Logo inside Banner -->
+                                            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-20 h-20 bg-orange-800 rounded-xl flex items-center justify-center text-white shadow-xl overflow-hidden cursor-pointer border-4 border-white" onclick="event.stopPropagation(); document.getElementById('logo_file').click()">
                                                 <img id="logo_preview" src="{{ ($agent && $agent->logo) ? asset($agent->logo) : '' }}" class="{{ ($agent && $agent->logo) ? '' : 'hidden' }} w-full h-full object-cover">
                                                 <div id="logo_placeholder" class="{{ ($agent && $agent->logo) ? 'hidden' : '' }} text-center">
                                                     <i class="fas fa-camera-retro text-xl"></i>
@@ -761,6 +790,55 @@ function previewLogo(input) {
         }
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+// Client-side Banner Image preview helper
+function previewBanner(input) {
+    if (input.files && input.files[0]) {
+        const fileSize = input.files[0].size / 1024 / 1024; // in MB
+        if (fileSize > 5) {
+            Swal.fire({
+                title: 'File Too Large',
+                text: 'Your banner file must be less than 5MB. Your file is ' + fileSize.toFixed(2) + 'MB.',
+                icon: 'warning',
+                confirmButtonColor: '#F0642F',
+                borderRadius: '2rem'
+            });
+            input.value = ''; // Reset input
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('banner_preview');
+            const placeholder = document.getElementById('banner_placeholder');
+            const deleteBtn = document.getElementById('delete_banner_btn');
+            const deleteInput = document.getElementById('delete_banner');
+            if (preview) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            if (placeholder) placeholder.classList.add('hidden');
+            if (deleteBtn) deleteBtn.classList.remove('hidden');
+            if (deleteInput) deleteInput.value = '0';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Client-side Banner Delete handler
+function deleteBanner(e) {
+    e.stopPropagation(); // prevent triggering the file upload click
+    const preview = document.getElementById('banner_preview');
+    const placeholder = document.getElementById('banner_placeholder');
+    const deleteBtn = document.getElementById('delete_banner_btn');
+    const deleteInput = document.getElementById('delete_banner');
+    const fileInput = document.getElementById('banner_file');
+    
+    if (preview) preview.classList.add('hidden');
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (deleteBtn) deleteBtn.classList.add('hidden');
+    if (deleteInput) deleteInput.value = '1';
+    if (fileInput) fileInput.value = '';
 }
 
 // Client-side Logo Delete handler

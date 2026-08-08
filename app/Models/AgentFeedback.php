@@ -16,5 +16,7 @@ class AgentFeedback extends Model
         'customer_name',
         'rating',
         'message',
+        'image_path',
+        'package_id',
     ];
 }

@@ -1149,6 +1149,56 @@
                             </form>
                         </div>
 
+                        {{-- Leave Feedback --}}
+                        <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-5 mt-6" id="feedback-form">
+                            <div style="margin-bottom: 0.5rem;">
+                                <h3 class="font-black text-gray-900 section-heading"
+                                    style="font-family: 'Poppins', sans-serif; font-size: 22px;">Leave Feedback</h3>
+                                <p class="text-gray-500 mt-4" style="font-size: 14px;">How was your experience with {{ $agentNameForForm }}?</p>
+                            </div>
+
+                            @if(session('feedback_success'))
+                                <div
+                                    class="p-3 bg-green-50 border border-green-100 rounded-xl text-green-700 font-bold text-xs flex items-center gap-2">
+                                    <i data-lucide="check-circle" size="16"></i>
+                                    {{ session('feedback_success') }}
+                                </div>
+                            @endif
+
+                            <form action="{{ route('package.feedback.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3">
+                                @csrf
+                                <input type="hidden" name="agent_id" value="{{ $agentIdForForm }}">
+                                <input type="hidden" name="package_id" value="{{ $package['id'] ?? '' }}">
+                                
+                                <input type="text" name="customer_name" required placeholder="Your name"
+                                    class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                                    
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-semibold text-gray-700">Rating:</span>
+                                    <select name="rating" required class="px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300">
+                                        <option value="5">⭐⭐⭐⭐⭐ 5 Stars</option>
+                                        <option value="4">⭐⭐⭐⭐ 4 Stars</option>
+                                        <option value="3">⭐⭐⭐ 3 Stars</option>
+                                        <option value="2">⭐⭐ 2 Stars</option>
+                                        <option value="1">⭐ 1 Star</option>
+                                    </select>
+                                </div>
+                                
+                                <textarea name="message" required rows="3" placeholder="Share your experience..."
+                                    class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400 resize-none"></textarea>
+                                
+                                <div>
+                                    <label class="text-xs font-semibold text-gray-600 block mb-1">Upload Photo (Optional)</label>
+                                    <input type="file" name="image" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 cursor-pointer">
+                                </div>
+                                
+                                <button type="submit"
+                                    class="w-full py-3 bg-gray-900 hover:bg-black text-white font-black text-sm rounded-md transition-colors duration-200 shadow-sm mt-2">
+                                    Submit Feedback
+                                </button>
+                            </form>
+                        </div>
+
                     </div>{{-- end right sidebar --}}
                 </div>{{-- end grid --}}
             </div>

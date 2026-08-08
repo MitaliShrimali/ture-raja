@@ -61,8 +61,13 @@
                                 </div>
                             </td>
                             <td class="py-4">
-                                <span class="px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-tighter {{ $b->status == 'Online' ? 'bg-green-500 text-white' : 'bg-gray-300 text-white' }}">
-                                    {{ $b->status }}
+                                @php
+                                    $displayStatus = $b->status;
+                                    if(strtolower($b->status) == 'online') $displayStatus = 'Active';
+                                    if(strtolower($b->status) == 'offline') $displayStatus = 'Inactive';
+                                @endphp
+                                <span class="px-3 py-1 rounded-lg text-[8px] font-bold uppercase tracking-tighter {{ $displayStatus == 'Active' ? 'bg-green-500 text-white' : 'bg-red-500 text-white' }}">
+                                    {{ $displayStatus }}
                                 </span>
                             </td>
                             <td class="py-4 text-[10px] font-bold text-gray-800">{{ $city }}</td>

@@ -704,6 +704,38 @@ class UserController extends Controller
 
         return redirect()->back()->with('success', 'Your review has been submitted and is pending approval. Thank you! ⭐');
     }
+
+    // ─── SUBMIT PACKAGE FEEDBACK ──────────────────────────────────────
+    public function storePackageFeedback(Request $request)
+    {
+        $request->validate([
+            'agent_id'      => 'required|exists:agents,id',
+            'package_id'    => 'required|exists:packages,id',
+            'customer_name' => 'required|string|max:255',
+            'rating'        => 'required|integer|min:1|max:5',
+            'message'       => 'required|string',
+            'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/feedback'), $imageName);
+            $imagePath = 'uploads/feedback/' . $imageName;
+        }
+
+        \App\Models\AgentFeedback::create([
+            'agent_id'      => $request->agent_id,
+            'customer_name' => $request->customer_name,
+            'rating'        => $request->rating,
+            'message'       => $request->message,
+            'image_path'    => $imagePath,
+            'package_id'    => $request->package_id
+        ]);
+
+        return redirect()->back()->with('feedback_success', 'Thank you! Your feedback has been submitted successfully.');
+    }
     // ─── SIGN UP ──────────────────────────────────────────────────────
     public function signupSubmit(Request $request)
     {
