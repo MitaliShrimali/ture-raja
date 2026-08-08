@@ -23,10 +23,10 @@
             
             <!-- Right: Text Content (Flexibly fills the rest of the space) -->
             <div class="w-full flex-2">
-                <h4 class="text-gray-500 font-bold text-[12px] uppercase mb-2 tracking-wider">WELCOME TO OUR SITE!</h4>
+                <h4 class="text-gray-500 font-bold text-[12px] uppercase mb-2 tracking-wider"> TO OUR SITE!</h4>
                 <h2 class="text-2xl lg:text-[40px] font-black text-black mb-4 leading-[1.15] tracking-tight">About Us</h2>
                 <div class="text-gray-800 font-medium text-[15px] leading-relaxed space-y-4">
-                    <p>Welcome to <span class="font-bold text-black">www.tourraja.com</span> [“Tourraja”] – your trusted platform connecting travel agents with customers through seamless brochure uploads and easy access to contact details.</p>
+                    <p>helloo test <span class="font-bold text-black">www.tourraja.com</span> [“Tourraja”] – your trusted platform connecting travel agents with customers through seamless brochure uploads and easy access to contact details.</p>
                     <p>At Tourraja, we specialize in offering travel agents a user-friendly space to showcase their brochures, upload their latest travel offerings, and manage essential contact details. Our platform is designed to make it easier for both travel agents and customers to find what they need, when they need it.</p>
                     
                     <div class="mt-6 space-y-2">
