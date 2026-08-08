@@ -370,7 +370,7 @@
                 <button type="button" @click="activeTab = 'profile'; window.history.pushState({}, '', '?agent_id={{ $agent->id }}&tab=profile');"
                     class="mobile-tab-text py-3 px-3 sm:px-6 border-b-[3px] font-black text-[13px] sm:text-base uppercase tracking-wider transition-colors whitespace-nowrap"
                     :class="activeTab === 'profile' || activeTab === 'both' ? 'border-[#e85d26] text-white bg-black/40' : 'border-transparent text-gray-200 hover:text-white hover:bg-white/10'">
-                    <i class="fas fa-user mr-1 sm:mr-2"></i> Profile
+                    <i class="fas fa-id-card mr-1 sm:mr-2"></i> About Agent
                 </button>
                 <button type="button" @click="activeTab = 'packages'; window.history.pushState({}, '', '?agent_id={{ $agent->id }}&tab=packages');"
                     class="mobile-tab-text py-3 px-3 sm:px-6 border-b-[3px] font-black text-[13px] sm:text-base uppercase tracking-wider transition-colors whitespace-nowrap"
