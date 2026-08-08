@@ -217,6 +217,9 @@
                 width: auto !important;
                 white-space: nowrap !important;
                 border-radius: 20px !important;
+                background-color: #e85d26 !important;
+                color: #ffffff !important;
+                display: block !important;
             }
 
             /* Duration badge on title row */
