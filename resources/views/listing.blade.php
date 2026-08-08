@@ -2,15 +2,246 @@
 
 @push('scripts')
 <style>
+    /* MOBILE LIST VIEW RESTORATION - FORCES HORIZONTAL LAYOUT */
     @media (max-width: 767px) {
-        /* Fix badge and wishlist icon overlap on small screens */
+        /* Force list wrapper to keep its shape */
+        body .list-view-wrapper .package-card-inner {
+            flex-direction: row !important;
+            display: flex !important;
+            height: 120px !important;
+            padding: 0 !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            align-items: stretch !important;
+        }
+
+        /* Image container strictly on the left */
+        body .list-view-wrapper .package-image-container {
+            width: 110px !important;
+            height: 100% !important;
+            margin: 0 !important;
+            aspect-ratio: auto !important;
+            flex-shrink: 0 !important;
+        }
+
+        body .list-view-wrapper .package-image-container img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            border-radius: 12px 0 0 12px !important;
+        }
+
+        /* Content strictly on the right */
+        body .list-view-wrapper .package-content {
+            flex: 1 !important;
+            min-width: 0 !important;
+            padding: 6px 8px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            height: 100% !important;
+        }
+
+        /* Title text clipping */
+        body .list-view-wrapper .package-content h3 {
+            font-size: 11px !important;
+            line-height: 1.3 !important;
+            margin-bottom: 2px !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            overflow: hidden !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        /* Tags row (Luxury Bus, Spring) - wrap and clip */
+        body .list-view-wrapper .package-content .flex.flex-wrap {
+            flex-wrap: wrap !important;
+            gap: 3px !important;
+            overflow: hidden !important;
+            max-height: 52px !important;
+        }
+
+        body .list-view-wrapper .package-content .flex.flex-wrap span,
+        body .list-view-wrapper .package-content .flex.flex-wrap a {
+            font-size: 9px !important;
+            padding: 2px 6px !important;
+            white-space: nowrap !important;
+        }
+
+        /* Agent row - clip text */
+        body .list-view-wrapper .package-content .flex.items-center.gap-2\.5 {
+            max-width: 100% !important;
+            overflow: hidden !important;
+        }
+
+        body .list-view-wrapper .package-content .flex.items-center.gap-2\.5 p {
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+            max-width: 100% !important;
+            font-size: 10px !important;
+        }
+
+        /* Agent avatar smaller */
+        body .list-view-wrapper .package-content .w-9.h-9 {
+            width: 26px !important;
+            height: 26px !important;
+            min-width: 26px !important;
+        }
+
+        /* Price + Search Now row */
+        body .list-view-wrapper .package-action {
+            border-top: 1px solid #f3f4f6 !important;
+            padding-top: 4px !important;
+            margin-top: 4px !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            display: flex !important;
+            gap: 4px !important;
+        }
+
+        body .list-view-wrapper .package-action span.text-2xl {
+            font-size: 0.95rem !important;
+            white-space: nowrap !important;
+        }
+
+        /* GLOBAL FIX for Search Now button missing bg color on live site */
+        body .package-action a,
+        body .list-view-wrapper .package-action a {
+            background-color: #e85d26 !important;
+            color: #ffffff !important;
+        }
+
+        body .list-view-wrapper .package-action a {
+            padding: 4px 10px !important;
+            font-size: 9px !important;
+            width: auto !important;
+            white-space: nowrap !important;
+            border-radius: 20px !important;
+            display: block !important;
+        }
+
+        /* Duration badge on title row */
+        body .list-view-wrapper .package-content > div:first-child {
+            display: flex !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+            gap: 4px !important;
+        }
+
+        body .list-view-wrapper .package-content > div:first-child > div.shrink-0 {
+            font-size: 9px !important;
+            padding: 2px 5px !important;
+        }
+
+        /* Wishlist button inside image */
+        body .list-view-wrapper .wishlist-btn {
+            width: 24px !important;
+            height: 24px !important;
+            top: 4px !important;
+            right: 4px !important;
+        }
+
+        body .list-view-wrapper .wishlist-btn svg {
+            width: 11px !important;
+            height: 11px !important;
+        }
+
+        /* Badge inside image */
         body .list-view-wrapper .package-image-container .absolute.top-3.left-3 {
             top: 4px !important;
             left: 4px !important;
         }
-        body .list-view-wrapper .package-image-container .wishlist-btn {
-            top: 4px !important;
-            right: 4px !important;
+
+        body .list-view-wrapper .package-image-container span.px-4 {
+            padding: 1px 5px !important;
+            font-size: 7px !important;
+        }
+    }
+
+    /* DESKTOP LIST VIEW RESTORATION */
+    @media (min-width: 768px) {
+        body .list-view-wrapper .package-card-inner {
+            flex-direction: row !important;
+            display: flex !important;
+            height: auto !important;
+            min-height: 240px !important;
+            padding: 1rem !important;
+            max-width: 100% !important;
+        }
+
+        body .list-view-wrapper .package-image-container {
+            width: 300px !important;
+            height: 100% !important;
+            margin: 0 !important;
+            aspect-ratio: auto !important;
+            flex-shrink: 0 !important;
+        }
+
+        body .list-view-wrapper .package-content {
+            display: grid !important;
+            grid-template-columns: 1fr 220px !important;
+            grid-template-rows: auto auto 1fr !important;
+            row-gap: 0.75rem !important;
+            column-gap: 1.5rem !important;
+            align-items: start !important;
+            flex-grow: 1 !important;
+            padding: 0.5rem 1.5rem !important;
+        }
+
+        /* Child 1: Title (Col 1, Row 1) */
+        body .list-view-wrapper .package-content>div:nth-child(1) {
+            grid-column: 1 !important;
+            grid-row: 1 !important;
+        }
+
+        /* Child 2: Properties (Col 1, Row 2) */
+        body .list-view-wrapper .package-content>div:nth-child(2) {
+            grid-column: 1 !important;
+            grid-row: 2 !important;
+        }
+
+        /* Child 3: Agent (Col 1, Row 3) */
+        body .list-view-wrapper .package-content>div:nth-child(3):not(:last-child) {
+            grid-column: 1 !important;
+            grid-row: 3 !important;
+            align-self: end !important;
+        }
+
+        /* Action / Price (Always the last child, spanning all rows on the right) */
+        body .list-view-wrapper .package-content>div:last-child {
+            grid-column: 2 !important;
+            grid-row: 1 / span 3 !important;
+            border-top: none !important;
+            border-left: 1px dashed #e5e7eb !important;
+            padding-left: 1.5rem !important;
+            margin-top: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            height: 100% !important;
+        }
+
+        body .list-view-wrapper .package-content>div:last-child span.text-2xl {
+            font-size: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        body .list-view-wrapper .package-content>div:last-child a {
+            width: 100% !important;
+            margin-top: 0.5rem !important;
+        }
+        
+        /* GLOBAL FIX for Search Now button missing bg color on live site */
+        body .package-action a,
+        body .list-view-wrapper .package-action a {
+            background-color: #e85d26 !important;
+            color: #ffffff !important;
         }
     }
 </style>

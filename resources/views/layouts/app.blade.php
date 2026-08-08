@@ -20,7 +20,7 @@
     <!-- Styles & Scripts -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ @filemtime(public_path('css/style.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}?v={{ time() }}">
-    <link rel="stylesheet" href="{{ asset('css/mobile-listing-fix.css') }}?v={{ time() }}">
+
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
 
