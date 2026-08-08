@@ -1,5 +1,21 @@
 @extends('layouts.app')
 
+@push('scripts')
+<style>
+    @media (max-width: 767px) {
+        /* Fix badge and wishlist icon overlap on small screens */
+        body .list-view-wrapper .package-image-container .absolute.top-3.left-3 {
+            top: 4px !important;
+            left: 4px !important;
+        }
+        body .list-view-wrapper .package-image-container .wishlist-btn {
+            top: 4px !important;
+            right: 4px !important;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
     @php
         // Fetch transit music for the active tour_type filter
