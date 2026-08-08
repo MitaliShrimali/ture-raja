@@ -287,7 +287,7 @@
             }
 
             /* Row 1: Title (left) + Rating (right) */
-            body .list-view-wrapper .package-content>div:nth-child(1) {
+            body .list-view-wrapper .package-content>.pc-row-title {
                 grid-column: 1 !important;
                 grid-row: 1 !important;
                 display: flex !important;
@@ -297,7 +297,7 @@
             }
 
             /* Row 2: Duration + Tour Type */
-            body .list-view-wrapper .package-content>div:nth-child(2) {
+            body .list-view-wrapper .package-content>.pc-row-props {
                 grid-column: 1 !important;
                 grid-row: 2 !important;
                 display: flex !important;
@@ -306,8 +306,8 @@
                 width: auto !important;
             }
 
-            /* Row 3: Category + Theme */
-            body .list-view-wrapper .package-content>div:nth-child(3) {
+            /* Row 3: Category + Theme (Now part of props if they exist) */
+            body .list-view-wrapper .package-content>div:nth-child(3):not(.pc-row-agent):not(.pc-row-action) {
                 grid-column: 1 !important;
                 grid-row: 3 !important;
                 display: flex !important;
@@ -317,7 +317,7 @@
             }
 
             /* Row 4: Agent Info (Top Right spanning row 1 & 2) */
-            body .list-view-wrapper .package-content>div:nth-child(4) {
+            body .list-view-wrapper .package-content>.pc-row-agent {
                 grid-column: 2 !important;
                 grid-row: 1 / span 2 !important;
                 border-left: 1px dashed #e5e7eb !important;
@@ -328,7 +328,7 @@
             }
 
             /* Row 5: Action - Price (left) + Button (right) */
-            body .list-view-wrapper .package-content>div:nth-child(5) {
+            body .list-view-wrapper .package-content>.pc-row-action {
                 grid-column: 2 !important;
                 grid-row: 3 !important;
                 border-left: 1px dashed #e5e7eb !important;

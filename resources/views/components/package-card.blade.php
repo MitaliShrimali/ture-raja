@@ -151,7 +151,7 @@
     <div class="px-5 pt-4 pb-5 flex flex-col flex-grow gap-3 package-content">
 
         {{-- Row 1: Title + Duration --}}
-        <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center justify-between gap-3 pc-row-title">
             <h3 class="font-black text-foreground leading-tight truncate font-heading flex-grow" style="font-size:18px;" title="{{ $title }}">
                 {{ $title }}
             </h3>
@@ -164,7 +164,7 @@
         </div>
 
         {{-- Row 2: Properties --}}
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2 pc-row-props">
             @if($transitVal)
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-100 text-[11px] font-bold text-orange-600">
                     <i data-lucide="{{ $transportIcon }}" size="12"></i>
@@ -180,9 +180,9 @@
             @endif
         </div>
 
-        {{-- Row 4: Agent avatar + Name + Location --}}
+        {{-- Row 3/4: Agent avatar + Name + Location --}}
         @if(!$hideAgent)
-        <div class="flex items-center gap-2.5 min-w-0">
+        <div class="flex items-center gap-2.5 min-w-0 pc-row-agent">
             {{-- Agent Avatar --}}
             <div class="relative shrink-0">
                 <div class="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-100 shadow-sm"
@@ -213,7 +213,7 @@
         @endif
 
         {{-- Row 5: Price + Search Now --}}
-        <div class="pt-3 border-t border-border-soft/50 flex flex-col gap-3 mt-auto package-action">
+        <div class="pt-3 border-t border-border-soft/50 flex flex-col gap-3 mt-auto package-action pc-row-action">
             <div class="flex flex-col">
                 <span class="text-2xl font-black text-foreground tracking-tight font-heading">{{ $currency ?? '₹' }}{{ number_format($price) }}</span>
                 @if($oldPrice)
@@ -222,7 +222,8 @@
             </div>
 
             <a href="{{ $detailUrl }}" target="_blank" onclick="event.stopPropagation()"
-               class="w-full px-5 py-2.5 rounded-full bg-primary text-white text-xs font-black shadow-glow hover:bg-primary/90 transition-all duration-300 inline-block whitespace-nowrap text-center">
+               class="w-full px-5 py-2.5 rounded-full text-white text-xs font-black shadow-glow transition-all duration-300 inline-block whitespace-nowrap text-center"
+               style="background-color: #e85d26;">
                 Search Now
             </a>
         </div>
