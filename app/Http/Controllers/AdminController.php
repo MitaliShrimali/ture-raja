@@ -1314,6 +1314,10 @@ class AdminController extends Controller
             $plan_id = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
         }
 
+        $planRecordForDuration = DB::table('plans')->where('id', $plan_id)->first();
+        $durationDays = $planRecordForDuration ? intval($planRecordForDuration->duration) : 0;
+        $plan_expires_at = $durationDays > 0 ? now()->addDays($durationDays) : null;
+
         DB::table('agents')->insert([
             'name' => $request->name,
             'logo' => $logoUrl,
@@ -1339,7 +1343,7 @@ class AdminController extends Controller
             'region' => $request->region ?? 'Asia Pacific',
             'tier' => $request->tier ?? 'Premium',
             'plan_id' => $plan_id,
-            'status' => $request->status ?? 'Active',
+            'plan_expires_at' => $plan_expires_at,
             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
             'generate_bill' => $request->has('generate_bill') ? true : false,
             'api_access' => $request->has('api_access') ? true : false,
@@ -1449,6 +1453,10 @@ class AdminController extends Controller
             $plan_id = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
         }
 
+        $planRecordForDuration = DB::table('plans')->where('id', $plan_id)->first();
+        $durationDays = $planRecordForDuration ? intval($planRecordForDuration->duration) : 0;
+        $plan_expires_at = $durationDays > 0 ? now()->addDays($durationDays) : null;
+
         $updateData = [
             'name' => $request->name,
             'logo' => $logoUrl,
@@ -1473,6 +1481,7 @@ class AdminController extends Controller
             'region' => $request->region ?? 'Asia Pacific',
             'tier' => $request->tier ?? 'Premium',
             'plan_id' => $plan_id,
+            'plan_expires_at' => $plan_expires_at,
             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
             'generate_bill' => $request->has('generate_bill') ? true : false,
             'api_access' => $request->has('api_access') ? true : false,

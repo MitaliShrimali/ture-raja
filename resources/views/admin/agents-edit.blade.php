@@ -161,18 +161,18 @@
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Primary
                                         Mobile <span class="text-red-500">*</span></label>
                                     <div class="flex gap-2 items-center">
-                                        <div class="relative w-24 shrink-0">
+                                        <div class="relative w-[4.5rem] shrink-0">
                                             <select
-                                                class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-2 outline-none text-xs font-medium">
-                                                <option value="+91" data-len="10" selected>ðŸ‡®ðŸ‡³ +91</option>
-                                                <option value="+1" data-len="10">ðŸ‡ºðŸ‡¸ +1</option>
-                                                <option value="+44" data-len="10">ðŸ‡¬ðŸ‡§ +44</option>
-                                                <option value="+62" data-len="11">ðŸ‡®ðŸ‡© +62</option>
-                                                <option value="+65" data-len="8">ðŸ‡¸ðŸ‡¬ +65</option>
-                                                <option value="+971" data-len="9">ðŸ‡¦ðŸ‡ª +971</option>
-                                                <option value="+61" data-len="9">ðŸ‡¦ðŸ‡º +61</option>
-                                                <option value="+66" data-len="9">ðŸ‡¹ðŸ‡­ +66</option>
-                                                <option value="+60" data-len="10">ðŸ‡²ðŸ‡¾ +60</option>
+                                                class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 pl-2 pr-0 outline-none text-xs font-medium">
+                                                <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                                <option value="+1" data-len="10">🇺🇸 +1</option>
+                                                <option value="+44" data-len="10">🇬🇧 +44</option>
+                                                <option value="+62" data-len="11">🇮🇩 +62</option>
+                                                <option value="+65" data-len="8">🇸🇬 +65</option>
+                                                <option value="+971" data-len="9">🇦🇪 +971</option>
+                                                <option value="+61" data-len="9">🇦🇺 +61</option>
+                                                <option value="+66" data-len="9">🇹🇭 +66</option>
+                                                <option value="+60" data-len="10">🇲🇾 +60</option>
                                             </select>
                                         </div>
                                         <div class="relative flex-grow">
@@ -188,18 +188,18 @@
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Secondary
                                         Mobile</label>
                                     <div class="flex gap-2 items-center">
-                                        <div class="relative w-24 shrink-0">
+                                        <div class="relative w-[4.5rem] shrink-0">
                                             <select
-                                                class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-2 outline-none text-xs font-medium">
-                                                <option value="+91" data-len="10" selected>ðŸ‡®ðŸ‡³ +91</option>
-                                                <option value="+1" data-len="10">ðŸ‡ºðŸ‡¸ +1</option>
-                                                <option value="+44" data-len="10">ðŸ‡¬ðŸ‡§ +44</option>
-                                                <option value="+62" data-len="11">ðŸ‡®ðŸ‡© +62</option>
-                                                <option value="+65" data-len="8">ðŸ‡¸ðŸ‡¬ +65</option>
-                                                <option value="+971" data-len="9">ðŸ‡¦ðŸ‡ª +971</option>
-                                                <option value="+61" data-len="9">ðŸ‡¦ðŸ‡º +61</option>
-                                                <option value="+66" data-len="9">ðŸ‡¹ðŸ‡­ +66</option>
-                                                <option value="+60" data-len="10">ðŸ‡²ðŸ‡¾ +60</option>
+                                                class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 pl-2 pr-0 outline-none text-xs font-medium">
+                                                <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                                <option value="+1" data-len="10">🇺🇸 +1</option>
+                                                <option value="+44" data-len="10">🇬🇧 +44</option>
+                                                <option value="+62" data-len="11">🇮🇩 +62</option>
+                                                <option value="+65" data-len="8">🇸🇬 +65</option>
+                                                <option value="+971" data-len="9">🇦🇪 +971</option>
+                                                <option value="+61" data-len="9">🇦🇺 +61</option>
+                                                <option value="+66" data-len="9">🇹🇭 +66</option>
+                                                <option value="+60" data-len="10">🇲🇾 +60</option>
                                             </select>
                                         </div>
                                         <div class="relative flex-grow">

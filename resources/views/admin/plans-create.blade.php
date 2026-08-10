@@ -107,13 +107,11 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Duration Threshold</label>
-                    <select name="duration" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground">
-                        <option value="1 Month">1 Month</option>
-                        <option value="3 Months">3 Months</option>
-                        <option value="6 Months">6 Months</option>
-                        <option value="1 Year">1 Year</option>
-                        <option value="Custom">Custom / Unlimited</option>
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Duration Threshold (Days)</label>
+                    <select name="duration" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground max-h-60 overflow-y-auto">
+                        @for ($i = 1; $i <= 365; $i++)
+                            <option value="{{ $i }}">{{ $i }} {{ $i > 1 ? 'Days' : 'Day' }}</option>
+                        @endfor
                     </select>
                 </div>
             </div>

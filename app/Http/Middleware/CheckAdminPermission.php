@@ -25,8 +25,16 @@ class CheckAdminPermission
             return redirect('/admin/login');
         }
 
+        $role = strtoupper($user->role ?? '');
+        $adminRoles = ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'EMPLOYEE'];
+
+        // Block regular users/customers from accessing any admin routes
+        if (!in_array($role, $adminRoles)) {
+            return redirect('/profile')->with('error', 'Access Denied: You are not authorized to access the admin panel.');
+        }
+
         // Super Admin gets access to everything
-        if (strtoupper($user->role) === 'SUPER ADMIN') {
+        if ($role === 'SUPER ADMIN') {
             return $next($request);
         }
 

@@ -120,8 +120,12 @@
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Duration Threshold</label>
-                    <input type="text" name="duration" value="{{ $plan->duration ?? '' }}" placeholder="e.g. 1 Month, 30 Days" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Duration Threshold (Days)</label>
+                    <select name="duration" class="w-full bg-[#F8F9FA] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground max-h-60 overflow-y-auto">
+                        @for ($i = 1; $i <= 365; $i++)
+                            <option value="{{ $i }}" {{ ($plan->duration == $i) ? 'selected' : '' }}>{{ $i }} {{ $i > 1 ? 'Days' : 'Day' }}</option>
+                        @endfor
+                    </select>
                 </div>
             </div>
 

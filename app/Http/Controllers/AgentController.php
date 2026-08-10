@@ -2123,9 +2123,14 @@ class AgentController extends Controller
         }
 
         if ($type == 'plan') {
+            $planRecordForDuration = DB::table('plans')->where('id', $id)->first();
+            $durationDays = $planRecordForDuration ? intval($planRecordForDuration->duration) : 0;
+            $plan_expires_at = $durationDays > 0 ? now()->addDays($durationDays) : null;
+
             DB::table('agents')->where('id', $agentId)->update([
                 'plan_id' => $id,
                 'plan_status' => 'active',
+                'plan_expires_at' => $plan_expires_at,
                 'updated_at' => now()
             ]);
         } elseif ($type == 'boost') {

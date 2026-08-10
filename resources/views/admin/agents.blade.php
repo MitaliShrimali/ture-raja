@@ -129,8 +129,8 @@
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Primary Mobile <span class="text-red-500">*</span></label>
                                 <div class="flex gap-2 items-center">
-                                    <div class="relative w-24 shrink-0">
-                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-2 outline-none text-xs font-medium">
+                                    <div class="relative w-[4.5rem] shrink-0">
+                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 pl-2 pr-0 outline-none text-xs font-medium">
                                             <option value="+91" data-len="10" selected>🇮🇳 +91</option>
                                             <option value="+1" data-len="10">🇺🇸 +1</option>
                                             <option value="+44" data-len="10">🇬🇧 +44</option>
@@ -152,8 +152,8 @@
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Secondary Mobile</label>
                                 <div class="flex gap-2 items-center">
-                                    <div class="relative w-24 shrink-0">
-                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-2 outline-none text-xs font-medium">
+                                    <div class="relative w-[4.5rem] shrink-0">
+                                        <select class="phone-country-code w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 pl-2 pr-0 outline-none text-xs font-medium">
                                             <option value="+91" data-len="10" selected>🇮🇳 +91</option>
                                             <option value="+1" data-len="10">🇺🇸 +1</option>
                                             <option value="+44" data-len="10">🇬🇧 +44</option>
