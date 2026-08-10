@@ -79,6 +79,14 @@ Route::match(['GET', 'POST'], '/logout', [UserController::class, 'logout'])->nam
 // ─── ADMIN ROUTES ────────────────────────────────────────────────────────────
 Route::prefix('admin')->group(function () {
     Route::get('/login', function () {
+        if (\Illuminate\Support\Facades\Auth::check()) {
+            $role = strtoupper(\Illuminate\Support\Facades\Auth::user()->role ?? '');
+            if (in_array($role, ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'EMPLOYEE'])) {
+                return redirect('/admin/dashboard');
+            } else {
+                return redirect('/profile')->with('error', 'You are logged in as a customer. Please log out first to access the admin portal.');
+            }
+        }
         return view('admin.login', ['type' => 'admin']);
     });
     Route::get('/signup', function () {

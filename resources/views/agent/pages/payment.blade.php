@@ -168,6 +168,7 @@
             </div>
             @endforeach
 
+            @if($ads->isNotEmpty())
             <div class="bg-[#f8fafc] rounded-[2rem] border border-gray-100 shadow-sm p-6">
                 <div class="flex justify-between items-start mb-4">
                     <h4 class="text-lg font-bold text-gray-900">AD Placement</h4>
@@ -206,6 +207,7 @@
                     <button type="submit" class="w-full bg-[#1e293b] text-white font-bold text-sm py-4 rounded-xl hover:bg-black transition-colors shadow-lg">Purchase Placement</button>
                 </form>
             </div>
+            @endif
         </div>
 
     </div>

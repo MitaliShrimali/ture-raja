@@ -1314,6 +1314,10 @@ class AdminController extends Controller
             $plan_id = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
         }
 
+        $planRecordForDuration = DB::table('plans')->where('id', $plan_id)->first();
+        $durationDays = $planRecordForDuration ? intval($planRecordForDuration->duration) : 0;
+        $plan_expires_at = $durationDays > 0 ? now()->addDays($durationDays) : null;
+
         DB::table('agents')->insert([
             'name' => $request->name,
             'logo' => $logoUrl,
@@ -1339,7 +1343,7 @@ class AdminController extends Controller
             'region' => $request->region ?? 'Asia Pacific',
             'tier' => $request->tier ?? 'Premium',
             'plan_id' => $plan_id,
-            'status' => $request->status ?? 'Active',
+            'plan_expires_at' => $plan_expires_at,
             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
             'generate_bill' => $request->has('generate_bill') ? true : false,
             'api_access' => $request->has('api_access') ? true : false,
@@ -1375,31 +1379,22 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Agent not found.');
         }
 
-        // Seed realistic default values for empty fields based on reference design
-        if (empty($agent->address)) {
-            $agent->address = "102 Royal Plaza, Opp. Crystal Mall";
-        }
-        if (empty($agent->city)) {
-            $agent->city = "Rajkot";
-        }
-        if (empty($agent->pincode)) {
-            $agent->pincode = "360003";
-        }
-        if (empty($agent->state)) {
-            $agent->state = "Gujarat";
-        }
-        if (empty($agent->about)) {
-            $agent->about = "Specializing in luxury domestic tours and international holiday packages. We pride ourselves on customer satisfaction and 24/7 on-ground support for all our clients.";
-        }
-        if (empty($agent->landline)) {
-            $agent->landline = "0281-2233445";
-        }
-
         $activePlan = DB::table('plans')->where('id', $agent->plan_id ?? null)->first();
         $payments = DB::table('payments')->where('email', $agent->email)->orderBy('id', 'desc')->get();
         $branches = DB::table('branches')->where('agent_id', $agent->id)->get();
 
-        return view('admin.agent-profile', compact('agent', 'activePlan', 'payments', 'branches'));
+        $activePackagesCount = DB::table('packages')
+            ->where('status', 'active')
+            ->get()
+            ->filter(function($package) use ($agent) {
+                $agentData = json_decode($package->agent, true);
+                return isset($agentData['id']) && $agentData['id'] == $agent->id;
+            })->count();
+
+        $averageRating = DB::table('agent_feedback')->where('agent_id', $agent->id)->avg('rating');
+        $averageRating = $averageRating ? number_format($averageRating, 1) : '0.0';
+
+        return view('admin.agent-profile', compact('agent', 'activePlan', 'payments', 'branches', 'activePackagesCount', 'averageRating'));
     }
 
     public function updateAgent(Request $request)
@@ -1449,6 +1444,10 @@ class AdminController extends Controller
             $plan_id = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
         }
 
+        $planRecordForDuration = DB::table('plans')->where('id', $plan_id)->first();
+        $durationDays = $planRecordForDuration ? intval($planRecordForDuration->duration) : 0;
+        $plan_expires_at = $durationDays > 0 ? now()->addDays($durationDays) : null;
+
         $updateData = [
             'name' => $request->name,
             'logo' => $logoUrl,
@@ -1473,6 +1472,7 @@ class AdminController extends Controller
             'region' => $request->region ?? 'Asia Pacific',
             'tier' => $request->tier ?? 'Premium',
             'plan_id' => $plan_id,
+            'plan_expires_at' => $plan_expires_at,
             'service_guaranteed' => $request->has('service_guaranteed') ? true : false,
             'generate_bill' => $request->has('generate_bill') ? true : false,
             'api_access' => $request->has('api_access') ? true : false,
