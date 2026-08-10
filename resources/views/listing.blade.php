@@ -562,7 +562,7 @@
                 <!-- Top Bar -->
                 <div class="bg-white rounded-lg shadow-soft w-full overflow-hidden">
                     <!-- Single-row on mobile, flex on desktop -->
-                    <div class="flex items-center gap-1.5 px-2 py-2 md:hidden">
+                    <div class="flex items-center gap-1.5 px-2 py-2 md:hidden w-full max-w-full overflow-hidden">
                         <!-- 1. Package Count Pill -->
                         <button type="button" @click="stateModalOpen = true"
                             class="flex items-center gap-0.5 px-2 py-1.5 bg-white border border-[#e85d26] rounded-md text-xs font-black text-foreground shadow-sm hover:bg-orange-50 shrink-0">
@@ -576,9 +576,10 @@
                             Filters
                         </button>
                         <!-- 3. Sort By (flex-1 to take remaining space) -->
-                        <div class="relative flex-1 min-w-0">
-                            <select name="sort"
-                                class="w-full bg-white border border-[#e85d26] rounded-md py-1.5 pl-2 pr-5 text-xs font-semibold focus:outline-none appearance-none cursor-pointer text-[#e85d26] truncate">
+                        <div class="relative flex-1 min-w-0 max-w-full overflow-hidden" style="min-width: 0; flex: 1 1 0%;">
+                            <select name="sort" onchange="this.form.submit()"
+                                class="w-full bg-white border border-[#e85d26] rounded-md py-1.5 pl-2 pr-5 text-xs font-semibold focus:outline-none appearance-none cursor-pointer text-[#e85d26] truncate"
+                                style="max-width: 100%; width: 100%; min-width: 0;">
                                 <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
                                 <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' ? 'selected' : '' }}>Guaranteed</option>
                                 <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' ? 'selected' : '' }}>Price ↑</option>
