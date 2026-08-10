@@ -12,6 +12,7 @@ class AgentFeedback extends Model
     protected $table = 'agent_feedback';
 
     protected $fillable = [
+        'user_id',
         'agent_id',
         'customer_name',
         'rating',
@@ -19,4 +20,9 @@ class AgentFeedback extends Model
         'image_path',
         'package_id',
     ];
+
+    public function package()
+    {
+        return $this->belongsTo(Package::class, 'package_id');
+    }
 }
