@@ -120,12 +120,20 @@
 
 <div onclick="window.open('{{ $detailUrl }}', '_blank')" {{ $attributes->merge(['class' => 'cursor-pointer group bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-1 flex flex-col border border-border-soft/50 package-card-inner']) }}>
 
+    @php
+        $imgSrc = $image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800';
+        if (!str_starts_with($imgSrc, 'http://') && !str_starts_with($imgSrc, 'https://') && !str_starts_with($imgSrc, '//')) {
+            $imgSrc = asset(ltrim($imgSrc, '/'));
+        }
+    @endphp
+
     {{-- ── Image ─────────────────────────────────────────────────────── --}}
     <div class="relative overflow-hidden m-2 rounded-xl package-image-container" style="aspect-ratio:1.25/1;">
         <img
-            src="{{ asset($image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800') }}"
+            src="{{ $imgSrc }}"
             alt="{{ $title }}"
             class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800';"
         >
 
         {{-- Badge top-left --}}
