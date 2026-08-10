@@ -56,7 +56,7 @@
         @endphp
         
         <div class="flex-1 relative flex justify-center items-center z-20">
-            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap w-auto items-center justify-center gap-5 xl:gap-8 2xl:gap-12 px-2 transition-all duration-500 z-50 opacity-0 scale-90 translate-y-0 pointer-events-none" :class="{ 'opacity-100 scale-100 -translate-y-1/2 pointer-events-auto': isPastTransits || !isHome, 'opacity-0 scale-90 translate-y-0 pointer-events-none': !(isPastTransits || !isHome) }">
+            <div id="navbar-transits" class="absolute top-1/2 left-1/2 -translate-x-1/2 hidden lg:flex flex-nowrap max-w-full w-max items-center justify-center gap-2 xl:gap-4 2xl:gap-8 px-2 transition-all duration-500 z-50 opacity-0 scale-90 translate-y-0 pointer-events-none" :class="{ 'opacity-100 scale-100 -translate-y-1/2 pointer-events-auto': isPastTransits || !isHome, 'opacity-0 scale-90 translate-y-0 pointer-events-none': !(isPastTransits || !isHome) }">
                 @foreach($dbTransits as $t)
                   @php
                       $imgUrl = '';
@@ -69,12 +69,13 @@
                       }
                       $cleanType = $t->name;
                       $label = str_replace(" Package", "\nPackage", $t->name);
+                      $label = str_replace("Land/Customised", "Land/Custom", $label);
                   @endphp
-                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center justify-start group w-[85px] xl:w-[110px] 2xl:w-[130px] flex-shrink-0 text-center">
-                     <div class="w-11 h-11 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 flex items-center justify-center">
+                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center justify-center group flex-1 min-w-[60px] max-w-[80px] xl:max-w-[100px] text-center">
+                     <div class="w-8 h-8 xl:w-9 xl:h-9 2xl:w-11 2xl:h-11 flex items-center justify-center shrink-0">
                         <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
-                     <span class="text-[12px] xl:text-[14px] 2xl:text-[15px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-1 w-full text-center leading-tight whitespace-pre-line">{{ $label }}</span>
+                     <span class="text-[9px] xl:text-[10px] 2xl:text-[12px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-1 w-full text-center leading-tight whitespace-pre-line">{{ $label }}</span>
                   </a>
                 @endforeach
             </div>
