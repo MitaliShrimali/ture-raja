@@ -56,7 +56,7 @@
     }
 
     // ── Tour type & category ─────────────────────────────────────────────
-    $transitVal   = $pkgArr['group_size'] ?? '';
+    $transitVal   = $pkgArr['tour_type'] ?? '';
     $categoryVal  = $pkgArr['category']  ?? '';
     $themeVal     = $pkgArr['theme']     ?? '';
     $holidayVal   = $pkgArr['holiday_type'] ?? '';
