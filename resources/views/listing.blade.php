@@ -566,7 +566,7 @@
                         <!-- 1. Package Count Pill -->
                         <button type="button" @click="stateModalOpen = true"
                             class="flex items-center gap-0.5 px-2 py-1.5 bg-white border border-[#e85d26] rounded-md text-xs font-black text-foreground shadow-sm hover:bg-orange-50 shrink-0">
-                            <span>(<span id="results-count">{{ $packages->count() }}</span>)</span>
+                            <span>(<span id="results-count">{{ is_countable($packages) ? count($packages) : 0 }}</span>)</span>
                             <i data-lucide="chevron-down" size="12" class="text-[#e85d26]"></i>
                         </button>
                         <!-- 2. Filters Button -->
@@ -610,7 +610,7 @@
                         <div class="flex items-center">
                             <button type="button" @click="stateModalOpen = true"
                                 class="flex items-center justify-between w-auto min-w-[90px] px-4 py-2 bg-white border border-[#e85d26] rounded-md text-base font-black text-foreground transition-all shadow-sm hover:bg-orange-50">
-                                <span>(<span>{{ $packages->count() }}</span>)</span>
+                                <span>(<span>{{ is_countable($packages) ? count($packages) : 0 }}</span>)</span>
                                 <i data-lucide="chevron-down" size="18" class="text-[#e85d26] ml-3"></i>
                             </button>
                         </div>
@@ -706,7 +706,7 @@
 
                 <!-- Load More Section -->
                 <div id="load-more-section">
-                    @if($packages->count() > 25)
+                    @if((is_countable($packages) ? count($packages) : 0) > 25)
                         <div class="text-center pt-10" id="loadMoreContainer">
                             <button type="button" onclick="loadMorePackages()"
                                 class="bg-white hover:bg-gray-50 text-foreground px-10 py-5 rounded-full font-bold shadow-soft transition-all border border-gray-100">
