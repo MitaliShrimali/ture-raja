@@ -577,12 +577,6 @@
                                             <line x1="10" y1="14" x2="21" y2="3"></line>
                                         </svg>
                                     </a>
-                                    <button @click="documentExpanded = !documentExpanded" type="button" class="text-sm font-semibold text-gray-600 hover:text-[#e85d26] flex items-center gap-1 transition-colors bg-gray-100 hover:bg-orange-50 px-3 py-1.5 rounded-md">
-                                        <span x-text="documentExpanded ? 'Collapse Preview' : 'Expand Preview'"></span>
-                                        <svg class="w-4 h-4 transition-transform duration-200" :class="documentExpanded ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                        </svg>
-                                    </button>
                                 </div>
 
                                 <div class="mt-4 transition-all duration-500 ease-in-out relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50"
@@ -609,8 +603,16 @@
                                             <line x1="10" y1="14" x2="21" y2="3"></line>
                                         </svg>
                                     </a>
-                                </div> <!-- end of relative w-full -->
+                                    </div> <!-- end of relative w-full -->
                                 </div> <!-- end of documentExpanded wrapper -->
+
+                                <div class="mt-4 flex justify-center relative z-10">
+                                    <button type="button" @click="documentExpanded = !documentExpanded"
+                                        class="inline-flex items-center justify-center px-6 py-2.5 rounded-lg text-white text-sm font-bold tracking-wide transition-all hover:opacity-90 shadow-sm"
+                                        style="background-color: #e85d26;">
+                                        <span x-html="documentExpanded ? 'Show Less &uarr;' : 'Expand Full Preview &darr;'"></span>
+                                    </button>
+                                </div>
                             </div> <!-- end of #document -->
                         @else
 
