@@ -20,8 +20,11 @@
     <!-- Styles & Scripts -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ @filemtime(public_path('css/style.css')) }}">
     <link rel="stylesheet" href="{{ asset('css/mobile-responsive.css') }}?v={{ time() }}">
+    @if (file_exists(public_path('build/manifest.json')))
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
-    <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
 
     <!-- Lordicon for animated icons -->
     <script src="https://cdn.lordicon.com/xdjxvujz.js"></script>

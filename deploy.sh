@@ -15,6 +15,11 @@ git reset --hard origin/main
 echo "📦 Installing composer dependencies..."
 composer install --no-dev --optimize-autoloader --no-interaction
 
+# 🎨 Building frontend assets
+echo "🎨 Building frontend assets..."
+npm ci --no-audit || npm install --no-audit
+npm run build
+
 # 🧹 Clearing caches (Avoid caching routes in subdirectories)
 echo "🧹 Clearing caches..."
 php artisan optimize:clear
