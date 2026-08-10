@@ -104,7 +104,7 @@
                         <p class="text-sm font-extrabold text-slate-800">{{ $agent->phone }}</p>
                     </div>
                     <div class="space-y-1">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Phone</span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Landline Number</span>
                         <p class="text-sm font-extrabold text-slate-800">{{ $agent->landline ?? 'N/A' }}</p>
                     </div>
                 </div>
@@ -161,7 +161,9 @@
                             <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-0.5">State</span>
                             <span class="text-xs font-extrabold text-slate-700">{{ $agent->state }}</span>
                         </div>
-                        <span class="text-[9px] font-black text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded uppercase tracking-wide">INDIA</span>
+                        @if(!empty($agent->country))
+                        <span class="text-[9px] font-black text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded uppercase tracking-wide">{{ $agent->country }}</span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -307,7 +309,7 @@
     </div>
 
     <!-- Stats row -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Package Stat Card -->
         <div style="background-color: #D35400;" class="p-8 rounded-[32px] text-white flex flex-col justify-between relative overflow-hidden min-h-[160px] shadow-lg shadow-orange-500/10">
             <span class="absolute right-6 top-6 text-[9px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">
@@ -317,22 +319,8 @@
                 <i data-lucide="package" size="20"></i>
             </div>
             <div class="mt-4">
-                <h3 class="text-3xl font-extrabold tracking-tight">24</h3>
+                <h3 class="text-3xl font-extrabold tracking-tight">{{ $activePackagesCount }}</h3>
                 <p class="text-xs text-white/80 font-bold uppercase tracking-wider mt-0.5">Active Tour Packages</p>
-            </div>
-        </div>
-
-        <!-- Clients Stat Card -->
-        <div class="bg-[#0074A6] p-8 rounded-[32px] text-white flex flex-col justify-between relative overflow-hidden min-h-[160px] shadow-lg shadow-blue-500/10">
-            <span class="absolute right-6 top-6 text-[9px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">
-                TOTAL
-            </span>
-            <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
-                <i data-lucide="users" size="20"></i>
-            </div>
-            <div class="mt-4">
-                <h3 class="text-3xl font-extrabold tracking-tight">1,208</h3>
-                <p class="text-xs text-white/80 font-bold uppercase tracking-wider mt-0.5">Clients Served</p>
             </div>
         </div>
 
@@ -348,7 +336,7 @@
             <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Agent Rating</span>
             <div class="mt-4">
                 <div class="flex items-baseline gap-1">
-                    <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight">4.8</h3>
+                    <h3 class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ $averageRating }}</h3>
                     <span class="text-xs text-slate-400 font-bold">/5.0</span>
                 </div>
                 <p class="text-[10px] text-[#D35400] font-black uppercase tracking-widest mt-1">Top Rated Partner</p>

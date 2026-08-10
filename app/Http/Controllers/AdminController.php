@@ -1379,31 +1379,22 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Agent not found.');
         }
 
-        // Seed realistic default values for empty fields based on reference design
-        if (empty($agent->address)) {
-            $agent->address = "102 Royal Plaza, Opp. Crystal Mall";
-        }
-        if (empty($agent->city)) {
-            $agent->city = "Rajkot";
-        }
-        if (empty($agent->pincode)) {
-            $agent->pincode = "360003";
-        }
-        if (empty($agent->state)) {
-            $agent->state = "Gujarat";
-        }
-        if (empty($agent->about)) {
-            $agent->about = "Specializing in luxury domestic tours and international holiday packages. We pride ourselves on customer satisfaction and 24/7 on-ground support for all our clients.";
-        }
-        if (empty($agent->landline)) {
-            $agent->landline = "0281-2233445";
-        }
-
         $activePlan = DB::table('plans')->where('id', $agent->plan_id ?? null)->first();
         $payments = DB::table('payments')->where('email', $agent->email)->orderBy('id', 'desc')->get();
         $branches = DB::table('branches')->where('agent_id', $agent->id)->get();
 
-        return view('admin.agent-profile', compact('agent', 'activePlan', 'payments', 'branches'));
+        $activePackagesCount = DB::table('packages')
+            ->where('status', 'active')
+            ->get()
+            ->filter(function($package) use ($agent) {
+                $agentData = json_decode($package->agent, true);
+                return isset($agentData['id']) && $agentData['id'] == $agent->id;
+            })->count();
+
+        $averageRating = DB::table('agent_feedback')->where('agent_id', $agent->id)->avg('rating');
+        $averageRating = $averageRating ? number_format($averageRating, 1) : '0.0';
+
+        return view('admin.agent-profile', compact('agent', 'activePlan', 'payments', 'branches', 'activePackagesCount', 'averageRating'));
     }
 
     public function updateAgent(Request $request)
