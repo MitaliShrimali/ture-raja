@@ -17,8 +17,12 @@ composer install --no-dev --optimize-autoloader --no-interaction
 
 # 🎨 Building frontend assets
 echo "🎨 Building frontend assets..."
-npm ci --no-audit || npm install --no-audit
-npm run build
+if command -v npm &> /dev/null; then
+    npm ci --no-audit || npm install --no-audit
+    npm run build
+else
+    echo "⚠️ npm command not found on server. Using pre-compiled public/build assets & Tailwind script fallback."
+fi
 
 # 🧹 Clearing caches (Avoid caching routes in subdirectories)
 echo "🧹 Clearing caches..."
