@@ -215,7 +215,7 @@
             this.isGalleryModalOpen = false;
         },
         fetchGallery(folderId = null) {
-            let url = '{{ route('agent.api.gallery') }}';
+            let url = '{{ request()->is("admin/*") ? route("admin.api.gallery") : route("agent.api.gallery") }}';
             if (folderId) url += '?folder=' + folderId;
             url += (url.includes('?') ? '&' : '?') + '_t=' + new Date().getTime();
 
@@ -1442,7 +1442,7 @@
                             <!-- Images -->
                             <template x-for="image in galleryImages" :key="'image_'+image.id">
                                 <div class="relative aspect-square rounded-2xl border border-gray-200 overflow-hidden group cursor-pointer" @click="toggleGalleryImage(image)">
-                                    <img :src="'/' + image.file_path" class="w-full h-full object-cover" />
+                                    <img :src="image.file_path.startsWith('http') ? image.file_path : ('{{ rtrim(asset(''), '/') }}/' + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path))" class="w-full h-full object-cover" />
                                     
                                     <!-- Selection Overlay -->
                                     <div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
