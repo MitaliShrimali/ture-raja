@@ -541,10 +541,18 @@ class UserController extends Controller
             }
         } catch (\Exception $e) {}
 
+        $myReviews = collect();
+        try {
+            $myReviews = \App\Models\AgentFeedback::where('user_id', $userId)
+                ->orderByDesc('created_at')
+                ->get();
+        } catch (\Exception $e) {}
+
         return view('profile', compact(
             'user', 'profile', 'wishlist', 'bookings',
             'packages', 'unreadCount', 'userNotifications',
-            'activePlan', 'userPayments', 'searchHistory', 'viewedPackages'
+            'activePlan', 'userPayments', 'searchHistory', 'viewedPackages',
+            'myReviews'
         ));
     }
 
@@ -726,6 +734,7 @@ class UserController extends Controller
         }
 
         \App\Models\AgentFeedback::create([
+            'user_id'       => \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::id() : null,
             'agent_id'      => $request->agent_id,
             'customer_name' => $request->customer_name,
             'rating'        => $request->rating,

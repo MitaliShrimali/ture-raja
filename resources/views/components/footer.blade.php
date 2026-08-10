@@ -165,7 +165,7 @@
           </li>
           <li style="padding:1px 0;">
             @auth
-              <a href="{{ url('/profile?tab=saved-agent') }}"
+              <a href="{{ url('/profile?tab=wishlist') }}"
                 style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
                 onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Saved
                 Agent</a>

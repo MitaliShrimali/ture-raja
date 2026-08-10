@@ -28,7 +28,7 @@
 <div class="pf-toast pf-toast--err">{{ session('error') }}</div>
 @endif
 
-<div x-data="{ tab: 'account' }" class="pf-page">
+<div x-data="{ tab: new URLSearchParams(window.location.search).get('tab') || 'account' }" class="pf-page">
 
   {{-- ══════════ HERO ══════════ --}}
   <div class="pf-hero">
@@ -78,6 +78,9 @@
       <button @click="tab='wishlist'"
               :class="tab==='wishlist' ? 'pf-tab-on' : ''"
               class="pf-tab">Wishlist</button>
+      <button @click="tab='reviews'"
+              :class="tab==='reviews' ? 'pf-tab-on' : ''"
+              class="pf-tab">My Reviews</button>
     </div>
   </div>
 
@@ -268,6 +271,8 @@
 
 
 
+
+
       {{-- ── Newsletter ── --}}
       <section class="pf-section">
         <div class="pf-news">
@@ -440,6 +445,32 @@
       </section>
 
     </div>{{-- /wishlist tab --}}
+
+    {{-- ── REVIEWS TAB ── --}}
+    <div x-show="tab==='reviews'" x-transition.opacity.duration.200ms>
+      {{-- ── My Reviews ── --}}
+      <section class="pf-section">
+        <h2 class="pf-sec-h">My Reviews</h2>
+        @if(isset($myReviews) && $myReviews->isNotEmpty())
+            <div class="pf-reviews-grid" style="display: grid; gap: 16px;">
+                @foreach($myReviews as $review)
+                    <div class="pf-review-card" style="background:#fff; border:1.5px solid #e5e7eb; border-radius:12px; padding:20px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <h3 style="margin:0; font-size:1.05rem; font-weight:800; color:#111827; font-family:'Syne',sans-serif;">{{ $review->package ? $review->package->title : 'Package Tour' }}</h3>
+                            <span style="font-size:0.85rem; color:#f59e0b; font-weight:700;">★ {{ $review->rating }}/5</span>
+                        </div>
+                        <p style="font-size:0.95rem; color:#4b5563; margin:0 0 12px 0; line-height:1.5;">{{ $review->message }}</p>
+                        <p style="font-size:0.75rem; color:#9ca3af; margin:0; font-weight:600; text-transform:uppercase; letter-spacing:0.05em;">Reviewed on {{ $review->created_at->format('M d, Y') }}</p>
+                    </div>
+                @endforeach
+            </div>
+        @else
+            <div style="background:#f9fafb; border:1.5px dashed #d1d5db; border-radius:12px; padding:30px; text-align:center;">
+                <p style="color:#6b7280; font-size:0.95rem; margin:0; font-weight:500;">You haven't left any reviews yet.</p>
+            </div>
+        @endif
+      </section>
+    </div>{{-- /reviews tab --}}
 
   </div>{{-- /pf-content --}}
 </div>{{-- /pf-page --}}
