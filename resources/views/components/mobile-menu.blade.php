@@ -70,12 +70,14 @@
         <!-- Actions -->
         <div class="space-y-4">
             @auth
+                @if(auth()->user()->role === 'Customer')
                 <a href="{{ url('/profile') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-foreground hover:bg-gray-50 transition-colors">
                     <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                         <i data-lucide="user" size="24"></i>
                     </div>
                     My Profile
                 </a>
+                @endif
                 <a href="{{ url('/logout') }}" class="flex items-center gap-4 p-4 rounded-2xl bg-white shadow-soft font-bold text-red-500 hover:bg-red-50 transition-colors">
                     <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-500">
                         <i data-lucide="log-out" size="24"></i>
