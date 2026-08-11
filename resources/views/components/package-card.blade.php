@@ -33,7 +33,7 @@
         $rating   = $pkgArr['rating']   ?? $rating;
         $reviews  = $pkgArr['reviews']  ?? $reviews;
         $price    = $pkgArr['price']    ?? $price;
-        $oldPrice = $pkgArr['oldPrice'] ?? $oldPrice;
+        $oldPrice = $pkgArr['old_price'] ?? $pkgArr['oldPrice'] ?? $oldPrice;
         $badge    = $pkgArr['badge']    ?? $badge;
         $slug     = $pkgArr['slug']     ?? \Illuminate\Support\Str::slug($title ?? '') ?: $slug;
         $agentObj = $pkgArr['agent']    ?? null;
