@@ -88,7 +88,7 @@
                 <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.about') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
                     <i class="fas fa-info-circle text-xs"></i>
                 </div>
-                <span class="text-xs">About TourRaja</span>
+                <span class="text-xs">About Tour Raja</span>
             </a>
 
             <a href="{{ route('agent.profile-images') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.profile-images') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">

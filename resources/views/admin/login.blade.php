@@ -8,7 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - TourRaja</title>
+    <title>Sign In - Tour Raja</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
@@ -23,7 +23,7 @@
 
         .orange-side {
             background-color: #e85d26;
-            background-image: url("{{ asset('images/tourraja-bg.png') }}");
+            background-image: url("{{ asset('images/tour raja-bg.png') }}");
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
@@ -41,20 +41,20 @@
 @php
     $type = $type ?? 'admin';
     $title = 'Sign In';
-    $subtext = 'Enter your credentials to access the TourRaja Admin Central.';
+    $subtext = 'Enter your credentials to access the Tour Raja Admin Central.';
     $actionUrl = url('admin/dashboard');
-    $defaultEmail = 'admin@tourraja.com';
+    $defaultEmail = 'admin@tour raja.com';
     $btnText = 'Access Dashboard';
 
     if ($type === 'agent') {
         $title = 'Agent Sign In';
-        $subtext = 'Enter your credentials to access the TourRaja Agent Portal.';
+        $subtext = 'Enter your credentials to access the Tour Raja Agent Portal.';
         $actionUrl = url('/');
-        $defaultEmail = 'agent@tourraja.com';
+        $defaultEmail = 'agent@tour raja.com';
         $btnText = 'Access Agent Portal';
     } elseif ($type === 'customer') {
         $title = 'Customer Sign In';
-        $subtext = 'Enter your credentials to access your TourRaja Account.';
+        $subtext = 'Enter your credentials to access your Tour Raja Account.';
         $actionUrl = url('/');
         $defaultEmail = 'user@example.com';
         $btnText = 'Sign In to Account';

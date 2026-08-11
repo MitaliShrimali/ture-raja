@@ -5,7 +5,7 @@
     <link rel="icon" href="{{ \Illuminate\Support\Facades\DB::table('settings')->where('key', 'favicon')->value('value') ?? asset('favicon.ico') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forgot Password – TourRaja</title>
+    <title>Forgot Password – Tour Raja</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap"
@@ -18,7 +18,7 @@
 
         .gradient-side {
             background-color: #e85d26;
-            background-image: url("{{ asset('images/tourraja-bg.png') }}");
+            background-image: url("{{ asset('images/tour raja-bg.png') }}");
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;

@@ -4,9 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'TourRaja — Premium Global Travel Experiences')</title>
+    <title>@yield('title', 'Tour Raja — Premium Global Travel Experiences')</title>
     <meta name="description"
-        content="@yield('description', 'Discover curated luxury travel packages with TourRaja. Your premium global travel partner.')">
+        content="@yield('description', 'Discover curated luxury travel packages with Tour Raja. Your premium global travel partner.')">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" href="{{ \Illuminate\Support\Facades\DB::table('settings')->where('key', 'favicon')->value('value') ?? asset('favicon.ico') }}">
 
@@ -184,7 +184,7 @@
                 return;
             }
 
-            let wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
+            let wishlist = JSON.parse(localStorage.getItem('tour raja_wishlist') || '[]');
             const index = wishlist.findIndex(item => item.slug === pkg.slug);
 
             if (index > -1) {
@@ -193,7 +193,7 @@
                 wishlist.push(pkg);
             }
 
-            localStorage.setItem('tourraja_wishlist', JSON.stringify(wishlist));
+            localStorage.setItem('tour raja_wishlist', JSON.stringify(wishlist));
             updateWishlistUI();
 
             // ── Also persist to DB so profile wishlist tab shows items ──
@@ -218,7 +218,7 @@
 
         window.updateWishlistUI = function () {
             const isAuthenticated = {{ (Auth::check() && Auth::user()->role === 'Customer') ? 'true' : 'false' }};
-            const wishlist = isAuthenticated ? JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]') : [];
+            const wishlist = isAuthenticated ? JSON.parse(localStorage.getItem('tour raja_wishlist') || '[]') : [];
             const countEl = document.getElementById('wishlist-count');
             const itemsEl = document.getElementById('wishlist-items');
 

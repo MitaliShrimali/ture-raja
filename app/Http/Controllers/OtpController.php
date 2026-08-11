@@ -31,11 +31,11 @@ class OtpController extends Controller
         
         try {
             // TEMPORARY: Send OTP via email instead of SMS
-            \Illuminate\Support\Facades\Mail::raw("Your TourRaja verification OTP for phone {$phone} is {$otp}. Valid for 5 minutes.", function ($message) use ($email) {
+            \Illuminate\Support\Facades\Mail::raw("Your Tour Raja verification OTP for phone {$phone} is {$otp}. Valid for 5 minutes.", function ($message) use ($email) {
                 // If email is missing for some reason, fallback to a default so it doesn't crash
-                $targetEmail = $email ?: 'tourraja@emperorsmartsolutions.com';
+                $targetEmail = $email ?: 'tour raja@emperorsmartsolutions.com';
                 $message->to($targetEmail)
-                        ->subject('TourRaja OTP Verification');
+                        ->subject('Tour Raja OTP Verification');
             });
             
             Log::info("Sent OTP via Email to {$email}", ['otp' => $otp, 'phone' => $phone]);

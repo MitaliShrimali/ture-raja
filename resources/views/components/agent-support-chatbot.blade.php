@@ -1,8 +1,8 @@
 <!-- Chatbot Root Wrapper -->
-<div id="tourraja-chatbot" class="chatbot-root" style="position: fixed; bottom: 20px; right: 20px; z-index: 99999; font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; align-items: flex-end;">
+<div id="tour raja-chatbot" class="chatbot-root" style="position: fixed; bottom: 20px; right: 20px; z-index: 99999; font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; align-items: flex-end;">
     <!-- Scoped Styles -->
     <style>
-        #tourraja-chatbot .chatbot-window {
+        #tour raja-chatbot .chatbot-window {
             width: 360px !important;
             height: 480px !important;
             background: #ffffff !important;
@@ -14,7 +14,7 @@
             margin-bottom: 12px !important;
             overflow: hidden !important;
         }
-        #tourraja-chatbot .chatbot-header {
+        #tour raja-chatbot .chatbot-header {
             background: linear-gradient(135deg, #0052FF 0%, #1e3a8a 100%) !important;
             padding: 12px 16px !important;
             color: #ffffff !important;
@@ -23,7 +23,7 @@
             justify-content: space-between !important;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
         }
-        #tourraja-chatbot .chatbot-body {
+        #tour raja-chatbot .chatbot-body {
             flex: 1 !important;
             overflow-y: auto !important;
             padding: 16px !important;
@@ -32,7 +32,7 @@
             flex-direction: column !important;
             gap: 12px !important;
         }
-        #tourraja-chatbot .chatbot-footer {
+        #tour raja-chatbot .chatbot-footer {
             padding: 12px !important;
             border-top: 1px solid #f1f5f9 !important;
             background: #ffffff !important;
@@ -40,7 +40,7 @@
             flex-direction: column !important;
             gap: 8px !important;
         }
-        #tourraja-chatbot .chatbot-bubble-btn {
+        #tour raja-chatbot .chatbot-bubble-btn {
             width: 56px !important;
             height: 56px !important;
             background-color: #0052FF !important;
@@ -54,10 +54,10 @@
             cursor: pointer !important;
             transition: all 0.2s ease !important;
         }
-        #tourraja-chatbot .chatbot-bubble-btn:hover {
+        #tour raja-chatbot .chatbot-bubble-btn:hover {
             transform: scale(1.05) !important;
         }
-        #tourraja-chatbot .chatbot-msg-bot {
+        #tour raja-chatbot .chatbot-msg-bot {
             background-color: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
             border-radius: 16px !important;
@@ -68,7 +68,7 @@
             color: #1e293b !important;
             max-width: 85% !important;
         }
-        #tourraja-chatbot .chatbot-msg-user {
+        #tour raja-chatbot .chatbot-msg-user {
             background-color: #0052FF !important;
             color: #ffffff !important;
             border-radius: 16px !important;
@@ -79,7 +79,7 @@
             max-width: 85% !important;
             margin-left: auto !important;
         }
-        #tourraja-chatbot .chatbot-cat-btn {
+        #tour raja-chatbot .chatbot-cat-btn {
             padding: 6px 10px !important;
             background-color: #f1f5f9 !important;
             border: 1px solid #e2e8f0 !important;
@@ -90,12 +90,12 @@
             cursor: pointer !important;
             transition: all 0.15s ease !important;
         }
-        #tourraja-chatbot .chatbot-cat-btn:hover {
+        #tour raja-chatbot .chatbot-cat-btn:hover {
             background-color: #eff6ff !important;
             color: #1d4ed8 !important;
             border-color: #bfdbfe !important;
         }
-        #tourraja-chatbot .chatbot-qr-btn {
+        #tour raja-chatbot .chatbot-qr-btn {
             padding: 5px 10px !important;
             background-color: #eff6ff !important;
             border: 1px solid #dbeafe !important;
@@ -106,14 +106,14 @@
             cursor: pointer !important;
             transition: all 0.15s ease !important;
         }
-        #tourraja-chatbot .chatbot-qr-btn:hover {
+        #tour raja-chatbot .chatbot-qr-btn:hover {
             background-color: #0052FF !important;
             color: #ffffff !important;
         }
-        #tourraja-chatbot .chatbot-body::-webkit-scrollbar {
+        #tour raja-chatbot .chatbot-body::-webkit-scrollbar {
             width: 4px !important;
         }
-        #tourraja-chatbot .chatbot-body::-webkit-scrollbar-thumb {
+        #tour raja-chatbot .chatbot-body::-webkit-scrollbar-thumb {
             background-color: #cbd5e1 !important;
             border-radius: 2px !important;
         }
@@ -126,7 +126,7 @@
             <div style="display: flex; align-items: center; gap: 10px;">
                 <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.15); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px;">🤖</div>
                 <div>
-                    <h4 style="margin: 0; font-size: 13px; font-weight: 800; line-height: 1.2;">TourRaja Agent Support</h4>
+                    <h4 style="margin: 0; font-size: 13px; font-weight: 800; line-height: 1.2;">Tour Raja Agent Support</h4>
                     <p style="margin: 0; font-size: 9px; opacity: 0.8; font-weight: 500;">Always active online</p>
                 </div>
             </div>
@@ -141,7 +141,7 @@
             <div style="display: flex; gap: 8px; align-items: flex-start;">
                 <div style="width: 24px; height: 24px; border-radius: 50%; background-color: #0052FF; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;">🤖</div>
                 <div class="chatbot-msg-bot">
-                    👋 Welcome to TourRaja Agent Support!<br><br>
+                    👋 Welcome to Tour Raja Agent Support!<br><br>
                     How can I help you today? Choose a topic below or type your query.
                 </div>
             </div>
@@ -296,7 +296,7 @@
                 questions: [
                     {
                         q: 'I need help / Contact us',
-                        a: 'Get in touch:<br>📧 <b>support@tourraja.com</b><br>📞 <b>+91 XXXXX XXXXX</b><br>🕘 Mon–Sat (10 AM – 7 PM)'
+                        a: 'Get in touch:<br>📧 <b>support@tour raja.com</b><br>📞 <b>+91 XXXXX XXXXX</b><br>🕘 Mon–Sat (10 AM – 7 PM)'
                     },
                     {
                         q: 'My package is not showing.',
@@ -457,9 +457,9 @@
                     } else if (textLower.includes('package')) {
                         response = 'Add packages via My Packages page in the dashboard. Make sure your active plan allows listings.';
                     } else if (textLower.includes('support') || textLower.includes('admin') || textLower.includes('need support')) {
-                        response = 'Reach out to support at <b>support@tourraja.com</b> or phone at <b>+91 XXXXX XXXXX</b>.';
+                        response = 'Reach out to support at <b>support@tour raja.com</b> or phone at <b>+91 XXXXX XXXXX</b>.';
                     } else {
-                        response = 'Thank you for reaching out! You can check details inside the category sections or contact support at support@tourraja.com.';
+                        response = 'Thank you for reaching out! You can check details inside the category sections or contact support at support@tour raja.com.';
                     }
                 }
                 addMessage('bot', response);
@@ -492,7 +492,7 @@
                 if (bestMatch && highestScore > 0) {
                     addMessage('bot', `<b>${bestMatch.q}</b><br><br>${bestMatch.a}`);
                 } else {
-                    addMessage('bot', 'Sorry, I couldn\'t find an exact match. Try clicking one of our main support categories or email us at support@tourraja.com.');
+                    addMessage('bot', 'Sorry, I couldn\'t find an exact match. Try clicking one of our main support categories or email us at support@tour raja.com.');
                 }
             }, 300);
         }

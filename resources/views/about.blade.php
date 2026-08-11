@@ -26,8 +26,8 @@
                 <h4 class="text-gray-500 font-bold text-[12px] uppercase mb-2 tracking-wider"> TO OUR SITE!</h4>
                 <h2 class="text-2xl lg:text-[40px] font-black text-black mb-4 leading-[1.15] tracking-tight">About Us</h2>
                 <div class="text-gray-800 font-medium text-[15px] leading-relaxed space-y-4">
-                    <p>Welcome to <span class="font-bold text-black">www.tourraja.com</span> [“Tourraja”] – your trusted platform connecting travel agents with customers through seamless brochure uploads and easy access to contact details.</p>
-                    <p>At Tourraja, we specialize in offering travel agents a user-friendly space to showcase their brochures, upload their latest travel offerings, and manage essential contact details. Our platform is designed to make it easier for both travel agents and customers to find what they need, when they need it.</p>
+                    <p>Welcome to <span class="font-bold text-black">www.tour raja.com</span> [“Tour raja”] – your trusted platform connecting travel agents with customers through seamless brochure uploads and easy access to contact details.</p>
+                    <p>At Tour raja, we specialize in offering travel agents a user-friendly space to showcase their brochures, upload their latest travel offerings, and manage essential contact details. Our platform is designed to make it easier for both travel agents and customers to find what they need, when they need it.</p>
                     
                     <div class="mt-6 space-y-2"> 
                         <h3 class="text-lg font-bold text-black">For Travel Agents:</h3>
@@ -39,9 +39,9 @@
                         <p>Our platform makes it easier than ever to explore a wide range of travel options, from brochures to contact details. Whether you're planning your next vacation or researching travel services, you’ll find all the information you need in one place.</p>
                     </div>
 
-                    <p class="mt-6">Our mission is to bridge the gap between travel agents and customers by providing a straightforward, efficient platform that saves time and enhances business opportunities. Whether you’re a travel agent looking to showcase your offerings or a customer seeking personalized travel information, Tourraja is here to make the process smooth and seamless for everyone.</p>
+                    <p class="mt-6">Our mission is to bridge the gap between travel agents and customers by providing a straightforward, efficient platform that saves time and enhances business opportunities. Whether you’re a travel agent looking to showcase your offerings or a customer seeking personalized travel information, Tour raja is here to make the process smooth and seamless for everyone.</p>
                     
-                    <p class="mt-4 font-bold text-black">Join Tourraja today and experience the convenience of connecting, sharing, and discovering travel options with ease.</p>
+                    <p class="mt-4 font-bold text-black">Join Tour raja today and experience the convenience of connecting, sharing, and discovering travel options with ease.</p>
                 </div>
             </div>
         </div>
@@ -55,7 +55,7 @@
             <div class="w-full lg:w-1/2 lg:pr-8">
                 <!-- Bulletproof Pill with Inline style for Orange Background -->
                 <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-[13px] mb-8 shadow-sm" style="background-color: #df8b3a !important; color: #111827 !important;">
-                    <span class="text-base leading-none">🌍</span> Why book at TourRaja ?
+                    <span class="text-base leading-none">🌍</span> Why book at Tour Raja ?
                 </div>
                 
                 <h2 class="text-4xl md:text-[46px] font-black text-gray-900 mb-5 leading-[1.15] tracking-tight">Embracing Adventure<br>Since 2003</h2>
@@ -133,10 +133,10 @@
         </div>
     </div>
 
-    <!-- Why Travel With TourRaja Section -->
+    <!-- Why Travel With Tour Raja Section -->
     <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
         <div class="text-center mb-16">
-            <h2 class="text-[32px] md:text-[40px] font-extrabold text-black mb-3 leading-tight tracking-tight">Why Travel With TourRaja?</h2>
+            <h2 class="text-[32px] md:text-[40px] font-extrabold text-black mb-3 leading-tight tracking-tight">Why Travel With Tour Raja?</h2>
             <p class="text-gray-500 font-medium text-[15px]">The best booking platform you can trust</p>
         </div>
 
@@ -189,7 +189,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-12 gap-6">
                 <div class="space-y-2">
                     <h2 class="text-3xl md:text-4xl lg:text-6xl font-black text-black tracking-tight">What Our Clients Say!!!</h2>
-                    <p class="text-gray-500 text-base md:text-lg font-medium">They Love TourRaja!</p>
+                    <p class="text-gray-500 text-base md:text-lg font-medium">They Love Tour Raja!</p>
                 </div>
                 <div class="flex items-center gap-4 self-start md:self-auto">
                     <button id="about-prev-testi" class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-100 flex items-center justify-center text-black hover:bg-[#E8460A] hover:text-white transition-all duration-300">
@@ -207,10 +207,10 @@
                         $aboutTestimonials = [
                             ['name' => 'Sara Mohamed',  'loc' => 'Jakarta',    'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips. The interface is user-friendly and I appreciate the real-time availability.",    'img' => 'https://i.pravatar.cc/150?u=sara',  'rating' => 5],
                             ['name' => 'Atend John',    'loc' => 'California', 'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips. The interface is user-friendly and I appreciate the real-time availability.",    'img' => 'https://i.pravatar.cc/150?u=john',  'rating' => 5],
-                            ['name' => 'Michael Chen',  'loc' => 'Singapore',  'text' => "Excellent service and direct agent contact saved me 30% on my last Bali trip. Highly recommend TourRaja to anyone looking for reliable and affordable travel packages.",                               'img' => 'https://i.pravatar.cc/150?u=mike',  'rating' => 5],
+                            ['name' => 'Michael Chen',  'loc' => 'Singapore',  'text' => "Excellent service and direct agent contact saved me 30% on my last Bali trip. Highly recommend Tour Raja to anyone looking for reliable and affordable travel packages.",                               'img' => 'https://i.pravatar.cc/150?u=mike',  'rating' => 5],
                             ['name' => 'Sara Mohamed',  'loc' => 'Jakarta',    'text' => "I've been using the hotel booking system for several years now, and it's become my go-to platform for planning my trips. The interface is user-friendly and I appreciate the real-time availability.",    'img' => 'https://i.pravatar.cc/150?u=sara2', 'rating' => 3],
-                            ['name' => 'Emily Watson',  'loc' => 'London',     'text' => "Booking through TourRaja was seamless. The customer support team responded within minutes and helped me customise my itinerary perfectly. Will definitely use them again!",                            'img' => 'https://i.pravatar.cc/150?u=emily', 'rating' => 5],
-                            ['name' => 'Raj Patel',     'loc' => 'Mumbai',     'text' => "The best travel platform I have ever used. TourRaja's deals are unbeatable and the booking process is incredibly smooth. My whole family had an amazing experience.",                                  'img' => 'https://i.pravatar.cc/150?u=raj',   'rating' => 5],
+                            ['name' => 'Emily Watson',  'loc' => 'London',     'text' => "Booking through Tour Raja was seamless. The customer support team responded within minutes and helped me customise my itinerary perfectly. Will definitely use them again!",                            'img' => 'https://i.pravatar.cc/150?u=emily', 'rating' => 5],
+                            ['name' => 'Raj Patel',     'loc' => 'Mumbai',     'text' => "The best travel platform I have ever used. Tour Raja's deals are unbeatable and the booking process is incredibly smooth. My whole family had an amazing experience.",                                  'img' => 'https://i.pravatar.cc/150?u=raj',   'rating' => 5],
                         ];
                     @endphp
 

@@ -3,7 +3,7 @@
 <svg {{ $attributes->merge(['class' => 'w-auto h-12']) }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.1 414.1">
   @if(!$white)
   <defs>
-    <linearGradient id="tourraja-gradient" x1="131.4" y1="428.13" x2="297.8" y2="428.13" gradientTransform="translate(0 -181.39)" gradientUnits="userSpaceOnUse">
+    <linearGradient id="tour raja-gradient" x1="131.4" y1="428.13" x2="297.8" y2="428.13" gradientTransform="translate(0 -181.39)" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#f9703b"/>
       <stop offset="1" stop-color="#e44100"/>
     </linearGradient>
@@ -24,7 +24,7 @@
   <path fill="{{ $white ? '#ffffff' : '#e44100' }}" d="M285.5,146.3c-4.4-4.4-7.2-9.7-7.2-9.7-8.6-9.8-18.7-16.8-31-21.9-10-4.1-21.3-6.4-32.8-6.4s-22.8,2.3-32.8,6.4c-12.3,5.1-22.4,12.1-31,21.9,0,0-2.8,5.3-7.2,9.7,2.9-5.1,4.6-9.9,8.5-14.3h0c8.4-9.6,18.9-17.2,30.8-22.1,9.8-4,20.4-6.3,31.7-6.3s21.9,2.2,31.7,6.3c11.9,4.9,22.5,12.5,30.8,22.1h0c3.9,4.4,5.6,9.2,8.5,14.3"/>
   
   <!-- 'u' smile (Gradient or White) -->
-  <path fill="{{ $white ? '#ffffff' : 'url(#tourraja-gradient)' }}" d="M297.8,204.8c0,45.9-37,90.2-82.9,90.2s-83.5-44.5-83.5-90.5c0-2,0-4,.3-6,3,43.2,48.5,61.4,82.9,62.6,25.7.9,79.9-19.2,83-62.4.1,2,.2,4.1.2,6.2"/>
+  <path fill="{{ $white ? '#ffffff' : 'url(#tour raja-gradient)' }}" d="M297.8,204.8c0,45.9-37,90.2-82.9,90.2s-83.5-44.5-83.5-90.5c0-2,0-4,.3-6,3,43.2,48.5,61.4,82.9,62.6,25.7.9,79.9-19.2,83-62.4.1,2,.2,4.1.2,6.2"/>
 
   <!-- "raja" part & eyes (currentColor or White) -->
   <g fill="{{ $white ? '#ffffff' : 'currentColor' }}" fill-rule="evenodd">

@@ -122,7 +122,7 @@
 
                     <div class="space-y-1.5">
                         <label class="text-[11px] font-bold text-gray-700 ml-1 tracking-wider uppercase">Email Address</label>
-                        <input required type="email" name="email" placeholder="hello@tourraja.com" class="w-full bg-gray-50 border border-transparent rounded-xl py-3.5 px-4 outline-none focus:bg-white focus:border-[#E8460A] focus:ring-4 focus:ring-[#E8460A]/10 transition-all text-gray-800 placeholder:text-gray-400 text-sm font-medium" />
+                        <input required type="email" name="email" placeholder="hello@tour raja.com" class="w-full bg-gray-50 border border-transparent rounded-xl py-3.5 px-4 outline-none focus:bg-white focus:border-[#E8460A] focus:ring-4 focus:ring-[#E8460A]/10 transition-all text-gray-800 placeholder:text-gray-400 text-sm font-medium" />
                     </div>
 
                     <div x-show="!showForgotPassword" class="space-y-1.5">

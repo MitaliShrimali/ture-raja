@@ -42,7 +42,7 @@
                 <!-- Badge -->
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide uppercase border" style="background-color: #FFF4CE !important; color: #E85D26 !important; border-color: #FFE7A3 !important;">
                     <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#E85D26] animate-pulse" style="background-color: #E85D26 !important;"></span>
-                    New on TourRaja
+                    New on Tour Raja
                 </div>
 
                 <!-- Main Heading -->

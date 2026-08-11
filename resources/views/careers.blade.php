@@ -185,7 +185,7 @@
             <div class="w-full md:w-1/2">
                 <h2 style="font-size: 40px;" class="font-black text-gray-900 mb-6 tracking-tight">Our Team</h2>
                 <p class="text-gray-600 font-medium leading-relaxed text-sm lg:text-base">
-                    At Tourraja, we specialize in offering travel agents a user-friendly space to showcase their brochures,
+                    At Tour raja, we specialize in offering travel agents a user-friendly space to showcase their brochures,
                     upload their latest travel offerings, and manage essential contact details. Our platform is designed to
                     make it easier for both travel agents and customers to find what they need, when they need it.
                 </p>
@@ -616,7 +616,7 @@
                                 Apply for Position
                             </button>
                             <div class="text-[11px] text-gray-500 font-medium text-center sm:text-left mt-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
-                                <span class="font-bold text-gray-700">Privacy Notice:</span> By submitting your application, you consent to TourRaja collecting and processing your personal information solely for recruitment purposes. Your information will be handled securely and will not be shared with third parties except where required for the hiring process or by law.
+                                <span class="font-bold text-gray-700">Privacy Notice:</span> By submitting your application, you consent to Tour Raja collecting and processing your personal information solely for recruitment purposes. Your information will be handled securely and will not be shared with third parties except where required for the hiring process or by law.
                                 <br><br>
                                 Read our full <a href="{{ url('/privacy-policy-careers') }}" target="_blank" class="text-[#E8460A] hover:underline font-bold">Privacy Policy – Careers</a>.
                             </div>

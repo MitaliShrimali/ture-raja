@@ -249,7 +249,7 @@ class AgentController extends Controller
         try {
             \Illuminate\Support\Facades\Mail::send('emails.reset-password', ['resetUrl' => $resetUrl], function($message) use ($request) {
                 $message->to($request->email);
-                $message->subject('Reset Your TourRaja Agent Password');
+                $message->subject('Reset Your Tour Raja Agent Password');
             });
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to send reset link. Please check email configuration.');
@@ -1996,7 +1996,7 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         $agent = DB::table('agents')->where('id', $agentId)->first();
         $firstname = !empty(trim($agent->name ?? '')) ? str_replace('|', '', trim($agent->name)) : 'Agent';
-        $email = !empty(trim($agent->email ?? '')) ? str_replace('|', '', trim($agent->email)) : 'agent@tourraja.com';
+        $email = !empty(trim($agent->email ?? '')) ? str_replace('|', '', trim($agent->email)) : 'agent@tour raja.com';
         $phone = $agent->phone ?? '9999999999';
         
         $productinfo = $type . '-' . $id;

@@ -61,7 +61,7 @@
     @endphp
     @extends('layouts.app')
 
-    @section('title', $package['title'] . ' — TourRaja')
+    @section('title', $package['title'] . ' — Tour Raja')
 
     @section('content')
         <style>
@@ -1212,7 +1212,7 @@
                         <div class="space-y-1">
                             <h2 class="text-[34px] leading-tight font-black text-foreground tracking-tight font-heading"
                                 style="font-family: 'Poppins', sans-serif;">What Our Clients Say!!!</h2>
-                            <p class="text-text-muted text-base font-medium">They Love TourRaja!</p>
+                            <p class="text-text-muted text-base font-medium">They Love Tour Raja!</p>
                         </div>
                     </div>
 

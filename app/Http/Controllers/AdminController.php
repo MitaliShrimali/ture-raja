@@ -4566,7 +4566,7 @@ class AdminController extends Controller
         $encryption = $settings['mail_encryption'] ?? 'tls';
         $username = $settings['mail_username'] ?? null;
         $password = $settings['mail_password'] ?? null;
-        $fromAddress = $settings['mail_from_address'] ?? 'noreply@tourraja.com';
+        $fromAddress = $settings['mail_from_address'] ?? 'noreply@tour raja.com';
         $fromName = $settings['mail_from_name'] ?? 'Tour Raja';
 
         config([

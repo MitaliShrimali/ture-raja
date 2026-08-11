@@ -91,8 +91,8 @@
                             </div>
                             <!-- Fake QR Code -->
                             <div class="flex flex-col items-center justify-center p-4 bg-white rounded-xl border border-gray-100">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=tourraja@upi" alt="QR Code" class="w-32 h-32 mb-2">
-                                <p class="text-xs text-gray-500 font-medium">Scan to pay tourraja@upi</p>
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=tour raja@upi" alt="QR Code" class="w-32 h-32 mb-2">
+                                <p class="text-xs text-gray-500 font-medium">Scan to pay tour raja@upi</p>
                                 <input type="text" name="sender_details" placeholder="Enter your UPI ID (e.g. name@okaxis)" value="agent_mock@upi" class="mt-4 w-full text-xs px-3 py-2 border border-gray-200 rounded-lg focus:ring-orange-500 focus:border-orange-500">
                             </div>
                         </label>

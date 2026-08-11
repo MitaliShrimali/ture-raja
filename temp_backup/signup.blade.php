@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Sign Up – TourRaja</title>
+    <title>Admin Sign Up – Tour Raja</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
@@ -20,7 +20,7 @@
 
         .hero-bg {
             background-color: #e85d26;
-            background-image: url("{{ asset('images/tourraja-bg.png') }}");
+            background-image: url("{{ asset('images/tour raja-bg.png') }}");
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
@@ -173,7 +173,7 @@
         <div class="text-center pt-10 px-6" style="padding-bottom: 240px;">
             <h1 class="font-black tracking-tight mb-2" style="color: #ffffff; font-size: 28px;">Welcome!</h1>
             <p class="text-sm max-w-md mx-auto leading-relaxed" style="color: rgba(255,255,255,0.9); font-weight: 500;">
-                Join with TourRaja,<br>We have wide range of travel category!
+                Join with Tour Raja,<br>We have wide range of travel category!
             </p>
         </div>
     </div>

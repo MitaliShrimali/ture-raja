@@ -1,2 +1,2 @@
 // Application main JavaScript entrypoint
-console.log('TourRaja App initialized');
+console.log('Tour Raja App initialized');

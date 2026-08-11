@@ -223,7 +223,7 @@
                 <div class="space-y-2">
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-black text-foreground tracking-tight font-heading"
                         style="font-family: 'Poppins', sans-serif;">What Our Clients Say!!!</h2>
-                    <p class="text-text-muted text-base md:text-lg font-medium">They Love TourRaja!</p>
+                    <p class="text-text-muted text-base md:text-lg font-medium">They Love Tour Raja!</p>
                 </div>
                 <div class="flex items-center gap-4 self-start md:self-auto">
                     <button id="prev-testi"

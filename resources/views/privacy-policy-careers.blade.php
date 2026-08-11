@@ -8,10 +8,10 @@
             
             <div class="prose prose-lg max-w-none text-text-muted">
                 <p class="font-bold text-gray-800 uppercase tracking-wider bg-gray-100 inline-block px-3 py-1 rounded-lg text-sm mb-6">Last Updated: {{ date('F j, Y') }}</p>
-                <p>At TourRaja, we value your privacy and are committed to protecting the personal information you share while applying for career opportunities through our website.</p>
+                <p>At Tour Raja, we value your privacy and are committed to protecting the personal information you share while applying for career opportunities through our website.</p>
                 
                 <h4 class="font-black text-gray-900 text-lg mt-8 uppercase tracking-wide">1. Information We Collect</h4>
-                <p>When you apply for a position at TourRaja, we may collect the following information:</p>
+                <p>When you apply for a position at Tour Raja, we may collect the following information:</p>
                 <ul class="list-disc pl-5 space-y-1.5 marker:text-[#E8460A]">
                     <li>Full Name</li>
                     <li>Email Address</li>
@@ -42,7 +42,7 @@
                 <p>If you are hired, your information will become part of your employee record. If you are not selected, we may retain your resume for up to 12 months to consider you for future opportunities. You can request the deletion of your data at any time.</p>
 
                 <h4 class="font-black text-gray-900 text-lg mt-8 uppercase tracking-wide">5. Your Rights</h4>
-                <p>You have the right to access, update, or request the deletion of your personal information. To do so, please contact us at <a href="mailto:careers@tourraja.com" class="text-[#E8460A] font-bold hover:underline">careers@tourraja.com</a>.</p>
+                <p>You have the right to access, update, or request the deletion of your personal information. To do so, please contact us at <a href="mailto:careers@tour raja.com" class="text-[#E8460A] font-bold hover:underline">careers@tour raja.com</a>.</p>
 
                 <h4 class="font-black text-gray-900 text-lg mt-8 uppercase tracking-wide">6. Changes to this Policy</h4>
                 <p>We may update this Privacy Policy occasionally. Any changes will be reflected on this page with the updated date.</p>

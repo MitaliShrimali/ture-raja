@@ -15,7 +15,7 @@
     </div>
     <div class="p-6 bg-white rounded-3xl shadow-soft border border-border-soft max-w-md">
         <p class="text-sm font-medium text-muted-text leading-relaxed">
-            The <span class="text-foreground font-bold">{{ $title }}</span> module is part of the TourRaja v2.4.0 expansion. Our engineers are finalizing the data models for this section.
+            The <span class="text-foreground font-bold">{{ $title }}</span> module is part of the Tour Raja v2.4.0 expansion. Our engineers are finalizing the data models for this section.
         </p>
     </div>
 </div>

@@ -869,7 +869,7 @@ class UserController extends Controller
         try {
             \Illuminate\Support\Facades\Mail::send('emails.reset-password', ['resetUrl' => $resetUrl], function($message) use ($request) {
                 $message->to($request->email);
-                $message->subject('Reset Your TourRaja Password');
+                $message->subject('Reset Your Tour Raja Password');
             });
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to send reset link. Please check email configuration.');

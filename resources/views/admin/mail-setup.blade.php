@@ -75,7 +75,7 @@
                         {{-- Username --}}
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Username</label>
-                            <input type="email" name="mail_username" value="{{ $settings['mail_username'] ?? 'admin@tourraja.com' }}" placeholder="admin@tourraja.com" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
+                            <input type="email" name="mail_username" value="{{ $settings['mail_username'] ?? 'admin@tour raja.com' }}" placeholder="admin@tour raja.com" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
                         </div>
 
                         {{-- Password --}}
@@ -104,13 +104,13 @@
                         {{-- From Name --}}
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">From Name</label>
-                            <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] ?? 'Tourraja Concierge' }}" placeholder="E.g. Tourraja Concierge" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
+                            <input type="text" name="mail_from_name" value="{{ $settings['mail_from_name'] ?? 'Tour raja Concierge' }}" placeholder="E.g. Tour raja Concierge" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
                         </div>
 
                         {{-- From Email --}}
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">From Email Address</label>
-                            <input type="email" name="mail_from_address" value="{{ $settings['mail_from_address'] ?? 'noreply@tourraja.com' }}" placeholder="E.g. noreply@tourraja.com" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
+                            <input type="email" name="mail_from_address" value="{{ $settings['mail_from_address'] ?? 'noreply@tour raja.com' }}" placeholder="E.g. noreply@tour raja.com" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
                         </div>
                     </div>
                 </div>

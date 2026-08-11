@@ -442,10 +442,10 @@
         </script>
     </section>
 
-    <!-- Section 3: Why Travel With TourRaja -->
+    <!-- Section 3: Why Travel With Tour Raja -->
     <div class="max-w-7xl mx-auto px-6 py-4 md:py-8 lg:py-10">
-        <x-section-title subtitle="The TourRaja Advantage" align="center" class="!space-y-0 mb-3">
-            <span style="font-size: 34px; line-height: 1; display: block; margin-top: 0;">Why tourraja !!!</span>
+        <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-0 mb-3">
+            <span style="font-size: 34px; line-height: 1; display: block; margin-top: 0;">Why tour raja !!!</span>
         </x-section-title>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -1006,7 +1006,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-1 animate-fade-up gap-6">
                 <div class="space-y-1">
                     <h2 class="text-3xl md:text-4xl lg:text-6xl font-black text-foreground tracking-tight font-heading">What Our Clients Say!!!</h2>
-                    <p class="text-text-muted text-base md:text-lg font-medium">They Love TourRaja!</p>
+                    <p class="text-text-muted text-base md:text-lg font-medium">They Love Tour Raja!</p>
                 </div>
 
             </div>

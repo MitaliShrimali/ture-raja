@@ -492,7 +492,7 @@ document.querySelectorAll('.pf-toast').forEach(t => {
 
 // ── Render wishlist from localStorage ──────────────────────────────────────
 function pfRenderWishlist() {
-  const wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
+  const wishlist = JSON.parse(localStorage.getItem('tour raja_wishlist') || '[]');
   const grid       = document.getElementById('pf-wl-grid');
   const header     = document.getElementById('pf-wl-has-items');
   const emptyState = document.getElementById('pf-wl-empty');
@@ -539,9 +539,9 @@ function pfRenderWishlist() {
 }
 
 function pfRemoveWishlist(slug) {
-  let wishlist = JSON.parse(localStorage.getItem('tourraja_wishlist') || '[]');
+  let wishlist = JSON.parse(localStorage.getItem('tour raja_wishlist') || '[]');
   wishlist = wishlist.filter(item => item.slug !== slug);
-  localStorage.setItem('tourraja_wishlist', JSON.stringify(wishlist));
+  localStorage.setItem('tour raja_wishlist', JSON.stringify(wishlist));
   pfRenderWishlist();
   // Also sync removal to server
   if (typeof updateWishlistUI === 'function') updateWishlistUI();

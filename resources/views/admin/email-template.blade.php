@@ -20,7 +20,7 @@
         text = text.replace(/{StartDate}/g, 'July 12, 2026');
         text = text.replace(/{Destination}/g, 'Tanzania');
         text = text.replace(/{AgentName}/g, 'Miths Holidays');
-        text = text.replace(/{ItineraryLink}/g, 'tourraja.com/itinerary/129');
+        text = text.replace(/{ItineraryLink}/g, 'tour raja.com/itinerary/129');
         return text.replace(/\n/g, '<br>');
     },
 

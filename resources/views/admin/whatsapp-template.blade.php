@@ -5,7 +5,7 @@
 @section('content')
 <div class="space-y-8 pb-12" x-data="{
     templateName: 'Booking Confirmation - Premium Tours',
-    messageBody: 'Hi @{{CustomerName}}! 👋\n\nThank you for choosing Tourraja for your next expedition. We are thrilled to confirm your booking @{{BookingID}} for the upcoming adventure on @{{TourDate}}.\n\nOur team is currently preparing all the details to ensure you have a premium experience. Your assigned expert, @{{AgentName}}, will be in touch shortly with the full itinerary',
+    messageBody: 'Hi @{{CustomerName}}! 👋\n\nThank you for choosing Tour raja for your next expedition. We are thrilled to confirm your booking @{{BookingID}} for the upcoming adventure on @{{TourDate}}.\n\nOur team is currently preparing all the details to ensure you have a premium experience. Your assigned expert, @{{AgentName}}, will be in touch shortly with the full itinerary',
     
     // Live preview token replacements
     get previewText() {
@@ -194,7 +194,7 @@
                                 </div>
                                 <div class="flex flex-col">
                                     <span class="text-xs font-black flex items-center gap-1">
-                                        Tourraja Concierge
+                                        Tour raja Concierge
                                         <span class="bg-[#128c7e] text-white p-0.5 rounded-full text-[6px]">✓</span>
                                     </span>
                                     <span class="text-[8px] text-white/70">Online</span>

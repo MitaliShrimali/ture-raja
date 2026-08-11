@@ -425,8 +425,8 @@
     </style>
 
     <div class="container-custom pt-8 pb-16"
-        x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tourraja_view_style') || 'grid'" }}, mobileFiltersOpen: false, stateModalOpen: false, expandedStates: {}, activeTab: new URLSearchParams(window.location.search).get('tab') || 'both' }"
-        x-init="$watch('viewStyle', value => { localStorage.setItem('tourraja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
+        x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tour raja_view_style') || 'grid'" }}, mobileFiltersOpen: false, stateModalOpen: false, expandedStates: {}, activeTab: new URLSearchParams(window.location.search).get('tab') || 'both' }"
+        x-init="$watch('viewStyle', value => { localStorage.setItem('tour raja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
 
         <form id="filter-form" action="{{ url('/listing') }}" method="GET"
             class="flex flex-col lg:flex-row gap-12 w-full items-start">

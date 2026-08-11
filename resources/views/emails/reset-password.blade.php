@@ -18,17 +18,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>TourRaja</h1>
+            <h1>Tour Raja</h1>
         </div>
         <div class="content">
             <h2>Reset Your Password</h2>
             <p>Hello,</p>
-            <p>We received a request to reset your password for your TourRaja account. You can do this by clicking the button below:</p>
+            <p>We received a request to reset your password for your Tour Raja account. You can do this by clicking the button below:</p>
             <div style="text-align: center;">
                 <a href="{{ $resetUrl }}" class="btn">Reset Password</a>
             </div>
             <p>If you did not request a password reset, please ignore this email or contact support if you have questions.</p>
-            <p>Thanks,<br>The TourRaja Team</p>
+            <p>Thanks,<br>The Tour Raja Team</p>
         </div>
         <div class="footer">
             &copy; {{ date('Y') }} Tour Raja Private Limited, India. All rights reserved.

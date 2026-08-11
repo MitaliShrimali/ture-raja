@@ -4,13 +4,13 @@
 <div class="bg-gray-50 pb-12" style="padding-top: 48px;">
     <div class="container-custom">
         <div class="w-full">
-            <h1 class="font-black text-primary mb-6" style="font-size: 30px; line-height: 1.2;">Terms and Conditions for Listing on www.tourraja.com as Travel Agent</h1>
+            <h1 class="font-black text-primary mb-6" style="font-size: 30px; line-height: 1.2;">Terms and Conditions for Listing on www.tour raja.com as Travel Agent</h1>
             
             <div class="prose prose-lg max-w-none text-text-muted space-y-6">
                 <div>
                     <h3 class="text-lg font-bold text-foreground mt-4 mb-2">1. Introduction:</h3>
                     <p>
-                        Welcome to www.tourraja.com [“TourRaja”]. By listing your travel booking services on our platform, you agree to comply with and be bound by the following terms and conditions. These terms govern your relationship with TourRaja and set out the rules and guidelines for listing and maintaining your services on our website.
+                        Welcome to www.tour raja.com [“Tour Raja”]. By listing your travel booking services on our platform, you agree to comply with and be bound by the following terms and conditions. These terms govern your relationship with Tour Raja and set out the rules and guidelines for listing and maintaining your services on our website.
                     </p>
                 </div>
 
@@ -40,7 +40,7 @@
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">4. Content Guidelines:</h3>
                     <ul class="list-disc pl-5 space-y-1">
                         <li><strong>4.1.</strong> All content, including descriptions, images, pricing, and contact details, must be accurate, lawful, and not infringe on any third-party rights.</li>
-                        <li><strong>4.2.</strong> TourRaja reserves the right to review, edit, or remove content that violates these guidelines or is deemed inappropriate.</li>
+                        <li><strong>4.2.</strong> Tour Raja reserves the right to review, edit, or remove content that violates these guidelines or is deemed inappropriate.</li>
                     </ul>
                 </div>
 
@@ -61,8 +61,8 @@
                         <li><strong>6.1.</strong> You must deliver the services as advertised and maintain high standards of customer satisfaction.</li>
                         <li><strong>6.2.</strong> You are solely responsible for managing customer inquiries, bookings, cancellations, and disputes related to your services.</li>
                         <li><strong>6.3.</strong> Travel agents shall be responsible for providing a customer care number, address, and email ID for contact and shall resolve all customer issues.</li>
-                        <li><strong>6.4.</strong> TourRaja shall not be responsible for providing any resolution to customers regarding services to be provided by travel agents.</li>
-                        <li><strong>6.5.</strong> TourRaja does not guarantee the provision for Security of any data or information uploaded on our platform. Please ensure you keep records at your end.</li>
+                        <li><strong>6.4.</strong> Tour Raja shall not be responsible for providing any resolution to customers regarding services to be provided by travel agents.</li>
+                        <li><strong>6.5.</strong> Tour Raja does not guarantee the provision for Security of any data or information uploaded on our platform. Please ensure you keep records at your end.</li>
                     </ul>
                 </div>
 
@@ -70,7 +70,7 @@
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">7. Prohibited Activities:</h3>
                     <ul class="list-disc pl-5 space-y-1">
                         <li><strong>7.1.</strong> Posting false or misleading information about your services.</li>
-                        <li><strong>7.2.</strong> Engaging in activities that harm the reputation of TourRaja or other service providers.</li>
+                        <li><strong>7.2.</strong> Engaging in activities that harm the reputation of Tour Raja or other service providers.</li>
                         <li><strong>7.3.</strong> Using the platform for illegal or unauthorized purposes.</li>
                     </ul>
                 </div>
@@ -78,31 +78,31 @@
                 <div>
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">8. Termination of Listing:</h3>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li><strong>8.1.</strong> TourRaja reserves the right to suspend or terminate your listing at any time, with or without notice, for violation of these terms or any applicable laws.</li>
-                        <li><strong>8.2.</strong> You may terminate your listing by providing written notice to TourRaja.</li>
+                        <li><strong>8.1.</strong> Tour Raja reserves the right to suspend or terminate your listing at any time, with or without notice, for violation of these terms or any applicable laws.</li>
+                        <li><strong>8.2.</strong> You may terminate your listing by providing written notice to Tour Raja.</li>
                     </ul>
                 </div>
 
                 <div>
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">9. Limitation of Liability:</h3>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li><strong>9.1.</strong> TourRaja is a platform for listing services and does not guarantee bookings or customer interactions.</li>
-                        <li><strong>9.2.</strong> TourRaja is not responsible for any loss, damage, or liability arising from your use of the platform or your dealings with customers.</li>
+                        <li><strong>9.1.</strong> Tour Raja is a platform for listing services and does not guarantee bookings or customer interactions.</li>
+                        <li><strong>9.2.</strong> Tour Raja is not responsible for any loss, damage, or liability arising from your use of the platform or your dealings with customers.</li>
                     </ul>
                 </div>
 
                 <div>
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">10. Indemnification:</h3>
                     <p>
-                        You agree to indemnify and hold harmless TourRaja, its affiliates, and employees from any claims, damages, or expenses arising from your use of the platform or violation of these terms. TourRaja reserves the right to disclose information about your listing, activities, or account to government authorities or law enforcement agencies as required by law or to ensure compliance with these terms.
+                        You agree to indemnify and hold harmless Tour Raja, its affiliates, and employees from any claims, damages, or expenses arising from your use of the platform or violation of these terms. Tour Raja reserves the right to disclose information about your listing, activities, or account to government authorities or law enforcement agencies as required by law or to ensure compliance with these terms.
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">11. Intellectual Property Rights:</h3>
                     <ul class="list-disc pl-5 space-y-1">
-                        <li><strong>11.1.</strong> All intellectual property rights, including trademarks, copyrights, and proprietary information associated with TourRaja, remain the sole property of TourRaja.</li>
-                        <li><strong>11.2.</strong> By submitting content for listing on the platform, you grant TourRaja a non-exclusive, royalty-free, worldwide license to use, reproduce, modify, and display your content for the purposes of operating and promoting the platform.</li>
+                        <li><strong>11.1.</strong> All intellectual property rights, including trademarks, copyrights, and proprietary information associated with Tour Raja, remain the sole property of Tour Raja.</li>
+                        <li><strong>11.2.</strong> By submitting content for listing on the platform, you grant Tour Raja a non-exclusive, royalty-free, worldwide license to use, reproduce, modify, and display your content for the purposes of operating and promoting the platform.</li>
                         <li><strong>11.3.</strong> You warrant that you have the necessary rights to grant this license and that your content does not infringe on the intellectual property rights of any third party.</li>
                     </ul>
                 </div>
@@ -110,7 +110,7 @@
                 <div>
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">12. Changes to Terms and Conditions:</h3>
                     <p>
-                        TourRaja reserves the right to modify these terms at any time. Changes will be effective upon posting on the website. Continued use of the platform signifies acceptance of the updated terms.
+                        Tour Raja reserves the right to modify these terms at any time. Changes will be effective upon posting on the website. Continued use of the platform signifies acceptance of the updated terms.
                     </p>
                 </div>
 
@@ -124,14 +124,14 @@
                 <div>
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">14. Grievance Redressal:</h3>
                     <p>
-                        If you have any grievances regarding your listing or the platform, you may contact our grievance redressal team at <a href="mailto:grievance@tourraja.com" class="text-primary hover:underline">grievance@tourraja.com</a>. We will acknowledge your complaint within 48 hours and strive to resolve it within tentative 30 days of receipt.
+                        If you have any grievances regarding your listing or the platform, you may contact our grievance redressal team at <a href="mailto:grievance@tour raja.com" class="text-primary hover:underline">grievance@tour raja.com</a>. We will acknowledge your complaint within 48 hours and strive to resolve it within tentative 30 days of receipt.
                     </p>
                 </div>
 
                 <div>
                     <h3 class="text-lg font-bold text-foreground mt-6 mb-2">15. Contact Information:</h3>
                     <p>
-                        If you have any questions or concerns about these terms, please contact us at <a href="mailto:support@tourraja.com" class="text-primary hover:underline">support@tourraja.com</a>.
+                        If you have any questions or concerns about these terms, please contact us at <a href="mailto:support@tour raja.com" class="text-primary hover:underline">support@tour raja.com</a>.
                     </p>
                 </div>
             </div>

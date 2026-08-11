@@ -21,7 +21,7 @@
             </div>
             <h2 class="text-3xl font-black text-foreground tracking-tight pl-9">State Management</h2>
             <p class="text-xs text-gray-400 font-semibold pl-9 leading-relaxed max-w-xl">
-                Curate and organize regional administrative boundaries across the Tourraja network.
+                Curate and organize regional administrative boundaries across the Tour raja network.
             </p>
         </div>
         <button @click="showAddModal = true" style="background-color: #b13c0b;" class="hover:opacity-90 text-white px-6 py-3.5 rounded-2xl font-black text-sm transition-all shadow-xl flex items-center gap-2 uppercase tracking-wider self-end sm:self-center">

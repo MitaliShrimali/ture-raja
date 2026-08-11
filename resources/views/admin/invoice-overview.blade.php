@@ -223,7 +223,7 @@
             <div class="space-y-4">
                 <svg style="height: 30px; width: auto;" height="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1263.1 414.1">
                   <defs>
-                    <linearGradient id="tourraja-gradient-invoice" x1="131.4" y1="428.13" x2="297.8" y2="428.13" gradientTransform="translate(0 -181.39)" gradientUnits="userSpaceOnUse">
+                    <linearGradient id="tour raja-gradient-invoice" x1="131.4" y1="428.13" x2="297.8" y2="428.13" gradientTransform="translate(0 -181.39)" gradientUnits="userSpaceOnUse">
                       <stop offset="0" stop-color="#f9703b"/>
                       <stop offset="1" stop-color="#e44100"/>
                     </linearGradient>
@@ -240,7 +240,7 @@
                   <path fill="#e44100" d="M285.5,146.3c-4.4-4.4-7.2-9.7-7.2-9.7-8.6-9.8-18.7-16.8-31-21.9-10-4.1-21.3-6.4-32.8-6.4s-22.8,2.3-32.8,6.4c-12.3,5.1-22.4,12.1-31,21.9,0,0-2.8,5.3-7.2,9.7,2.9-5.1,4.6-9.9,8.5-14.3h0c8.4-9.6,18.9-17.2,30.8-22.1,9.8-4,20.4-6.3,31.7-6.3s21.9,2.2,31.7,6.3c11.9,4.9,22.5,12.5,30.8,22.1h0c3.9,4.4,5.6,9.2,8.5,14.3"/>
                   
                   <!-- 'u' smile (Gradient) -->
-                  <path fill="url(#tourraja-gradient-invoice)" d="M297.8,204.8c0,45.9-37,90.2-82.9,90.2s-83.5-44.5-83.5-90.5c0-2,0-4,.3-6,3,43.2,48.5,61.4,82.9,62.6,25.7.9,79.9-19.2,83-62.4.1,2,.2,4.1.2,6.2"/>
+                  <path fill="url(#tour raja-gradient-invoice)" d="M297.8,204.8c0,45.9-37,90.2-82.9,90.2s-83.5-44.5-83.5-90.5c0-2,0-4,.3-6,3,43.2,48.5,61.4,82.9,62.6,25.7.9,79.9-19.2,83-62.4.1,2,.2,4.1.2,6.2"/>
                 
                   <!-- "raja" part & eyes (Hardcoded Dark Gray / Black) -->
                   <g fill="#1a1a1a" fill-rule="evenodd">
@@ -263,7 +263,7 @@
                 <div class="space-y-1 text-xs text-slate-500 font-medium leading-relaxed">
                     <p class="font-bold text-slate-900 text-sm">Tour Raja Private Limited</p>
                     <p>H-15, Sector 63, Noida, Uttar Pradesh 201301</p>
-                    <p>Email: finance@tourraja.com | Ph: +91 120 4455 6677</p>
+                    <p>Email: finance@tour raja.com | Ph: +91 120 4455 6677</p>
                     <p class="pt-1"><span class="font-bold text-[#D35400] bg-[#FFF9F6] border border-[#FDEBD0] px-2.5 py-0.5 rounded-full text-[9px] tracking-wide">GSTIN: 09AAHCT0000A1Z5</span></p>
                 </div>
             </div>

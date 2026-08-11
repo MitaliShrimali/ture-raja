@@ -5,7 +5,7 @@
     <link rel="icon" href="{{ \Illuminate\Support\Facades\DB::table('settings')->where('key', 'favicon')->value('value') ?? asset('favicon.ico') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In – TourRaja</title>
+    <title>Sign In – Tour Raja</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
     <!-- <script src="https://unpkg.com/@tailwindcss/browser@4"></script> -->
@@ -20,7 +20,7 @@
 
         .gradient-side {
             background-color: #e85d26;
-            background-image: url("{{ asset('images/tourraja-bg.png') }}");
+            background-image: url("{{ asset('images/tour raja-bg.png') }}");
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover;
@@ -44,7 +44,7 @@
                 <div class="space-y-4">
                     <h2 class="font-black text-foreground text-3xl tracking-tight">Sign In</h2>
                     <p class="text-xs font-bold text-primary uppercase tracking-widest mb-1">Enter your credentials to
-                        access your TourRaja account.</p>
+                        access your Tour Raja account.</p>
                 </div>
                 <!-- Flash Messages -->
                 @if(session('error'))
@@ -126,7 +126,7 @@
                     <x-logo white="true" class="h-20 sm:h-28 w-auto" />
                 </div>
                 <h3 class="text-3xl font-bold tracking-tight" style="color: #E8460A;">Welcome Back!</h3>
-                <p class="max-w-md mx-auto" style="color: #E8460A;">Explore the world with TourRaja – your gateway to
+                <p class="max-w-md mx-auto" style="color: #E8460A;">Explore the world with Tour Raja – your gateway to
                     unforgettable journeys.</p>
             </div>
         </div>
