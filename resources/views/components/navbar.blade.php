@@ -105,8 +105,8 @@
                 @endif
             </div>
             
-            @if(Auth::check())
-                <!-- Wishlist (Logged In) -->
+            @if(Auth::check() && Auth::user()->role === 'Customer')
+                <!-- Wishlist (Logged In as Customer) -->
                 <div class="relative hidden lg:block" x-data="{ open: false }" @click.away="open = false">
                     <button 
                         @click="open = !open"
@@ -144,7 +144,6 @@
                     </div>
                 </div>
                 
-                @if(Auth::user()->role === 'Customer')
                 <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2 overflow-hidden">
                     @php
                         $navProfile = DB::table('user_profiles')->where('user_id', Auth::id())->first();
@@ -154,9 +153,8 @@
                     @endphp
                     <img src="{{ $navAvatarUrl }}" class="w-full h-full object-cover">
                 </a>
-                @endif
             @else
-                <!-- Wishlist (Not Logged In -> Triggers Modal) -->
+                <!-- Wishlist (Not Logged In OR Not Customer -> Triggers Modal) -->
                 <div class="relative hidden lg:block mr-2">
                     <button 
                         @click="$dispatch('open-login-modal')"
