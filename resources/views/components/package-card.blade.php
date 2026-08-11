@@ -172,7 +172,7 @@
         </div>
 
         {{-- Row 2: Properties --}}
-        <div class="flex flex-wrap items-center gap-2 pc-row-props">
+        <div class="flex flex-col items-start gap-2 pc-row-props">
             @if($transitVal)
                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-orange-50 border border-orange-100 text-[11px] font-bold text-orange-600">
                     <i data-lucide="{{ $transportIcon }}" size="12"></i>

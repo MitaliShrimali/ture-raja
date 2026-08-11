@@ -1,8 +1,8 @@
 <!-- Admin Chatbot Root Wrapper -->
-<div id="tour raja-admin-chatbot" class="chatbot-root" style="position: fixed; bottom: 20px; right: 20px; z-index: 99999; font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; align-items: flex-end;">
+<div id="tourraja-admin-chatbot" class="chatbot-root" style="position: fixed; bottom: 20px; right: 20px; z-index: 99999; font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; align-items: flex-end;">
     <!-- Scoped Styles -->
     <style>
-        #tour raja-admin-chatbot .chatbot-window {
+        #tourraja-admin-chatbot .chatbot-window {
             width: 360px !important;
             height: 480px !important;
             background: #ffffff !important;
@@ -14,7 +14,7 @@
             margin-bottom: 12px !important;
             overflow: hidden !important;
         }
-        #tour raja-admin-chatbot .chatbot-header {
+        #tourraja-admin-chatbot .chatbot-header {
             background: linear-gradient(135deg, #0052FF 0%, #1e3a8a 100%) !important;
             padding: 12px 16px !important;
             color: #ffffff !important;
@@ -23,7 +23,7 @@
             justify-content: space-between !important;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
         }
-        #tour raja-admin-chatbot .chatbot-body {
+        #tourraja-admin-chatbot .chatbot-body {
             flex: 1 !important;
             overflow-y: auto !important;
             padding: 16px !important;
@@ -32,7 +32,7 @@
             flex-direction: column !important;
             gap: 12px !important;
         }
-        #tour raja-admin-chatbot .chatbot-footer {
+        #tourraja-admin-chatbot .chatbot-footer {
             padding: 12px !important;
             border-top: 1px solid #f1f5f9 !important;
             background: #ffffff !important;
@@ -40,7 +40,7 @@
             flex-direction: column !important;
             gap: 8px !important;
         }
-        #tour raja-admin-chatbot .chatbot-bubble-btn {
+        #tourraja-admin-chatbot .chatbot-bubble-btn {
             width: 56px !important;
             height: 56px !important;
             background-color: #0052FF !important;
@@ -54,10 +54,10 @@
             cursor: pointer !important;
             transition: all 0.2s ease !important;
         }
-        #tour raja-admin-chatbot .chatbot-bubble-btn:hover {
+        #tourraja-admin-chatbot .chatbot-bubble-btn:hover {
             transform: scale(1.05) !important;
         }
-        #tour raja-admin-chatbot .chatbot-msg-bot {
+        #tourraja-admin-chatbot .chatbot-msg-bot {
             background-color: #ffffff !important;
             border: 1px solid #e2e8f0 !important;
             border-radius: 16px !important;
@@ -68,7 +68,7 @@
             color: #1e293b !important;
             max-width: 85% !important;
         }
-        #tour raja-admin-chatbot .chatbot-msg-user {
+        #tourraja-admin-chatbot .chatbot-msg-user {
             background-color: #0052FF !important;
             color: #ffffff !important;
             border-radius: 16px !important;
@@ -79,7 +79,7 @@
             max-width: 85% !important;
             margin-left: auto !important;
         }
-        #tour raja-admin-chatbot .chatbot-cat-btn {
+        #tourraja-admin-chatbot .chatbot-cat-btn {
             padding: 6px 10px !important;
             background-color: #f1f5f9 !important;
             border: 1px solid #e2e8f0 !important;
@@ -92,15 +92,15 @@
             text-align: left !important;
             width: 100% !important;
         }
-        #tour raja-admin-chatbot .chatbot-cat-btn:hover {
+        #tourraja-admin-chatbot .chatbot-cat-btn:hover {
             background-color: #eff6ff !important;
             color: #1d4ed8 !important;
             border-color: #bfdbfe !important;
         }
-        #tour raja-admin-chatbot .chatbot-body::-webkit-scrollbar {
+        #tourraja-admin-chatbot .chatbot-body::-webkit-scrollbar {
             width: 4px !important;
         }
-        #tour raja-admin-chatbot .chatbot-body::-webkit-scrollbar-thumb {
+        #tourraja-admin-chatbot .chatbot-body::-webkit-scrollbar-thumb {
             background-color: #cbd5e1 !important;
             border-radius: 2px !important;
         }
