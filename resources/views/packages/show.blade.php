@@ -206,21 +206,22 @@
             x-data='{ showBookingModal: false, slides: @json($gallerySlides), sections: @json($navSections) }'>
             {{-- Breadcrumb --}}
             <div>
-                <div class="container-custom py-2 flex items-center justify-between">
-                    <nav class="flex items-center gap-2 text-xs font-semibold text-gray-500">
+                <div class="container-custom pt-4 pb-2 sm:py-2 flex items-center justify-between gap-2">
+                    <nav class="flex items-center gap-2 text-xs font-semibold text-gray-500 overflow-hidden whitespace-nowrap">
                         <a href="{{ url('/') }}" class="hover:text-orange-500 transition-colors">Home</a>
                         <span>/</span>
-                        <a href="{{ url('/') }}" class="hover:text-orange-500 transition-colors">Tours</a>
+                        <a href="{{ url('/') }}" class="hover:text-orange-500 transition-colors shrink-0">Tours</a>
                         <span>/</span>
-                        <span class="text-gray-800">{{ $package['title'] }}</span>
+                        <span class="text-gray-800 truncate">{{ $package['title'] }}</span>
                     </nav>
 
                     {{-- Share Section --}}
-                    <div class="relative" x-data="{ open: false, copied: false, shareData: { title: '{{ addslashes($package['title']) }}', text: 'Check out this awesome tour package: {{ addslashes($package['title']) }}', url: window.location.href } }">
+                    <div class="relative shrink-0" x-data="{ open: false, copied: false, shareData: { title: '{{ addslashes($package['title']) }}', text: 'Check out this awesome tour package: {{ addslashes($package['title']) }}', url: window.location.href } }">
                         <!-- Share Button -->
                         <button @click="if (navigator.share) { navigator.share(shareData).catch(err => console.log(err)) } else { open = !open }" 
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-xl text-xs font-black uppercase tracking-widest text-gray-700 hover:text-primary transition-all duration-300 shadow-sm focus:ring-2 focus:ring-primary/20">
-                            <i data-lucide="share-2" class="w-4 h-4"></i> Share Package
+                            class="inline-flex items-center justify-center gap-2 w-9 h-9 sm:w-auto sm:px-4 sm:py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-full sm:rounded-xl text-xs font-black uppercase tracking-widest text-gray-700 hover:text-primary transition-all duration-300 shadow-sm focus:ring-2 focus:ring-primary/20">
+                            <i data-lucide="share-2" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Share Package</span>
                         </button>
 
                         <!-- Dropdown Menu -->
