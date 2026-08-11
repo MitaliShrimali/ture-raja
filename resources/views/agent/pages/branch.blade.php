@@ -99,7 +99,7 @@
                     borderRadius: '2rem'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        window.location.href = '/agent/branch/delete/' + id;
+                        window.location.href = '{{ url("agent/branch/delete") }}/' + id;
                     }
                 });
             }
