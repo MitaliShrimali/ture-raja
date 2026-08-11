@@ -262,7 +262,7 @@
             body .list-view-wrapper .package-card-inner {
                 flex-direction: row !important;
                 display: flex !important;
-                height: 200px !important;
+                height: 220px !important;
                 padding: 0.75rem !important;
                 max-width: 100% !important;
             }
@@ -277,7 +277,7 @@
 
             body .list-view-wrapper .package-content {
                 display: grid !important;
-                grid-template-columns: 2.1fr 1.2fr !important;
+                grid-template-columns: minmax(0, 1fr) 280px !important;
                 grid-template-rows: auto auto auto !important;
                 row-gap: 0.5rem !important;
                 column-gap: 1.5rem !important;
@@ -324,7 +324,8 @@
                 padding-left: 1.75rem !important;
                 height: 100% !important;
                 display: flex !important;
-                align-items: center !important;
+                align-items: flex-start !important;
+                padding-top: 0.25rem !important;
             }
 
             /* Row 5: Action - Price (left) + Button (right) */
@@ -336,6 +337,7 @@
                 border-top: none !important;
                 margin-top: 0 !important;
                 padding-top: 0 !important;
+                padding-bottom: 0.5rem !important;
                 display: flex !important;
                 flex-direction: row !important;
                 align-items: center !important;
@@ -343,6 +345,13 @@
                 width: 100% !important;
                 height: 100% !important;
                 gap: 0.75rem !important;
+            }
+
+            body .list-view-wrapper .pc-row-action a {
+                width: auto !important;
+                flex-shrink: 0 !important;
+                padding-left: 1.25rem !important;
+                padding-right: 1.25rem !important;
             }
 
             body .list-view-wrapper .package-content>div:nth-child(5) span.text-2xl {
