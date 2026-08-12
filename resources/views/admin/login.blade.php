@@ -43,7 +43,7 @@
     $title = 'Sign In';
     $subtext = 'Enter your credentials to access the Tour Raja Admin Central.';
     $actionUrl = url('admin/dashboard');
-    $defaultEmail = 'admin@tour raja.com';
+    $defaultEmail = 'admin@tourraja.com';
     $btnText = 'Access Dashboard';
 
     if ($type === 'agent') {

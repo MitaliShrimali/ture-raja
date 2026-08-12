@@ -47,7 +47,7 @@
                 <div class="w-full border-t border-border-soft/60 pt-6 space-y-4 text-left text-sm font-medium">
                     <div class="flex items-center justify-between">
                         <span class="text-muted-text">Email Address</span>
-                        <span class="font-bold text-foreground">{{ $admin->email ?? 'admin@tour raja.com' }}</span>
+                        <span class="font-bold text-foreground">{{ $admin->email ?? 'admin@tourraja.com' }}</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <span class="text-muted-text">Joined Date</span>

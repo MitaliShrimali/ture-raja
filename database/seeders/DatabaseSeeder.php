@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'name' => 'Super Admin',
-                'email' => 'admin@tour raja.com',
+                'email' => 'admin@tourraja.com',
                 'password' => Hash::make('password123'),
                 'role' => 'SUPER ADMIN',
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin',
@@ -33,7 +33,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Main Super Admin',
-                'email' => 'superadmin@tour raja.com',
+                'email' => 'superadmin@tourraja.com',
                 'password' => Hash::make('Password@123'),
                 'role' => 'SUPER ADMIN',
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=MainAdmin',
@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Siti Wahyuni',
-                'email' => 'siti.w@tour raja.id',
+                'email' => 'siti.w@tourraja.id',
                 'password' => Hash::make('password123'),
                 'role' => 'MANAGER',
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Siti',
@@ -51,7 +51,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Rian Jatmiko',
-                'email' => 'rian_j@tour raja.id',
+                'email' => 'rian_j@tourraja.id',
                 'password' => Hash::make('password123'),
                 'role' => 'SUPER ADMIN',
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rian',
@@ -60,7 +60,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Budi Antoro',
-                'email' => 'budi.a@tour raja.id',
+                'email' => 'budi.a@tourraja.id',
                 'password' => Hash::make('password123'),
                 'role' => 'EDITOR',
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Budi',
@@ -69,7 +69,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Dewi Anggraeni',
-                'email' => 'dewi.a@tour raja.id',
+                'email' => 'dewi.a@tourraja.id',
                 'password' => Hash::make('password123'),
                 'role' => 'EDITOR',
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Dewi',
@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Hendra Rusli',
-                'email' => 'hendra.r@tour raja.id',
+                'email' => 'hendra.r@tourraja.id',
                 'password' => Hash::make('password123'),
                 'role' => 'MANAGER',
                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Hendra',
@@ -705,7 +705,7 @@ class DatabaseSeeder extends Seeder
         DB::table('settings')->insert([
             ['key' => 'site_name', 'value' => 'Tour Raja Admin HQ', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'site_logo', 'value' => 'TR', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'support_email', 'value' => 'support@tour raja.com', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'support_email', 'value' => 'support@tourraja.com', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'site_motto', 'value' => 'Elevating Travel Experiences', 'created_at' => now(), 'updated_at' => now()],
         ]);
 
@@ -925,10 +925,10 @@ class DatabaseSeeder extends Seeder
             ['key' => 'mail_host', 'value' => 'smtp.gmail.com', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'mail_port', 'value' => '587', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'mail_encryption', 'value' => 'tls', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'mail_username', 'value' => 'admin@tour raja.com', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_username', 'value' => 'admin@tourraja.com', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'mail_password', 'value' => 'password123', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'mail_from_name', 'value' => 'Tour raja Concierge', 'created_at' => now(), 'updated_at' => now()],
-            ['key' => 'mail_from_address', 'value' => 'noreply@tour raja.com', 'created_at' => now(), 'updated_at' => now()],
+            ['key' => 'mail_from_address', 'value' => 'noreply@tourraja.com', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'gateway_api_key', 'value' => 's8J6Ji', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'merchant_salt', 'value' => 'MIIEvaIBADANBg', 'created_at' => now(), 'updated_at' => now()],
         ]);

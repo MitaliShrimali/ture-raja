@@ -75,7 +75,7 @@
                         {{-- Username --}}
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Username</label>
-                            <input type="email" name="mail_username" value="{{ $settings['mail_username'] ?? 'admin@tour raja.com' }}" placeholder="admin@tour raja.com" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
+                            <input type="email" name="mail_username" value="{{ $settings['mail_username'] ?? 'admin@tourraja.com' }}" placeholder="admin@tourraja.com" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
                         </div>
 
                         {{-- Password --}}
