@@ -14,13 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        Schema::disableForeignKeyConstraints();
+
         // 1. Seed Packages using existing PackageSeeder
         $this->call(PackageSeeder::class);
 
         // 2. Seed Users (Admin Users)
-        Schema::disableForeignKeyConstraints();
         DB::table('users')->truncate();
-        Schema::enableForeignKeyConstraints();
         DB::table('users')->insert([
             [
                 'name' => 'Super Admin',
@@ -932,5 +932,7 @@ class DatabaseSeeder extends Seeder
             ['key' => 'gateway_api_key', 'value' => 's8J6Ji', 'created_at' => now(), 'updated_at' => now()],
             ['key' => 'merchant_salt', 'value' => 'MIIEvaIBADANBg', 'created_at' => now(), 'updated_at' => now()],
         ]);
+
+        Schema::enableForeignKeyConstraints();
     }
 }
