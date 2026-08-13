@@ -149,7 +149,7 @@
                         $navProfile = DB::table('user_profiles')->where('user_id', Auth::id())->first();
                         $navAvatarUrl = ($navProfile && $navProfile->avatar)
                             ? asset($navProfile->avatar)
-                            : asset('images/default-avatar.svg');
+                            : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name ?? 'User') . '&background=e85d26&color=fff';
                     @endphp
                     <img src="{{ $navAvatarUrl }}" class="w-full h-full object-cover">
                 </a>
@@ -169,6 +169,14 @@
                         </div>
                     </button>
                 </div>
+                
+                <!-- Profile Icon (Not Logged In -> Triggers Modal) -->
+                <button 
+                    @click="$dispatch('open-login-modal')"
+                    class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2 overflow-hidden"
+                >
+                    <i data-lucide="user" size="20"></i>
+                </button>
             @endif
 
 

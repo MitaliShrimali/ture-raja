@@ -581,7 +581,7 @@
                                 </div>
 
                                 <div class="mt-4 transition-all duration-500 ease-in-out relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50"
-                                     :style="documentExpanded ? 'height: 800px;' : 'height: 120px;'">
+                                     :style="documentExpanded ? 'height: 1000px;' : 'height: 450px;'">
                                      
                                     <!-- Gradient Overlay when collapsed -->
                                     <div x-show="!documentExpanded" 
