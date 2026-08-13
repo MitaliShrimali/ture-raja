@@ -486,7 +486,7 @@
                         </div>
 
                         {{-- Section Navigation Tabs --}}
-                        <div class="relative flex items-center mb-6 group bg-[#F8F9FA]">
+                        <div class="sticky top-[72px] sm:top-[80px] md:top-[88px] lg:top-[96px] z-[90] relative flex items-center mb-6 group bg-[#F8F9FA] py-2 border-b border-gray-200 w-full transition-all duration-300">
                             <!-- Left Arrow -->
                             <button type="button"
                                 class="absolute left-0 z-10 w-12 h-full flex items-center justify-start bg-gradient-to-r from-[#F8F9FA] via-[#F8F9FA] to-transparent text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex"
@@ -497,7 +497,7 @@
                             </button>
 
                             <div id="section-nav"
-                                class="flex overflow-x-auto gap-3 py-1 px-1 md:px-8 hide-scrollbar scroll-smooth w-full">
+                                class="flex overflow-x-auto gap-3 py-1 pl-4 pr-12 md:pl-14 md:pr-14 hide-scrollbar scroll-smooth w-full">
                                 @if(!empty($package['brochure']))
                                     <a href="#document"
                                         class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
@@ -1406,3 +1406,78 @@
         </div>
 
     @endsection
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup drag-to-scroll for sliders
+            const setupSlider = (sliderId) => {
+                const slider = document.getElementById(sliderId);
+                if (!slider) return;
+
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+                let preventClickFlag = false;
+                
+                slider.style.cursor = 'grab';
+
+                slider.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    preventClickFlag = false;
+                    slider.style.cursor = 'grabbing';
+                    slider.style.userSelect = 'none'; // Prevent text selection
+                    startX = e.pageX - slider.offsetLeft;
+                    scrollLeft = slider.scrollLeft;
+                });
+
+                const endDrag = () => {
+                    isDown = false;
+                    slider.style.cursor = 'grab';
+                    slider.style.removeProperty('user-select');
+                    Array.from(slider.children).forEach(c => c.style.pointerEvents = '');
+                    
+                    if (preventClickFlag) {
+                        setTimeout(() => preventClickFlag = false, 100);
+                    }
+                };
+
+                slider.addEventListener('mouseleave', endDrag);
+                slider.addEventListener('mouseup', endDrag);
+                
+                // Failsafe for if mouse is released outside the element
+                window.addEventListener('mouseup', () => {
+                    if (isDown) endDrag();
+                });
+
+                slider.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - slider.offsetLeft;
+                    const walk = (x - startX) * 1.5; // Scroll-fast
+                    
+                    // If we drag more than 5 pixels, prevent clicking
+                    if (Math.abs(walk) > 5) {
+                        preventClickFlag = true;
+                        Array.from(slider.children).forEach(c => c.style.pointerEvents = 'none');
+                    }
+                    
+                    slider.scrollLeft = scrollLeft - walk;
+                });
+                
+                // Prevent clicks on children if we are dragging
+                const preventClick = (e) => {
+                    if (preventClickFlag) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                    }
+                };
+                slider.addEventListener('click', preventClick, true);
+            };
+
+            setupSlider('section-nav');
+            setupSlider('agent-pkg-slider');
+        });
+    </script>
+    @endpush

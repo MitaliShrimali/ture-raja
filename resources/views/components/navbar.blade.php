@@ -105,16 +105,23 @@
                 @endif
             </div>
             
-            @if(Auth::check() && Auth::user()->role === 'Customer')
-                <!-- Wishlist (Logged In as Customer) -->
-                <div class="relative hidden lg:block" x-data="{ open: false }" @click.away="open = false">
+            @if(Auth::check())
+                <!-- Wishlist (Logged In) -->
+                <div class="relative hidden lg:block mr-2" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false">
                     <button 
-                        @click="open = !open"
+                        @click="window.location.href='{{ url('/profile') }}'"
                         class="relative flex items-center gap-2.5 text-left group"
                     >
                         <div class="relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                             <i data-lucide="heart" size="20" class="text-primary nav-heart-icon"></i>
-                            <span id="wishlist-count" class="absolute -top-1 -right-1 w-4 h-4 bg-black text-white text-[10px] font-black rounded-full flex items-center justify-center hidden">0</span>
+                            @php
+                                $wishlistCount = \App\Models\Wishlist::where('user_id', Auth::id())->count();
+                            @endphp
+                            @if($wishlistCount > 0)
+                                <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-black text-white bg-primary rounded-full border border-white shadow-sm">
+                                    {{ $wishlistCount }}
+                                </span>
+                            @endif
                         </div>
                         <div class="hidden xl:flex flex-col justify-center transition-colors duration-300" :class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'">
                             <span class="text-[14px] font-black leading-tight tracking-wide">Wishlist</span>
@@ -144,17 +151,21 @@
                     </div>
                 </div>
                 
-                <a href="{{ url('/profile') }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2 overflow-hidden">
-                    @php
-                        $navProfile = DB::table('user_profiles')->where('user_id', Auth::id())->first();
-                        $navAvatarUrl = ($navProfile && $navProfile->avatar)
-                            ? asset($navProfile->avatar)
-                            : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name ?? 'User') . '&background=e85d26&color=fff';
-                    @endphp
+                @php
+                    $navProfile = DB::table('user_profiles')->where('user_id', Auth::id())->first();
+                    $navAvatarUrl = ($navProfile && $navProfile->avatar)
+                        ? asset($navProfile->avatar)
+                        : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user()->name ?? 'User') . '&background=e85d26&color=fff';
+                    
+                    $profileLink = url('/profile');
+                    if (Auth::user()->role === 'Admin') $profileLink = url('/admin/dashboard');
+                    elseif (Auth::user()->role === 'Agent') $profileLink = url('/agent/dashboard');
+                @endphp
+                <a href="{{ $profileLink }}" class="hidden lg:flex items-center justify-center w-10 h-10 bg-primary text-white rounded-full transition-all shadow-sm border border-black/5 hover:scale-105 duration-300 ml-2 overflow-hidden">
                     <img src="{{ $navAvatarUrl }}" class="w-full h-full object-cover">
                 </a>
             @else
-                <!-- Wishlist (Not Logged In OR Not Customer -> Triggers Modal) -->
+                <!-- Wishlist (Not Logged In) -->
                 <div class="relative hidden lg:block mr-2">
                     <button 
                         @click="$dispatch('open-login-modal')"
@@ -183,10 +194,22 @@
 
             <!-- Mobile Wishlist Icon -->
             <button 
-                @click="{{ (Auth::check() && Auth::user()->role === 'Customer') ? 'window.location.href=\''.url('/profile').'\'' : '$dispatch(\'open-login-modal\')' }}"
+                @click="{{ Auth::check() ? 'window.location.href=\''.(Auth::user()->role === 'Admin' ? url('/admin/dashboard') : (Auth::user()->role === 'Agent' ? url('/agent/dashboard') : url('/profile'))).'\'' : '$dispatch(\'open-login-modal\')' }}"
                 class="hidden relative flex items-center justify-center text-primary"
             >
                 <i data-lucide="heart" size="20" class="text-primary nav-heart-icon"></i>
+            </button>
+            
+            <!-- Mobile Profile Icon -->
+            <button 
+                @click="{{ Auth::check() ? 'window.location.href=\''.(Auth::user()->role === 'Admin' ? url('/admin/dashboard') : (Auth::user()->role === 'Agent' ? url('/agent/dashboard') : url('/profile'))).'\'' : '$dispatch(\'open-login-modal\')' }}"
+                class="lg:hidden flex items-center justify-center w-8 h-8 bg-primary text-white rounded-full ml-2 overflow-hidden"
+            >
+                @if(Auth::check())
+                    <img src="{{ $navAvatarUrl ?? 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name ?? 'User').'&background=e85d26&color=fff' }}" class="w-full h-full object-cover">
+                @else
+                    <i data-lucide="user" size="16"></i>
+                @endif
             </button>
 
             <!-- Mobile Toggle -->

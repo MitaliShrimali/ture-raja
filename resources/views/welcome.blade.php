@@ -1265,7 +1265,6 @@
                     let startX;
                     let scrollLeft;
                     let preventClickFlag = false;
-                    let isHovered = false;
                     
                     // Make it visually look draggable
                     slider.style.cursor = 'grab';
@@ -1279,25 +1278,23 @@
                         scrollLeft = slider.scrollLeft;
                     });
 
-                    slider.addEventListener('mouseleave', () => {
-                        isDown = false;
-                        isHovered = false;
-                        slider.style.cursor = 'grab';
-                    });
-
-                    slider.addEventListener('mouseenter', () => {
-                        isHovered = true;
-                    });
-
-                    slider.addEventListener('mouseup', () => {
+                    const endDrag = () => {
                         isDown = false;
                         slider.style.cursor = 'grab';
                         slider.style.removeProperty('user-select');
+                        Array.from(slider.children).forEach(c => c.style.pointerEvents = '');
                         
-                        // We reset the flag shortly after so legitimate clicks go through
                         if (preventClickFlag) {
-                            setTimeout(() => preventClickFlag = false, 50);
+                            setTimeout(() => preventClickFlag = false, 100);
                         }
+                    };
+
+                    slider.addEventListener('mouseleave', endDrag);
+                    slider.addEventListener('mouseup', endDrag);
+                    
+                    // Failsafe for if mouse is released outside the element
+                    window.addEventListener('mouseup', () => {
+                        if (isDown) endDrag();
                     });
 
                     slider.addEventListener('mousemove', (e) => {
@@ -1309,6 +1306,7 @@
                         // If we drag more than 5 pixels, prevent clicking
                         if (Math.abs(walk) > 5) {
                             preventClickFlag = true;
+                            Array.from(slider.children).forEach(c => c.style.pointerEvents = 'none');
                         }
                         
                         slider.scrollLeft = scrollLeft - walk;
@@ -1319,15 +1317,16 @@
                         if (preventClickFlag) {
                             e.preventDefault();
                             e.stopPropagation();
+                            e.stopImmediatePropagation();
                         }
                     };
                     slider.addEventListener('click', preventClick, true);
 
                     if (continuous) {
                         const autoScroll = () => {
-                            if (!isDown && !isHovered) {
+                            if (!isDown) {
                                 slider.scrollLeft += 1;
-                                if (slider.scrollLeft >= slider.scrollWidth - slider.clientWidth - 1) {
+                                if (Math.ceil(slider.scrollLeft) >= slider.scrollWidth - slider.clientWidth) {
                                     slider.scrollLeft = 0;
                                 }
                             }
