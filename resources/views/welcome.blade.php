@@ -1012,14 +1012,14 @@
             </div>
 
             <div class="relative group">
-                <div class="flex gap-6 overflow-hidden pt-2 pb-8 testimonial-track" id="testi-slider">
+                <div class="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-6 pt-2 pb-8" id="testi-slider">
                     @php
                         $testimonials = \DB::table('reviews')->where('status', 'Active')->orderBy('id', 'desc')->get()->toArray();
-                        $allTestimonials = $testimonials; // Removed array_merge so it doesn't duplicate
+                        $allTestimonials = array_merge($testimonials, $testimonials, $testimonials, $testimonials); // Duplicate to allow continuous scrolling
                     @endphp
 
                     @foreach($allTestimonials as $testi)
-                        <div class="flex-shrink-0 w-full md:w-[450px] testimonial-card">
+                        <div class="flex-shrink-0 w-[80vw] md:w-[450px] testimonial-card">
                             <div class="p-6 rounded-[32px] border border-border-soft bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-3">
                                 <h4 class="text-lg md:text-xl font-black text-foreground font-heading">The best booking system</h4>
                                 <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic break-words line-clamp-4">"{{ $testi->text }}"</p>
@@ -1043,31 +1043,6 @@
                     @endforeach
                 </div>
             </div>
-        </div>
-
-        <style>
-            @keyframes marquee {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(calc(-450px * 4 - 24px * 4)); }
-            }
-            .testimonial-track {
-                display: flex;
-                width: max-content;
-                animation: marquee 40s linear infinite;
-            }
-            @media (max-width: 767px) {
-                .testimonial-card {
-                    width: calc(100vw - 80px); /* Leave space for next card */
-                }
-                @keyframes marquee-mobile {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-                .testimonial-track {
-                    animation: marquee-mobile 15s linear infinite;
-                }
-            }
-        </style>
     </section>
 
     <!-- Section 9: Newsletter -->
@@ -1246,7 +1221,7 @@
 
             function initSlidersAndFilters() {
                 // ── Sliders ──────────────────────────────────────────────
-                const setupSlider = (sliderId, prevBtnId, nextBtnId, fallbackScroll = 340, autoSwipe = true) => {
+                const setupSlider = (sliderId, prevBtnId, nextBtnId, fallbackScroll = 340, autoSwipe = true, continuous = false) => {
                     const slider = document.getElementById(sliderId);
                     const prevBtn = document.getElementById(prevBtnId);
                     const nextBtn = document.getElementById(nextBtnId);
@@ -1285,16 +1260,98 @@
                     if (nextBtn) nextBtn.addEventListener('click', moveNext);
                     if (prevBtn) prevBtn.addEventListener('click', movePrev);
 
-                    if (autoSwipe) {
+                    // Drag to scroll logic
+                    let isDown = false;
+                    let startX;
+                    let scrollLeft;
+                    let preventClickFlag = false;
+                    let isHovered = false;
+                    
+                    // Make it visually look draggable
+                    slider.style.cursor = 'grab';
+
+                    slider.addEventListener('mousedown', (e) => {
+                        isDown = true;
+                        preventClickFlag = false;
+                        slider.style.cursor = 'grabbing';
+                        slider.style.userSelect = 'none'; // Prevent text selection
+                        startX = e.pageX - slider.offsetLeft;
+                        scrollLeft = slider.scrollLeft;
+                    });
+
+                    slider.addEventListener('mouseleave', () => {
+                        isDown = false;
+                        isHovered = false;
+                        slider.style.cursor = 'grab';
+                    });
+
+                    slider.addEventListener('mouseenter', () => {
+                        isHovered = true;
+                    });
+
+                    slider.addEventListener('mouseup', () => {
+                        isDown = false;
+                        slider.style.cursor = 'grab';
+                        slider.style.removeProperty('user-select');
+                        
+                        // We reset the flag shortly after so legitimate clicks go through
+                        if (preventClickFlag) {
+                            setTimeout(() => preventClickFlag = false, 50);
+                        }
+                    });
+
+                    slider.addEventListener('mousemove', (e) => {
+                        if (!isDown) return;
+                        e.preventDefault();
+                        const x = e.pageX - slider.offsetLeft;
+                        const walk = (x - startX) * 1.5; // Scroll-fast
+                        
+                        // If we drag more than 5 pixels, prevent clicking
+                        if (Math.abs(walk) > 5) {
+                            preventClickFlag = true;
+                        }
+                        
+                        slider.scrollLeft = scrollLeft - walk;
+                    });
+                    
+                    // Prevent clicks on children if we are dragging
+                    const preventClick = (e) => {
+                        if (preventClickFlag) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                        }
+                    };
+                    slider.addEventListener('click', preventClick, true);
+
+                    if (continuous) {
+                        const autoScroll = () => {
+                            if (!isDown && !isHovered) {
+                                slider.scrollLeft += 1;
+                                if (slider.scrollLeft >= slider.scrollWidth - slider.clientWidth - 1) {
+                                    slider.scrollLeft = 0;
+                                }
+                            }
+                            requestAnimationFrame(autoScroll);
+                        };
+                        requestAnimationFrame(autoScroll);
+                        
+                        slider.addEventListener('touchstart', () => isHovered = true, {passive: true});
+                        slider.addEventListener('touchend', () => isHovered = false, {passive: true});
+                    } else if (autoSwipe) {
                         let interval = setInterval(moveNext, 2500);
                         const resetInterval = () => {
                             clearInterval(interval);
                             interval = setInterval(moveNext, 2500);
                         };
+                        
+                        // Clear on hover or interact, resume after
                         slider.addEventListener('mouseenter', () => clearInterval(interval));
                         slider.addEventListener('mouseleave', resetInterval);
                         slider.addEventListener('touchstart', () => clearInterval(interval), {passive: true});
                         slider.addEventListener('touchend', resetInterval, {passive: true});
+                        slider.addEventListener('mousedown', () => clearInterval(interval));
+                        slider.addEventListener('mouseup', resetInterval);
+                        
                         slider.addEventListener('scroll', () => {
                             clearTimeout(slider.scrollTimeout);
                             clearInterval(interval);
@@ -1305,7 +1362,8 @@
                 
                 setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, true);
                 setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, true);
-                setupSlider('promo-slider', 'prev-promo', 'next-promo', 360, false);
+                setupSlider('promo-slider', 'prev-promo', 'next-promo', 360, true);
+                setupSlider('testi-slider', null, null, 474, false, true);
 
                 // ── Close dropdowns when clicking outside ─────────────────
                 document.addEventListener('click', (e) => {
