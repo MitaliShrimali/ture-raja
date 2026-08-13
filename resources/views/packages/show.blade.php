@@ -486,7 +486,76 @@
                         </div>
 
                         {{-- Section Navigation Tabs --}}
-                        <div class="sticky top-[72px] sm:top-[80px] md:top-[88px] lg:top-[96px] z-[90] relative flex items-center mb-6 group bg-[#F8F9FA] py-2 border-b border-gray-200 w-full transition-all duration-300">
+                        <div id="sticky-section-nav-wrapper">
+                            <div id="sticky-section-nav-placeholder" style="display: none;"></div>
+                            <div id="sticky-section-nav" class="z-[90] flex items-center mb-6 group bg-[#F8F9FA] py-2 border-b border-gray-200 w-full transition-all duration-300">
+                                
+                                <script>
+                                    (function() {
+                                        let isSticky = false;
+                                        
+                                        function initStickyNav() {
+                                            const nav = document.getElementById('sticky-section-nav');
+                                            const placeholder = document.getElementById('sticky-section-nav-placeholder');
+                                            const navbar = document.querySelector('nav.fixed.top-0');
+                                            
+                                            if (!nav || !placeholder || !navbar) return;
+
+                                            const checkSticky = () => {
+                                                const navHeight = navbar.offsetHeight || (window.innerWidth >= 1024 ? 96 : 80);
+                                                
+                                                // Calculate where the element WOULD be if it wasn't fixed
+                                                const rect = isSticky ? placeholder.getBoundingClientRect() : nav.getBoundingClientRect();
+                                                
+                                                if (rect.top <= navHeight) {
+                                                    if (!isSticky) {
+                                                        // Become sticky
+                                                        placeholder.style.height = nav.offsetHeight + 'px';
+                                                        placeholder.style.display = 'block';
+                                                        placeholder.style.marginBottom = window.getComputedStyle(nav).marginBottom;
+                                                        
+                                                        // Get exact width before fixing
+                                                        const computedWidth = window.getComputedStyle(nav.parentElement).width;
+                                                        
+                                                        nav.style.position = 'fixed';
+                                                        nav.style.top = navHeight + 'px';
+                                                        nav.style.width = computedWidth;
+                                                        nav.style.marginTop = '0';
+                                                        nav.classList.add('shadow-md');
+                                                        isSticky = true;
+                                                    } else {
+                                                        // Update width dynamically if window resized
+                                                        nav.style.width = window.getComputedStyle(nav.parentElement).width;
+                                                    }
+                                                } else {
+                                                    if (isSticky) {
+                                                        // Stop being sticky
+                                                        placeholder.style.display = 'none';
+                                                        nav.style.position = '';
+                                                        nav.style.top = '';
+                                                        nav.style.width = '';
+                                                        nav.classList.remove('shadow-md');
+                                                        isSticky = false;
+                                                    }
+                                                }
+                                            };
+
+                                            window.addEventListener('scroll', checkSticky, { passive: true });
+                                            window.addEventListener('resize', checkSticky, { passive: true });
+                                            
+                                            // Initial checks
+                                            checkSticky();
+                                            setTimeout(checkSticky, 100);
+                                            setTimeout(checkSticky, 500);
+                                        }
+
+                                        if (document.readyState === 'loading') {
+                                            document.addEventListener('DOMContentLoaded', initStickyNav);
+                                        } else {
+                                            initStickyNav();
+                                        }
+                                    })();
+                                </script>
                             <!-- Left Arrow -->
                             <button type="button"
                                 class="absolute left-0 z-10 w-12 h-full flex items-center justify-start bg-gradient-to-r from-[#F8F9FA] via-[#F8F9FA] to-transparent text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex"
@@ -559,6 +628,7 @@
                                 </svg>
                             </button>
                         </div>
+                        </div> <!-- End sticky-section-nav-wrapper -->
 
                         @if(!empty($package['brochure']))
                             {{-- Document / Brochure PDF Preview Section --}}
