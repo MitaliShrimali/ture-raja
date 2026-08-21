@@ -80,8 +80,8 @@ class AgentController extends Controller
             'status'      => 1,
             'pending'     => 1,
             'approved'    => 0,
-            'plan_id'     => DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5, // Dynamic free plan
-            'plan_status' => 'Active',
+            'plan_id'     => null,
+            'plan_status' => 'Pending',
             'service_guaranteed' => 0,
             'service_guaranteed_expires_at' => null,
             'created_at'  => now(),
@@ -1827,6 +1827,25 @@ class AgentController extends Controller
             'agent_agency_name' => $request->input('name')
         ]);
 
+        // Calculate new percentage to determine redirect
+        $fields = ['name', 'phone', 'email', 'address', 'city', 'state', 'country', 'pincode', 'logo', 'about'];
+        $filled = 0;
+        
+        // Refetch agent to get latest data including uploads
+        $agentUpdated = DB::table('agents')->where('id', $agentId)->first();
+        if ($agentUpdated) {
+            foreach ($fields as $field) {
+                if (!empty($agentUpdated->$field)) {
+                    $filled++;
+                }
+            }
+        }
+        $percentage = round(($filled / count($fields)) * 100);
+
+        if ($percentage >= 80 && empty($agentUpdated->plan_id)) {
+            return redirect()->route('agent.payment')->with('show_upgrade_modal', true)->with('success', 'Profile settings updated successfully! Please select a plan to continue.');
+        }
+
         return redirect()->back()->with('success', 'Profile settings updated successfully!');
     }
 
@@ -2000,6 +2019,29 @@ class AgentController extends Controller
         $phone = $agent->phone ?? '9999999999';
         
         $productinfo = $type . '-' . $id;
+
+        if ($totalAmount == 0 && $type == 'plan') {
+            DB::table('agents')->where('id', $agentId)->update([
+                'plan_id' => $id,
+                'plan_status' => 'Active',
+                'updated_at' => now()
+            ]);
+            DB::table('payments')->insert([
+                'agent_id' => $agentId,
+                'user_name' => $firstname,
+                'email' => $email,
+                'plan_type' => $itemName,
+                'type' => 'plan_upgrade',
+                'amount' => 0,
+                'payment_id' => 'FREE-' . $txnid,
+                'date' => date('Y-m-d'),
+                'status' => 'Completed',
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            return redirect()->route('agent.dashboard')->with('success', 'Free plan activated successfully!');
+        }
+
         $udf2 = str_replace('|', '', $itemName);
         $payuAmount = number_format($totalAmount, 2, '.', '');
         

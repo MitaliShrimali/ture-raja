@@ -80,18 +80,18 @@
                                         
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COMPANY NAME <span class="text-red-500">*</span></label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COMPANY NAME <span class="text-red-500">*</span></label>
                                                 <input type="text" name="name" value="{{ $agent->agency_name ?? $agent->name ?? '' }}" required class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SINCE</label>
-                                                <input type="text" name="since" value="{{ $agent->since ?? '2026' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SINCE</label>
+                                                <input type="text" name="since" value="{{ $agent->since ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PRIMARY MOBILE <span class="text-red-500">*</span></label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PRIMARY MOBILE <span class="text-red-500">*</span></label>
                                                 <div class="flex gap-2 items-center">
-                                                    <div class="relative w-28 shrink-0">
-                                                        <select class="phone-country-code w-full px-3 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
+                                                    <div class="relative w-20 shrink-0">
+                                                        <select class="phone-country-code w-full px-2 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
                                                             <option value="+91" data-len="10" selected>🇮🇳 +91</option>
                                                             <option value="+1" data-len="10">🇺🇸 +1</option>
                                                             <option value="+44" data-len="10">🇬🇧 +44</option>
@@ -111,10 +111,10 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SECONDARY MOBILE</label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SECONDARY MOBILE</label>
                                                 <div class="flex gap-2 items-center">
-                                                    <div class="relative w-28 shrink-0">
-                                                        <select class="phone-country-code w-full px-3 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
+                                                    <div class="relative w-20 shrink-0">
+                                                        <select class="phone-country-code w-full px-2 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
                                                             <option value="+91" data-len="10" selected>🇮🇳 +91</option>
                                                             <option value="+1" data-len="10">🇺🇸 +1</option>
                                                             <option value="+44" data-len="10">🇬🇧 +44</option>
@@ -134,23 +134,23 @@
                                                 </div>
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">LANDLINE NUMBER</label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">LANDLINE NUMBER</label>
                                                 <input type="text" name="landline" value="{{ $agent->landline ?? '' }}" placeholder="e.g. +91-79-12345678" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICIAL EMAIL ADDRESS <span class="text-red-500">*</span></label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICIAL EMAIL ADDRESS <span class="text-red-500">*</span></label>
                                                 <input type="email" name="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email ending with a proper domain like .com" value="{{ $agent->email ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">WEBSITE URL</label>
-                                                <input type="url" name="website" value="{{ $agent->website ?? '' }}" placeholder="e.g. https://www.youragency.com" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">WEBSITE URL</label>
+                                                <input type="text" name="website" value="{{ $agent->website ?? '' }}" placeholder="e.g. www.youragency.com" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">GST NUMBER</label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">GST NUMBER</label>
                                                 <input type="text" name="gst_number" value="{{ $agent->gst_number ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium uppercase focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div class="md:col-span-2">
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">ABOUT TRAVEL AGENT (Max 160 characters - Fits in Orange Header) <span class="text-red-500">*</span></label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">ABOUT TRAVEL AGENT (Max 160 characters - Fits in Orange Header) <span class="text-red-500">*</span></label>
                                                 <textarea name="about" required rows="3" maxlength="160" placeholder="Describe your agency in 3-4 sentences..." class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ $agent->about ?? '' }}</textarea>
                                             </div>
                                         </div>
@@ -165,32 +165,32 @@
 
                                         <div class="space-y-6">
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICE ADDRESS <span class="text-red-500">*</span></label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">OFFICE ADDRESS <span class="text-red-500">*</span></label>
                                                 <input type="text" name="address" required value="{{ $agent->address ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                 <div class="relative">
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">CITY (SEARCH) <span class="text-red-500">*</span></label>
+                                                    <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">CITY (SEARCH) <span class="text-red-500">*</span></label>
                                                     <input type="text" id="settingsCity" name="city" value="{{ $agent->city ?? '' }}" required placeholder="Search city" autocomplete="off" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                     <div id="citySuggestions" class="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto bg-white rounded-2xl border border-gray-100 shadow-xl hidden custom-scroll"></div>
                                                 </div>
                                                 <div>
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">STATE <span class="text-red-500">*</span></label>
+                                                    <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">STATE <span class="text-red-500">*</span></label>
                                                     <input type="text" id="settingsState" name="state" value="{{ $agent->state ?? '' }}" required placeholder="State" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                 </div>
                                                 <div>
-                                                    <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COUNTRY <span class="text-red-500">*</span></label>
+                                                    <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COUNTRY <span class="text-red-500">*</span></label>
                                                     <input type="text" id="settingsCountry" name="country" value="{{ $agent->country ?? '' }}" required placeholder="Country" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                 </div>
                                             </div>
                                             <div class="w-1/3">
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PINCODE <span class="text-red-500">*</span></label>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">PINCODE <span class="text-red-500">*</span></label>
                                                 <input type="text" name="pincode" value="{{ $agent->pincode ?? '' }}" required pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Why Us (Showcase)</label>
-                                                <textarea name="why_us" rows="4" placeholder="Tell customers why they should choose you..." class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ $agent->why_us ?? '' }}</textarea>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Why Us (Showcase)</label>
+                                                <textarea name="why_us" rows="4" maxlength="300" placeholder="Tell customers why they should choose you..." class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ $agent->why_us ?? '' }}</textarea>
                                             </div>
                                         </div>
                                     </div>
@@ -213,12 +213,12 @@
                                                 <i class="fas fa-check-circle"></i> Card Uploaded
                                             </div>
                                         </div>
-                                        <p class="text-[10px] text-gray-400 font-medium mb-6 -mt-3">Upload front and back images of your business card (Max 2MB each).</p>
+                                        <p class="text-[10px] text-gray-400 font-medium mb-6 -mt-3">Upload front and back images of your business card. Supported formats: JPG, PNG (Max 2MB each).</p>
                                         
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                                             <!-- Front Side -->
                                             <div>
-                                                <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-3 tracking-widest">FRONT SIDE</h5>
+                                                <h5 class="text-[12px] font-bold text-gray-400 uppercase mb-3 tracking-widest">FRONT SIDE</h5>
                                                 <div class="w-full aspect-[1.58/1] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-orange-50/20 transition-all relative" onclick="document.getElementById('business_card_front_file').click()">
                                                     @if($agent && $agent->business_card_front)
                                                         <img id="card_front_preview" src="{{ asset($agent->business_card_front) }}" class="w-full h-full object-cover">
@@ -246,7 +246,7 @@
 
                                             <!-- Back Side -->
                                             <div>
-                                                <h5 class="text-[10px] font-bold text-gray-400 uppercase mb-3 tracking-widest">BACK SIDE</h5>
+                                                <h5 class="text-[12px] font-bold text-gray-400 uppercase mb-3 tracking-widest">BACK SIDE</h5>
                                                 <div class="w-full aspect-[1.58/1] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:bg-orange-50/20 transition-all relative" onclick="document.getElementById('business_card_back_file').click()">
                                                     @if($agent && $agent->business_card_back)
                                                         <img id="card_back_preview" src="{{ asset($agent->business_card_back) }}" class="w-full h-full object-cover">
@@ -277,49 +277,56 @@
                                 <div class="lg:col-span-4 space-y-8">
                                     <!-- Agency Branding -->
                                     <div class="bg-white p-2 rounded-[32px] shadow-sm border border-gray-100 overflow-hidden relative group">
-                                        <!-- Hero Banner Upload -->
-                                        <div class="bg-orange-100 h-28 rounded-t-[30px] relative cursor-pointer group/banner" onclick="document.getElementById('banner_file').click()">
-                                            @if($agent && $agent->banner)
-                                                <img id="banner_preview" src="{{ asset($agent->banner) }}" class="w-full h-full object-cover rounded-t-[30px]">
-                                            @else
-                                                <img id="banner_preview" class="hidden w-full h-full object-cover rounded-t-[30px]">
-                                                <div id="banner_placeholder" class="w-full h-full flex flex-col items-center justify-center text-orange-800/50">
-                                                    <i class="fas fa-image text-2xl mb-1"></i>
-                                                    <span class="text-[8px] font-bold uppercase tracking-widest">Upload Banner</span>
+                                        <!-- Banner Section -->
+                                        <div class="mb-6">
+                                            <h4 class="text-xs font-bold text-gray-800 mb-1">Agency Banner</h4>
+                                            <p class="text-[8px] text-gray-400 font-medium mb-2">Upload your hero banner. Supported formats: JPG, PNG (Max 2MB).</p>
+                                            <div class="bg-orange-100 h-28 rounded-2xl relative cursor-pointer group/banner border border-gray-100 overflow-hidden" onclick="document.getElementById('banner_file').click()">
+                                                @if($agent && $agent->banner)
+                                                    <img id="banner_preview" src="{{ asset($agent->banner) }}" class="w-full h-full object-cover">
+                                                @else
+                                                    <img id="banner_preview" class="hidden w-full h-full object-cover">
+                                                    <div id="banner_placeholder" class="w-full h-full flex flex-col items-center justify-center text-orange-800/50">
+                                                        <i class="fas fa-image text-2xl mb-1"></i>
+                                                        <span class="text-[8px] font-bold uppercase tracking-widest">Upload Banner</span>
+                                                    </div>
+                                                @endif
+                                                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover/banner:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <span class="text-white text-xs font-bold shadow-sm">Change Banner</span>
                                                 </div>
-                                            @endif
-                                            <!-- Overlay on hover -->
-                                            <div class="absolute inset-0 bg-black/30 rounded-t-[30px] opacity-0 group-hover/banner:opacity-100 transition-opacity flex items-center justify-center">
-                                                <span class="text-white text-xs font-bold shadow-sm">Change Banner</span>
-                                            </div>
-                                            
-                                            <!-- Delete Banner Button -->
-                                            <button type="button" id="delete_banner_btn" onclick="deleteBanner(event)" class="{{ ($agent && $agent->banner) ? '' : 'hidden' }} absolute top-2 right-2 w-6 h-6 bg-red-500/80 hover:bg-red-500 text-white rounded-full flex items-center justify-center transition-all z-10" title="Remove Banner">
-                                                <i class="fas fa-times text-xs"></i>
-                                            </button>
-                                            
-                                            <input type="file" name="banner_file" id="banner_file" class="hidden" accept="image/*" onchange="previewBanner(this)">
-                                            <input type="hidden" name="delete_banner" id="delete_banner" value="0">
-
-                                            <!-- Logo inside Banner -->
-                                            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-20 h-20 bg-orange-800 rounded-xl flex items-center justify-center text-white shadow-xl overflow-hidden cursor-pointer border-4 border-white" onclick="event.stopPropagation(); document.getElementById('logo_file').click()">
-                                                <img id="logo_preview" src="{{ ($agent && $agent->logo) ? asset($agent->logo) : '' }}" class="{{ ($agent && $agent->logo) ? '' : 'hidden' }} w-full h-full object-cover">
-                                                <div id="logo_placeholder" class="{{ ($agent && $agent->logo) ? 'hidden' : '' }} text-center">
-                                                    <i class="fas fa-camera-retro text-xl"></i>
-                                                </div>
-                                            </div>
-                                            <input type="file" name="logo_file" id="logo_file" class="hidden" accept="image/*" onchange="previewLogo(this)">
-                                        </div>
-                                        <div class="p-6 pt-10 text-center space-y-3">
-                                            <h4 class="text-xs font-bold text-gray-800 mb-1">Agency Branding</h4>
-                                            <p class="text-[8px] text-gray-400 font-medium mb-4">Click logo circle above or button below to upload your company logo (Max 2MB).</p>
-                                            <div class="flex items-center gap-2">
-                                                <button type="button" onclick="document.getElementById('logo_file').click()" class="flex-grow py-2 bg-white border border-gray-100 rounded-xl text-[9px] font-bold text-orange-800 uppercase tracking-widest hover:bg-gray-50">Upload Logo</button>
-                                                <button type="button" id="delete_logo_btn" onclick="deleteLogo()" class="{{ ($agent && $agent->logo) ? '' : 'hidden' }} px-3 py-2 bg-red-50 border border-red-100 rounded-xl text-red-500 hover:bg-red-100 transition-all">
-                                                    <i class="fas fa-trash-alt text-xs"></i>
+                                                
+                                                <button type="button" id="delete_banner_btn" onclick="deleteBanner(event)" class="{{ ($agent && $agent->banner) ? '' : 'hidden' }} absolute top-2 right-2 w-6 h-6 bg-red-500/80 hover:bg-red-500 text-white rounded-full flex items-center justify-center transition-all z-10" title="Remove Banner">
+                                                    <i class="fas fa-times text-xs"></i>
                                                 </button>
+                                                
+                                                <input type="file" name="banner_file" id="banner_file" class="hidden" accept="image/jpeg,image/png" onchange="previewBanner(this)">
+                                                <input type="hidden" name="delete_banner" id="delete_banner" value="0">
                                             </div>
-                                            <input type="hidden" name="delete_logo" id="delete_logo" value="0">
+                                        </div>
+
+                                        <!-- Logo Section -->
+                                        <div>
+                                            <h4 class="text-xs font-bold text-gray-800 mb-1">Agency Logo</h4>
+                                            <p class="text-[8px] text-gray-400 font-medium mb-2">Upload your company logo. Supported formats: JPG, PNG (Max 2MB).</p>
+                                            
+                                            <div class="flex items-center gap-4">
+                                                <div class="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 shadow-sm overflow-hidden cursor-pointer border border-gray-200" onclick="document.getElementById('logo_file').click()">
+                                                    <img id="logo_preview" src="{{ ($agent && $agent->logo) ? asset($agent->logo) : '' }}" class="{{ ($agent && $agent->logo) ? '' : 'hidden' }} w-full h-full object-cover">
+                                                    <div id="logo_placeholder" class="{{ ($agent && $agent->logo) ? 'hidden' : '' }} text-center">
+                                                        <i class="fas fa-camera-retro text-xl"></i>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="flex flex-col gap-2 flex-grow">
+                                                    <button type="button" onclick="document.getElementById('logo_file').click()" class="w-full py-2 bg-white border border-gray-100 rounded-xl text-[9px] font-bold text-orange-800 uppercase tracking-widest hover:bg-gray-50">Upload Logo</button>
+                                                    <button type="button" id="delete_logo_btn" onclick="deleteLogo()" class="{{ ($agent && $agent->logo) ? '' : 'hidden' }} w-full py-2 bg-red-50 border border-red-100 rounded-xl text-red-500 hover:bg-red-100 transition-all text-[9px] font-bold uppercase tracking-widest">
+                                                        <i class="fas fa-trash-alt mr-1"></i> Remove Logo
+                                                    </button>
+                                                </div>
+                                                
+                                                <input type="file" name="logo_file" id="logo_file" class="hidden" accept="image/jpeg,image/png" onchange="previewLogo(this)">
+                                                <input type="hidden" name="delete_logo" id="delete_logo" value="0">
+                                            </div>
                                         </div>
                                     </div>
 
@@ -330,25 +337,25 @@
                                         <h4 class="text-xs font-bold text-gray-800 mb-6 tracking-tight">Social Integration</h4>
                                         <div class="space-y-4">
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
                                                     <i class="fab fa-facebook-f text-blue-600"></i> Facebook Profile
                                                 </label>
                                                 <input type="url" name="facebook" value="{{ $agent->facebook ?? '' }}" placeholder="https://facebook.com/yourpage" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border-none text-[10px] font-medium text-gray-800 focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
                                                     <i class="fab fa-twitter text-cyan-500"></i> Twitter (X)
                                                 </label>
                                                 <input type="url" name="twitter" value="{{ $agent->twitter ?? '' }}" placeholder="https://twitter.com/yourhandle" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border-none text-[10px] font-medium text-gray-800 focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
                                                     <i class="fab fa-linkedin-in text-blue-800"></i> LinkedIn Company
                                                 </label>
                                                 <input type="url" name="linkedin" value="{{ $agent->linkedin ?? '' }}" placeholder="https://linkedin.com/company/yourcompany" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border-none text-[10px] font-medium text-gray-800 focus:ring-2 focus:ring-primary/20">
                                             </div>
                                             <div>
-                                                <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest flex items-center gap-2">
                                                     <i class="fab fa-instagram text-pink-500"></i> Instagram Feed
                                                 </label>
                                                 <input type="url" name="instagram" value="{{ $agent->instagram ?? '' }}" placeholder="https://instagram.com/yourprofile" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border-none text-[10px] font-medium text-gray-800 focus:ring-2 focus:ring-primary/20">
@@ -375,7 +382,7 @@
                                 <div class="space-y-6">
                                     <div class="grid grid-cols-1 gap-6">
                                         <div class="space-y-2">
-                                            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Current Password</label>
+                                            <label class="text-[12px] font-bold text-gray-400 uppercase tracking-widest ml-1">Current Password</label>
                                             <div class="relative">
                                                 <input type="password" name="current_password" id="current_password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold pr-12" required>
                                                 <button type="button" onclick="togglePasswordVisibility('current_password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
@@ -385,7 +392,7 @@
                                         </div>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div class="space-y-2">
-                                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">New Password</label>
+                                                <label class="text-[12px] font-bold text-gray-400 uppercase tracking-widest ml-1">New Password</label>
                                                 <div class="relative">
                                                     <input type="password" name="new_password" id="new_password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold pr-12" required minlength="8">
                                                     <button type="button" onclick="togglePasswordVisibility('new_password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
@@ -394,7 +401,7 @@
                                                 </div>
                                             </div>
                                             <div class="space-y-2">
-                                                <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Confirm New Password</label>
+                                                <label class="text-[12px] font-bold text-gray-400 uppercase tracking-widest ml-1">Confirm New Password</label>
                                                 <div class="relative">
                                                     <input type="password" name="confirm_new_password" id="confirm_new_password" placeholder="••••••••" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-gray-700 text-sm font-bold pr-12" required minlength="8">
                                                     <button type="button" onclick="togglePasswordVisibility('confirm_new_password', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
@@ -411,21 +418,7 @@
                             </form>
                         </div>
 
-                        <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
-                            <h3 class="text-xl font-bold text-gray-800 mb-6">Two-Factor Authentication</h3>
-                            <div class="flex items-center justify-between p-6 bg-orange-50 rounded-3xl border border-orange-100">
-                                <div class="flex items-center space-x-4">
-                                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm text-xl">
-                                        <i class="fas fa-shield-alt"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm font-bold text-gray-800">Two-factor authentication is disabled</p>
-                                        <p class="text-[10px] text-gray-500 max-w-sm">Add an extra layer of security to your account by requiring a verification code in addition to your password.</p>
-                                    </div>
-                                </div>
-                                <button class="px-6 py-3 bg-primary text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-orange-600 transition-all">Enable</button>
-                            </div>
-                        </div>
+
                     </div>
 
                     <!-- Notifications Section -->
@@ -691,7 +684,7 @@ function calculateLiveProgress() {
     ];
 
     let filled = 0;
-    const totalFields = 11; // 9 text fields + logo + business card
+    const totalFields = 10; // 9 text fields + logo
 
     // Check text/input fields
     fields.forEach(f => {
@@ -706,14 +699,6 @@ function calculateLiveProgress() {
     const hasExistingLogo = {{ ($agent && $agent->logo) ? 'true' : 'false' }};
     const deleteLogoVal = document.getElementById('delete_logo') ? document.getElementById('delete_logo').value : '0';
     if (deleteLogoVal !== '1' && ((logoInput && logoInput.files && logoInput.files.length > 0) || hasExistingLogo)) {
-        filled++;
-    }
-
-    // Check Business Card
-    const cardInput = document.getElementById('business_card_file');
-    const hasExistingCard = {{ ($agent && $agent->business_card) ? 'true' : 'false' }};
-    const deleteCardVal = document.getElementById('delete_card') ? document.getElementById('delete_card').value : '0';
-    if (deleteCardVal !== '1' && ((cardInput && cardInput.files && cardInput.files.length > 0) || hasExistingCard)) {
         filled++;
     }
 
@@ -752,6 +737,28 @@ document.addEventListener('DOMContentLoaded', () => {
         form.querySelectorAll('input, textarea, select').forEach(el => {
             el.addEventListener('input', calculateLiveProgress);
             el.addEventListener('change', calculateLiveProgress);
+        });
+        
+        // Prevent duplicate phone numbers
+        const phoneInputs = form.querySelectorAll('.phone-number-val, input[name="landline"]');
+        phoneInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const val = this.value.trim();
+                if(!val) return;
+                phoneInputs.forEach(other => {
+                    if(other !== this && other.value.trim() === val) {
+                        Swal.fire({
+                            title: 'Duplicate Number',
+                            text: 'This number is already used in another phone field.',
+                            icon: 'warning',
+                            confirmButtonColor: '#F0642F',
+                            borderRadius: '2rem'
+                        });
+                        this.value = '';
+                        calculateLiveProgress();
+                    }
+                });
+            });
         });
     }
     // Initial run

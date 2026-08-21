@@ -20,7 +20,7 @@ class CheckAgentProfileCompletion
             $agent = \DB::table('agents')->where('id', $agentId)->first();
             if ($agent) {
                 // Calculate completion percentage
-                $fields = ['name', 'phone', 'email', 'address', 'city', 'state', 'country', 'pincode', 'logo', 'about', 'business_card'];
+                $fields = ['name', 'phone', 'email', 'address', 'city', 'state', 'country', 'pincode', 'logo', 'about'];
                 $filled = 0;
                 foreach ($fields as $field) {
                     if (!empty($agent->$field)) {
@@ -35,10 +35,22 @@ class CheckAgentProfileCompletion
 
                 // Check route name
                 $routeName = $request->route() ? $request->route()->getName() : null;
-                $allowedRoutes = ['agent.settings', 'agent.settings.update', 'agent.logout'];
+                
+                // Allow API and logout routes globally
+                if ($request->is('agent/logout*') || $request->is('api*')) {
+                    return $next($request);
+                }
 
-                if ($percentage < 80 && !in_array($routeName, $allowedRoutes) && !$request->is('agent/settings*') && !$request->is('agent/logout*') && !$request->is('api*')) {
-                    return redirect()->route('agent.settings')->with('warning', 'Please complete at least 80% of your profile details to unlock other features (Current completion: ' . $percentage . '%).');
+                if ($percentage < 80) {
+                    $allowedSettingsRoutes = ['agent.settings', 'agent.settings.update'];
+                    if (!in_array($routeName, $allowedSettingsRoutes) && !$request->is('agent/settings*')) {
+                        return redirect()->route('agent.settings')->with('warning', 'Please complete at least 80% of your profile details to unlock other features (Current completion: ' . $percentage . '%).');
+                    }
+                } else if (empty($agent->plan_id)) {
+                    $allowedBillingRoutes = ['agent.payment', 'agent.checkout', 'agent.checkout.process'];
+                    if (!in_array($routeName, $allowedBillingRoutes) && !$request->is('agent/payment*') && !$request->is('agent/checkout*')) {
+                        return redirect()->route('agent.payment')->with('show_upgrade_modal', true)->with('warning', 'Please select a plan to access the full dashboard.');
+                    }
                 }
             }
         }
