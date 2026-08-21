@@ -85,7 +85,8 @@
                     @php
                         $profileLogo = ($agent && $agent->logo) ? $agent->logo : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode(session('agent_name', 'Agent'));
                         $profileName = ($agent && $agent->agency_name) ? $agent->agency_name : ($agent ? $agent->name : session('agent_name', 'Agent'));
-                        $profileRegion = ($agent && $agent->region) ? $agent->region : 'Rajkot, Gujarat';
+                        $locParts = array_filter([$agent->city ?? null, $agent->state ?? null]);
+                        $profileRegion = !empty($locParts) ? implode(', ', $locParts) : ($agent->region ?? 'Rajkot, Gujarat');
                     @endphp
                     <img src="{{ asset($profileLogo) }}" class="w-24 h-24 rounded-full border-4 border-gray-50 object-cover" alt="Profile">
                     <div class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full"></div>

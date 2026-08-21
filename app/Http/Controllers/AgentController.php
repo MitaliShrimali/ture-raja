@@ -349,8 +349,7 @@ class AgentController extends Controller
         }
 
 
-
-        $branches = DB::table('branches')->orderBy('created_at', 'desc')->get();
+        $branches = DB::table('branches')->where('agent_id', $agentId)->orderBy('created_at', 'desc')->get();
 
         return view('agent.pages.branch', [
             'page_title' => 'Branches',

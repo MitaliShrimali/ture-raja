@@ -49,14 +49,6 @@
         </button>
     </div>
 
-    @if(count($selectedServices) < 3)
-        <div id="min-services-warning" class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-            <div class="text-xs font-bold" id="min-services-text">
-                Please select at least 3 services. You currently have only {{ count($selectedServices) }} selected.
-            </div>
-        </div>
-    @endif
 
     <!-- Services Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -154,35 +146,6 @@
             });
         });
 
-        function updateWarningBanner() {
-            const count = document.querySelectorAll('.service-checkbox:checked').length;
-            const banner = document.getElementById('min-services-warning');
-            if (count < 3) {
-                if (!banner) {
-                    const header = document.querySelector('.max-w-6xl');
-                    const newBanner = document.createElement('div');
-                    newBanner.id = 'min-services-warning';
-                    newBanner.className = 'bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl flex items-center gap-3';
-                    newBanner.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        <div class="text-xs font-bold" id="min-services-text">Please select at least 3 services. You currently have only ${count} selected.</div>
-                    `;
-                    if (header && header.children.length > 1) {
-                        header.insertBefore(newBanner, header.children[1]);
-                    }
-                } else {
-                    const textEl = document.getElementById('min-services-text');
-                    if (textEl) {
-                        textEl.textContent = `Please select at least 3 services. You currently have only ${count} selected.`;
-                    }
-                    banner.classList.remove('hidden');
-                }
-            } else {
-                if (banner) {
-                    banner.classList.add('hidden');
-                }
-            }
-        }
 
         // Handle checkbox toggles via AJAX
         document.querySelectorAll('.service-checkbox').forEach(chk => {
@@ -191,14 +154,6 @@
                 const icon = chk.getAttribute('data-icon');
                 const checked = chk.checked;
 
-                // Validate minimum 3 checked
-                const checkedCount = document.querySelectorAll('.service-checkbox:checked').length;
-                if (!checked && checkedCount < 3) {
-                    chk.checked = true;
-                    showToast('You must select at least 3 services.', 'error');
-                    e.preventDefault();
-                    return;
-                }
 
                 fetch("{{ route('agent.services.toggle') }}", {
                     method: 'POST',
@@ -215,17 +170,15 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        updateWarningBanner();
+                        // success
                     } else {
                         chk.checked = !checked;
-                        updateWarningBanner();
                         showToast('Failed to update service status', 'error');
                     }
                 })
                 .catch(err => {
                     console.error('Error toggling service:', err);
                     chk.checked = !checked;
-                    updateWarningBanner();
                     showToast('Error updating service status', 'error');
                 });
             });
