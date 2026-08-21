@@ -48,6 +48,15 @@ class OtpController extends Controller
             ], 500);
         }
 
+        // Send OTP via MSGClub SMS
+        try {
+            $msgClubService = app(\App\Services\MsgClubService::class);
+            $msgClubService->sendOtpSms($phone, $otp);
+        } catch (\Throwable $e) {
+            Log::error("MSGClub SMS Exception in Controller", ['error' => $e->getMessage()]);
+            // We do not fail the request if SMS fails, as Email might have succeeded.
+        }
+
         // Store OTP in cache for 5 minutes
         Cache::put('otp_' . $phone, $otp, now()->addMinutes(5));
 

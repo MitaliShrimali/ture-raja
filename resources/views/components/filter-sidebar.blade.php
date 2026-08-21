@@ -142,48 +142,11 @@
         <div x-data="{ expanded: false }">
             <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Tour Type</h3>
             @php
-                $allTourTypes = DB::table('transits')->where('status', 'Active')->pluck('name')->toArray();
+                $allTourTypes = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->pluck('name')->toArray();
                 if (empty($allTourTypes)) {
                     $allTourTypes = ['Land/Customised Packages', 'Bullet Packages', 'Flight Packages', 'Train Packages', 'Bus Packages', 'Cruise Packages', 'Tracking Packages', 'Helicopter Packages'];
                 }
-                usort($allTourTypes, function($a, $b) {
-                    $nameA = strtolower(trim($a));
-                    $nameB = strtolower(trim($b));
-                    $orderMap = [
-                        'land' => 1,
-                        'bullet' => 2,
-                        'flight' => 3,
-                        'train' => 4,
-                        'bus' => 5,
-                        'cruise' => 6,
-                        'tracking' => 7,
-                        'helicopter' => 8,
-                    ];
-                    
-                    $normA = $nameA;
-                    if (str_contains($nameA, 'land') || str_contains($nameA, 'custom')) $normA = 'land';
-                    elseif (str_contains($nameA, 'bullet') || str_contains($nameA, 'bike')) $normA = 'bullet';
-                    elseif (str_contains($nameA, 'flight') || str_contains($nameA, 'air')) $normA = 'flight';
-                    elseif (str_contains($nameA, 'train') || str_contains($nameA, 'rail')) $normA = 'train';
-                    elseif (str_contains($nameA, 'bus') || str_contains($nameA, 'coach')) $normA = 'bus';
-                    elseif (str_contains($nameA, 'cruise') || str_contains($nameA, 'ship') || str_contains($nameA, 'boat')) $normA = 'cruise';
-                    elseif (str_contains($nameA, 'track') || str_contains($nameA, 'hike') || str_contains($nameA, 'trek')) $normA = 'tracking';
-                    elseif (str_contains($nameA, 'helicopter') || str_contains($nameA, 'sky')) $normA = 'helicopter';
-
-                    $normB = $nameB;
-                    if (str_contains($nameB, 'land') || str_contains($nameB, 'custom')) $normB = 'land';
-                    elseif (str_contains($nameB, 'bullet') || str_contains($nameB, 'bike')) $normB = 'bullet';
-                    elseif (str_contains($nameB, 'flight') || str_contains($nameB, 'air')) $normB = 'flight';
-                    elseif (str_contains($nameB, 'train') || str_contains($nameB, 'rail')) $normB = 'train';
-                    elseif (str_contains($nameB, 'bus') || str_contains($nameB, 'coach')) $normB = 'bus';
-                    elseif (str_contains($nameB, 'cruise') || str_contains($nameB, 'ship') || str_contains($nameB, 'boat')) $normB = 'cruise';
-                    elseif (str_contains($nameB, 'track') || str_contains($nameB, 'hike') || str_contains($nameB, 'trek')) $normB = 'tracking';
-                    elseif (str_contains($nameB, 'helicopter') || str_contains($nameB, 'sky')) $normB = 'helicopter';
-
-                    $orderValA = $orderMap[$normA] ?? 999;
-                    $orderValB = $orderMap[$normB] ?? 999;
-                    return $orderValA <=> $orderValB;
-                });
+                
                 $visibleTypes = array_slice($allTourTypes, 0, 5);
                 $hiddenTypes = array_slice($allTourTypes, 5);
                 $selectedTypes = (array) request('tour_type', []);

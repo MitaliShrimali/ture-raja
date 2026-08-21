@@ -7,7 +7,9 @@
     showAddModal: false,
     showEditModal: false,
     addTransitIcon: 'bus',
-    editItem: { id: '', name: '', selected_icon: '', description: '', status: '', image: '', svg_icon: '' }
+    addPreviewImage: '',
+    addPreviewSvg: '',
+    editItem: { id: '', name: '', selected_icon: '', description: '', status: '', image: '', svg_icon: '', image_preview: '', svg_preview: '', clear_media: 0 }
 }">
 
     {{-- ===== PAGE HEADER ===== --}}
@@ -91,21 +93,26 @@
             <table class="w-full text-left">
                 <thead>
                     <tr class="bg-gray-50/50">
-                        <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest w-20">SR. NO</th>
+                        <th class="py-6 px-4 text-[10px] font-black text-muted-text uppercase tracking-widest w-10"></th>
+                        <th class="py-6 px-6 text-[10px] font-black text-muted-text uppercase tracking-widest w-20">SR. NO</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest min-w-[280px]">TRANSIT PACKAGE</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest text-center">TYPE ICON</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest">FLEET STATUS</th>
                         <th class="py-6 px-10 text-[10px] font-black text-muted-text uppercase tracking-widest text-right">OPERATIONS</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-border-soft">
+                <tbody class="divide-y divide-border-soft" id="transit-table-body">
                     @forelse($transits as $index => $item)
                         @php
                             $srNo = str_pad($transits->firstItem() + $index, 2, '0', STR_PAD_LEFT);
                         @endphp
-                        <tr class="group hover:bg-gray-50/30 transition-colors">
+                        <tr class="group hover:bg-gray-50/30 transition-colors" data-id="{{ $item->id }}">
+                            {{-- DRAG HANDLE --}}
+                            <td class="py-6 px-4 text-center cursor-move text-gray-400 hover:text-gray-600">
+                                <i data-lucide="grip-vertical" size="18"></i>
+                            </td>
                             {{-- SR NO --}}
-                            <td class="py-6 px-10 text-sm font-bold text-muted-text opacity-40">{{ $srNo }}</td>
+                            <td class="py-6 px-6 text-sm font-bold text-muted-text opacity-40">{{ $srNo }}</td>
 
                             {{-- Name + Description --}}
                             <td class="py-6 px-10">
@@ -123,9 +130,28 @@
                             <td class="py-6 px-10">
                                 <div class="flex justify-center">
                                     <div class="w-10 h-10 bg-[#FFF5F2] rounded-full flex items-center justify-center text-primary">
+                                        @php
+                                            $gifMap = [
+                                                'flight' => 'images/airplane.gif',
+                                                'train' => 'images/train.gif',
+                                                'bus' => 'images/bus.gif',
+                                                'bike' => 'images/motorcycle.gif',
+                                                'ship' => 'images/cruise-ship.gif',
+                                                'footprints' => 'images/hiking.gif',
+                                                'helicopter' => 'images/helicopter.gif',
+                                                'car' => 'images/beach.gif',
+                                            ];
+                                            $mappedGif = $gifMap[$item->selected_icon] ?? null;
+                                        @endphp
                                         @if($item->svg_icon)
                                             {{-- Custom uploaded SVG Icon --}}
-                                            <img src="{{ asset($item->svg_icon) }}" class="w-5 h-5 object-contain" alt="Custom Transit Icon">
+                                            <img src="{{ asset($item->svg_icon) }}" class="w-6 h-6 object-contain" alt="Custom Transit Icon">
+                                        @elseif($item->image)
+                                            {{-- Custom uploaded Featured Image --}}
+                                            <img src="{{ asset($item->image) }}" class="w-6 h-6 object-contain" alt="Featured Image">
+                                        @elseif($mappedGif)
+                                            {{-- Standard GIF --}}
+                                            <img src="{{ asset($mappedGif) }}" class="w-6 h-6 object-contain" alt="Standard Transit Icon">
                                         @else
                                             {{-- Presets standard lucide icon --}}
                                             <i data-lucide="{{ $item->selected_icon ?: 'truck' }}" size="18"></i>
@@ -149,7 +175,7 @@
                             <td class="py-6 px-10 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button 
-                                        @click="showEditModal = true; editItem = { id: '{{ $item->id }}', name: '{{ addslashes($item->name) }}', selected_icon: '{{ $item->selected_icon ?: 'bus' }}', description: '{{ addslashes($item->description) }}', status: '{{ $item->status }}', image: '{{ $item->image }}', svg_icon: '{{ $item->svg_icon }}' }"
+                                        @click="showEditModal = true; editItem = { id: '{{ $item->id }}', name: '{{ addslashes($item->name) }}', selected_icon: '{{ $item->selected_icon ?: 'bus' }}', description: '{{ addslashes($item->description) }}', status: '{{ $item->status }}', image: '{{ $item->image }}', svg_icon: '{{ $item->svg_icon }}', clear_media: 0 }"
                                         class="p-2 text-muted-text hover:text-primary transition-all"
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
@@ -247,23 +273,41 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {{-- Featured Image Upload --}}
                     <div class="space-y-2">
-                        <label class="text-xs font-black text-muted-text pl-1">Featured Image</label>
-                        <div class="relative group border-2 border-dashed border-[#FFF5F2] hover:border-primary/30 rounded-[24px] p-6 bg-[#FFF5F2]/20 flex flex-col items-center justify-center transition-colors cursor-pointer" onclick="document.getElementById('add_image_input').click()">
-                            <input type="file" id="add_image_input" name="image" class="hidden" onchange="document.getElementById('add_img_preview_name').innerText = this.files[0] ? this.files[0].name : 'Drop image here'">
-                            <i data-lucide="image-plus" class="text-primary w-8 h-8 mb-2"></i>
-                            <p class="text-xs font-semibold text-foreground" id="add_img_preview_name">Drop image here or <span class="text-primary underline">browse</span></p>
-                            <p class="text-[10px] text-muted-text mt-1">Supports JPG, PNG, WEBP</p>
+                        <label class="text-xs font-black text-muted-text pl-1">Featured Image <span class="text-[9px] font-normal opacity-70 ml-1">(Recommended Size: 800x600px, Max 2MB)</span></label>
+                        <div class="relative group border-2 border-dashed border-[#FFF5F2] hover:border-primary/30 rounded-[24px] p-6 bg-[#FFF5F2]/20 flex flex-col items-center justify-center transition-colors cursor-pointer overflow-hidden" onclick="document.getElementById('add_image_input').click()">
+                            <input type="file" id="add_image_input" name="image" accept=".jpg,.jpeg,.png,.webp,.gif" class="hidden" @change="
+                                const file = $event.target.files[0];
+                                if(file) {
+                                    document.getElementById('add_img_preview_name').innerText = file.name;
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => addPreviewImage = e.target.result;
+                                    reader.readAsDataURL(file);
+                                }
+                            ">
+                            <img x-show="addPreviewImage" :src="addPreviewImage" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-10 transition-opacity" style="display:none;">
+                            <i data-lucide="image-plus" class="text-primary w-8 h-8 mb-2 relative z-10" x-show="!addPreviewImage"></i>
+                            <p class="text-xs font-semibold text-foreground relative z-10" id="add_img_preview_name">Drop image here or <span class="text-primary underline">browse</span></p>
+                            <p class="text-[10px] text-muted-text mt-1 relative z-10">Supports JPG, PNG, WEBP, GIF</p>
                         </div>
                     </div>
 
                     {{-- Custom SVG Icon --}}
                     <div class="space-y-2">
                         <label class="text-xs font-black text-muted-text pl-1">Custom SVG Icon</label>
-                        <div class="relative group border-2 border-dashed border-[#FFF5F2] hover:border-primary/30 rounded-[24px] p-6 bg-[#FFF5F2]/20 flex flex-col items-center justify-center transition-colors cursor-pointer" onclick="document.getElementById('add_svg_input').click()">
-                            <input type="file" id="add_svg_input" name="svg_icon" accept=".svg" class="hidden" onchange="document.getElementById('add_svg_preview_name').innerText = this.files[0] ? this.files[0].name : 'Upload Vector SVG'">
-                            <i data-lucide="shapes" class="text-primary w-8 h-8 mb-2"></i>
-                            <p class="text-xs font-semibold text-foreground" id="add_svg_preview_name">Upload Vector <span class="text-primary underline">SVG</span></p>
-                            <p class="text-[10px] text-muted-text mt-1">Recommended 48x48px</p>
+                        <div class="relative group border-2 border-dashed border-[#FFF5F2] hover:border-primary/30 rounded-[24px] p-6 bg-[#FFF5F2]/20 flex flex-col items-center justify-center transition-colors cursor-pointer overflow-hidden" onclick="document.getElementById('add_svg_input').click()">
+                            <input type="file" id="add_svg_input" name="svg_icon" accept=".svg" class="hidden" @change="
+                                const file = $event.target.files[0];
+                                if(file) {
+                                    document.getElementById('add_svg_preview_name').innerText = file.name;
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => addPreviewSvg = e.target.result;
+                                    reader.readAsDataURL(file);
+                                }
+                            ">
+                            <img x-show="addPreviewSvg" :src="addPreviewSvg" class="absolute inset-0 w-full h-full object-contain opacity-30 group-hover:opacity-10 transition-opacity p-4" style="display:none;">
+                            <i data-lucide="shapes" class="text-primary w-8 h-8 mb-2 relative z-10" x-show="!addPreviewSvg"></i>
+                            <p class="text-xs font-semibold text-foreground relative z-10" id="add_svg_preview_name">Upload Vector <span class="text-primary underline">SVG</span></p>
+                            <p class="text-[10px] text-muted-text mt-1 relative z-10">Recommended 48x48px</p>
                         </div>
                     </div>
                 </div>
@@ -277,13 +321,19 @@
                     <input type="hidden" name="selected_icon" :value="addTransitIcon">
                     <div class="flex flex-wrap items-center gap-3 p-4 bg-[#FFF5F2]/20 rounded-2xl border border-border-soft">
                         @foreach([
-                            ['bus','Bus'], ['car','Car'], ['ship','Cruise'], ['plane','Flight'], ['helicopter','Helicopter'], 
-                            ['train','Train'], ['bike','Bike'], ['motorcycle','Scooter'], ['sailboat','Sailboat'], ['tram-front','Tram']
-                        ] as [$ic, $lb])
-                            <button type="button" @click="addTransitIcon = '{{ $ic }}'"
-                                :class="addTransitIcon === '{{ $ic }}' ? 'ring-2 ring-primary ring-offset-2 bg-white shadow-md text-primary' : 'text-foreground hover:bg-white/50'"
-                                class="w-12 h-12 rounded-xl flex items-center justify-center transition-all" title="{{ $lb }}">
-                                <i data-lucide="{{ $ic }}" class="w-5 h-5"></i>
+                            ['flight','images/airplane.gif','Flight'], 
+                            ['train','images/train.gif','Train'], 
+                            ['bus','images/bus.gif','Bus'], 
+                            ['bike','images/motorcycle.gif','Bike'], 
+                            ['ship','images/cruise-ship.gif','Cruise'], 
+                            ['footprints','images/hiking.gif','Tracking/Hiking'], 
+                            ['helicopter','images/helicopter.gif','Helicopter'], 
+                            ['car','images/beach.gif','Beach/Car']
+                        ] as [$ic, $img, $lb])
+                            <button type="button" @click="addTransitIcon = '{{ $ic }}'; addPreviewImage = ''; addPreviewSvg = ''; document.getElementById('add_image_input').value = ''; document.getElementById('add_svg_input').value = ''; document.getElementById('add_img_preview_name').innerHTML = 'Drop image here or <span class=\'text-primary underline\'>browse</span>'; document.getElementById('add_svg_preview_name').innerHTML = 'Upload Vector <span class=\'text-primary underline\'>SVG</span>';"
+                                :class="addTransitIcon === '{{ $ic }}' ? 'ring-2 ring-primary ring-offset-2 bg-white shadow-md' : 'hover:bg-white/50 opacity-60 hover:opacity-100'"
+                                class="w-14 h-14 rounded-xl flex items-center justify-center transition-all p-2" title="{{ $lb }}">
+                                <img src="{{ asset($img) }}" alt="{{ $lb }}" class="w-full h-full object-contain">
                             </button>
                         @endforeach
                     </div>
@@ -336,23 +386,41 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {{-- Featured Image Upload --}}
                     <div class="space-y-2">
-                        <label class="text-xs font-black text-muted-text pl-1">Featured Image</label>
-                        <div class="relative group border-2 border-dashed border-[#FFF5F2] hover:border-primary/30 rounded-[24px] p-6 bg-[#FFF5F2]/20 flex flex-col items-center justify-center transition-colors cursor-pointer" onclick="document.getElementById('edit_image_input').click()">
-                            <input type="file" id="edit_image_input" name="image" class="hidden" onchange="document.getElementById('edit_img_preview_name').innerText = this.files[0] ? this.files[0].name : 'Drop image here'">
-                            <i data-lucide="image-plus" class="text-primary w-8 h-8 mb-2"></i>
-                            <p class="text-xs font-semibold text-foreground" id="edit_img_preview_name">Drop image here or <span class="text-primary underline">browse</span></p>
-                            <p class="text-[10px] text-muted-text mt-1">Supports JPG, PNG, WEBP</p>
+                        <label class="text-xs font-black text-muted-text pl-1">Featured Image <span class="text-[9px] font-normal opacity-70 ml-1">(Recommended Size: 800x600px, Max 2MB)</span></label>
+                        <div class="relative group border-2 border-dashed border-[#FFF5F2] hover:border-primary/30 rounded-[24px] p-6 bg-[#FFF5F2]/20 flex flex-col items-center justify-center transition-colors cursor-pointer overflow-hidden" onclick="document.getElementById('edit_image_input').click()">
+                            <input type="file" id="edit_image_input" name="image" accept=".jpg,.jpeg,.png,.webp,.gif" class="hidden" @change="
+                                const file = $event.target.files[0];
+                                if(file) {
+                                    document.getElementById('edit_img_preview_name').innerText = file.name;
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => editItem.image_preview = e.target.result;
+                                    reader.readAsDataURL(file);
+                                }
+                            ">
+                            <img x-show="editItem.image_preview || editItem.image" :src="editItem.image_preview || (editItem.image ? '{{ asset('') }}' + editItem.image : '')" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-10 transition-opacity" style="display:none;">
+                            <i data-lucide="image-plus" class="text-primary w-8 h-8 mb-2 relative z-10" x-show="!(editItem.image_preview || editItem.image)"></i>
+                            <p class="text-xs font-semibold text-foreground relative z-10" id="edit_img_preview_name">Drop image here or <span class="text-primary underline">browse</span></p>
+                            <p class="text-[10px] text-muted-text mt-1 relative z-10">Supports JPG, PNG, WEBP, GIF</p>
                         </div>
                     </div>
 
                     {{-- Custom SVG Icon --}}
                     <div class="space-y-2">
                         <label class="text-xs font-black text-muted-text pl-1">Custom SVG Icon</label>
-                        <div class="relative group border-2 border-dashed border-[#FFF5F2] hover:border-primary/30 rounded-[24px] p-6 bg-[#FFF5F2]/20 flex flex-col items-center justify-center transition-colors cursor-pointer" onclick="document.getElementById('edit_svg_input').click()">
-                            <input type="file" id="edit_svg_input" name="svg_icon" accept=".svg" class="hidden" onchange="document.getElementById('edit_svg_preview_name').innerText = this.files[0] ? this.files[0].name : 'Upload Vector SVG'">
-                            <i data-lucide="shapes" class="text-primary w-8 h-8 mb-2"></i>
-                            <p class="text-xs font-semibold text-foreground" id="edit_svg_preview_name">Upload Vector <span class="text-primary underline">SVG</span></p>
-                            <p class="text-[10px] text-muted-text mt-1">Recommended 48x48px</p>
+                        <div class="relative group border-2 border-dashed border-[#FFF5F2] hover:border-primary/30 rounded-[24px] p-6 bg-[#FFF5F2]/20 flex flex-col items-center justify-center transition-colors cursor-pointer overflow-hidden" onclick="document.getElementById('edit_svg_input').click()">
+                            <input type="file" id="edit_svg_input" name="svg_icon" accept=".svg" class="hidden" @change="
+                                const file = $event.target.files[0];
+                                if(file) {
+                                    document.getElementById('edit_svg_preview_name').innerText = file.name;
+                                    const reader = new FileReader();
+                                    reader.onload = (e) => editItem.svg_preview = e.target.result;
+                                    reader.readAsDataURL(file);
+                                }
+                            ">
+                            <img x-show="editItem.svg_preview || editItem.svg_icon" :src="editItem.svg_preview || (editItem.svg_icon ? '{{ asset('') }}' + editItem.svg_icon : '')" class="absolute inset-0 w-full h-full object-contain opacity-30 group-hover:opacity-10 transition-opacity p-4" style="display:none;">
+                            <i data-lucide="shapes" class="text-primary w-8 h-8 mb-2 relative z-10" x-show="!(editItem.svg_preview || editItem.svg_icon)"></i>
+                            <p class="text-xs font-semibold text-foreground relative z-10" id="edit_svg_preview_name">Upload Vector <span class="text-primary underline">SVG</span></p>
+                            <p class="text-[10px] text-muted-text mt-1 relative z-10">Recommended 48x48px</p>
                         </div>
                     </div>
                 </div>
@@ -364,15 +432,22 @@
                         <span class="text-[9px] font-black text-primary bg-primary/10 px-2 py-1 rounded-md uppercase tracking-wider">Quick Selection</span>
                     </div>
                     <input type="hidden" name="selected_icon" :value="editItem.selected_icon">
+                    <input type="hidden" name="clear_media" :value="editItem.clear_media">
                     <div class="flex flex-wrap items-center gap-3 p-4 bg-[#FFF5F2]/20 rounded-2xl border border-border-soft">
                         @foreach([
-                            ['bus','Bus'], ['car','Car'], ['ship','Cruise'], ['plane','Flight'], ['helicopter','Helicopter'], 
-                            ['train','Train'], ['bike','Bike'], ['motorcycle','Scooter'], ['sailboat','Sailboat'], ['tram-front','Tram']
-                        ] as [$ic, $lb])
-                            <button type="button" @click="editItem.selected_icon = '{{ $ic }}'"
-                                :class="editItem.selected_icon === '{{ $ic }}' ? 'ring-2 ring-primary ring-offset-2 bg-white shadow-md text-primary' : 'text-foreground hover:bg-white/50'"
-                                class="w-12 h-12 rounded-xl flex items-center justify-center transition-all" title="{{ $lb }}">
-                                <i data-lucide="{{ $ic }}" class="w-5 h-5"></i>
+                            ['flight','images/airplane.gif','Flight'], 
+                            ['train','images/train.gif','Train'], 
+                            ['bus','images/bus.gif','Bus'], 
+                            ['bike','images/motorcycle.gif','Bike'], 
+                            ['ship','images/cruise-ship.gif','Cruise'], 
+                            ['footprints','images/hiking.gif','Tracking/Hiking'], 
+                            ['helicopter','images/helicopter.gif','Helicopter'], 
+                            ['car','images/beach.gif','Beach/Car']
+                        ] as [$ic, $img, $lb])
+                            <button type="button" @click="editItem.selected_icon = '{{ $ic }}'; editItem.clear_media = 1; editItem.image = ''; editItem.svg_icon = ''; editItem.image_preview = ''; editItem.svg_preview = ''; document.getElementById('edit_image_input').value = ''; document.getElementById('edit_svg_input').value = ''; document.getElementById('edit_img_preview_name').innerHTML = 'Drop image here or <span class=\'text-primary underline\'>browse</span>'; document.getElementById('edit_svg_preview_name').innerHTML = 'Upload Vector <span class=\'text-primary underline\'>SVG</span>';"
+                                :class="editItem.selected_icon === '{{ $ic }}' ? 'ring-2 ring-primary ring-offset-2 bg-white shadow-md' : 'hover:bg-white/50 opacity-60 hover:opacity-100'"
+                                class="w-14 h-14 rounded-xl flex items-center justify-center transition-all p-2" title="{{ $lb }}">
+                                <img src="{{ asset($img) }}" alt="{{ $lb }}" class="w-full h-full object-contain">
                             </button>
                         @endforeach
                     </div>
@@ -399,4 +474,43 @@
     </div>
     </template>
 </div>
+
+<!-- SortableJS -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var el = document.getElementById('transit-table-body');
+        if (el) {
+            Sortable.create(el, {
+                handle: '.cursor-move',
+                animation: 150,
+                ghostClass: 'bg-gray-100',
+                onEnd: function (evt) {
+                    var order = [];
+                    var rows = el.querySelectorAll('tr[data-id]');
+                    rows.forEach(function(row) {
+                        order.push(row.getAttribute('data-id'));
+                    });
+
+                    // Send AJAX request to update the order
+                    fetch('{{ url('/admin/settings/preferences/transits/reorder') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({ order: order })
+                    }).then(response => response.json())
+                      .then(data => {
+                          if(data.success) {
+                              // Optionally reload the page to refresh SR NOs or just show a toast
+                              location.reload();
+                          }
+                      })
+                      .catch(error => console.error('Error:', error));
+                }
+            });
+        }
+    });
+</script>
 @endsection

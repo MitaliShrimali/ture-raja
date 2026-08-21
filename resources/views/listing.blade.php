@@ -20,15 +20,28 @@
     @php
         // Fetch transit music for the active tour_type filter
         $activeTourTypes = array_filter((array) request('tour_type'));
-        $firstTourType = count($activeTourTypes) > 0 ? reset($activeTourTypes) : null;
+        $firstTourType = count($activeTourTypes) === 1 ? reset($activeTourTypes) : null;
         
         $transitMusic = null;
         if ($firstTourType) {
             try {
+                // Try exact match first
                 $transitMusic = DB::table('transit_music')
                     ->where('transit_name', $firstTourType)
                     ->where('status', 'Active')
                     ->first();
+                
+                // If not found, try adding ' Packages' to it or doing a LIKE query
+                if (!$transitMusic) {
+                    $transitMusic = DB::table('transit_music')
+                        ->where('status', 'Active')
+                        ->where(function($q) use ($firstTourType) {
+                            $q->where('transit_name', $firstTourType . ' Packages')
+                              ->orWhere('transit_name', str_replace(' Packages', '', $firstTourType))
+                              ->orWhere('transit_name', 'LIKE', '%' . trim(str_replace(' Packages', '', $firstTourType)) . '%');
+                        })
+                        ->first();
+                }
             } catch (\Exception $e) {
                 $transitMusic = null;
             }

@@ -259,6 +259,7 @@ Route::prefix('admin')->group(function () {
             Route::post('/transits/update', [AdminController::class, 'updateTransit']);
             Route::get('/transits/delete/{id}', [AdminController::class, 'deleteTransit']);
             Route::get('/transits/toggle/{id}', [AdminController::class, 'toggleTransit']);
+            Route::post('/transits/reorder', [AdminController::class, 'reorderTransits']);
 
             // Durations
             Route::get('/durations', [AdminController::class, 'durations']);

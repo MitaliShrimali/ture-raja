@@ -34,24 +34,51 @@
                             </div>
                         </div>
 
-                        {{-- Gateway API Key --}}
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Gateway API Key</label>
+                        {{-- PayU Merchant Key --}}
+                        <div class="space-y-2" x-data="{ show: false }">
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">PayU Merchant Key</label>
                             <div class="relative">
-                                <input type="text" name="gateway_api_key" value="{{ $settings['gateway_api_key'] ?? 's8J6Ji' }}" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 pr-12 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                    <i data-lucide="key" class="w-5 h-5"></i>
+                                <input :type="show ? 'text' : 'password'" name="payu_merchant_key" value="{{ $settings['payu_merchant_key'] ?? '93MUBS' }}" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 pr-12 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600 transition-colors" @click="show = !show">
+                                    <i data-lucide="eye" x-show="!show" class="w-5 h-5"></i>
+                                    <i data-lucide="eye-off" x-show="show" class="w-5 h-5" style="display: none;"></i>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- Merchant Salt --}}
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Merchant Salt</label>
+                        {{-- PayU Merchant Salt --}}
+                        <div class="space-y-2" x-data="{ show: false }">
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">PayU Merchant Salt</label>
                             <div class="relative">
-                                <input type="password" name="merchant_salt" value="{{ $settings['merchant_salt'] ?? 'MIIEvaIBADANBg' }}" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 pr-12 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
+                                <input :type="show ? 'text' : 'password'" name="payu_merchant_salt" value="{{ $settings['payu_merchant_salt'] ?? 'rYZSnOSPjauR4P0rVOMT3J8tKqM1uZJY' }}" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 pr-12 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-gray-600 transition-colors" @click="show = !show">
+                                    <i data-lucide="eye" x-show="!show" class="w-5 h-5"></i>
+                                    <i data-lucide="eye-off" x-show="show" class="w-5 h-5" style="display: none;"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- PayU Test Mode --}}
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">PayU Test Mode</label>
+                            <div class="relative">
+                                <select name="payu_test_mode" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 pr-12 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm appearance-none">
+                                    <option value="false" {{ ($settings['payu_test_mode'] ?? 'false') == 'false' ? 'selected' : '' }}>False (Production)</option>
+                                    <option value="true" {{ ($settings['payu_test_mode'] ?? 'false') == 'true' ? 'selected' : '' }}>True (Sandbox)</option>
+                                </select>
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- PayU Base URL --}}
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">PayU Base URL</label>
+                            <div class="relative">
+                                <input type="text" name="payu_base_url" value="{{ $settings['payu_base_url'] ?? 'https://secure.payu.in/_payment' }}" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 pr-12 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-bold text-foreground shadow-sm" />
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                                    <i data-lucide="lock" class="w-5 h-5"></i>
+                                    <i data-lucide="link" class="w-5 h-5"></i>
                                 </div>
                             </div>
                         </div>

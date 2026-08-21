@@ -322,30 +322,8 @@
       class="flex flex-nowrap justify-center items-start gap-1 md:gap-6 lg:gap-8 pb-4 md:pb-0 px-1 md:px-2 mx-auto w-full overflow-hidden">
       @php
         try {
-          $dbTransits = DB::table('transits')->where('status', 'Active')->get();
-          $dbTransits = $dbTransits->sortBy(function($t) {
-              $name = strtolower(trim($t->name));
-              $orderMap = [
-                  'land' => 1,
-                  'bullet' => 2,
-                  'flight' => 3,
-                  'train' => 4,
-                  'bus' => 5,
-                  'cruise' => 6,
-                  'tracking' => 7,
-                  'helicopter' => 8,
-              ];
-              $norm = $name;
-              if (str_contains($name, 'land') || str_contains($name, 'custom')) $norm = 'land';
-              elseif (str_contains($name, 'bullet') || str_contains($name, 'bike')) $norm = 'bullet';
-              elseif (str_contains($name, 'flight') || str_contains($name, 'air')) $norm = 'flight';
-              elseif (str_contains($name, 'train') || str_contains($name, 'rail')) $norm = 'train';
-              elseif (str_contains($name, 'bus') || str_contains($name, 'coach')) $norm = 'bus';
-              elseif (str_contains($name, 'cruise') || str_contains($name, 'ship') || str_contains($name, 'boat')) $norm = 'cruise';
-              elseif (str_contains($name, 'track') || str_contains($name, 'hike') || str_contains($name, 'trek')) $norm = 'tracking';
-              elseif (str_contains($name, 'helicopter') || str_contains($name, 'sky')) $norm = 'helicopter';
-              return $orderMap[$norm] ?? 999;
-          });
+          $dbTransits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
+
         } catch (\Exception $e) {
           $dbTransits = collect();
         }
@@ -413,16 +391,17 @@
           }
 
           $cleanType = $t->name;
-          $label = str_replace(" Package", "\nPackage", $t->name);
+          $label = str_replace(" Packages", "<br>Packages", e(trim($t->name)));
+          $label = str_replace(" Package", "<br>Package", $label);
         @endphp
         <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
-          class="group flex-1 min-w-0 max-w-[85px] md:max-w-[105px] lg:max-w-[125px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
+          class="group flex-1 min-w-0 max-w-[85px] md:max-w-[125px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
           <div class="w-10 h-10 md:w-16 md:h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex items-center justify-center">
             <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}"
               class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
           </div>
           <span
-            class="text-center text-[9px] md:text-[14px] lg:text-[15px] font-bold text-gray-600 leading-tight whitespace-pre-line group-hover:text-[#e85d26] transition-colors w-full truncate md:overflow-visible md:whitespace-pre-line">{{ $label }}</span>
+            class="block text-center text-[9px] md:text-[14px] lg:text-[15px] font-bold text-gray-600 leading-tight group-hover:text-[#e85d26] transition-colors whitespace-normal">{!! $label !!}</span>
         </a>
       @endforeach
     </div>

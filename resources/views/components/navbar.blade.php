@@ -14,30 +14,8 @@
         <!-- Centered Menu (Transit Icons) -->
         @php
           $isHome = request()->is('/');
-          $dbTransits = DB::table('transits')->where('status', 'Active')->get();
-          $dbTransits = $dbTransits->sortBy(function($t) {
-              $name = strtolower(trim($t->name));
-              $orderMap = [
-                  'land' => 1,
-                  'bullet' => 2,
-                  'flight' => 3,
-                  'train' => 4,
-                  'bus' => 5,
-                  'cruise' => 6,
-                  'tracking' => 7,
-                  'helicopter' => 8,
-              ];
-              $norm = $name;
-              if (str_contains($name, 'land') || str_contains($name, 'custom')) $norm = 'land';
-              elseif (str_contains($name, 'bullet') || str_contains($name, 'bike')) $norm = 'bullet';
-              elseif (str_contains($name, 'flight') || str_contains($name, 'air')) $norm = 'flight';
-              elseif (str_contains($name, 'train') || str_contains($name, 'rail')) $norm = 'train';
-              elseif (str_contains($name, 'bus') || str_contains($name, 'coach')) $norm = 'bus';
-              elseif (str_contains($name, 'cruise') || str_contains($name, 'ship') || str_contains($name, 'boat')) $norm = 'cruise';
-              elseif (str_contains($name, 'track') || str_contains($name, 'hike') || str_contains($name, 'trek')) $norm = 'tracking';
-              elseif (str_contains($name, 'helicopter') || str_contains($name, 'sky')) $norm = 'helicopter';
-              return $orderMap[$norm] ?? 999;
-          });
+          $dbTransits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
+
           $gifMap = [
               'flight' => 'images/airplane.gif',
               'plane' => 'images/airplane.gif',
@@ -68,14 +46,14 @@
                           $imgUrl = $gifMap[$t->selected_icon] ?? 'https://s13.gifyu.com/images/bIHHY.png';
                       }
                       $cleanType = $t->name;
-                      $label = str_replace(" Package", "\nPackage", $t->name);
-                      $label = str_replace("Land/Customised", "Land/Custom", $label);
+                      $label = str_replace(" Packages", "<br>Packages", e(trim($t->name)));
+                      $label = str_replace(" Package", "<br>Package", $label);
                   @endphp
-                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center justify-center group flex-1 min-w-[60px] max-w-[80px] xl:max-w-[100px] text-center">
+                  <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}" class="flex flex-col items-center justify-center group flex-1 min-w-[60px] max-w-[90px] xl:max-w-[120px] text-center">
                      <div class="w-8 h-8 xl:w-9 xl:h-9 2xl:w-11 2xl:h-11 flex items-center justify-center shrink-0">
                         <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">
                      </div>
-                     <span class="text-[9px] xl:text-[10px] 2xl:text-[12px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-1 w-full text-center leading-tight whitespace-pre-line">{{ $label }}</span>
+                     <span class="block text-[9px] xl:text-[10px] 2xl:text-[12px] font-bold text-gray-700 tracking-tight group-hover:text-primary transition-colors mt-1 text-center leading-tight whitespace-normal">{!! $label !!}</span>
                   </a>
                 @endforeach
             </div>
@@ -115,7 +93,7 @@
                         <div class="relative flex items-center justify-center group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                             <i data-lucide="heart" size="20" class="text-primary nav-heart-icon"></i>
                             @php
-                                $wishlistCount = \App\Models\Wishlist::where('user_id', Auth::id())->count();
+                                $wishlistCount = \Illuminate\Support\Facades\DB::table('user_wishlists')->where('user_id', Auth::id())->count();
                             @endphp
                             @if($wishlistCount > 0)
                                 <span class="absolute -top-1.5 -right-1.5 flex items-center justify-center min-w-[16px] h-4 px-1 text-[9px] font-black text-white bg-primary rounded-full border border-white shadow-sm">

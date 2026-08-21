@@ -91,19 +91,19 @@
           <li style="padding:1px 0;"><a href="{{ url('/discover?category=international') }}"
               style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
               onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">International
-              Destinations</a></li>
+              Packages</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/discover?category=domestic') }}"
               style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
               onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Domestic
-              Destinations</a></li>
+              Packages</a></li>
           <li style="padding:1px 0;"><a href="#"
               style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
               onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Multi-City
-              Destinations</a></li>
+               Packages</a></li>
           <li style="padding:1px 0;"><a href="{{ url('/discover?badge=Popular') }}"
               style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
               onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Popular
-              Destinations</a></li>
+              Packages</a></li>
         </ul>
       </div>
 
@@ -111,38 +111,18 @@
       <div class="footer-partition">
         <h4 style="font-size:18px; font-weight:700; margin-bottom:16px;" class="text-white">Popular Transits</h4>
         <ul style="list-style:none; padding:0; margin:0;">
-          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Flight Package')) }}"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Flight
-              Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Train Package')) }}"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Train
-              Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Bus Package')) }}"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Bus
-              Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Bullet Ride')) }}"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Bullet Ride
-              Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Cruise Package')) }}"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Cruise
-              Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Land Package')) }}"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Land
-              Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Tracking Package')) }}"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Tracking
-              Package</a></li>
-          <li style="padding:1px 0;"><a href="{{ url('/discover?tour_type=' . urlencode('Helicopter Package')) }}"
-              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Helicopter
-              Package</a></li>
+          @php
+              $footerTransits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
+          @endphp
+          @foreach($footerTransits as $transit)
+          <li style="padding:1px 0;">
+              <a href="{{ url('/discover?tour_type=' . urlencode($transit->name)) }}"
+                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">
+                {{ $transit->name }}
+              </a>
+          </li>
+          @endforeach
         </ul>
       </div>
 

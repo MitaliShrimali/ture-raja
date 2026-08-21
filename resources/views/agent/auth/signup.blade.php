@@ -321,7 +321,7 @@
                 </button>
 
                 <p class="text-xs font-semibold text-gray-400">
-                    <span x-show="timer > 0">Resend in <span x-text="timer" class="text-[#e85d26]"></span>s</span>
+                    <span x-show="timer > 0">Resend in <span x-text="Math.floor(timer / 60) + ':' + (timer % 60).toString().padStart(2, '0')" class="text-[#e85d26]"></span></span>
                     <button x-show="timer === 0" @click="resendOtp" class="text-[#e85d26] hover:underline cursor-pointer">Resend OTP</button>
                 </p>
                 
@@ -413,7 +413,7 @@
                 showConfirmPassword: false,
                 showOtpModal: false,
                 otp: '',
-                timer: 60,
+                timer: 300,
                 interval: null,
                 loading: false,
                 errorMsg: '',
@@ -469,7 +469,7 @@
                 },
 
                 startTimer() {
-                    this.timer = 60;
+                    this.timer = 300;
                     clearInterval(this.interval);
                     this.interval = setInterval(() => {
                         if(this.timer > 0) this.timer--;

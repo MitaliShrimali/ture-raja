@@ -336,7 +336,7 @@ class AdminController extends Controller
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
-        $transits = DB::table('transits')->where('status', 'Active')->orderBy('id', 'asc')->get();
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
         return view('admin.packages-create', compact('agents', 'themes', 'holidayTypes', 'category', 'transits'));
     }
 
@@ -349,7 +349,7 @@ class AdminController extends Controller
         $agents = DB::table('agents')->orderBy('name', 'asc')->get();
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
-        $transits = DB::table('transits')->where('status', 'Active')->orderBy('id', 'asc')->get();
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
         return view('admin.packages-edit', compact('pkg', 'agents', 'themes', 'holidayTypes', 'transits'));
     }
 
@@ -2541,7 +2541,7 @@ class AdminController extends Controller
     public function homeEditor(Request $request)
     {
         $banners = DB::table('banners')->orderBy('id', 'desc')->paginate(5);
-        $transits = DB::table('transits')->where('status', 'Active')->orderBy('id', 'asc')->get();
+        $transits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
         $transitMusics = DB::table('transit_music')->orderBy('id', 'desc')->get();
         return view('admin.banners', compact('banners', 'transits', 'transitMusics'));
     }
@@ -3708,7 +3708,7 @@ class AdminController extends Controller
                 ],
             ]);
         }
-        $sortedTransits = DB::table('transits')->orderBy('id', 'asc')->get();
+        $sortedTransits = DB::table('transits')->orderBy('sr_no', 'asc')->get();
 
         $page = request()->get('page', 1);
         $perPage = 10;
@@ -3774,6 +3774,11 @@ class AdminController extends Controller
             'updated_at' => now(),
         ];
 
+        if ($request->clear_media) {
+            $data['image'] = null;
+            $data['svg_icon'] = null;
+        }
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = time() . '_img_' . $file->getClientOriginalName();
@@ -3810,6 +3815,17 @@ class AdminController extends Controller
         }
         $this->logActivity('Platform Action', 'Transit status updated!');
         return redirect()->back()->with('success', 'Transit status updated!');
+    }
+
+    public function reorderTransits(Request $request)
+    {
+        $order = $request->input('order');
+        if (is_array($order)) {
+            foreach ($order as $index => $id) {
+                DB::table('transits')->where('id', $id)->update(['sr_no' => $index + 1]);
+            }
+        }
+        return response()->json(['success' => true]);
     }
 
     // ─── DURATIONS ─────────────────────────────────────────────────────────────

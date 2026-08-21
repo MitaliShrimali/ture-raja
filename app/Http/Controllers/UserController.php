@@ -818,6 +818,28 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Account does not exist. Please create an account.')->withInput();
         }
 
+        // Enforce role separation
+        $isCustomerRoute = $request->routeIs('login.submit');
+        $isAdminRoute = $request->routeIs('admin.login.submit');
+        
+        $role = strtoupper($user->role ?? '');
+        $isAdminRole = in_array($role, ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR']);
+        $isCustomerRole = ($role === 'CUSTOMER');
+
+        if ($isCustomerRoute && !$isCustomerRole) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Access denied. Admin credentials cannot be used here.']);
+            }
+            return redirect()->back()->with('error', 'Access denied. Admin credentials cannot be used here. Please use the Admin login portal.')->withInput();
+        }
+
+        if ($isAdminRoute && !$isAdminRole) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => 'Access denied. Admin credentials required.']);
+            }
+            return redirect()->back()->with('error', 'Access denied. Admin credentials required.')->withInput();
+        }
+
         if (Hash::check($request->password, $user->password)) {
             Auth::loginUsingId($user->id);
             
