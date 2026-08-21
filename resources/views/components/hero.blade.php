@@ -166,45 +166,156 @@
       Discover Exclusive Travel Packages from <br class="hidden sm:block">Local Agents Near You!
     </h1><br>
 
+    @php
+        // Fetch data for autocomplete
+        $autoDestinations = \Illuminate\Support\Facades\DB::table('packages')
+            ->whereNotNull('location')
+            ->where('location', '!=', '')
+            ->distinct()
+            ->pluck('location')
+            ->toArray();
+            
+        $autoCities = \Illuminate\Support\Facades\DB::table('agents')
+            ->whereNotNull('city')
+            ->where('city', '!=', '')
+            ->distinct()
+            ->pluck('city')
+            ->toArray();
+    @endphp
+
     <div class="w-full max-w-7xl">
-      <form action="{{ route('search') }}" method="GET">
+      <form action="{{ route('search') }}" method="GET" id="hero-search-form" autocomplete="off">
         <div
           style="background:rgba(255,255,255,0.9); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-radius:12px; box-shadow: 0 10px 40px rgba(0,0,0,0.15);"
           class="flex flex-col md:flex-row items-center gap-0 overflow-visible p-1">
 
           {{-- Destination Field --}}
-          <div class="flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-3 py-2 md:px-6 md:py-4 hero-search-divider transition-all hover:bg-gray-50/50 rounded-lg">
-            <svg class="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
+          <div class="relative flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-3 py-2 md:px-6 md:py-4 hero-search-divider transition-all hover:bg-gray-50/50 rounded-lg group" id="dest-container">
+            <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg> 
-            <input type="text" name="destination" placeholder="Where You Go !!!"
+            <!-- Hidden input for actual submission -->
+            <input type="hidden" name="destination" id="hidden-destination" value="{{ request('destination') }}">
+            <!-- Visible input for UI (NO name attribute to defeat Chrome autofill) -->
+            <input type="text" id="hero-destination" placeholder="Where You Go !!!" autocomplete="off"
               class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
               style="box-shadow: none;" value="{{ request('destination') }}">
+            <!-- Dropdown -->
+            <ul id="dest-dropdown" class="absolute left-0 right-0 top-[100%] mt-1 bg-white border border-gray-100 rounded-lg shadow-xl max-h-60 overflow-y-auto hidden z-50 text-left">
+            </ul>
           </div>
 
           {{-- Agent/City Field --}}
-          <div class="flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-3 py-2 md:px-6 md:py-4 transition-all hover:bg-gray-50/50 rounded-lg">
-            <svg class="w-4 h-4 md:w-5 md:h-5" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
+          <div class="relative flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-3 py-2 md:px-6 md:py-4 transition-all hover:bg-gray-50/50 rounded-lg group" id="city-container">
+            <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
-            <input type="text" name="from_city" placeholder="Search agent from your city/near by location"
+            <!-- Hidden input for actual submission -->
+            <input type="hidden" name="from_city" id="hidden-city" value="{{ request('from_city') }}">
+            <!-- Visible input for UI (NO name attribute to defeat Chrome autofill) -->
+            <input type="text" id="hero-city" placeholder="Search agent from your city/near by location" autocomplete="off"
               class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
               style="box-shadow: none;" value="{{ request('from_city') }}">
+            <!-- Dropdown -->
+            <ul id="city-dropdown" class="absolute left-0 right-0 top-[100%] mt-1 bg-white border border-gray-100 rounded-lg shadow-xl max-h-60 overflow-y-auto hidden z-50 text-left">
+            </ul>
           </div>
 
           {{-- Search Button --}}
           <div class="px-2 py-2 flex-shrink-0 w-full md:w-auto">
             <button type="submit" style="background:#ea580c;"
               class="rounded-xl px-4 py-2.5 md:px-10 md:py-4 text-white font-black text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto shadow-md hover:shadow-lg">
-              Search
+              Search Now
             </button>
           </div>
         </div>
       </form>
     </div>
   </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const destInput = document.getElementById('hero-destination');
+        const destDropdown = document.getElementById('dest-dropdown');
+        const cityInput = document.getElementById('hero-city');
+        const cityDropdown = document.getElementById('city-dropdown');
+        const searchForm = document.getElementById('hero-search-form');
+        
+        const destinations = @json($autoDestinations);
+        const cities = @json($autoCities);
+
+        // Prevent form submission if both fields are not filled
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                if (!destInput.value.trim() || !cityInput.value.trim()) {
+                    e.preventDefault();
+                    // Optionally alert the user or show a toast
+                    alert('Please enter both Destination and City to search.');
+                }
+            });
+            
+            // Prevent Enter key from submitting form inside inputs unless both are filled
+            [destInput, cityInput].forEach(input => {
+                if (input) {
+                    input.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault(); // Stop default form submit on Enter key
+                        }
+                    });
+                }
+            });
+        }
+
+        function setupAutocomplete(input, dropdown, data, hiddenInput) {
+            // Defeat native browser autocomplete thoroughly
+            input.setAttribute('autocomplete', 'nope');
+            
+            // Sync typing to hidden input
+            input.addEventListener('input', function() {
+                hiddenInput.value = this.value;
+                const val = this.value.toLowerCase();
+                dropdown.innerHTML = '';
+                
+                if (!val) {
+                    dropdown.classList.add('hidden');
+                    return;
+                }
+                
+                const matches = data.filter(item => item.toLowerCase().includes(val));
+                
+                if (matches.length > 0) {
+                    matches.forEach(match => {
+                        const li = document.createElement('li');
+                        li.className = 'px-4 py-3 hover:bg-orange-50 cursor-pointer text-sm font-medium text-gray-700 transition-colors border-b border-gray-50 last:border-0';
+                        li.textContent = match;
+                        li.addEventListener('mousedown', function(e) {
+                            e.preventDefault(); // Prevent blur
+                            input.value = match;
+                            hiddenInput.value = match; // Sync selection to hidden input
+                            dropdown.classList.add('hidden');
+                        });
+                        dropdown.appendChild(li);
+                    });
+                    dropdown.classList.remove('hidden');
+                } else {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+            input.addEventListener('blur', function() {
+                setTimeout(() => dropdown.classList.add('hidden'), 200);
+            });
+        }
+
+        const hiddenDest = document.getElementById('hidden-destination');
+        const hiddenCity = document.getElementById('hidden-city');
+
+        if (destInput && destDropdown && hiddenDest) setupAutocomplete(destInput, destDropdown, destinations, hiddenDest);
+        if (cityInput && cityDropdown && hiddenCity) setupAutocomplete(cityInput, cityDropdown, cities, hiddenCity);
+    });
+</script>
 
 
 
