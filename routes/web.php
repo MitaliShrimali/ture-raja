@@ -828,7 +828,28 @@ Route::get('/packages/{slug}', function ($slug) {
                 ->get()
                 ->toArray();
         }
-        return view('packages.show', ['package' => $package, 'agentPackages' => $agentPackages]);
+        
+        // Fetch similar packages based on location and title
+        $similarPackagesQuery = \App\Models\Package::where('status', 'Active')
+            ->where('id', '!=', $dbPkg->id);
+            
+        $similarPackagesQuery->where(function($query) use ($dbPkg) {
+            if (!empty($dbPkg->location)) {
+                $query->orWhere('location', 'like', '%' . $dbPkg->location . '%');
+            }
+            if (!empty($dbPkg->title)) {
+                $words = array_filter(explode(' ', str_replace(['-','_'], ' ', $dbPkg->title)), function($word) {
+                    return strlen($word) > 3 && !in_array(strtolower($word), ['tour', 'package', 'trip', 'holiday', 'with', 'from']);
+                });
+                foreach ($words as $word) {
+                    $query->orWhere('title', 'like', '%' . $word . '%');
+                }
+            }
+        });
+        
+        $similarPackages = $similarPackagesQuery->inRandomOrder()->take(8)->get()->toArray();
+
+        return view('packages.show', ['package' => $package, 'agentPackages' => $agentPackages, 'similarPackages' => $similarPackages]);
     }
 
     if (!isset($allPackages[$slug])) {
@@ -882,7 +903,7 @@ Route::get('/packages/{slug}', function ($slug) {
         }
     } catch (\Exception $e) {}
 
-    return view('packages.show', ['package' => $allPackages[$slug]]);
+    return view('packages.show', ['package' => $allPackages[$slug], 'similarPackages' => []]);
 })->name('packages.show');
 
 Route::get('/audio/bg_music.mp3', function () { return response()->file(public_path('audio/bg_music.mp3')); });

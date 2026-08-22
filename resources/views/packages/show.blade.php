@@ -1241,11 +1241,25 @@
                         </div>
 
                         {{-- Leave Feedback --}}
-                        <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-5 mt-6" id="feedback-form">
+                        <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-5 mt-6" id="feedback-form"
+                             x-data="{ showLoginMsg: false }">
                             <div style="margin-bottom: 0.5rem;">
                                 <h3 class="font-black text-gray-900 section-heading"
                                     style="font-family: 'Poppins', sans-serif; font-size: 22px;">Leave Feedback</h3>
                                 <p class="text-gray-500 mt-4" style="font-size: 14px;">How was your experience with {{ $agentNameForForm }}?</p>
+                            </div>
+
+                            <!-- Login Warning Message -->
+                            <div x-show="showLoginMsg" style="display: none;"
+                                x-transition:enter="transition ease-out duration-300"
+                                x-transition:enter-start="opacity-0 translate-y-2"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                x-transition:leave="transition ease-in duration-200"
+                                x-transition:leave-start="opacity-100 translate-y-0"
+                                x-transition:leave-end="opacity-0 translate-y-2"
+                                class="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 font-bold text-xs flex items-center gap-2 mb-2">
+                                <i class="fas fa-exclamation-circle text-red-500 text-sm"></i>
+                                <span>You must login first to submit a review!</span>
                             </div>
 
                             @if(session('feedback_success'))
@@ -1256,8 +1270,15 @@
                                 </div>
                             @endif
 
-                            <form action="{{ route('package.feedback.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3">
-                                @csrf
+                            <div class="relative">
+                                @if(!Auth::check())
+                                <!-- Transparent overlay to block form interaction when not logged in -->
+                                <div @click="showLoginMsg = true; setTimeout(() => showLoginMsg = false, 4000)" 
+                                     class="absolute inset-0 z-10 cursor-not-allowed"></div>
+                                @endif
+                                
+                                <form action="{{ route('package.feedback.store') }}" method="POST" enctype="multipart/form-data" class="space-y-3">
+                                    @csrf
                                 <input type="hidden" name="agent_id" value="{{ $agentIdForForm }}">
                                 <input type="hidden" name="package_id" value="{{ $package['id'] ?? '' }}">
                                 
@@ -1287,7 +1308,8 @@
                                     class="w-full py-3 bg-gray-900 hover:bg-black text-white font-black text-sm rounded-md transition-colors duration-200 shadow-sm mt-2">
                                     Submit Feedback
                                 </button>
-                            </form>
+                                </form>
+                            </div>
                         </div>
 
                     </div>{{-- end right sidebar --}}
@@ -1308,8 +1330,40 @@
                     <div class="relative group">
                         <div class="flex gap-6 overflow-hidden pt-2 pb-8 testimonial-track" id="testi-slider">
                             @php
-                                $testimonials = \DB::table('reviews')->where('status', 'Active')->orderBy('id', 'desc')->get()->toArray();
-                                $allTestimonials = $testimonials; // Removed array_merge so it doesn't duplicate
+                                // Fetch agent feedback
+                                $agentId = $agentIdForForm ?? ($dbAgent->id ?? 0);
+                                $agentFeedbacks = \App\Models\AgentFeedback::where('agent_id', $agentId)
+                                    ->orderBy('id', 'desc')
+                                    ->get()
+                                    ->map(function($f) {
+                                        return (object) [
+                                            'id' => $f->id,
+                                            'name' => $f->customer_name,
+                                            'location' => 'Verified Customer',
+                                            'text' => $f->message,
+                                            'image' => $f->image_path ?: 'https://ui-avatars.com/api/?name='.urlencode($f->customer_name).'&background=random',
+                                            'rating' => $f->rating,
+                                        ];
+                                    })->toArray();
+
+                                // Fetch Tour Raja reviews
+                                $testimonials = \DB::table('reviews')
+                                    ->where('status', 'Active')
+                                    ->orderBy('id', 'desc')
+                                    ->get()
+                                    ->map(function($r) {
+                                        return (object) [
+                                            'id' => $r->id,
+                                            'name' => $r->name,
+                                            'location' => $r->location,
+                                            'text' => $r->text,
+                                            'image' => $r->image ?: 'https://ui-avatars.com/api/?name='.urlencode($r->name).'&background=random',
+                                            'rating' => $r->rating,
+                                        ];
+                                    })->toArray();
+
+                                // Merge: agent reviews first, then tourraja reviews
+                                $allTestimonials = array_merge($agentFeedbacks, $testimonials);
                             @endphp
 
                             @foreach($allTestimonials as $testi)
@@ -1399,6 +1453,31 @@
                             @foreach($agentPackages as $agentPkg)
                                 <div style="width: 320px; flex-shrink: 0;" class="snap-start">
                                     <x-package-card :pkg="$agentPkg" />
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </section>
+            @endif
+
+            @if(!empty($similarPackages) && count($similarPackages) > 0)
+            <!-- Similar Packages Suggestions Section -->
+            <section class="pt-6 pb-12 lg:pt-8 lg:pb-16 bg-white border-b border-gray-100">
+                <div class="container-custom">
+                    <div class="flex items-center justify-between mb-6 md:mb-8">
+                        <div class="space-y-1">
+                            <h2 class="text-[34px] leading-tight font-black text-foreground tracking-tight font-heading"
+                                style="font-family: 'Poppins', sans-serif;">More Packages similar to {{ $package['title'] ?? 'search' }}</h2>
+                            <p class="text-text-muted text-xs font-semibold">Other packages matching this destination or theme</p>
+                        </div>
+                    </div>
+
+                    <div class="relative w-full">
+                        <div id="similar-pkg-slider" class="flex overflow-x-auto gap-4 pb-4 hide-scrollbar scroll-smooth w-full snap-x snap-mandatory">
+                            @foreach($similarPackages as $simPkg)
+                                <div style="width: 320px; flex-shrink: 0;" class="snap-start">
+                                    <x-package-card :pkg="$simPkg" />
                                 </div>
                             @endforeach
                         </div>
