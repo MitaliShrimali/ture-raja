@@ -53,7 +53,7 @@
                 <div id="intl-slider" class="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-5 pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
                 @foreach($scrollingIntl as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-xl overflow-hidden block group" style="height:150px; width: 260px; flex-shrink: 0;">
+                   class="relative rounded-xl overflow-hidden block group w-[45vw] sm:w-[260px]" style="height:150px; flex-shrink: 0;">
                     <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
@@ -139,7 +139,7 @@
                 <div id="dom-slider" class="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-5 pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
                 @foreach($scrollingDom as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
-                   class="relative rounded-xl overflow-hidden block group" style="height:150px; width: 260px; flex-shrink: 0;">
+                   class="relative rounded-xl overflow-hidden block group w-[45vw] sm:w-[260px]" style="height:150px; flex-shrink: 0;">
                     <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}"
                          class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
@@ -295,9 +295,9 @@
 
                 <!-- Cards Track -->
                 <style>
-                    .sticker-card-custom { flex-shrink: 0; width: 260px; }
-                    @media (min-width: 768px) { .sticker-card-custom { width: calc(50% - 12px); } }
-                    @media (min-width: 1024px) { .sticker-card-custom { width: calc(25% - 18px); } }
+                    .sticker-card-custom { flex-shrink: 0; width: 45vw; max-width: 260px; }
+                    @media (min-width: 768px) { .sticker-card-custom { width: calc(50% - 12px); max-width: none; } }
+                    @media (min-width: 1024px) { .sticker-card-custom { width: calc(25% - 18px); max-width: none; } }
                 </style>
                 <div id="promo-slider" class="flex-1 min-w-0 flex items-center justify-start overflow-x-auto hide-scrollbar z-10 relative pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
                             @if(isset($offerStickers) && $offerStickers->count() > 0)
@@ -443,50 +443,120 @@
     </section>
 
     <!-- Section 3: Why Travel With Tour Raja -->
-    <div class="max-w-7xl mx-auto px-6 pt-8 pb-4 md:pb-8 lg:pb-10">
-        <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-0 mb-8">
+    <div class="max-w-7xl mx-auto px-6 pt-2 pb-4 md:pb-8 lg:pb-10">
+        <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-0 mb-4">
             <span style="font-size: 34px; line-height: 1; display: block; margin-top: 0;">Why tour raja !!!</span>
         </x-section-title>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <style>
+            .why-us-mobile-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.75rem;
+            }
+            .why-us-card {
+                padding: 1rem 0.5rem;
+                border-radius: 16px;
+            }
+            .why-us-icon-container {
+                width: 3rem;
+                height: 3rem;
+                margin-bottom: 0.75rem;
+                border-radius: 12px;
+            }
+            .why-us-icon-img {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+            .why-us-title {
+                font-size: 13px;
+                margin-bottom: 0.25rem;
+            }
+            .why-us-desc {
+                font-size: 11px;
+                margin-bottom: 1rem;
+                padding: 0;
+            }
+            .why-us-link {
+                font-size: 11px;
+            }
+            
+            @media(min-width: 640px) {
+                .why-us-mobile-grid {
+                    gap: 1.5rem;
+                }
+                .why-us-card {
+                    padding: 2rem;
+                    border-radius: 24px;
+                }
+                .why-us-icon-container {
+                    width: 4rem;
+                    height: 4rem;
+                    margin-bottom: 1.5rem;
+                    border-radius: 18px;
+                }
+                .why-us-icon-img {
+                    width: 2rem;
+                    height: 2rem;
+                }
+                .why-us-title {
+                    font-size: 16px;
+                    margin-bottom: 0.75rem;
+                }
+                .why-us-desc {
+                    font-size: 13px;
+                    margin-bottom: 2rem;
+                    padding: 0 0.5rem;
+                }
+                .why-us-link {
+                    font-size: 13px;
+                }
+            }
+            @media(min-width: 1024px) {
+                .why-us-mobile-grid {
+                    grid-template-columns: repeat(4, minmax(0, 1fr));
+                }
+            }
+        </style>
+        <div class="why-us-mobile-grid">
             <!-- Card 1: Security Assurance -->
-            <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
-                <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <img src="{{ asset('svgs/security.svg.svg') }}" alt="Security Assurance" class="w-8 h-8 object-contain">
+            <div class="why-us-card flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
+                <div class="why-us-icon-container bg-white flex items-center justify-center shadow-sm">
+                    <img src="{{ asset('svgs/security.svg.svg') }}" alt="Security Assurance" class="why-us-icon-img object-contain">
                 </div>
-                <h4 class="font-extrabold text-black text-[16px] mb-3">Security Assurance</h4>
-                <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Demonstrates commitment to user data security</p>
-                <a href="#" class="mt-auto text-black font-medium text-[13px] flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+                <h4 class="why-us-title font-extrabold text-black">Security Assurance</h4>
+                <p class="why-us-desc text-gray-500 font-medium leading-relaxed">Demonstrates commitment to user data security</p>
+                <a href="#" class="why-us-link mt-auto text-black font-medium flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i></a>
             </div>
 
             <!-- Card 2: Best Price Deals -->
-            <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
-                <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <img src="{{ asset('svgs/support.svg.svg') }}" alt="Best Price Deals" class="w-8 h-8 object-contain">
+            <div class="why-us-card flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
+                <div class="why-us-icon-container bg-white flex items-center justify-center shadow-sm">
+                    <img src="{{ asset('svgs/support.svg.svg') }}" alt="Best Price Deals" class="why-us-icon-img object-contain">
                 </div>
-                <h4 class="font-extrabold text-black text-[16px] mb-3">Best Price Deals</h4>
-                <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Compare and choose the most affordable package</p>
-                <a href="#" class="mt-auto text-black font-medium text-[13px] flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+                <h4 class="why-us-title font-extrabold text-black">Best Price Deals</h4>
+                <p class="why-us-desc text-gray-500 font-medium leading-relaxed">Compare and choose the most affordable package</p>
+                <a href="#" class="why-us-link mt-auto text-black font-medium flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i></a>
             </div>
 
             <!-- Card 3: Direct Agent Contacts -->
-            <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
-                <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <img src="{{ asset('svgs/policy.svg.svg') }}" alt="Direct Agent Contacts" class="w-8 h-8 object-contain">
+            <div class="why-us-card flex flex-col items-center text-center shadow-sm" style="background-color: #F8EFE4 !important;">
+                <div class="why-us-icon-container bg-white flex items-center justify-center shadow-sm">
+                    <img src="{{ asset('svgs/policy.svg.svg') }}" alt="Direct Agent Contacts" class="why-us-icon-img object-contain">
                 </div>
-                <h4 class="font-extrabold text-black text-[16px] mb-3">Direct Agent Contacts</h4>
-                <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">No middleman, connect instantly</p>
-                <a href="#" class="mt-auto text-black font-medium text-[13px] flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+                <h4 class="why-us-title font-extrabold text-black">Direct Agent Contacts</h4>
+                <p class="why-us-desc text-gray-500 font-medium leading-relaxed">No middleman, connect instantly</p>
+                <a href="#" class="why-us-link mt-auto text-black font-medium flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i></a>
             </div>
 
             <!-- Card 4: Find Nearby Travel Agent -->
-            <div class="p-8 rounded-[24px] flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
-                <div class="w-16 h-16 rounded-[18px] bg-white flex items-center justify-center shadow-sm mb-6">
-                    <img src="{{ asset('svgs/repu.svg.svg') }}" alt="Find Nearby Travel Agent" class="w-8 h-8 object-contain">
+            <div class="why-us-card flex flex-col items-center text-center shadow-sm" style="background-color: #E8E9EC !important;">
+                <div class="why-us-icon-container bg-white flex items-center justify-center shadow-sm">
+                    <img src="{{ asset('svgs/repu.svg.svg') }}" alt="Find Nearby Travel Agent" class="why-us-icon-img object-contain">
                 </div>
-                <h4 class="font-extrabold text-black text-[16px] mb-3">Find Nearby Travel Agent</h4>
-                <p class="text-gray-500 font-medium text-[13px] leading-relaxed mb-8 px-2">Find the perfect trip without confusion with your local agent</p>
-                <a href="#" class="mt-auto text-black font-medium text-[13px] flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></a>
+                <h4 class="why-us-title font-extrabold text-black">Find Nearby Travel Agent</h4>
+                <p class="why-us-desc text-gray-500 font-medium leading-relaxed">Find the perfect trip without confusion with your local agent</p>
+                <a href="#" class="why-us-link mt-auto text-black font-medium flex items-center gap-1.5 transition-opacity hover:opacity-70">Learn More <i data-lucide="arrow-right" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i></a>
             </div>
         </div>
     </div>
@@ -818,8 +888,17 @@
                     $packages = array_merge($mappedDbPkgs, $filteredStaticPkgs);
                 @endphp
 
+                <style>
+                    @media (max-width: 639px) {
+                        .mobile-shrink-card {
+                            max-width: 340px !important;
+                            margin-left: auto !important;
+                            margin-right: auto !important;
+                        }
+                    }
+                </style>
                 @foreach($packages as $pkg)
-                    <div class="animate-fade-up pkg-card {{ $loop->index >= 8 ? 'hidden' : '' }}"
+                    <div class="animate-fade-up pkg-card mobile-shrink-card {{ $loop->index >= 8 ? 'hidden' : '' }}"
                          style="animation-delay: {{ $loop->index * 100 }}ms"
                          data-category="{{ $pkg['category'] }}"
                          data-duration="{{ $pkg['duration_days'] }}"
@@ -856,7 +935,16 @@
             </div>
 
             <!-- Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <style>
+                @media (max-width: 767px) {
+                    .mobile-category-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 0.75rem !important; /* equivalent to gap-3 */
+                    }
+                }
+            </style>
+            <div class="mobile-category-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 <!-- Card 1: Mountain -->
                 <a href="{{ url('/discover?categories[]=Mountain') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
                     <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
@@ -993,14 +1081,14 @@
             </div>
 
             <div class="relative group">
-                <div class="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-6 pt-2 pb-8" id="testi-slider">
+                <div id="testi-slider" class="hide-scrollbar gap-6 pt-2 pb-8" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch;">
                     @php
                         $testimonials = \DB::table('reviews')->where('status', 'Active')->orderBy('id', 'desc')->get()->toArray();
                         $allTestimonials = array_merge($testimonials, $testimonials, $testimonials, $testimonials); // Duplicate to allow continuous scrolling
                     @endphp
 
                     @foreach($allTestimonials as $testi)
-                        <div class="flex-shrink-0 w-[80vw] md:w-[450px] testimonial-card">
+                        <div class="testimonial-card" style="flex: 0 0 auto !important; width: 85vw !important; max-width: 450px !important;">
                             <div class="p-6 rounded-[32px] border border-border-soft bg-white shadow-soft hover:shadow-premium transition-all duration-500 h-full flex flex-col space-y-3">
                                 <h4 class="text-lg md:text-xl font-black text-foreground font-heading">The best booking system</h4>
                                 <p class="text-text-muted text-xs md:text-sm leading-relaxed font-medium italic break-words line-clamp-4">"{{ $testi->text }}"</p>
@@ -1304,8 +1392,23 @@
                     slider.addEventListener('click', preventClick, true);
 
                     if (continuous) {
+                        let isTouching = false;
+                        let isHovered = false;
+                        
+                        if (window.matchMedia("(hover: hover)").matches) {
+                            slider.addEventListener('mouseenter', () => isHovered = true);
+                            slider.addEventListener('mouseleave', () => isHovered = false);
+                        }
+
+                        slider.addEventListener('touchstart', () => {
+                            isTouching = true;
+                            isHovered = false;
+                        }, {passive: true});
+                        slider.addEventListener('touchend', () => { setTimeout(() => isTouching = false, 500); }, {passive: true});
+                        slider.addEventListener('touchcancel', () => isTouching = false, {passive: true});
+
                         const autoScroll = () => {
-                            if (!isDown) {
+                            if (!isDown && !isTouching && !isHovered) {
                                 slider.scrollLeft += 1;
                                 if (Math.ceil(slider.scrollLeft) >= slider.scrollWidth - slider.clientWidth) {
                                     slider.scrollLeft = 0;
@@ -1314,9 +1417,6 @@
                             requestAnimationFrame(autoScroll);
                         };
                         requestAnimationFrame(autoScroll);
-                        
-                        slider.addEventListener('touchstart', () => isHovered = true, {passive: true});
-                        slider.addEventListener('touchend', () => isHovered = false, {passive: true});
                     } else if (autoSwipe) {
                         let interval = setInterval(moveNext, 2500);
                         const resetInterval = () => {

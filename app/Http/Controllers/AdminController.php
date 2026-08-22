@@ -2805,7 +2805,7 @@ class AdminController extends Controller
     // CMS (PAGES)
     public function cms(Request $request)
     {
-        $pages = DB::table('cms_pages')->orderBy('id', 'asc')->paginate(5);
+        $pages = DB::table('cms_pages')->orderBy('id', 'asc')->paginate(20);
         return view('admin.cms', compact('pages'));
     }
 
@@ -2827,6 +2827,15 @@ class AdminController extends Controller
         return redirect()->back()->with('success', 'CMS static page created!');
     }
 
+    public function editCmsPage($id)
+    {
+        $page = DB::table('cms_pages')->where('id', $id)->first();
+        if (!$page) {
+            return redirect()->back()->with('error', 'Page not found!');
+        }
+        return view('admin.cms_edit', compact('page'));
+    }
+
     public function updateCmsPage(Request $request)
     {
         $request->validate(['id' => 'required', 'title' => 'required']);
@@ -2840,7 +2849,7 @@ class AdminController extends Controller
         ]);
 
         $this->logActivity('Platform Action', 'CMS static page updated!');
-        return redirect()->back()->with('success', 'CMS static page updated!');
+        return redirect('/admin/cms')->with('success', 'CMS static page updated!');
     }
 
     public function deleteCmsPage($id)

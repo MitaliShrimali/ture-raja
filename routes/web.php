@@ -158,6 +158,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/home-editor', [AdminController::class, 'homeEditor']);
     Route::get('/notifications', [AdminController::class, 'notifications']);
     Route::get('/cms', [AdminController::class, 'cms']);
+    Route::get('/cms/edit/{id}', [AdminController::class, 'editCmsPage']);
     Route::get('/reports', [AdminController::class, 'reports']);
     Route::get('/reports/inquiries/download', [AdminController::class, 'downloadInquiryReport']);
     Route::get('/reports/leads/download', [AdminController::class, 'downloadLeadsReport']);

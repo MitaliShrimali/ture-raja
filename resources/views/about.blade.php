@@ -25,23 +25,8 @@
             <div class="w-full flex-2">
                 <h4 class="text-gray-500 font-bold text-[12px] uppercase mb-2 tracking-wider"> TO OUR SITE!</h4>
                 <h2 class="text-2xl lg:text-[40px] font-black text-black mb-4 leading-[1.15] tracking-tight">About Us</h2>
-                <div class="text-gray-800 font-medium text-[15px] leading-relaxed space-y-4">
-                    <p>Welcome to <span class="font-bold text-black">www.tour raja.com</span> [“Tour raja”] – your trusted platform connecting travel agents with customers through seamless brochure uploads and easy access to contact details.</p>
-                    <p>At Tour raja, we specialize in offering travel agents a user-friendly space to showcase their brochures, upload their latest travel offerings, and manage essential contact details. Our platform is designed to make it easier for both travel agents and customers to find what they need, when they need it.</p>
-                    
-                    <div class="mt-6 space-y-2"> 
-                        <h3 class="text-lg font-bold text-black">For Travel Agents:</h3>
-                        <p>We simplify the process of sharing your brochures with potential clients, providing a hassle-free solution for managing and displaying your travel products and services online. You can easily upload, update, and organize your brochures, making them accessible to your customers in just a few clicks.</p>
-                    </div>
-
-                    <div class="mt-6 space-y-2">
-                        <h3 class="text-lg font-bold text-black">For Customers:</h3>
-                        <p>Our platform makes it easier than ever to explore a wide range of travel options, from brochures to contact details. Whether you're planning your next vacation or researching travel services, you’ll find all the information you need in one place.</p>
-                    </div>
-
-                    <p class="mt-6">Our mission is to bridge the gap between travel agents and customers by providing a straightforward, efficient platform that saves time and enhances business opportunities. Whether you’re a travel agent looking to showcase your offerings or a customer seeking personalized travel information, Tour raja is here to make the process smooth and seamless for everyone.</p>
-                    
-                    <p class="mt-4 font-bold text-black">Join Tour raja today and experience the convenience of connecting, sharing, and discovering travel options with ease.</p>
+                <div class="text-gray-800 font-medium text-[15px] leading-relaxed space-y-4 cms-content">
+                    {!! \Illuminate\Support\Facades\DB::table('cms_pages')->where('slug', 'about-us')->value('content') !!}
                 </div>
             </div>
         </div>
@@ -608,4 +593,17 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .cms-content h1 { font-size: 2.25rem; font-weight: 800; margin-bottom: 1rem; margin-top: 2rem; color: #1f2937; line-height: 1.2; }
+        .cms-content h2 { font-size: 1.875rem; font-weight: 700; margin-bottom: 1rem; margin-top: 2rem; color: #374151; line-height: 1.3; }
+        .cms-content h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; margin-top: 1.5rem; color: #4b5563; }
+        .cms-content p { margin-bottom: 1.25rem; line-height: 1.7; }
+        .cms-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.25rem; }
+        .cms-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.25rem; }
+        .cms-content li { margin-bottom: 0.5rem; }
+        .cms-content a { color: #e85d26; text-decoration: underline; }
+        .cms-content strong { font-weight: 700; color: #111827; }
+        .cms-content br { margin-bottom: 1rem; }
+    </style>
 @endsection

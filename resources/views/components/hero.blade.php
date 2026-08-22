@@ -361,8 +361,18 @@
   <div class="container-custom">
     <h2 class="font-black text-foreground tracking-tight font-heading mb-2 md:mb-4 text-center"
       style="font-size: 28px;">Popular Transits</h2>
+    <style>
+      @media (max-width: 767px) {
+          .mobile-transits-grid {
+              display: grid !important;
+              grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+              row-gap: 1rem !important;
+              column-gap: 0.25rem !important;
+          }
+      }
+    </style>
     <div
-      class="flex flex-nowrap justify-center items-start gap-1 md:gap-6 lg:gap-8 pb-4 md:pb-0 px-1 md:px-2 mx-auto w-full overflow-hidden">
+      class="mobile-transits-grid flex flex-nowrap justify-center items-start gap-1 md:gap-6 lg:gap-8 pb-4 md:pb-0 px-1 md:px-2 mx-auto w-full overflow-hidden">
       @php
         try {
           $dbTransits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
@@ -403,6 +413,24 @@
               'svg_icon' => null,
               'image' => null,
             ],
+            (object) [
+              'name' => 'Car Package',
+              'selected_icon' => 'car',
+              'svg_icon' => null,
+              'image' => null,
+            ],
+            (object) [
+              'name' => 'Bike Package',
+              'selected_icon' => 'bike',
+              'svg_icon' => null,
+              'image' => null,
+            ],
+            (object) [
+              'name' => 'Hiking Package',
+              'selected_icon' => 'footprints',
+              'svg_icon' => null,
+              'image' => null,
+            ],
           ]);
         }
 
@@ -438,7 +466,7 @@
           $label = str_replace(" Package", "<br>Package", $label);
         @endphp
         <a href="{{ url('/discover?tour_type=' . urlencode($cleanType)) }}"
-          class="group flex-1 min-w-0 max-w-[85px] md:max-w-[125px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity flex-shrink">
+          class="group flex-1 min-w-0 max-w-[85px] md:max-w-[125px] flex flex-col items-center gap-1 md:gap-2 cursor-pointer hover:opacity-80 transition-opacity">
           <div class="w-10 h-10 md:w-16 md:h-16 lg:w-[4.5rem] lg:h-[4.5rem] flex items-center justify-center">
             <img src="{{ asset($imgUrl) }}" alt="{{ $t->name }}"
               class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300">

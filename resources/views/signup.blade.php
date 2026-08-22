@@ -309,17 +309,17 @@
                 
                 <p x-show="errorMsg" x-text="errorMsg" class="text-[10px] text-red-500 font-bold mb-4"></p>
 
-                <button @click="verifyOtp" class="btn-signup w-full text-white rounded-xl py-3.5 font-bold text-sm uppercase tracking-widest shadow-lg mb-4 flex items-center justify-center gap-2">
+                <button type="button" @click="verifyOtp" class="btn-signup w-full text-white rounded-xl py-3.5 font-bold text-sm uppercase tracking-widest shadow-lg mb-4 flex items-center justify-center gap-2">
                     <span x-show="loading" class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
                     Verify & Create Account
                 </button>
 
                 <p class="text-xs font-semibold text-gray-400">
                     <span x-show="timer > 0">Resend in <span x-text="Math.floor(timer / 60) + ':' + (timer % 60).toString().padStart(2, '0')" class="text-[#e85d26]"></span></span>
-                    <button x-show="timer === 0" @click="resendOtp" class="text-[#e85d26] hover:underline cursor-pointer">Resend OTP</button>
+                    <button type="button" x-show="timer === 0" @click="resendOtp" class="text-[#e85d26] hover:underline cursor-pointer">Resend OTP</button>
                 </p>
                 
-                <button @click="showOtpModal = false; clearInterval(interval)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <button type="button" @click="showOtpModal = false; clearInterval(interval)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
                     <i data-lucide="x" size="20"></i>
                 </button>
             </div>
