@@ -341,6 +341,25 @@ class ListingController extends Controller
                 if (str_contains($location, $search) || str_contains($city, $search)) $score += 400;
                 if ($agent && str_contains($agent, $search)) $score += 200;
                 if ($keywords && str_contains($keywords, $search)) $score += 100;
+
+                // --- Improved term-by-term matching ---
+                $searchTerms = array_filter(array_map('trim', preg_split('/[\s,]+/', $search)));
+                $keywordTerms = array_filter(array_map('trim', preg_split('/[\s,]+/', $keywords)));
+
+                foreach ($searchTerms as $term) {
+                    if (strlen($term) > 2) {
+                        if (str_contains($title, $term)) $score += 50;
+                        if (str_contains($location, $term) || str_contains($city, $term)) $score += 40;
+                        if ($agent && str_contains($agent, $term)) $score += 20;
+                        if ($keywords && str_contains($keywords, $term)) $score += 80;
+                    }
+                }
+
+                foreach ($keywordTerms as $kTerm) {
+                    if (strlen($kTerm) > 2 && str_contains($search, $kTerm)) {
+                        $score += 80;
+                    }
+                }
                 
                 if ($score > 0) {
                     $tt = strtolower($pkgArray['tour_type'] ?? '');

@@ -103,21 +103,32 @@
         cities: [],
         newCity: '',
         keywords: {{ json_encode($keywords) }},
-        newKeyword: '',
-        addCity() {
-            if (this.newCity.trim()) {
-                this.cities.push(this.newCity.trim().replace(/,$/, ''));
-                this.newCity = '';
+        keywordRows: [],
+        initKeywords() {
+            let kws = this.keywords || [];
+            if(kws.length === 0) {
+                this.keywordRows.push({ city: '', state: '', country: '' });
+            } else {
+                kws.forEach(k => {
+                    let parts = k.split(',').map(p => p.trim());
+                    this.keywordRows.push({
+                        city: parts[0] || '',
+                        state: parts[1] || '',
+                        country: parts[2] || ''
+                    });
+                });
             }
         },
-        removeCity(i) { this.cities.splice(i, 1); },
-        addKeyword() {
-            if (this.newKeyword.trim()) {
-                this.keywords.push(this.newKeyword.trim().replace(/,$/, ''));
-                this.newKeyword = '';
+        addKeywordRow() {
+            this.keywordRows.push({ city: '', state: '', country: '' });
+        },
+        removeKeywordRow(index) {
+            this.keywordRows.splice(index, 1);
+            if(this.keywordRows.length === 0) {
+                this.keywordRows.push({ city: '', state: '', country: '' });
             }
         },
-        removeKeyword(i) { this.keywords.splice(i, 1); },
+
         addInclusion() {
             if (this.newInclusion.trim()) {
                 this.inclusions.push(this.newInclusion.trim());
@@ -162,6 +173,7 @@
             }
         },
         init() {
+            this.initKeywords();
             if (this.duration && this.duration.includes(' Nights')) {
                 this.nights = parseInt(this.duration.split(' ')[0]);
             }
@@ -641,7 +653,7 @@
                     </div>
                 </div>
 
-                <!-- Lower Grid: Pricing and Specifics -->
+                <!-- Lower Grid: Pricing and Classification -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Pricing Card -->
                     <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
@@ -654,11 +666,9 @@
 
                         <!-- Currency Dropdown -->
                         <div class="space-y-2">
-                            <label
-                                class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Currency</label>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Currency</label>
                             <div class="relative">
-                                <i data-lucide="coins" size="16"
-                                    class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                <i data-lucide="coins" size="16" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
                                 <select name="currency" x-model="currency" @change="updatePrice(false)"
                                     class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm appearance-none">
                                     <option value="₹">INR (₹)</option>
@@ -667,27 +677,21 @@
                                     <option value="€">EUR (€)</option>
                                     <option value="£">GBP (£)</option>
                                 </select>
-                                <i data-lucide="chevron-down" size="16"
-                                    class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                                <i data-lucide="chevron-down" size="16" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                             </div>
                         </div>
 
                         <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Price Per
-                                Person (<span x-text="currency"></span>)</label>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Price Per Person (<span x-text="currency"></span>)</label>
                             <div class="grid grid-cols-2 gap-2">
                                 <div class="relative">
-                                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400"
-                                        x-text="currency"></span>
-                                    <input required type="number" step="0.01" name="price" x-model="price"
-                                        @input="updatePrice(true)" placeholder="45999"
+                                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400" x-text="currency"></span>
+                                    <input required type="number" step="0.01" name="price" x-model="price" @input="updatePrice(true)" placeholder="45999"
                                         class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm" />
                                 </div>
                                 <div class="relative">
-                                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400"
-                                        x-text="currency"></span>
-                                    <input type="number" step="0.01" name="old_price" x-model="old_price"
-                                        placeholder="Old Price"
+                                    <span class="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-gray-400" x-text="currency"></span>
+                                    <input type="number" step="0.01" name="old_price" x-model="old_price" placeholder="Old Price"
                                         class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 pl-12 pr-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm line-through text-gray-500" />
                                 </div>
                             </div>
@@ -701,83 +705,104 @@
                         </label>
                     </div>
 
-                    <!-- Specifics Card -->
-                    <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center">
-                                <i data-lucide="compass" size="20"></i>
+                    <!-- Right Column: Theme, Holiday Type & Tags -->
+                    <div class="flex flex-col gap-4">
+                        <!-- Theme & Holiday Type Card -->
+                        <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="compass" size="20"></i>
+                                </div>
+                                <h3 class="text-lg font-black text-gray-800">Theme & Holiday Type</h3>
                             </div>
-                            <h3 class="text-lg font-black text-gray-800">Specifics</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Theme Selection</label>
+                                    <select name="theme"
+                                        class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm">
+                                        <option value="" disabled {{ empty($pkg->theme) ? 'selected' : '' }}>Select Theme</option>
+                                        @foreach($themes as $t)
+                                            <option value="{{ $t->name }}" {{ ($pkg->theme ?? '') == $t->name ? 'selected' : '' }}>{{ $t->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Holiday Type</label>
+                                    <select name="holiday_type"
+                                        class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm">
+                                        <option value="" disabled {{ empty($pkg->holiday_type) ? 'selected' : '' }}>Select Holiday Type</option>
+                                        @foreach($holidayTypes as $h)
+                                            <option value="{{ $h->name }}" {{ ($pkg->holiday_type ?? '') == $h->name ? 'selected' : '' }}>{{ $h->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="space-y-2">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Theme
-                                    Selection</label>
-                                <select name="theme"
-                                    class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm">
-                                    <option value="" disabled {{ empty($pkg->theme) ? 'selected' : '' }}>Select Theme</option>
-                                    @foreach($themes as $t)
-                                        <option value="{{ $t->name }}" {{ ($pkg->theme ?? '') == $t->name ? 'selected' : '' }}>{{ $t->name }}</option>
-                                    @endforeach
-                                </select>
+                        <!-- Tags & Badges Card -->
+                        <div class="bg-white rounded-[32px] border border-gray-100 p-8 shadow-sm flex-1">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center">
+                                    <i data-lucide="tag" size="20"></i>
+                                </div>
+                                <h3 class="text-lg font-black text-gray-800">Tags & Badges</h3>
                             </div>
                             <div class="space-y-2">
-                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-2">Holiday
-                                    Type</label>
-                                <select name="holiday_type"
-                                    class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-foreground text-sm">
-                                    <option value="" disabled {{ empty($pkg->holiday_type) ? 'selected' : '' }}>Select Holiday Type</option>
-                                    @foreach($holidayTypes as $h)
-                                        <option value="{{ $h->name }}" {{ ($pkg->holiday_type ?? '') == $h->name ? 'selected' : '' }}>{{ $h->name }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Tag Name</label>
+                                <input type="text" name="badge" placeholder="e.g. 25% Off" value="{{ $pkg->badge ?? '' }}"
+                                    class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm" />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tags & Keywords Card -->
+
+                <!-- Trip Location/Search Keywords Card (separate, full-width) -->
                 <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-orange-50 text-primary rounded-xl flex items-center justify-center">
-                            <i data-lucide="tag" size="20"></i>
+                        <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                            <i data-lucide="map-pin" size="20"></i>
                         </div>
-                        <h3 class="text-lg font-black text-gray-800">Tags & Keywords</h3>
+                        <div>
+                            <h3 class="text-lg font-black text-gray-800">Trip Location / Search Keywords</h3>
+                            <p class="text-xs text-gray-400 font-medium mt-0.5">Add cities, states & countries so travellers can find this package</p>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-                        <!-- Tag Name (1 column) -->
-                        <div class="space-y-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Tag Name
-                                (e.g. 25% Off)</label>
-                            <input type="text" name="badge" placeholder="e.g. 25% Off" value="{{ $pkg->badge ?? '' }}"
-                                class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm" />
-                        </div>
-
-                        <!-- Search Keywords (2 columns) -->
-                        <div class="space-y-4 md:col-span-2">
-                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Trip Location/Search Keywords <span class="text-red-500">*</span></label>
-                            
-                            <!-- Tags Flex Container -->
-                            <div class="flex flex-wrap gap-3">
-                                <template x-for="(keyword, i) in keywords" :key="i">
-                                    <div class="flex items-center justify-between min-w-[140px] px-4 py-2.5 bg-white rounded-md border border-gray-200 shadow-sm">
-                                        <span class="text-xs font-medium text-gray-700" x-text="keyword"></span>
-                                        <button type="button" @click="removeKeyword(i)" class="text-gray-400 hover:text-red-500 ml-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                        </button>
+                    <!-- Dynamic Rows -->
+                    <div class="space-y-3">
+                        <template x-for="(row, index) in keywordRows" :key="index">
+                            <div class="flex flex-col md:flex-row items-end gap-3">
+                                <div class="flex flex-col sm:flex-row items-stretch gap-3 flex-1">
+                                    <div class="flex-1 space-y-1">
+                                        <label class="text-[10px] font-black text-indigo-400 uppercase tracking-wider pl-1">City</label>
+                                        <input type="text" x-model="row.city" placeholder="e.g. New Delhi" class="w-full bg-[#F0F0FF] border-none rounded-2xl py-3.5 px-4 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-indigo-300/50 transition-all" />
                                     </div>
-                                </template>
+                                    <div class="flex-1 space-y-1">
+                                        <label class="text-[10px] font-black text-indigo-400 uppercase tracking-wider pl-1">State</label>
+                                        <input type="text" x-model="row.state" placeholder="e.g. Delhi" class="w-full bg-[#F0F0FF] border-none rounded-2xl py-3.5 px-4 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-indigo-300/50 transition-all" />
+                                    </div>
+                                    <div class="flex-1 space-y-1">
+                                        <label class="text-[10px] font-black text-indigo-400 uppercase tracking-wider pl-1">Country</label>
+                                        <input type="text" x-model="row.country" placeholder="e.g. India" class="w-full bg-[#F0F0FF] border-none rounded-2xl py-3.5 px-4 text-sm font-bold text-gray-800 outline-none focus:ring-2 focus:ring-indigo-300/50 transition-all" />
+                                    </div>
+                                </div>
+                                <button type="button" @click.prevent="removeKeywordRow(index)"
+                                    class="px-4 py-3.5 bg-red-50 text-red-400 rounded-2xl text-xs font-black hover:bg-red-100 hover:text-red-600 transition-colors mb-0.5"
+                                    x-show="keywordRows.length > 1 || row.city || row.state || row.country">
+                                    <i data-lucide="trash-2" size="14"></i>
+                                </button>
+                                <input type="hidden" name="keywords[]" :value="[row.city, row.state, row.country].map(s => String(s || '').trim()).filter(Boolean).join(', ')">
                             </div>
+                        </template>
+                    </div>
 
-                            <!-- Add More Input & Button -->
-                            <div class="flex items-center gap-3">
-                                <input type="text" x-model="newKeyword" @keydown.enter.prevent="addKeyword()" placeholder="Type keyword..." class="w-48 bg-white border border-gray-200 rounded-md py-2.5 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-primary/30 shadow-sm" />
-                                <button type="button" @click="addKeyword()" class="px-4 py-2.5 bg-[#EEF2FF] text-[#4F46E5] rounded-md text-xs font-bold hover:bg-[#E0E7FF] transition-colors">Add more</button>
-                            </div>
-                            <input type="hidden" name="keywords" x-bind:value="keywords.join(',')">
-                        </div>
+                    <!-- Add More Button -->
+                    <div>
+                        <button type="button" @click.prevent="addKeywordRow()"
+                            class="px-6 py-3 bg-indigo-50 text-indigo-600 rounded-2xl text-sm font-black hover:bg-indigo-100 transition-colors inline-flex items-center gap-2 shadow-sm">
+                            <i data-lucide="plus" size="15"></i> Add another location
+                        </button>
                     </div>
                 </div>
 
@@ -1502,77 +1527,99 @@
                 }
             });
 
-            // Autocomplete for Departure City
+            // Autocomplete for Departure City — India First
             const input = document.getElementById('departureCity');
             const suggestionsDiv = document.getElementById('departureCitySuggestions');
             if (input && suggestionsDiv) {
                 let debounceTimer;
                 input.addEventListener('input', () => {
                     const query = input.value.trim();
-
                     clearTimeout(debounceTimer);
-                    if (!query || query.length < 3) {
+                    if (!query || query.length < 2) {
                         suggestionsDiv.innerHTML = '';
                         suggestionsDiv.classList.add('hidden');
                         return;
                     }
 
-                    // Show loading indicator
                     suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching cities...</div>';
                     suggestionsDiv.classList.remove('hidden');
 
                     debounceTimer = setTimeout(() => {
-                        fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&accept-language=en&q=${encodeURIComponent(query)}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                suggestionsDiv.innerHTML = '';
-                                if (data && data.length > 0) {
-                                    const seen = new Set();
-                                    data.forEach(item => {
-                                        const address = item.address || {};
+                        const base = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&accept-language=en`;
+                        const indiaUrl = `${base}&countrycodes=in&limit=15&q=${encodeURIComponent(query)}`;
 
-                                        // Determine city name
-                                        let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
+                        const parseItem = (item) => {
+                            const address = item.address || {};
+                            let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
+                            if (!city && item.display_name) city = item.display_name.split(',')[0].trim();
+                            const state   = address.state   || address.region || '';
+                            const country = address.country || '';
+                            return { city, state, country };
+                        };
 
-                                        if (!city && item.display_name) {
-                                            city = item.display_name.split(',')[0].trim();
-                                        }
+                        const renderRow = (city, state, country) => {
+                            const row = document.createElement('div');
+                            row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
+                            row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
+                            row.onclick = () => {
+                                input.value = city;
+                                const stateEl   = document.getElementById('departureState');
+                                const countryEl = document.getElementById('departureCountry');
+                                if (stateEl)   stateEl.value   = state;
+                                if (countryEl) countryEl.value = country;
+                                suggestionsDiv.classList.add('hidden');
+                            };
+                            return row;
+                        };
 
-                                        const state = address.state || address.region || '';
-                                        const country = address.country || '';
+                        // Step 1: Fetch India only
+                        fetch(indiaUrl).then(r => r.json()).then(indiaData => {
+                            suggestionsDiv.innerHTML = '';
+                            const seen = new Set();
+                            const indiaResults = [];
 
-                                        if (city && country) {
-                                            const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
-                                            if (seen.has(key)) return;
-                                            seen.add(key);
+                            (indiaData || []).forEach(item => {
+                                const { city, state, country } = parseItem(item);
+                                if (!city || !country) return;
+                                const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
+                                if (seen.has(key)) return;
+                                seen.add(key);
+                                indiaResults.push({ city, state, country });
+                            });
 
-                                            const row = document.createElement('div');
-                                            row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
-                                            row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
-                                            row.onclick = () => {
-                                                input.value = city;
-                                                document.getElementById('departureState').value = state;
-                                                document.getElementById('departureCountry').value = country;
-                                                suggestionsDiv.classList.add('hidden');
-                                            };
-                                            suggestionsDiv.appendChild(row);
-                                        }
+                            // Always render India results first
+                            indiaResults.forEach(({ city, state, country }) => {
+                                suggestionsDiv.appendChild(renderRow(city, state, country));
+                            });
+
+                            // Step 2: Only fetch global if India has fewer than 5 results
+                            if (indiaResults.length < 5) {
+                                const globalUrl = `${base}&limit=10&q=${encodeURIComponent(query)}`;
+                                fetch(globalUrl).then(r => r.json()).then(globalData => {
+                                    (globalData || []).forEach(item => {
+                                        const { city, state, country } = parseItem(item);
+                                        if (!city || !country) return;
+                                        if (country.toLowerCase() === 'india') return; // already shown
+                                        const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
+                                        if (seen.has(key)) return;
+                                        seen.add(key);
+                                        suggestionsDiv.appendChild(renderRow(city, state, country));
                                     });
-
-                                    if (suggestionsDiv.children.length > 0) {
-                                        suggestionsDiv.classList.remove('hidden');
-                                    } else {
+                                    if (suggestionsDiv.children.length === 0) {
                                         suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
                                     }
-                                } else {
-                                    suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
-                                }
-                            })
-                            .catch(err => {
-                                console.error('Error fetching cities:', err);
-                                suggestionsDiv.classList.add('hidden');
-                            });
-                    }, 400);
+                                    suggestionsDiv.classList.remove('hidden');
+                                }).catch(() => {});
+                            } else {
+                                suggestionsDiv.classList.remove('hidden');
+                            }
+
+                            if (suggestionsDiv.children.length === 0 && indiaResults.length === 0) {
+                                // Show loading until global responds
+                                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching...</div>';
+                            }
+                        }).catch(() => suggestionsDiv.classList.add('hidden'));
+                    }, 350);
                 });
 
                 // Close suggestions dropdown when clicking outside

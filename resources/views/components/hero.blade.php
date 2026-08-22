@@ -195,9 +195,11 @@
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg> 
-            <input type="text" name="destination" placeholder="Where You Go !!!" autocomplete="off"
-              class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
-              style="box-shadow: none;" value="{{ request('destination') }}">
+            <div class="w-full relative">
+                <input type="text" name="destination" id="where-to-input" placeholder="Where You Go !!!" autocomplete="off"
+                  class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
+                  style="box-shadow: none;" value="{{ request('destination') }}">
+            </div>
           </div>
 
           {{-- Agent/City Field --}}
@@ -206,9 +208,11 @@
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
-            <input type="text" name="from_city" placeholder="Search agent from your city/near by location" autocomplete="off"
-              class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
-              style="box-shadow: none;" value="{{ request('from_city') }}">
+            <div class="w-full relative">
+                <input type="text" name="from_city" id="agent-city-input" placeholder="Search agent from your city/near by location" autocomplete="off"
+                  class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
+                  style="box-shadow: none;" value="{{ request('from_city') }}">
+            </div>
           </div>
 
           {{-- Search Button --}}
@@ -248,6 +252,7 @@
                     });
                 }
             });
+
         }
     });
 </script>

@@ -1171,7 +1171,22 @@ class UserController extends Controller
                 }
 
                 $cities = array_values(array_unique(array_filter($cities)));
-                foreach (array_slice($cities, 0, 8) as $city) {
+                
+                // Prioritize Indian cities
+                usort($cities, function($a, $b) {
+                    $indianKeywords = ['india', 'delhi', 'mumbai', 'bangalore', 'kolkata', 'chennai', 'pune', 'hyderabad', 'jaipur', 'goa', 'dehradun', 'kerala', 'ahmedabad', 'gujarat', 'maharashtra'];
+                    $aIsIndian = false;
+                    $bIsIndian = false;
+                    foreach ($indianKeywords as $kw) {
+                        if (stripos($a, $kw) !== false) $aIsIndian = true;
+                        if (stripos($b, $kw) !== false) $bIsIndian = true;
+                    }
+                    if ($aIsIndian && !$bIsIndian) return -1;
+                    if (!$aIsIndian && $bIsIndian) return 1;
+                    return 0; // maintain relative order
+                });
+
+                foreach (array_slice($cities, 0, 15) as $city) {
                     $results[] = [
                         'text' => $city,
                         'type' => 'location',
@@ -1204,9 +1219,13 @@ class UserController extends Controller
                             $keywords = json_decode($pkg->keywords, true);
                             if (is_array($keywords)) {
                                 foreach ($keywords as $kw) {
-                                    $kw = trim($kw);
-                                    if ($kw && stripos($kw, $q) !== false) {
-                                        $places[] = $kw;
+                                    // Split by comma in case they entered City, State, Country as one string
+                                    $kwParts = explode(',', $kw);
+                                    foreach ($kwParts as $kwPart) {
+                                        $kwPart = trim($kwPart);
+                                        if ($kwPart && stripos($kwPart, $q) !== false) {
+                                            $places[] = $kwPart;
+                                        }
                                     }
                                 }
                             }
@@ -1223,7 +1242,23 @@ class UserController extends Controller
                 }
 
                 $places = array_values(array_unique(array_filter($places)));
-                foreach (array_slice($places, 0, 5) as $place) {
+                
+                // Prioritize Indian destinations
+                usort($places, function($a, $b) {
+                    $indianKeywords = ['india', 'delhi', 'mumbai', 'bangalore', 'kolkata', 'chennai', 'pune', 'hyderabad', 'jaipur', 'goa', 'dehradun', 'kerala', 'ahmedabad', 'gujarat', 'maharashtra', 'kashmir', 'ladakh', 'spiti', 'rishikesh', 'manali', 'shimla', 'kasol'];
+                    $aIsIndian = false;
+                    $bIsIndian = false;
+                    foreach ($indianKeywords as $kw) {
+                        if (stripos($a, $kw) !== false) $aIsIndian = true;
+                        if (stripos($b, $kw) !== false) $bIsIndian = true;
+                    }
+                    if ($aIsIndian && !$bIsIndian) return -1;
+                    if (!$aIsIndian && $bIsIndian) return 1;
+                    // Also favor shorter matches that match the query better? Or just keep original order.
+                    return 0;
+                });
+
+                foreach (array_slice($places, 0, 15) as $place) {
                     $results[] = [
                         'text' => $place,
                         'type' => 'place',

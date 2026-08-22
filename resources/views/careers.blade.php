@@ -193,13 +193,11 @@
             <div class="w-full md:w-1/2 flex flex-col gap-4">
                 <div class="bg-orange-50 border border-orange-100 p-6 rounded-2xl shadow-sm">
                     <h4 class="text-[#E8460A] font-black text-sm tracking-widest mb-2 uppercase">Vision</h4>
-                    <p class="text-gray-700 font-medium italic">“To inspire exploration by making premium travel accessible,
-                        seamless, and deeply personal.”</p>
+                    <p class="text-gray-700 font-medium italic">“To become the most trusted travel discovery platform, connecting travelers with the right travel agents and inspiring people to explore the world with confidence. ”</p>
                 </div>
                 <div class="bg-orange-50 border border-orange-100 p-6 rounded-2xl shadow-sm">
                     <h4 class="text-[#E8460A] font-black text-sm tracking-widest mb-2 uppercase">Mission</h4>
-                    <p class="text-gray-700 font-medium italic">“We craft extraordinary travel experiences by blending
-                        innovation, local expertise, and personalized service.”</p>
+                    <p class="text-gray-700 font-medium italic">“To simplify travel planning by helping travelers discover, explore, compare, and directly connect with reliable travel agents and packages—all in one place.”</p>   
                 </div>
             </div>
         </div>
@@ -236,37 +234,48 @@
                     </p>
                 </div>
 
-                <div class="space-y-6">
-                    <!-- Skill 1 -->
-                    <div>
-                        <div class="flex justify-between items-end mb-1">
-                            <span class="text-white font-bold text-sm tracking-wide">Customer Service Excellence</span>
-                            <span class="text-white font-black text-xs bg-white/20 px-2 py-0.5 rounded-md">98%</span>
+                <div class="space-y-6 mt-6">
+                    <!-- Point 1 -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-white/20 p-2 rounded-full shrink-0 mt-1">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-white"></i>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 98%;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Skill 2 -->
-                    <div>
-                        <div class="flex justify-between items-end mb-1">
-                            <span class="text-white font-bold text-sm tracking-wide">Sales & Global Reach</span>
-                            <span class="text-white font-black text-xs bg-white/20 px-2 py-0.5 rounded-md">95%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 95%;"></div>
+                        <div>
+                            <h4 class="text-white font-bold text-base">Find Trusted Travel Agents</h4>
+                            <p class="text-white/80 text-sm mt-1">Discover agents based on your destination and location.</p>
                         </div>
                     </div>
 
-                    <!-- Skill 3 -->
-                    <div>
-                        <div class="flex justify-between items-end mb-1">
-                            <span class="text-white font-bold text-sm tracking-wide">Tour Planning & Management</span>
-                            <span class="text-white font-black text-xs bg-white/20 px-2 py-0.5 rounded-md">92%</span>
+                    <!-- Point 2 -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-white/20 p-2 rounded-full shrink-0 mt-1">
+                            <i data-lucide="compass" class="w-5 h-5 text-white"></i>
                         </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: 92%;"></div>
+                        <div>
+                            <h4 class="text-white font-bold text-base">Explore Travel Packages</h4>
+                            <p class="text-white/80 text-sm mt-1">Browse packages, destinations, pricing and travel options.</p>
+                        </div>
+                    </div>
+
+                    <!-- Point 3 -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-white/20 p-2 rounded-full shrink-0 mt-1">
+                            <i data-lucide="git-compare" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-base">Compare Your Options</h4>
+                            <p class="text-white/80 text-sm mt-1">Check multiple agents and packages before making your choice.</p>
+                        </div>
+                    </div>
+
+                    <!-- Point 4 -->
+                    <div class="flex items-start gap-4">
+                        <div class="bg-white/20 p-2 rounded-full shrink-0 mt-1">
+                            <i data-lucide="message-circle" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-base">Connect Directly</h4>
+                            <p class="text-white/80 text-sm mt-1">Contact travel agents directly through Call or WhatsApp.</p>
                         </div>
                     </div>
                 </div>

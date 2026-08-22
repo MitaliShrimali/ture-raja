@@ -761,14 +761,24 @@
 
             <!-- Why Us Section (Below Gallery) -->
             @if(!empty($agent->why_us))
-                <div x-data="{ expanded: true }" class="mt-8 border border-gray-200 rounded-xl bg-white w-full shadow-sm">
-                    <div @click="expanded = !expanded" class="flex justify-between items-center px-6 py-5 cursor-pointer select-none">
-                        <h3 class="text-lg font-extrabold text-[#111827]">Why Us</h3>
-                        <svg class="w-5 h-5 text-[#4b5563] transition-transform duration-300" :class="expanded ? '' : 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                <div x-data="{ expanded: true }" class="mt-10 border border-primary/20 rounded-2xl bg-gradient-to-br from-orange-50/50 to-white w-full shadow-md overflow-hidden relative">
+                    <!-- Accent Line -->
+                    <div class="absolute top-0 left-0 w-1.5 h-full bg-primary"></div>
+                    
+                    <div @click="expanded = !expanded" class="flex justify-between items-center px-7 py-6 cursor-pointer select-none group">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary shadow-inner group-hover:scale-110 transition-transform">
+                                <i class="fas fa-award text-xl"></i>
+                            </div>
+                            <h3 class="text-xl font-black text-gray-900 tracking-tight">Why Us</h3>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                            <svg class="w-5 h-5 text-gray-500 group-hover:text-primary transition-transform duration-300" :class="expanded ? '' : 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                        </div>
                     </div>
-                    <div x-show="expanded" x-collapse.duration.300ms class="border-t border-gray-100"></div>
+                    <div x-show="expanded" x-collapse.duration.300ms class="border-t border-primary/10 mx-7"></div>
                     <div x-show="expanded" x-collapse.duration.300ms>
-                        <div class="px-6 py-6 text-[#4b5563] text-[14.5px] leading-relaxed whitespace-pre-wrap">{{ $agent->why_us }}</div>
+                        <div class="px-7 pb-7 pt-5 text-gray-700 text-[15px] leading-relaxed whitespace-pre-wrap font-medium">{{ $agent->why_us }}</div>
                     </div>
                 </div>
             @endif

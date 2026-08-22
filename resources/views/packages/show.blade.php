@@ -356,7 +356,7 @@
 
                                     {{-- Prev Arrow --}}
                                     <button @click.stop="prev()"
-                                        class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow transition-all border border-gray-200 hover:scale-105">
+                                        class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow transition-all border border-gray-200 hover:scale-105">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                                         </svg>
@@ -364,7 +364,7 @@
 
                                     {{-- Next Arrow --}}
                                     <button @click.stop="next()"
-                                        class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow transition-all border border-gray-200 hover:scale-105">
+                                        class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-white/80 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow transition-all border border-gray-200 hover:scale-105">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                                         </svg>
@@ -391,15 +391,8 @@
                                         </h1>
                                     </div>
 
-                                    {{-- Rating + Duration --}}
-                                    <div class="flex flex-col items-start sm:items-center gap-1 shrink-0">
-                                        <div class="flex items-center gap-1">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="#e85d26" xmlns="http://www.w3.org/2000/svg">
-                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                                            </svg>
-                                            <span class="font-bold text-gray-800 text-sm">{{ $package['rating'] }}</span>
-                                            <span class="text-gray-500 text-xs">({{ $package['reviews'] }} Review)</span>
-                                        </div>
+                                    {{-- Duration --}}
+                                    <div class="flex flex-col items-start sm:items-center gap-1 shrink-0 mt-1">
                                         <span class="text-xs font-semibold text-gray-500">Duration : {{ $formattedDuration }}</span>
                                     </div>
 
@@ -556,83 +549,85 @@
                                         }
                                     })();
                                 </script>
-                            <!-- Left Arrow -->
-                            <button type="button"
-                                class="absolute left-0 z-10 w-12 h-full flex items-center justify-start bg-gradient-to-r from-[#F8F9FA] via-[#F8F9FA] to-transparent text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex"
-                                onclick="document.getElementById('section-nav').scrollBy({left: -250, behavior: 'smooth'})">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                    <polyline points="15 18 9 12 15 6"></polyline>
-                                </svg>
-                            </button>
+                            <div class="relative flex items-center max-w-full w-fit">
+                                <!-- Left Arrow -->
+                                <button type="button"
+                                    class="absolute left-0 z-10 w-12 h-full flex items-center justify-start bg-gradient-to-r from-[#F8F9FA] via-[#F8F9FA] to-transparent text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex"
+                                    onclick="document.getElementById('section-nav').scrollBy({left: -250, behavior: 'smooth'})">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                        <polyline points="15 18 9 12 15 6"></polyline>
+                                    </svg>
+                                </button>
 
-                            <div id="section-nav"
-                                class="flex overflow-x-auto gap-3 py-1 pl-4 pr-12 md:pl-14 md:pr-14 hide-scrollbar scroll-smooth w-full">
-                                @if(!empty($package['brochure']))
-                                    <a href="#document"
-                                        class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                        <i data-lucide="file-text" class="w-4 h-4"></i> Document
-                                    </a>
-                                @else
-                                    @if(!empty($package['overview']) && trim(strip_tags(str_replace('&nbsp;', '', $package['overview']))) !== '')
-                                        <a href="#overview"
+                                <div id="section-nav"
+                                    class="flex overflow-x-auto gap-3 py-1 px-4 md:px-10 hide-scrollbar scroll-smooth max-w-full">
+                                    @if(!empty($package['brochure']))
+                                        <a href="#document"
                                             class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                            <i data-lucide="map" class="w-4 h-4"></i> Overview
+                                            <i data-lucide="file-text" class="w-4 h-4"></i> Document
                                         </a>
-                                    @endif
-                                    @if(!empty($package['editorial_itinerary']))
-                                        <a href="#itinerary"
-                                            class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                            <i data-lucide="list" class="w-4 h-4"></i> Itinerary
-                                        </a>
-                                    @endif
-                                    @if(count($sightseeingPills) > 0)
-                                        <a href="#sightseeing"
-                                            class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                            <i data-lucide="binoculars" class="w-4 h-4"></i> Sightseeing
-                                        </a>
-                                    @endif
-                                    @if(count($package['included'] ?? []) > 0 || count($package['excluded'] ?? []) > 0)
-                                        <a href="#inclusions"
-                                            class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                            <i data-lucide="check-circle-2" class="w-4 h-4"></i> Inclusions/Exclusions
-                                        </a>
-                                    @endif
-                                    @if(!empty($package['hotels']) && (is_array($package['hotels']) || trim(strip_tags(str_replace('&nbsp;', '', $package['hotels']))) !== ''))
-                                        <a href="#hotels"
-                                            class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                            <i data-lucide="building" class="w-4 h-4"></i> Hotels
-                                        </a>
-                                    @endif
-                                    @if(!empty($package['amenities']) && (is_array($package['amenities']) || trim(strip_tags(str_replace('&nbsp;', '', $package['amenities']))) !== ''))
-                                        <a href="#amenities"
-                                            class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                            <i data-lucide="star" class="w-4 h-4"></i> Amenities
-                                        </a>
-                                    @endif
+                                    @else
+                                        @if(!empty($package['overview']) && trim(strip_tags(str_replace('&nbsp;', '', $package['overview']))) !== '')
+                                            <a href="#overview"
+                                                class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                                                <i data-lucide="map" class="w-4 h-4"></i> Overview
+                                            </a>
+                                        @endif
+                                        @if(!empty($package['editorial_itinerary']))
+                                            <a href="#itinerary"
+                                                class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                                                <i data-lucide="list" class="w-4 h-4"></i> Itinerary
+                                            </a>
+                                        @endif
+                                        @if(count($sightseeingPills) > 0)
+                                            <a href="#sightseeing"
+                                                class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                                                <i data-lucide="binoculars" class="w-4 h-4"></i> Sightseeing
+                                            </a>
+                                        @endif
+                                        @if(count($package['included'] ?? []) > 0 || count($package['excluded'] ?? []) > 0)
+                                            <a href="#inclusions"
+                                                class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Inclusions/Exclusions
+                                            </a>
+                                        @endif
+                                        @if(!empty($package['hotels']) && (is_array($package['hotels']) || trim(strip_tags(str_replace('&nbsp;', '', $package['hotels']))) !== ''))
+                                            <a href="#hotels"
+                                                class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                                                <i data-lucide="building" class="w-4 h-4"></i> Hotels
+                                            </a>
+                                        @endif
+                                        @if(!empty($package['amenities']) && (is_array($package['amenities']) || trim(strip_tags(str_replace('&nbsp;', '', $package['amenities']))) !== ''))
+                                            <a href="#amenities"
+                                                class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                                                <i data-lucide="star" class="w-4 h-4"></i> Amenities
+                                            </a>
+                                        @endif
 
-                                    @if(!empty($package['terms']) && trim(strip_tags(str_replace('&nbsp;', '', $package['terms']))) !== '')
-                                        <a href="#terms"
-                                            class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                            <i data-lucide="file-text" class="w-4 h-4"></i> Tour Info
-                                        </a>
+                                        @if(!empty($package['terms']) && trim(strip_tags(str_replace('&nbsp;', '', $package['terms']))) !== '')
+                                            <a href="#terms"
+                                                class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
+                                                <i data-lucide="file-text" class="w-4 h-4"></i> Tour Info
+                                            </a>
+                                        @endif
                                     @endif
-                                @endif
+                                </div>
+
+                                <!-- Right Arrow -->
+                                <button type="button"
+                                    class="absolute right-0 z-10 w-12 h-full flex items-center justify-end bg-gradient-to-l from-[#F8F9FA] via-[#F8F9FA] to-transparent text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex"
+                                    onclick="document.getElementById('section-nav').scrollBy({left: 250, behavior: 'smooth'})">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                        <polyline points="9 18 15 12 9 6"></polyline>
+                                    </svg>
+                                </button>
                             </div>
-
-                            <!-- Right Arrow -->
-                            <button type="button"
-                                class="absolute right-0 z-10 w-12 h-full flex items-center justify-end bg-gradient-to-l from-[#F8F9FA] via-[#F8F9FA] to-transparent text-gray-600 hover:text-[#e85d26] transition-colors hidden md:flex"
-                                onclick="document.getElementById('section-nav').scrollBy({left: 250, behavior: 'smooth'})">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                                    <polyline points="9 18 15 12 9 6"></polyline>
-                                </svg>
-                            </button>
                         </div>
                         </div> <!-- End sticky-section-nav-wrapper -->
 
                         @if(!empty($package['brochure']))
                             {{-- Document / Brochure PDF Preview Section --}}
-                            <div id="document" class="bg-white rounded-lg border border-gray-150 p-6 shadow-sm mb-6" x-data="{ documentExpanded: false }">
+                            <div id="document" class="bg-white rounded-lg border border-gray-150 p-6 shadow-sm mb-6" style="scroll-margin-top: 180px;" x-data="{ documentExpanded: false }">
                                 <div class="flex items-center gap-3 mb-4">
                                     <div class="w-1.5 h-6 rounded-full" style="background-color: #e85d26;"></div>
                                     <h2 class="font-black text-gray-900 text-xl">Document</h2>
@@ -689,7 +684,7 @@
 
                         @if(!empty($package['overview']) && trim(strip_tags(str_replace('&nbsp;', '', $package['overview']))) !== '')
                         {{-- Tour Overview & Editorial --}}
-                        <div id="overview" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 mb-8">
+                        <div id="overview" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 mb-8" style="scroll-margin-top: 180px;">
                             <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
                             <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
 
@@ -712,7 +707,7 @@
 
                         {{-- Itinerary Timeline --}}
                         @if(!empty($package['editorial_itinerary']))
-                            <div id="itinerary" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                            <div id="itinerary" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
                                 <h2 class="font-black text-gray-900 mb-8 section-heading text-xl">Itinerary</h2>
                                 <div class="relative">
                                     <div id="itinerary-content" class="relative transition-all duration-500 overflow-hidden" style="max-height: 380px;">
@@ -755,7 +750,7 @@
                         
                         {{-- Sightseeing Section --}}
                         @if(count($sightseeingPills) > 0)
-                            <div id="sightseeing" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                            <div id="sightseeing" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
                                 <h2 class="font-black text-gray-900 mb-6 section-heading text-xl">Sightseeing</h2>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($sightseeingPills as $pill)
@@ -770,7 +765,7 @@
 
                         {{-- Inclusions & Exclusions --}}
                         @if(count($package['included'] ?? []) > 0 || count($package['excluded'] ?? []) > 0)
-                            <div id="inclusions" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <div id="inclusions" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" style="scroll-margin-top: 180px;">
                                 @if(count($package['included'] ?? []) > 0)
                                     <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
                                         <div class="flex items-center gap-2 mb-5">
@@ -813,7 +808,7 @@
                         
                         {{-- Hotels --}}
                         @if(!empty($package['hotels']) && (is_array($package['hotels']) || trim(strip_tags(str_replace('&nbsp;', '', $package['hotels']))) !== ''))
-                            <div id="hotels" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                            <div id="hotels" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
                                 <h2 class="font-black text-gray-900 mb-4 section-heading text-xl">Hotels</h2>
                                 @if(is_array($package['hotels']))
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -845,7 +840,7 @@
                         
                         {{-- Amenities --}}
                         @if(!empty($package['amenities']) && (is_array($package['amenities']) || trim(strip_tags(str_replace('&nbsp;', '', $package['amenities']))) !== ''))
-                            <div id="amenities" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                            <div id="amenities" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
                                 <h2 class="font-black text-gray-900 mb-4 section-heading text-xl">Amenities</h2>
                                 @if(is_array($package['amenities']))
                                     <div class="flex flex-wrap gap-2">
@@ -878,7 +873,7 @@
 
                         {{-- Terms & Conditions --}}
                         @if(!empty($package['terms']) && trim(strip_tags(str_replace('&nbsp;', '', $package['terms']))) !== '')
-                            <div id="terms" class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
+                            <div id="terms" class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
                                 <div class="flex items-center gap-3 mb-6">
                                     <h2 class="font-black text-gray-900 section-heading !mb-0 text-xl pb-2">Terms & Conditions</h2>
                                 </div>
@@ -1103,6 +1098,14 @@
                                         <i data-lucide="user" class="w-4 h-4"></i> Profile
                                     </a>
                                 </div>
+                                
+                                <!-- Why Us -->
+                                @if(!empty($dbAgent) && !empty($dbAgent->why_us))
+                                    <div class="mb-6 pt-4 border-t border-gray-100">
+                                        <h4 class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Why Us</h4>
+                                        <p class="text-xs text-gray-600 leading-relaxed">{{ $dbAgent->why_us }}</p>
+                                    </div>
+                                @endif
 
                                 <!-- Social Integration Icons Only -->
                                 @if(!empty($dbAgent->facebook) || !empty($dbAgent->twitter) || !empty($dbAgent->linkedin) || !empty($dbAgent->instagram))
@@ -1189,32 +1192,47 @@
                                 <input type="hidden" name="subject" value="Inquiry for {{ $package['title'] }}">
                                 <input type="hidden" name="agent_name" value="{{ $agentNameForForm }}">
                                 <input type="hidden" name="package_name" value="{{ $package['title'] }}">
-                                <input type="text" name="name" placeholder="Enter your name"
-                                    class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
-                                <input type="email" name="email" placeholder="Enter your email"
-                                    class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
-                                <div class="flex gap-2 items-center">
-                                    <div class="relative w-28 shrink-0">
-                                        <select class="phone-country-code w-full px-3 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
-                                            <option value="+91" data-len="10" selected>🇮🇳 +91</option>
-                                            <option value="+1" data-len="10">🇺🇸 +1</option>
-                                            <option value="+44" data-len="10">🇬🇧 +44</option>
-                                            <option value="+62" data-len="11">🇮🇩 +62</option>
-                                            <option value="+65" data-len="8">🇸🇬 +65</option>
-                                            <option value="+971" data-len="9">🇦🇪 +971</option>
-                                            <option value="+61" data-len="9">🇦🇺 +61</option>
-                                            <option value="+66" data-len="9">🇹🇭 +66</option>
-                                            <option value="+60" data-len="10">🇲🇾 +60</option>
-                                        </select>
-                                    </div>
-                                    <div class="relative flex-grow">
-                                        <input type="tel" required placeholder="Phone Number *"
-                                            class="phone-number-val w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
-                                    </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Name <span class="text-red-500 text-sm">*</span></label>
+                                    <input type="text" name="name" placeholder="Enter your name" required
+                                        class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
                                 </div>
-                                <input type="hidden" class="phone-full-val" name="phone">
-                                <textarea name="message" required rows="3" placeholder="Type your message.."
-                                    class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400 resize-none"></textarea>
+                                
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Email</label>
+                                    <input type="email" name="email" placeholder="Enter your email"
+                                        class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Phone Number <span class="text-red-500 text-sm">*</span></label>
+                                    <div class="flex gap-2 items-center">
+                                        <div class="relative w-28 shrink-0">
+                                            <select class="phone-country-code w-full px-3 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                                                <option value="+91" data-len="10" selected>🇮🇳 +91</option>
+                                                <option value="+1" data-len="10">🇺🇸 +1</option>
+                                                <option value="+44" data-len="10">🇬🇧 +44</option>
+                                                <option value="+62" data-len="11">🇮🇩 +62</option>
+                                                <option value="+65" data-len="8">🇸🇬 +65</option>
+                                                <option value="+971" data-len="9">🇦🇪 +971</option>
+                                                <option value="+61" data-len="9">🇦🇺 +61</option>
+                                                <option value="+66" data-len="9">🇹🇭 +66</option>
+                                                <option value="+60" data-len="10">🇲🇾 +60</option>
+                                            </select>
+                                        </div>
+                                        <div class="relative flex-grow">
+                                            <input type="tel" required placeholder="Phone Number"
+                                                class="phone-number-val w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400">
+                                        </div>
+                                    </div>
+                                    <input type="hidden" class="phone-full-val" name="phone">
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Message <span class="text-red-500 text-sm">*</span></label>
+                                    <textarea name="message" required rows="3" placeholder="Type your message"
+                                        class="w-full px-4 py-3 rounded-md border border-gray-200 text-sm text-gray-800 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 placeholder-gray-400 resize-none"></textarea>
+                                </div>
                                 <button type="submit"
                                     class="w-full py-3 bg-primary hover:bg-primary/90 text-white font-black text-sm rounded-md transition-colors duration-200 shadow-glow">
                                     Submit Inquiry

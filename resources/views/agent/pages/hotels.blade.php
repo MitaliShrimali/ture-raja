@@ -200,69 +200,91 @@
             const query = input.value.trim();
 
             clearTimeout(debounceTimer);
-            if (!query || query.length < 3) {
+            if (!query || query.length < 2) {
                 suggestionsDiv.innerHTML = '';
                 suggestionsDiv.classList.add('hidden');
                 return;
             }
 
-            // Show loading indicator
             suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-primary"></i> Searching cities...</div>';
             suggestionsDiv.classList.remove('hidden');
 
             debounceTimer = setTimeout(() => {
-                fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&accept-language=en&q=${encodeURIComponent(query)}`)
-                .then(res => res.json())
-                .then(data => {
-                    suggestionsDiv.innerHTML = '';
-                    if (data && data.length > 0) {
-                        const seen = new Set();
-                        data.forEach(item => {
-                            const address = item.address || {};
-                            
-                            // Determine city name: match city, town, village, suburb, municipality, county, state_district or fall back to main name
-                            let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
-                            
-                            if (!city && item.display_name) {
-                                // Fallback to first part of display name
-                                city = item.display_name.split(',')[0].trim();
-                            }
-                            
-                            const state = address.state || address.region || '';
-                            const country = address.country || '';
+                const base = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&accept-language=en`;
+                const indiaUrl = `${base}&countrycodes=in&limit=15&q=${encodeURIComponent(query)}`;
 
-                            if (city && country) {
+                const parseItem = (item) => {
+                    const address = item.address || {};
+                    let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
+                    if (!city && item.display_name) city = item.display_name.split(',')[0].trim();
+                    const state   = address.state   || address.region || '';
+                    const country = address.country || '';
+                    return { city, state, country };
+                };
+
+                const renderRow = (city, state, country) => {
+                    const row = document.createElement('div');
+                    row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
+                    row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
+                    row.onclick = () => {
+                        input.value = city;
+                        const stateEl   = document.getElementById('hotelState');
+                        const countryEl = document.getElementById('hotelCountry');
+                        if (stateEl)   stateEl.value   = state;
+                        if (countryEl) countryEl.value = country;
+                        suggestionsDiv.classList.add('hidden');
+                    };
+                    return row;
+                };
+
+                fetch(indiaUrl).then(r => r.json()).then(indiaData => {
+                    suggestionsDiv.innerHTML = '';
+                    const seen = new Set();
+                    const indiaResults = [];
+
+                    (indiaData || []).forEach(item => {
+                        const { city, state, country } = parseItem(item);
+                        if (!city || !country) return;
+                        const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
+                        if (seen.has(key)) return;
+                        seen.add(key);
+                        indiaResults.push({ city, state, country });
+                    });
+
+                    indiaResults.forEach(({ city, state, country }) => {
+                        suggestionsDiv.appendChild(renderRow(city, state, country));
+                    });
+
+                    if (indiaResults.length < 5) {
+                        const globalUrl = `${base}&limit=10&q=${encodeURIComponent(query)}`;
+                        fetch(globalUrl).then(r => r.json()).then(globalData => {
+                            (globalData || []).forEach(item => {
+                                const { city, state, country } = parseItem(item);
+                                if (!city || !country) return;
+                                if (country.toLowerCase() === 'india') return;
                                 const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
                                 if (seen.has(key)) return;
                                 seen.add(key);
-
-                                const row = document.createElement('div');
-                                row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
-                                row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
-                                row.onclick = () => {
-                                    input.value = city;
-                                    document.getElementById('hotelState').value = state;
-                                    document.getElementById('hotelCountry').value = country;
-                                    suggestionsDiv.classList.add('hidden');
-                                };
-                                suggestionsDiv.appendChild(row);
+                                suggestionsDiv.appendChild(renderRow(city, state, country));
+                            });
+                            if (suggestionsDiv.children.length === 0) {
+                                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
                             }
-                        });
-
-                        if (suggestionsDiv.children.length > 0) {
                             suggestionsDiv.classList.remove('hidden');
-                        } else {
-                            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
-                        }
+                        }).catch(() => {
+                            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-red-500 font-medium">Failed to load suggestions</div>';
+                        });
                     } else {
-                        suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
+                        suggestionsDiv.classList.remove('hidden');
                     }
-                })
-                .catch(err => {
-                    console.error('Error fetching global suggestions:', err);
+
+                    if (suggestionsDiv.children.length === 0 && indiaResults.length === 0) {
+                        suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-primary"></i> Searching...</div>';
+                    }
+                }).catch(() => {
                     suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-red-500 font-medium">Failed to load suggestions</div>';
                 });
-            }, 400);
+            }, 350);
         }
 
         // Hide suggestions when clicking outside
