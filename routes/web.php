@@ -24,7 +24,7 @@ Route::get('/contact', function () { return view('contact'); });
 Route::get('/privacy-policy', function () { return view('privacy-policy'); });
 Route::get('/privacy-policy-careers', function () { return view('privacy-policy-careers'); });
 Route::get('/terms-and-conditions', function () { return view('terms'); });
-
+Route::get('/page/{slug}', [UserController::class, 'showCmsPage'])->name('page.show');
 // Search from hero bar → redirect to listing
 Route::get('/search', [UserController::class, 'search'])->name('search');
 Route::get('/api/search-suggestions', [UserController::class, 'suggestions']);
@@ -64,6 +64,10 @@ Route::get('/login', [UserController::class, 'login'])->name('login');
 Route::get('/signup', [UserController::class, 'signup'])->name('signup');
 
 Route::post('/signup/submit', [UserController::class, 'signupSubmit'])->name('signup.submit');
+Route::post('/signup/resend-otp', [UserController::class, 'resendSignupOtp'])->name('signup.resend-otp');
+
+Route::get('/api/check-email', [UserController::class, 'checkEmail']);
+Route::get('/api/check-mobile', [UserController::class, 'checkMobile']);
 
 Route::post('/api/otp/send', [OtpController::class, 'sendOtp'])->name('otp.send');
 Route::post('/api/otp/verify', [OtpController::class, 'verifyOtp'])->name('otp.verify');
@@ -79,8 +83,8 @@ Route::match(['GET', 'POST'], '/logout', [UserController::class, 'logout'])->nam
 // ─── ADMIN ROUTES ────────────────────────────────────────────────────────────
 Route::prefix('admin')->group(function () {
     Route::get('/login', function () {
-        if (\Illuminate\Support\Facades\Auth::check()) {
-            $role = strtoupper(\Illuminate\Support\Facades\Auth::user()->role ?? '');
+        if (\Illuminate\Support\Facades\Auth::guard('admin')->check()) {
+            $role = strtoupper(\Illuminate\Support\Facades\Auth::guard('admin')->user()->role ?? '');
             if (in_array($role, ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'EMPLOYEE'])) {
                 return redirect('/admin/dashboard');
             }
@@ -391,6 +395,8 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::post('/login', [AgentController::class, 'loginSubmit'])->name('login.submit');
     Route::get('/signup',  [AgentController::class, 'signup'])->name('signup');
     Route::post('/signup', [AgentController::class, 'signupSubmit'])->name('signup.submit');
+    Route::post('/signup/resend-otp', [AgentController::class, 'resendSignupOtp'])->name('signup.resend-otp');
+    
     Route::match(['GET', 'POST'], '/logout',  [AgentController::class, 'logout'])->name('logout');
 
     Route::get('/forgot-password', [AgentController::class, 'forgotPassword'])->name('forgot-password');
@@ -454,6 +460,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
         Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
         Route::post('/settings/update', [AgentController::class, 'updateSettings'])->name('settings.update');
         Route::post('/settings/password', [AgentController::class, 'updatePassword'])->name('settings.password');
+        Route::post('/settings/password/verify', [AgentController::class, 'verifyPasswordOtp'])->name('settings.password.verify');
         Route::get('/settings/profile-images', [AgentController::class, 'profileImages'])->name('profile-images');
         Route::post('/settings/profile-images', [AgentController::class, 'storeProfileImage'])->name('profile-images.store');
         Route::get('/settings/profile-images/{id}/delete', [AgentController::class, 'deleteProfileImage'])->name('profile-images.delete');

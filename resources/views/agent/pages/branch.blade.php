@@ -73,10 +73,16 @@
                             <td class="py-4 text-[10px] font-bold text-gray-800">{{ $city }}</td>
                             <td class="py-4 text-[10px] font-bold text-gray-800">{{ strtoupper($state) }}</td>
                             <td class="py-4 text-center">
+                                @if($b->id != 0)
                                 <div class="flex items-center justify-center space-x-3">
                                     <a href="{{ route('agent.edit-branch', $b->id) }}" class="text-[9px] font-bold text-gray-400 hover:text-gray-800 transition-colors">Edit</a>
                                     <a href="javascript:void(0)" onclick="deleteBranch({{ $b->id }})" class="text-[9px] font-bold text-gray-400 hover:text-red-500 transition-colors">Delete</a>
                                 </div>
+                                @else
+                                <div class="flex items-center justify-center space-x-3">
+                                    <span class="text-[9px] font-bold text-gray-300">Main Profile</span>
+                                </div>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

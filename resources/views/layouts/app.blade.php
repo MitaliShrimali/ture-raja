@@ -317,6 +317,8 @@
             const inputs = document.querySelectorAll('input[name="destination"], input[name="search"], input[name="from_city"], input[name="city"], input[name="company"]');
 
             inputs.forEach(input => {
+                if (input.type === 'hidden') return;
+
                 const parent = input.closest('div');
                 if (parent) {
                     parent.style.position = 'relative';
@@ -466,15 +468,6 @@
 
                     // Dispatch input event so AJAX filter listener triggers correctly
                     input.dispatchEvent(new Event('input', { bubbles: true }));
-
-                    const form = input.closest('form');
-                    if (form) {
-                        const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
-                        form.dispatchEvent(submitEvent);
-                        if (!submitEvent.defaultPrevented) {
-                            form.submit();
-                        }
-                    }
                 }
             });
 

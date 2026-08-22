@@ -443,8 +443,8 @@
     </section>
 
     <!-- Section 3: Why Travel With Tour Raja -->
-    <div class="max-w-7xl mx-auto px-6 py-4 md:py-8 lg:py-10">
-        <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-0 mb-3">
+    <div class="max-w-7xl mx-auto px-6 pt-8 pb-4 md:pb-8 lg:pb-10">
+        <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-0 mb-8">
             <span style="font-size: 34px; line-height: 1; display: block; margin-top: 0;">Why tour raja !!!</span>
         </x-section-title>
 
@@ -865,8 +865,7 @@
                     <div class="px-2 pb-2 flex items-end justify-between">
                         <div>
                             <h3 class="font-bold text-gray-900 text-[16px] mb-1">Mountain</h3>
-                            <p class="text-gray-400 text-[11px]">356 Tours, 248 Activities</p>
-                        </div>
+                            </div>
                         <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
@@ -881,8 +880,7 @@
                     <div class="px-2 pb-2 flex items-end justify-between">
                         <div>
                             <h3 class="font-bold text-gray-900 text-[16px] mb-1">Safari</h3>
-                            <p class="text-gray-400 text-[11px]">356 Tours, 248 Activities</p>
-                        </div>
+                            </div>
                         <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
@@ -897,8 +895,7 @@
                     <div class="px-2 pb-2 flex items-end justify-between">
                         <div>
                             <h3 class="font-bold text-gray-900 text-[16px] mb-1">Desert</h3>
-                            <p class="text-gray-400 text-[11px]">356 Tours, 248 Activities</p>
-                        </div>
+                            </div>
                         <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
@@ -913,8 +910,7 @@
                     <div class="px-2 pb-2 flex items-end justify-between">
                         <div>
                             <h3 class="font-bold text-gray-900 text-[16px] mb-1">Flower</h3>
-                            <p class="text-gray-400 text-[11px]">356 Tours, 248 Activities</p>
-                        </div>
+                            </div>
                         <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
@@ -929,8 +925,7 @@
                     <div class="px-2 pb-2 flex items-end justify-between">
                         <div>
                             <h3 class="font-bold text-gray-900 text-[16px] mb-1">Beach</h3>
-                            <p class="text-gray-400 text-[11px]">356 Tours, 248 Activities</p>
-                        </div>
+                            </div>
                         <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
@@ -945,8 +940,7 @@
                     <div class="px-2 pb-2 flex items-end justify-between">
                         <div>
                             <h3 class="font-bold text-gray-900 text-[16px] mb-1">Temples</h3>
-                            <p class="text-gray-400 text-[11px]">356 Tours, 248 Activities</p>
-                        </div>
+                            </div>
                         <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
@@ -961,8 +955,7 @@
                     <div class="px-2 pb-2 flex items-end justify-between">
                         <div>
                             <h3 class="font-bold text-gray-900 text-[16px] mb-1">Yacht</h3>
-                            <p class="text-gray-400 text-[11px]">356 Tours, 248 Activities</p>
-                        </div>
+                            </div>
                         <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
@@ -1421,7 +1414,7 @@
                     else if (activeFilters.price === '20000-40000') priOk = price >= 20000 && price <= 40000;
                     else if (activeFilters.price === '40000+') priOk = price > 40000;
 
-                    const show = catOk && durOk && ratOk && priOk;
+                    const show = catOk && durOk && priOk;
                     card.style.display = show ? '' : 'none';
                     if (show) visible++;
                 });
@@ -1431,10 +1424,10 @@
             }
 
             window.resetFilters = function() {
-                ['category','duration','rating','price'].forEach(t => {
+                ['category','duration','price'].forEach(t => {
                     activeFilters[t] = 'all';
                 });
-                const defaults = { 'cat-btn':'Categories','dur-btn':'Duration','rat-btn':'Review / Rating','pri-btn':'Price range' };
+                const defaults = { 'cat-btn':'Categories','dur-btn':'Duration','pri-btn':'Price range' };
                 Object.entries(defaults).forEach(([id, label]) => {
                     const btn = document.getElementById(id);
                     if (btn) {

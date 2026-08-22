@@ -282,7 +282,7 @@
 
                         <!-- User Profile Avatar -->
                         @php
-                            $activeAdmin = Auth::check() ? Auth::user() : (\DB::table('users')->where('id', 1)->first() ?? (object) [
+                            $activeAdmin = Auth::guard('admin')->check() ? Auth::guard('admin')->user() : (\DB::table('users')->where('id', 1)->first() ?? (object) [
                                 'name' => 'Super Admin',
                                 'role' => 'SUPER ADMIN',
                                 'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin'

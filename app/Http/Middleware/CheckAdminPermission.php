@@ -18,19 +18,23 @@ class CheckAdminPermission
      */
     public function handle(Request $request, Closure $next, $permission = null)
     {
-        $user = Auth::user();
-
-        // Must be logged in
+        // Retrieve the authenticated user from the admin guard
+        $user = Auth::guard('admin')->user();
+        
+        // If not authenticated via admin guard, redirect to admin login
         if (!$user) {
-            return redirect('/admin/login');
+            return redirect('/admin/login')->with('error', 'Please log in to access the admin panel.');
         }
 
         $role = strtoupper($user->role ?? '');
         $adminRoles = ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'EMPLOYEE'];
 
-        // Block regular users/customers from accessing any admin routes
+        // Block non-admin roles (though if they log in via admin guard they should be an admin)
         if (!in_array($role, $adminRoles)) {
-            return redirect('/profile')->with('error', 'Access Denied: You are not authorized to access the admin panel.');
+            Auth::guard('admin')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect('/admin/login')->with('error', 'Access Denied: Please log in with admin credentials to access the admin panel.');
         }
 
         // Super Admin gets access to everything

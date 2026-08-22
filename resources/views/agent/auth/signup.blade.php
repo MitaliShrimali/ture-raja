@@ -220,8 +220,9 @@
                 <!-- Email -->
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Agent Email*</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required
-                        placeholder="agent@youragency.com" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address" class="input-field" />
+                    <input type="email" name="email" id="email" value="{{ old('email') }}" required
+                        placeholder="agent@youragency.com" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address" class="input-field" onblur="checkUniqueness('email', this.value, 'agent')" />
+                    <span id="email-error" class="text-[10px] text-red-500 font-bold hidden mt-1"><i class="fas fa-exclamation-circle"></i> This email is already used.</span>
                 </div>
 
                 <!-- Phone -->
@@ -245,10 +246,11 @@
                         <div class="relative flex-grow">
                             <input type="tel" required placeholder="Mobile Number *"
                                 class="phone-number-val w-full border-none rounded-xl py-3.5 px-4 outline-none text-gray-700 text-xs font-medium"
-                                style="background-color: #f3f4f6;">
+                                style="background-color: #f3f4f6;" onblur="checkUniqueness('phone', document.querySelector('.phone-full-val').value, 'agent')">
                         </div>
                     </div>
-                    <input type="hidden" class="phone-full-val" name="phone" value="{{ old('phone') }}">
+                    <input type="hidden" class="phone-full-val" name="phone" id="phone" value="{{ old('phone') }}">
+                    <span id="phone-error" class="text-[10px] text-red-500 font-bold hidden mt-1"><i class="fas fa-exclamation-circle"></i> This number is already used.</span>
                 </div>
 
                 <!-- Password -->
@@ -406,6 +408,22 @@
             }
         });
 
+        function checkUniqueness(field, value, type) {
+            if(!value) return;
+            const url = field === 'email' ? `/api/check-email?email=${encodeURIComponent(value)}&type=${type}` : `/api/check-mobile?phone=${encodeURIComponent(value)}&type=${type}`;
+            fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                const errorSpan = document.getElementById(`${field}-error`);
+                if(data.exists) {
+                    errorSpan.classList.remove('hidden');
+                } else {
+                    errorSpan.classList.add('hidden');
+                }
+            })
+            .catch(e => console.error(e));
+        }
+
         function agentSignupForm() {
             return {
                 remember: true, 
@@ -419,7 +437,7 @@
                 errorMsg: '',
                 formError: '',
 
-                submitForm(e) {
+                async submitForm(e) {
                     let password = document.querySelector('input[name="password"]').value;
                     let passwordConfirm = document.querySelector('input[name="password_confirmation"]').value;
                     
@@ -445,6 +463,27 @@
                     this.loading = true;
                     this.errorMsg = '';
                     
+                    // Validate if email or phone is already taken
+                    try {
+                        const [emailRes, phoneRes] = await Promise.all([
+                            fetch(`{{ url('/api/check-email') }}?email=${encodeURIComponent(email)}&type=agent`).then(r => r.json()),
+                            fetch(`{{ url('/api/check-mobile') }}?phone=${encodeURIComponent(phone)}&type=agent`).then(r => r.json())
+                        ]);
+                        
+                        if (emailRes.exists) {
+                            this.loading = false;
+                            this.formError = '❗️ This email is already registered.';
+                            return;
+                        }
+                        if (phoneRes.exists) {
+                            this.loading = false;
+                            this.formError = '❗️ This mobile number is already registered.';
+                            return;
+                        }
+                    } catch (err) {
+                        // ignore validation error and proceed
+                    }
+
                     fetch('{{ url('/api/otp/send') }}', {
                         method: 'POST',
                         headers: {
@@ -478,8 +517,31 @@
                 },
 
                 resendOtp() {
-                    if(this.timer > 0) return;
-                    this.submitForm();
+                    let phone = document.querySelector('.phone-full-val').value;
+                    let email = document.querySelector('input[name="email"]').value;
+                    
+                    if(!phone) return;
+                    
+                    this.errorMsg = '';
+                    
+                    fetch('{{ url('/api/otp/send') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                        },
+                        body: JSON.stringify({ phone: phone, email: email })
+                    }).then(res => res.json())
+                    .then(data => {
+                        if(data.success) {
+                            this.startTimer();
+                        } else {
+                            this.errorMsg = data.message || 'Error sending OTP';
+                        }
+                    }).catch(err => {
+                        this.errorMsg = 'Failed to send OTP';
+                    });
                 },
 
                 verifyOtp() {

@@ -41,6 +41,21 @@ class UserController extends Controller
     }
     
 
+
+    public function showCmsPage($slug)
+    {
+        $page = DB::table('cms_pages')
+            ->where('slug', $slug)
+            ->where('status', 'Published')
+            ->first();
+
+        if (!$page) {
+            abort(404);
+        }
+
+        return view('page', compact('page'));
+    }
+
     // ─── HOME PAGE ────────────────────────────────────────────────────
     public function home()
     {
@@ -745,6 +760,29 @@ class UserController extends Controller
 
         return redirect()->back()->with('feedback_success', 'Thank you! Your feedback has been submitted successfully.');
     }
+    // ─── API EXISTENCE CHECKS ─────────────────────────────────────────
+    public function checkEmail(Request $request)
+    {
+        $type = $request->get('type', 'customer');
+        $table = $type === 'agent' ? 'agents' : 'users';
+        $exists = DB::table($table)->where('email', $request->email)->exists();
+        return response()->json(['exists' => $exists]);
+    }
+
+    public function checkMobile(Request $request)
+    {
+        $type = $request->get('type', 'customer');
+        $table = $type === 'agent' ? 'agents' : 'users'; // Actually, users uses user_profiles for phone. But agents has phone column.
+        $phone = $request->phone;
+        
+        if ($type === 'agent') {
+            $exists = DB::table('agents')->where('phone', $phone)->exists();
+        } else {
+            $exists = DB::table('user_profiles')->where('phone', $phone)->exists();
+        }
+        return response()->json(['exists' => $exists]);
+    }
+
     // ─── SIGN UP ──────────────────────────────────────────────────────
     public function signupSubmit(Request $request)
     {
@@ -841,9 +879,16 @@ class UserController extends Controller
         }
 
         if (Hash::check($request->password, $user->password)) {
-            Auth::loginUsingId($user->id);
-            
             $redirect = '/';
+            $roleStr = strtoupper($user->role ?? '');
+            
+            if (in_array($roleStr, ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'EMPLOYEE'])) {
+                Auth::guard('admin')->loginUsingId($user->id);
+                $redirect = '/admin/dashboard';
+            } else {
+                Auth::loginUsingId($user->id);
+            }
+            
             if (in_array(strtoupper($user->role ?? ''), ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR'])) {
                 $redirect = '/admin/dashboard';
             }
@@ -933,19 +978,17 @@ class UserController extends Controller
         return redirect('/login')->with('success', 'Password reset successfully! You can now log in.');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        // Capture role before logging out
-        $role = Auth::check() ? Auth::user()->role : null;
-        Auth::logout();
-        session()->invalidate();
-        session()->regenerateToken();
-        // If admin role (any case) redirect to admin login
-        if ($role && stripos($role, 'admin') !== false) {
+        if ($request->routeIs('admin.logout') || $request->is('admin/*')) {
+            Auth::guard('admin')->logout();
+            // Don't invalidate the entire session to keep customer logged in if they are
             return redirect('/admin/login')
-                ->with('success', 'Logged out successfully.');
+                ->with('success', 'Logged out from Admin panel successfully.');
         }
-        // Default user logout redirects to public login
+
+        Auth::logout();
+        // Just logout the customer, don't invalidate entire session as admin might be logged in
         return redirect('/')
             ->with('success', 'Logged out successfully.');
     }

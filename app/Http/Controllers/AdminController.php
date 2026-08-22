@@ -3061,7 +3061,7 @@ class AdminController extends Controller
     private function logActivity($activity, $details = null)
     {
         try {
-            $user = Auth::user();
+            $user = Auth::guard('admin')->user();
             $userName = $user ? $user->name : 'System/Admin';
             $role = $user ? ($user->role ?? 'Admin') : 'System';
             $userNameWithRole = "{$role} ({$userName})";
@@ -3086,7 +3086,7 @@ class AdminController extends Controller
             'new_password' => 'required|min:6|confirmed',
         ]);
 
-        $user = Auth::check() ? Auth::user() : DB::table('users')->where('id', 1)->first();
+        $user = Auth::guard('admin')->check() ? Auth::guard('admin')->user() : DB::table('users')->where('id', 1)->first();
         if (!$user) {
             return redirect()->back()->with('error', 'User not found!');
         }
@@ -3220,7 +3220,7 @@ class AdminController extends Controller
     {
         $request->validate(['name' => 'required', 'email' => 'required|email']);
 
-        $adminId = Auth::check() ? Auth::id() : 1;
+        $adminId = Auth::guard('admin')->check() ? Auth::guard('admin')->id() : 1;
 
         DB::table('users')->where('id', $adminId)->update([
             'name' => $request->name,
@@ -3441,7 +3441,7 @@ class AdminController extends Controller
 
     public function adminProfile()
     {
-        $admin = Auth::check() ? Auth::user() : DB::table('users')->where('id', 1)->first();
+        $admin = Auth::guard('admin')->check() ? Auth::guard('admin')->user() : DB::table('users')->where('id', 1)->first();
 
         // System and analytical overview stats for admin profile!
         $totalPackages = DB::table('packages')->count();

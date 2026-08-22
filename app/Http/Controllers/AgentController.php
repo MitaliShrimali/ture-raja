@@ -348,8 +348,19 @@ class AgentController extends Controller
             return redirect()->route('agent.login')->with('error', 'Please log in.');
         }
 
-
+        $agent = DB::table('agents')->where('id', $agentId)->first();
         $branches = DB::table('branches')->where('agent_id', $agentId)->orderBy('created_at', 'desc')->get();
+
+        $mainBranch = (object)[
+            'id' => 0,
+            'agency_name' => $agent->agency_name ?: $agent->name,
+            'location' => $agent->city,
+            'state' => $agent->state,
+            'country' => $agent->country,
+            'status' => 'Online',
+            'is_main' => true
+        ];
+        $branches->prepend($mainBranch);
 
         return view('agent.pages.branch', [
             'page_title' => 'Branches',
@@ -1922,24 +1933,87 @@ class AgentController extends Controller
 
         $agentId = session('agent_id');
         if (!$agentId) {
-            return redirect()->route('agent.login')->with('error', 'Please login first.');
+            return response()->json(['success' => false, 'message' => 'Please login first.']);
         }
 
         $agent = \DB::table('agents')->where('id', $agentId)->first();
         if (!$agent) {
-            return redirect()->back()->with('error', 'Agent not found.');
+            return response()->json(['success' => false, 'message' => 'Agent not found.']);
         }
 
         if (!\Hash::check($request->current_password, $agent->password)) {
-            return redirect()->back()->with('error', 'Current password does not match.');
+            return response()->json(['success' => false, 'message' => 'Current password does not match.']);
         }
 
+        // Generate a 6-digit OTP
+        $otp = rand(100000, 999999);
+        
+        // Store OTP and new password in session
+        session([
+            'password_update_otp' => $otp,
+            'password_update_new' => \Hash::make($request->new_password),
+            'password_update_expires' => now()->addMinutes(5)
+        ]);
+
+        // Send OTP email
+        \Illuminate\Support\Facades\Mail::send('emails.update-password-otp', ['otp' => $otp], function($message) use ($agent) {
+            $message->to($agent->email);
+            $message->subject('Your Password Update OTP Code');
+        });
+
+        return response()->json([
+            'success' => true, 
+            'message' => 'An OTP has been sent to your email. Please enter it to verify.'
+        ]);
+    }
+
+    public function verifyPasswordOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|numeric'
+        ]);
+
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return response()->json(['success' => false, 'message' => 'Please login first.']);
+        }
+
+        $sessionOtp = session('password_update_otp');
+        $sessionExpires = session('password_update_expires');
+        $sessionNewPass = session('password_update_new');
+
+        if (!$sessionOtp || !$sessionExpires || !$sessionNewPass) {
+            return response()->json(['success' => false, 'message' => 'OTP session not found. Please try updating your password again.']);
+        }
+
+        if (now()->greaterThan($sessionExpires)) {
+            // Expired
+            session()->forget(['password_update_otp', 'password_update_expires', 'password_update_new']);
+            return response()->json(['success' => false, 'message' => 'OTP has expired. Please try updating your password again.']);
+        }
+
+        if ((string)$request->otp !== (string)$sessionOtp) {
+            return response()->json(['success' => false, 'message' => 'Invalid OTP. Please check the code and try again.']);
+        }
+
+        $agent = \DB::table('agents')->where('id', $agentId)->first();
+
+        // Valid OTP! Update the password
         \DB::table('agents')->where('id', $agentId)->update([
-            'password' => \Hash::make($request->new_password),
+            'password' => $sessionNewPass,
             'updated_at' => now()
         ]);
 
-        return redirect()->back()->with('success', 'Password updated successfully!');
+        // Clear session data
+        session()->forget(['password_update_otp', 'password_update_expires', 'password_update_new']);
+
+        // Send Success Email
+        \Illuminate\Support\Facades\Mail::send('emails.update-password-success', [], function($message) use ($agent) {
+            $message->to($agent->email);
+            $message->subject('Password Updated Successfully');
+        });
+
+        return response()->json(['success' => true, 'message' => 'Password updated successfully!']);
     }
 
     public function upgradePlan(Request $request)

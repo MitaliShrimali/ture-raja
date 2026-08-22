@@ -377,7 +377,7 @@
                                 </div>
                             </div>
 
-                            <form action="{{ route('agent.settings.password') }}" method="POST">
+                            <form action="{{ route('agent.settings.password') }}" method="POST" id="passwordUpdateForm">
                                 @csrf
                                 <div class="space-y-6">
                                     <div class="grid grid-cols-1 gap-6">
@@ -412,11 +412,12 @@
                                         </div>
                                     </div>
                                     <div class="pt-4">
-                                        <button type="submit" class="w-full py-4 bg-primary text-white text-xs font-black rounded-2xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all uppercase tracking-widest">Update Password</button>
+                                        <button type="submit" id="btnUpdatePassword" class="w-full py-4 bg-primary text-white text-xs font-black rounded-2xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all uppercase tracking-widest">Update Password</button>
                                     </div>
                                 </div>
                             </form>
                         </div>
+
 
 
                     </div>
@@ -495,6 +496,26 @@
 
 
     
+
+<!-- OTP Verification Modal (Moved outside layout structure to prevent clipping) -->
+<div id="otpModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex items-center justify-center p-4" style="margin: 0; padding: 0;">
+    <div class="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl transform transition-all relative z-[101] m-auto">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-orange-100 text-primary rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800">Verify Your Identity</h3>
+            <p class="text-sm text-gray-500 mt-2">We've sent a 6-digit OTP code to your email. It expires in 5 minutes.</p>
+        </div>
+        <form id="otpVerifyForm">
+            <div class="space-y-4">
+                <input type="text" id="otp_code" name="otp" placeholder="Enter 6-digit OTP" class="w-full px-5 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-primary/10 text-center text-gray-700 text-lg font-black tracking-widest" required maxlength="6" pattern="\d{6}">
+                <button type="submit" id="btnVerifyOtp" class="w-full py-4 bg-primary text-white text-xs font-black rounded-2xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all uppercase tracking-widest">Verify & Update Password</button>
+                <button type="button" onclick="closeOtpModal()" class="w-full py-3 text-gray-500 hover:text-gray-700 text-xs font-bold uppercase tracking-widest">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script>
 function switchTab(tabName) {
@@ -974,5 +995,135 @@ function deleteCardBack() {
     
     calculateLiveProgress();
 }
+
+// ---- OTP Password Update Logic ----
+document.addEventListener('DOMContentLoaded', function() {
+    const pwdForm = document.getElementById('passwordUpdateForm');
+    const otpModal = document.getElementById('otpModal');
+    const otpVerifyForm = document.getElementById('otpVerifyForm');
+    
+    if (pwdForm) {
+        pwdForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnUpdatePassword');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Requesting OTP...';
+            btn.disabled = true;
+
+            const formData = new FormData(this);
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                
+                if (data.success) {
+                    Swal.fire({
+                        title: 'OTP Sent',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#F0642F',
+                        borderRadius: '2rem'
+                    });
+                    otpModal.classList.remove('hidden');
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444',
+                        borderRadius: '2rem'
+                    });
+                }
+            })
+            .catch(error => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An unexpected error occurred. Please try again.',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444',
+                    borderRadius: '2rem'
+                });
+            });
+        });
+    }
+
+    if (otpVerifyForm) {
+        otpVerifyForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnVerifyOtp');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Verifying...';
+            btn.disabled = true;
+
+            const otpCode = document.getElementById('otp_code').value;
+            const csrfToken = document.querySelector('input[name="_token"]').value;
+
+            fetch('{{ route("agent.settings.password.verify") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ otp: otpCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+                if (data.success) {
+                    closeOtpModal();
+                    pwdForm.reset();
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#F0642F',
+                        borderRadius: '2rem'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message,
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444',
+                        borderRadius: '2rem'
+                    });
+                }
+            })
+            .catch(error => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An unexpected error occurred during verification.',
+                    icon: 'error',
+                    confirmButtonColor: '#ef4444',
+                    borderRadius: '2rem'
+                });
+            });
+        });
+    }
+});
+
+function closeOtpModal() {
+    document.getElementById('otpModal').classList.add('hidden');
+    const otpForm = document.getElementById('otpVerifyForm');
+    if(otpForm) otpForm.reset();
+}
 </script>
 @endsection
+

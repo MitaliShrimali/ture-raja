@@ -227,8 +227,9 @@
                 <!-- Email -->
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Email*</label>
-                    <input type="email" name="email" value="{{ old('email') }}" required placeholder="Your email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address"
-                        class="input-field @error('email') !border-red-500 @enderror" />
+                    <input type="email" name="email" id="email" value="{{ old('email') }}" required placeholder="Your email" pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$" title="Please enter a valid email address"
+                        class="input-field @error('email') !border-red-500 @enderror" onblur="checkUniqueness('email', this.value, 'customer')" />
+                    <span id="email-error" class="text-[10px] text-red-500 font-bold hidden mt-1"><i class="fas fa-exclamation-circle"></i> This email is already used.</span>
                     @error('email') <span class="text-[10px] text-red-500 font-medium block mt-1">{{ $message }}</span> @enderror
                 </div>
 
@@ -236,15 +237,16 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Phone Number*</label>
                     <div style="display: flex; gap: 8px;">
-                        <select name="country_code" class="input-field bg-white" style="width: 100px; flex-shrink: 0;" required>
+                        <select name="country_code" id="country_code" class="input-field bg-white" style="width: 100px; flex-shrink: 0;" required>
                             <option value="+91">+91 (IN)</option>
                             <option value="+1">+1 (US/CA)</option>
                             <option value="+44">+44 (UK)</option>
                             <option value="+61">+61 (AU)</option>
                             <option value="+971">+971 (AE)</option>
                         </select>
-                        <input type="tel" name="phone" value="{{ old('phone') }}" required placeholder="Phone number" class="input-field @error('phone') !border-red-500 @enderror" style="flex: 1;" minlength="7" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Please enter a valid phone number (digits only)" />
+                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" required placeholder="Phone number" class="input-field @error('phone') !border-red-500 @enderror" style="flex: 1;" minlength="7" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Please enter a valid phone number (digits only)" onblur="checkUniqueness('phone', document.getElementById('country_code').value + this.value, 'customer')" />
                     </div>
+                    <span id="phone-error" class="text-[10px] text-red-500 font-bold hidden mt-1"><i class="fas fa-exclamation-circle"></i> This number is already used.</span>
                     @error('phone') <span class="text-[10px] text-red-500 font-medium block mt-1">{{ $message }}</span> @enderror
                 </div>
 
@@ -349,6 +351,22 @@
         window.onpageshow = function (e) { if (e.persisted) window.location.reload(); };
         lucide.createIcons();
 
+        function checkUniqueness(field, value, type) {
+            if(!value) return;
+            const url = field === 'email' ? `/api/check-email?email=${encodeURIComponent(value)}&type=${type}` : `/api/check-mobile?phone=${encodeURIComponent(value)}&type=${type}`;
+            fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                const errorSpan = document.getElementById(`${field}-error`);
+                if(data.exists) {
+                    errorSpan.classList.remove('hidden');
+                } else {
+                    errorSpan.classList.add('hidden');
+                }
+            })
+            .catch(e => console.error(e));
+        }
+
         function signupForm() {
             return {
                 remember: true, 
@@ -362,7 +380,7 @@
                 errorMsg: '',
                 formError: '',
 
-                submitForm(e) {
+                async submitForm(e) {
                     let password = document.querySelector('input[name="password"]').value;
                     let passwordConfirm = document.querySelector('input[name="password_confirmation"]').value;
                     
@@ -382,6 +400,28 @@
                     this.loading = true;
                     this.errorMsg = '';
                     
+                    // Validate if email or phone is already taken
+                    try {
+                        let fullPhone = countryCode + phone;
+                        const [emailRes, phoneRes] = await Promise.all([
+                            fetch(`{{ url('/api/check-email') }}?email=${encodeURIComponent(email)}&type=customer`).then(r => r.json()),
+                            fetch(`{{ url('/api/check-mobile') }}?phone=${encodeURIComponent(fullPhone)}&type=customer`).then(r => r.json())
+                        ]);
+                        
+                        if (emailRes.exists) {
+                            this.loading = false;
+                            this.formError = '❗️ This email is already registered.';
+                            return;
+                        }
+                        if (phoneRes.exists) {
+                            this.loading = false;
+                            this.formError = '❗️ This mobile number is already registered.';
+                            return;
+                        }
+                    } catch (err) {
+                        // ignore validation error and proceed
+                    }
+
                     fetch('{{ url('/api/otp/send') }}', {
                         method: 'POST',
                         headers: {
@@ -415,8 +455,32 @@
                 },
 
                 resendOtp() {
-                    if(this.timer > 0) return;
-                    this.submitForm();
+                    let phone = document.querySelector('input[name="phone"]').value;
+                    let countryCode = document.querySelector('select[name="country_code"]').value;
+                    let email = document.querySelector('input[name="email"]').value;
+                    
+                    if(!phone) return;
+                    
+                    this.errorMsg = '';
+                    
+                    fetch('{{ url('/api/otp/send') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                        },
+                        body: JSON.stringify({ phone: countryCode + phone, email: email })
+                    }).then(res => res.json())
+                    .then(data => {
+                        if(data.success) {
+                            this.startTimer();
+                        } else {
+                            this.errorMsg = data.message || 'Error sending OTP';
+                        }
+                    }).catch(err => {
+                        this.errorMsg = 'Failed to send OTP';
+                    });
                 },
 
                 verifyOtp() {

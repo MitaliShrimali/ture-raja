@@ -132,59 +132,26 @@
         <ul style="list-style:none; padding:0; margin:0;">
           <li style="padding:1px 0;">
             @auth
-              <a href="{{ url('/profile?tab=history') }}"
-                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
-                Bookings</a>
-            @else
-              <a href="javascript:void(0)" @click="$dispatch('open-login-modal')"
-                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
-                Bookings</a>
-            @endauth
-          </li>
-          <li style="padding:1px 0;">
-            @auth
-              <a href="{{ url('/profile?tab=wishlist') }}"
-                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Saved
-                Agent</a>
-            @else
-              <a href="javascript:void(0)" @click="$dispatch('open-login-modal')"
-                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Saved
-                Agent</a>
-            @endauth
-          </li>
-          <li style="padding:1px 0;">
-            @auth
               <a href="{{ url('/profile') }}" style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
-                Account</a>
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My/Customer Login</a>
             @else
               <a href="javascript:void(0)" @click="$dispatch('open-login-modal')"
                 style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
-                Account</a>
+                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My/Customer Login</a>
             @endauth
           </li>
-          <li style="padding:1px 0;">
-            @auth
-              <a href="{{ url('/profile?tab=reviews') }}"
-                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
-                Reviews</a>
-            @else
-              <a href="javascript:void(0)" @click="$dispatch('open-login-modal')"
-                style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-                onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">My
-                Reviews</a>
-            @endauth
-          </li>
-          <li style="padding:1px 0;"><a href="{{ url('/admin/login') }}"
+          <li style="padding:1px 0;"><a href="{{ url('/page/anti-fraud-policy') }}"
               style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
-              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Admin
-              Login</a></li>
+              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Anti-fraud policy</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/page/listing-accuracy-policy') }}"
+              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
+              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Listing accuracy policy</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/page/intellectual-property') }}"
+              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
+              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Intellectual property</a></li>
+          <li style="padding:1px 0;"><a href="{{ url('/page/connect-purchase-terms') }}"
+              style="color:rgba(255,255,255,0.85); font-size:16px; text-decoration:none;"
+              onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.85)'">Connect purchase terms</a></li>
         </ul>
       </div>
 
