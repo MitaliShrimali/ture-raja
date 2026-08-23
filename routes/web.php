@@ -98,6 +98,7 @@ Route::prefix('admin')->group(function () {
         return view('admin.signup', ['type' => 'admin']);
     });
     Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('admin.login.submit');
+    Route::match(['GET', 'POST'], '/logout', [UserController::class, 'logout'])->name('admin.logout');
 
     Route::middleware(['admin.permission'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);

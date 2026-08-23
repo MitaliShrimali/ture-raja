@@ -204,7 +204,7 @@
 
             <!-- Bottom Actions -->
             <div class="p-6 border-t border-border-soft space-y-4 shrink-0">
-                <a href="{{ url('/logout') }}"
+                <a href="{{ route('admin.logout') }}"
                     class="flex items-center gap-4 px-4 py-3.5 text-red-500 hover:bg-red-50 rounded-2xl transition-all text-sm font-black">
                     <i data-lucide="log-out" size="20"></i>
                     <span>Logout</span>
