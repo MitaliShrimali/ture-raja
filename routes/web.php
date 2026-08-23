@@ -89,14 +89,17 @@ Route::prefix('admin')->group(function () {
                 return redirect('/admin/dashboard');
             }
         }
-        return view('admin.login', ['type' => 'admin']);
+        return response()->view('admin.login', ['type' => 'admin'])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     });
     Route::get('/signup', function () {
         return view('admin.signup', ['type' => 'admin']);
     });
     Route::post('/login/submit', [UserController::class, 'loginSubmit'])->name('admin.login.submit');
 
-    Route::middleware(['auth', 'admin.permission'])->group(function () {
+    Route::middleware(['admin.permission'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
         Route::get('/packages/approve/{id}', [AdminController::class, 'approvePackage'])->name('admin.package.approve');
         Route::get('/packages/decline/{id}', [AdminController::class, 'declinePackage'])->name('admin.package.decline');

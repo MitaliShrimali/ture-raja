@@ -23,7 +23,13 @@ class CheckAdminPermission
         
         // If not authenticated via admin guard, redirect to admin login
         if (!$user) {
-            return redirect('/admin/login')->with('error', 'Please log in to access the admin panel.');
+            return redirect('/admin/login')
+                ->with('error', 'Please log in to access the admin panel.')
+                ->withHeaders([
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0'
+                ]);
         }
 
         $role = strtoupper($user->role ?? '');
@@ -34,7 +40,13 @@ class CheckAdminPermission
             Auth::guard('admin')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return redirect('/admin/login')->with('error', 'Access Denied: Please log in with admin credentials to access the admin panel.');
+            return redirect('/admin/login')
+                ->with('error', 'Access Denied: Please log in with admin credentials to access the admin panel.')
+                ->withHeaders([
+                    'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0'
+                ]);
         }
 
         // Super Admin gets access to everything
