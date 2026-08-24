@@ -88,7 +88,7 @@ class ListingController extends Controller
         // Fetch all agents to check their tiers + location for card display
         try {
             $agentsList = \Illuminate\Support\Facades\DB::table('agents')
-                ->select('id', 'name', 'service_guaranteed', 'plan_id', 'city', 'state', 'logo')
+                ->select('id', 'name', 'service_guaranteed', 'plan_id', 'city', 'state', 'country', 'logo')
                 ->get();
                 
             $agentsById = $agentsList->keyBy('id')->toArray();
@@ -143,6 +143,7 @@ class ListingController extends Controller
                 }
                 $pkg['agent']['city']  = $dbAgent['city']  ?? '';
                 $pkg['agent']['state'] = $dbAgent['state'] ?? '';
+                $pkg['agent']['country'] = $dbAgent['country'] ?? '';
                 if (empty($pkg['agent']['logo']) && !empty($dbAgent['logo'])) {
                     $pkg['agent']['logo'] = $dbAgent['logo'];
                 }
@@ -511,18 +512,65 @@ class ListingController extends Controller
             });
         }
 
-        // ── City filter ────────────────────────────────────────────
+        // ── Agent Location filter ────────────────────────────────────
         if ($request->filled('city')) {
-            $cities = array_map('strtolower', (array) $request->city);
-            $packages = $packages->filter(function($pkg) use ($cities) {
+            $searchTerms = explode(',', $request->city);
+            $searchTerms = array_filter(array_map('trim', array_map('strtolower', $searchTerms)));
+
+            $packages = $packages->filter(function($pkg) use ($searchTerms, $agentsById, $agentsByName) {
                 $pkg = (array) $pkg;
-                $pkgCity = strtolower($pkg['city'] ?? '');
-                foreach ($cities as $city) {
-                    if (str_contains($pkgCity, $city)) {
-                        return true;
+                
+                $agentId = null;
+                $agentName = null;
+                $agentData = $pkg['agent'] ?? null;
+                if (is_string($agentData)) {
+                    $decoded = json_decode($agentData, true);
+                    if (is_array($decoded)) {
+                        $agentId = $decoded['id'] ?? null;
+                        $agentName = $decoded['name'] ?? null;
+                    } else {
+                        $agentName = $agentData;
+                    }
+                } elseif (is_array($agentData)) {
+                    $agentId = $agentData['id'] ?? null;
+                    $agentName = $agentData['name'] ?? null;
+                } elseif (is_object($agentData)) {
+                    $agentId = $agentData->id ?? null;
+                    $agentName = $agentData->name ?? null;
+                }
+                
+                $agentInfo = null;
+                if ($agentId && isset($agentsById[$agentId])) {
+                    $agentInfo = (array) $agentsById[$agentId];
+                } else {
+                    $agentKey = $agentName ? strtolower(trim($agentName)) : null;
+                    if ($agentKey && isset($agentsByName[$agentKey])) {
+                        $agentInfo = (array) $agentsByName[$agentKey];
                     }
                 }
-                return false;
+
+                if (!$agentInfo) {
+                    return false;
+                }
+                
+                $agentCity = strtolower(trim($agentInfo['city'] ?? ''));
+                $agentState = strtolower(trim($agentInfo['state'] ?? ''));
+                $agentCountry = strtolower(trim($agentInfo['country'] ?? ''));
+                
+                foreach ($searchTerms as $term) {
+                    if (empty($term)) continue;
+                    
+                    $matchedTerm = false;
+                    if ($agentCity && str_contains($agentCity, $term)) $matchedTerm = true;
+                    if ($agentState && str_contains($agentState, $term)) $matchedTerm = true;
+                    if ($agentCountry && str_contains($agentCountry, $term)) $matchedTerm = true;
+                    
+                    if (!$matchedTerm) {
+                        return false;
+                    }
+                }
+                
+                return true;
             });
         }
 

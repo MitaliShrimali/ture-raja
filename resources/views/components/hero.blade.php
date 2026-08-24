@@ -176,10 +176,18 @@
             ->toArray();
             
         $autoCities = \Illuminate\Support\Facades\DB::table('agents')
+            ->select('city', 'state')
             ->whereNotNull('city')
             ->where('city', '!=', '')
             ->distinct()
-            ->pluck('city')
+            ->get()
+            ->map(function ($agent) {
+                $c = trim($agent->city);
+                $s = trim($agent->state ?? '');
+                return $s ? "{$c}, {$s}" : $c;
+            })
+            ->unique()
+            ->values()
             ->toArray();
     @endphp
 

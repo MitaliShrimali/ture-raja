@@ -1147,53 +1147,37 @@ class UserController extends Controller
                     ];
                 }
             } elseif ($type === 'agent_location') {
-                // Suggest cities and regions of active agents
-                $cities = [];
+                // Suggest Agent Locations (City, State) based on agents table
+                $locations = [];
                 try {
-                    $dbCities = \DB::table('agents')
-                        ->where('status', 'Active')
-                        ->whereNotNull('city')
-                        ->where('city', '!=', '')
-                        ->where('city', 'like', "%{$q}%")
-                        ->pluck('city')
-                        ->toArray();
-                    $dbRegions = \DB::table('agents')
-                        ->where('status', 'Active')
-                        ->whereNotNull('region')
-                        ->where('region', '!=', '')
-                        ->where('region', 'like', "%{$q}%")
-                        ->pluck('region')
-                        ->toArray();
-                    $cities = array_merge($cities, $dbCities, $dbRegions);
+                    $dbAgents = \DB::table('agents')
+                        ->select('city', 'state', 'country')
+                        ->where(function ($query) use ($q) {
+                            $query->where('city', 'like', "%{$q}%")
+                                  ->orWhere('state', 'like', "%{$q}%")
+                                  ->orWhere('country', 'like', "%{$q}%");
+                        })
+                        ->get();
+
+                    foreach ($dbAgents as $agent) {
+                        $c = trim($agent->city ?? '');
+                        $s = trim($agent->state ?? '');
+                        
+                        if ($c && $s) {
+                            $locations[] = "{$c}, {$s}";
+                        } elseif ($c) {
+                            $locations[] = $c;
+                        } elseif ($s) {
+                            $locations[] = $s;
+                        }
+                    }
                 } catch (\Exception $e) {}
 
-                // Static backup of popular cities
-                $staticCities = ['New Delhi', 'Delhi', 'Mumbai', 'Bangalore', 'Kolkata', 'Chennai', 'Pune', 'Hyderabad', 'Jaipur', 'Goa', 'Dehradun', 'Singapore', 'Thailand', 'Bali'];
-                foreach ($staticCities as $sc) {
-                    if (stripos($sc, $q) !== false) {
-                        $cities[] = $sc;
-                    }
-                }
-
-                $cities = array_values(array_unique(array_filter($cities)));
+                $locations = array_values(array_unique(array_filter($locations)));
                 
-                // Prioritize Indian cities
-                usort($cities, function($a, $b) {
-                    $indianKeywords = ['india', 'delhi', 'mumbai', 'bangalore', 'kolkata', 'chennai', 'pune', 'hyderabad', 'jaipur', 'goa', 'dehradun', 'kerala', 'ahmedabad', 'gujarat', 'maharashtra'];
-                    $aIsIndian = false;
-                    $bIsIndian = false;
-                    foreach ($indianKeywords as $kw) {
-                        if (stripos($a, $kw) !== false) $aIsIndian = true;
-                        if (stripos($b, $kw) !== false) $bIsIndian = true;
-                    }
-                    if ($aIsIndian && !$bIsIndian) return -1;
-                    if (!$aIsIndian && $bIsIndian) return 1;
-                    return 0; // maintain relative order
-                });
-
-                foreach (array_slice($cities, 0, 15) as $city) {
+                foreach (array_slice($locations, 0, 15) as $loc) {
                     $results[] = [
-                        'text' => $city,
+                        'text' => $loc,
                         'type' => 'location',
                         'icon' => 'map-pin'
                     ];
