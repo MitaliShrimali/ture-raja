@@ -851,41 +851,7 @@
                         ];
                     })->toArray();
 
-                    $staticPkgs = [
-                        ['slug'=>'monaco-luxury-tour','title'=>'Monaco Luxury Tour Package','image'=>'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=600','duration'=>'2 days 3 nights','duration_days'=>2,'groupSize'=>'4-6 guest','rating'=>'4.96','reviews'=>'672','price'=>44825,'oldPrice'=>59825,'badge'=>'Top Rated','category'=>'international', 'tour_type'=>'Cruise Package', 'theme'=>'Honeymoon', 'agent'=>'Azure Horizons'],
-                        ['slug'=>'vietnam-tour-package','title'=>'Vietnam Tour Package','image'=>'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=600','duration'=>'3 days 3 nights','duration_days'=>3,'groupSize'=>'2-3 guest','rating'=>'4.91','reviews'=>'670','price'=>17320,'oldPrice'=>25320,'badge'=>'Best Sale','category'=>'international', 'tour_type'=>'Flight Package', 'theme'=>'Adventure', 'agent'=>'Nomad Ventures'],
-                        ['slug'=>'char-dham-yatra','title'=>'Char Dham Yatra Package','image'=>'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=600','duration'=>'7 days 6 nights','duration_days'=>7,'groupSize'=>'4-6 guest','rating'=>'4.86','reviews'=>'656','price'=>15463,'oldPrice'=>19000,'badge'=>'25% Off','category'=>'religious', 'tour_type'=>'Bus Package', 'theme'=>'Religious', 'agent'=>'Miths Holidays'],
-                        ['slug'=>'goa-beach-package','title'=>'Goa Beach Holiday Package','image'=>'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=600','duration'=>'2 days 3 nights','duration_days'=>2,'groupSize'=>'4-6 guest','rating'=>'4.74','reviews'=>'631','price'=>14755,'oldPrice'=>19825,'badge'=>'Top Rated','category'=>'domestic', 'tour_type'=>'Flight Package', 'theme'=>'Honeymoon', 'agent'=>'Miths Holidays'],
-                        ['slug'=>'spiti-valley-adventure','title'=>'Spiti Valley Package','image'=>'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&q=80&w=600','duration'=>'3 days 3 nights','duration_days'=>3,'groupSize'=>'4-6 guest','rating'=>'4.51','reviews'=>'617','price'=>24840,'oldPrice'=>31825,'badge'=>'Best Sale','category'=>'adventure', 'tour_type'=>'Train Package', 'theme'=>'Adventure', 'agent'=>'Nomad Ventures'],
-                        ['slug'=>'swiss-paris-delight','title'=>'Swiss Paris Delight','image'=>'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=600','duration'=>'7 days 6 nights','duration_days'=>7,'groupSize'=>'4-6 guest','rating'=>'4.29','reviews'=>'608','price'=>51247,'oldPrice'=>null,'badge'=>'25% Off','category'=>'international', 'tour_type'=>'Flight Package', 'theme'=>'Family/Group', 'agent'=>'Globe Trotters'],
-                        ['slug'=>'kerala-backwaters','title'=>'Kerala Backwaters Escape','image'=>'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&q=80&w=600','duration'=>'4 days 3 nights','duration_days'=>4,'groupSize'=>'2-4 guest','rating'=>'4.65','reviews'=>'420','price'=>12500,'oldPrice'=>15000,'badge'=>'Popular','category'=>'domestic', 'tour_type'=>'Train Package', 'theme'=>'Honeymoon', 'agent'=>'Miths Holidays'],
-                        ['slug'=>'dubai-desert-safari','title'=>'Dubai Desert Safari & Burj','image'=>'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=600','duration'=>'4 days 3 nights','duration_days'=>4,'groupSize'=>'2-6 guest','rating'=>'4.8','reviews'=>'890','price'=>29999,'oldPrice'=>35000,'badge'=>'Trending','category'=>'international', 'tour_type'=>'Flight Package', 'theme'=>'Family/Group', 'agent'=>'Atlas Global Travels'],
-                        ['slug'=>'bali-luxury-villa','title'=>'Bali Luxury Villa Escape','image'=>'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=600','duration'=>'5 days 4 nights','duration_days'=>5,'groupSize'=>'2 guest','rating'=>'4.9','reviews'=>'543','price'=>35000,'oldPrice'=>42000,'badge'=>'Honeymoon','category'=>'international', 'tour_type'=>'Flight Package', 'theme'=>'Honeymoon', 'agent'=>'Miths Holidays'],
-                    ];
-
-                    // Map locations for static packages as well
-                    $staticPkgs = array_map(function($pkg) use ($agentsById, $agentsByName) {
-                        $agentName = $pkg['agent'] ?? null;
-                        $agentData = ['name' => $agentName];
-                        if ($agentName) {
-                            $key = strtolower(trim($agentName));
-                            if (isset($agentsByName[$key])) {
-                                $dbAgent = (array)$agentsByName[$key];
-                                $agentData['city'] = $dbAgent['city'] ?? '';
-                                $agentData['state'] = $dbAgent['state'] ?? '';
-                                $agentData['logo'] = $dbAgent['logo'] ?? '';
-                            }
-                        }
-                        $pkg['agent'] = $agentData;
-                        return $pkg;
-                    }, $staticPkgs);
-
-                    $dbSlugs = array_column($mappedDbPkgs, 'slug');
-                    $filteredStaticPkgs = array_filter($staticPkgs, function($static) use ($dbSlugs) {
-                        return !in_array($static['slug'], $dbSlugs);
-                    });
-
-                    $packages = array_merge($mappedDbPkgs, $filteredStaticPkgs);
+                    $packages = $mappedDbPkgs;
                 @endphp
 
                 <style>
