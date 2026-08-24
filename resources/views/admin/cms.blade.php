@@ -60,6 +60,13 @@
                                     >
                                         <i data-lucide="edit-3" size="18"></i>
                                     </a>
+                                    <a 
+                                        href="{{ url('/admin/cms/delete/' . $page->id) }}" 
+                                        class="p-2 text-muted-text hover:text-red-500 transition-colors"
+                                        onclick="return confirm('Are you sure you want to delete this page?')"
+                                    >
+                                        <i data-lucide="trash-2" size="18"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
