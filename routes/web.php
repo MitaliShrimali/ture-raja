@@ -480,434 +480,157 @@ Route::get('/package/{id}', [PackageController::class, 'show']);
 
 Route::get('/packages/{slug}', function ($slug) {
     try {
-        \App\Models\Package::where('slug', $slug)->increment('clicks');
-    } catch (\Exception $e) {
-        // ignore
-    }
-
-    $allPackages = [
-        'monaco-luxury-tour' => [
-            'slug'       => 'monaco-luxury-tour',
-            'title'      => 'Monaco Luxury Tour Package',
-            'image'      => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=1200',
-            'duration'   => '2 days 3 nights',
-            'groupSize'  => '4-6 guest',
-            'rating'     => '4.96',
-            'reviews'    => '672',
-            'price'      => 44825,
-            'oldPrice'   => 59825,
-            'badge'      => 'Top Rated',
-            'category'   => 'international',
-            'tour_type'  => 'Cruise Package',
-            'city'       => 'Monaco',
-            'theme'      => 'Honeymoon',
-            'activities' => ['Cable Car / Rope way', 'Nature'],
-            'overview'   => 'Experience the pinnacle of luxury in the glamorous Monaco. Walk along the famous Monte Carlo Casino, enjoy the breathtaking Mediterranean coastline, and immerse yourself in Formula 1 culture at every corner of this stunning principality.',
-            'highlights' => [
-                'Visit the iconic Monte Carlo Casino and Royal Palace',
-                'Sunset cruise along the Mediterranean coast',
-                'Exclusive dining at award-winning restaurants',
-                'Private guide for the entire trip',
-                'Carry on from any major Indian airport',
-            ],
-            'included'   => ['Beverages, drinking water, hot/key tea and buffet lunch', 'Local tours', 'Hotel pickup and drop off', 'Insurance/Transfer in a private car', 'Sick drinks', 'Tour Guide'],
-            'excluded'   => ['Airfare', 'Tips', 'Alcoholic Beverages'],
-            'itinerary'  => [
-                ['title' => 'Airport Pick Up', 'desc' => 'Arrive at Nice Côte d\'Azur Airport and transfer to your luxury hotel in Monaco.'],
-                ['title' => 'Temple & River Cruise', 'desc' => 'Morning guided tour of the Royal Palace, followed by an evening Mediterranean cruise.'],
-                ['title' => 'Casino & Overnight Stay', 'desc' => 'Explore Monte Carlo Casino, enjoy fine dining, and overnight at your 5-star hotel.'],
-            ],
-        ],
-        'vietnam-tour-package' => [
-            'slug'       => 'vietnam-tour-package',
-            'title'      => 'Vietnam Tour Package',
-            'image'      => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=1200',
-            'duration'   => '3 days 3 nights',
-            'groupSize'  => '2-3 guest',
-            'rating'     => '4.91',
-            'reviews'    => '670',
-            'price'      => 17320,
-            'oldPrice'   => 25320,
-            'badge'      => 'Best Sale',
-            'category'   => 'international',
-            'tour_type'  => 'Flight Package',
-            'city'       => 'Hanoi',
-            'theme'      => 'Adventure',
-            'activities' => ['Water Activities', 'Nature'],
-            'overview'   => 'Discover the stunning Ha Long Bay, cruise through emerald waters dotted with towering limestone karsts, visit Monkey Island, and experience the vibrant local culture of Vietnam.',
-            'highlights' => [
-                'Ha Long Bay cruise with stunning karst landscapes',
-                'Visit Monkey Island and pristine beaches',
-                'Kayaking through hidden lagoons',
-                'Authentic Vietnamese cooking class',
-                'All-inclusive cruise package',
-            ],
-            'included'   => ['All meals on cruise', 'Kayaking & activities', 'Hotel transfers', 'Tour guide', 'Entry fees'],
-            'excluded'   => ['International flights', 'Vietnam Visa fees', 'Personal expenses'],
-            'itinerary'  => [
-                ['title' => 'Arrival & Embarkation', 'desc' => 'Arrive at Hanoi, transfer to Ha Long Bay, and board your luxury cruise.'],
-                ['title' => 'Ha Long Bay Exploration', 'desc' => 'Kayaking through limestone caves, visit Monkey Island and floating villages.'],
-                ['title' => 'Sunrise Tai Chi & Departure', 'desc' => 'Morning Tai Chi on deck, breakfast, and transfer back to Hanoi.'],
-            ],
-        ],
-        'char-dham-yatra' => [
-            'slug'       => 'char-dham-yatra',
-            'title'      => 'Char Dham Yatra Package',
-            'image'      => 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&q=80&w=1200',
-            'duration'   => '7 days 6 nights',
-            'groupSize'  => '4-6 guest',
-            'rating'     => '4.86',
-            'reviews'    => '656',
-            'price'      => 15463,
-            'oldPrice'   => 19000,
-            'badge'      => '25% Off',
-            'category'   => 'religious',
-            'tour_type'  => 'Bus Package',
-            'city'       => 'Haridwar',
-            'theme'      => 'Religious',
-            'activities' => ['Hill Station', 'Religious'],
-            'overview'   => 'Embark on the sacred Char Dham Yatra — a spiritual journey to Yamunotri, Gangotri, Kedarnath, and Badrinath nestled in the majestic Himalayas. Experience divine serenity and breathtaking mountain scenery.',
-            'highlights' => [
-                'Visit all four sacred Dhams: Yamunotri, Gangotri, Kedarnath, Badrinath',
-                'Helicopter option available for Kedarnath',
-                'Comfortable stays at each Dham',
-                'Experienced religious guide throughout',
-                'Starting from Haridwar/Rishikesh',
-            ],
-            'included'   => ['Accommodation (6 nights)', 'Daily breakfast & dinner', 'AC vehicle', 'Guide', 'All darshan arrangements'],
-            'excluded'   => ['Helicopter charges', 'Personal pooja items', 'Tips', 'Lunch'],
-            'itinerary'  => [
-                ['title' => 'Haridwar to Yamunotri', 'desc' => 'Depart from Haridwar. Drive to Janki Chatti and trek to Yamunotri temple.'],
-                ['title' => 'Yamunotri to Gangotri', 'desc' => 'Morning aarti at Yamunotri, drive to Uttarkashi, overnight stay.'],
-                ['title' => 'Gangotri Darshan', 'desc' => 'Visit the Gangotri temple at the source of the river Ganga.'],
-                ['title' => 'Kedarnath Trek', 'desc' => 'Drive to Gaurikund, trek 16 km (or helicopter) to Kedarnath temple.'],
-                ['title' => 'Kedarnath to Badrinath', 'desc' => 'Morning darshan at Kedarnath, drive to Badrinath via Chopta.'],
-                ['title' => 'Badrinath Darshan', 'desc' => 'Early morning abhishek and darshan at Badrinath, visit Mana Village.'],
-                ['title' => 'Return to Haridwar', 'desc' => 'Drive back to Haridwar with divine memories and blessings.'],
-            ],
-        ],
-        'goa-beach-package' => [
-            'slug'       => 'goa-beach-package',
-            'title'      => 'Goa Beach Holiday Package',
-            'image'      => 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=1200',
-            'duration'   => '2 days 3 nights',
-            'groupSize'  => '4-6 guest',
-            'rating'     => '4.74',
-            'reviews'    => '631',
-            'price'      => 14755,
-            'oldPrice'   => 19825,
-            'badge'      => 'Top Rated',
-            'category'   => 'domestic',
-            'tour_type'  => 'Flight Package',
-            'city'       => 'Goa',
-            'theme'      => 'Honeymoon',
-            'activities' => ['Water Activities', 'Rides and Thrill'],
-            'overview'   => 'Sun, sand, and surf await you in Goa! Enjoy pristine beaches, vibrant nightlife, delicious seafood, and a blend of Indian and Portuguese culture in this ultimate beach holiday.',
-            'highlights' => [
-                'North Goa beaches: Baga, Calangute, Anjuna',
-                'South Goa tranquil beaches: Palolem, Colva',
-                'Water sports: parasailing, jet ski, banana ride',
-                'Old Goa heritage churches tour',
-                'Sunset cruise on the Mandovi River',
-            ],
-            'included'   => ['Hotel stay (3 nights)', 'Breakfast daily', 'Airport transfers', 'Sightseeing by AC cab', 'Water sports (1 session)'],
-            'excluded'   => ['Flights', 'Personal expenses', 'Lunch & dinner', 'Tips'],
-            'itinerary'  => [
-                ['title' => 'Arrival & North Goa Beach', 'desc' => 'Arrive at Goa airport, check in, relax at Calangute/Baga beach, enjoy the nightlife.'],
-                ['title' => 'Sightseeing & Water Sports', 'desc' => 'Old Goa churches, spice plantation, water sports session, sunset cruise.'],
-                ['title' => 'South Goa & Departure', 'desc' => 'Morning at Palolem beach, checkout, and drop to airport.'],
-            ],
-        ],
-        'spiti-valley-adventure' => [
-            'slug'       => 'spiti-valley-adventure',
-            'title'      => 'Spiti Valley Package',
-            'image'      => 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?auto=format&fit=crop&q=80&w=1200',
-            'duration'   => '3 days 3 nights',
-            'groupSize'  => '4-6 guest',
-            'rating'     => '4.51',
-            'reviews'    => '617',
-            'price'      => 24840,
-            'oldPrice'   => 31825,
-            'badge'      => 'Best Sale',
-            'category'   => 'adventure',
-            'tour_type'  => 'Train Package',
-            'city'       => 'Manali',
-            'theme'      => 'Adventure',
-            'activities' => ['Jeep Safari', 'Hill Station'],
-            'overview'   => 'Journey into the cold desert of Spiti Valley — one of the world\'s highest inhabited regions. Experience ancient monasteries, dramatic landscapes, starry nights, and raw Himalayan adventure.',
-            'highlights' => [
-                'Key Monastery — oldest in Spiti',
-                'Chandratal Lake at 14,100 ft',
-                'Kaza market and local village walks',
-                'Tabo Monastery UNESCO heritage site',
-                'Off-road adventure on mountain trails',
-            ],
-            'included'   => ['Accommodation (3 nights)', 'All meals', '4x4 vehicle', 'Experienced local guide', 'Permits'],
-            'excluded'   => ['Flights to Manali/Shimla', 'Travel insurance', 'Personal gear'],
-            'itinerary'  => [
-                ['title' => 'Manali to Kaza', 'desc' => 'Cross Rohtang Pass, drive through Lahaul valley to Kaza. Check in and rest.'],
-                ['title' => 'Kaza Sightseeing', 'desc' => 'Visit Key Monastery, Kibber village, Chicham bridge, and Pin Valley.'],
-                ['title' => 'Chandratal & Departure', 'desc' => 'Drive to Chandratal Lake, enjoy the surreal beauty, return to Manali.'],
-            ],
-        ],
-        'swiss-paris-delight' => [
-            'slug'       => 'swiss-paris-delight',
-            'title'      => 'Swiss Paris Delight',
-            'image'      => 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&q=80&w=1200',
-            'duration'   => '7 days 6 nights',
-            'groupSize'  => '4-6 guest',
-            'rating'     => '4.29',
-            'reviews'    => '608',
-            'price'      => 51247,
-            'oldPrice'   => null,
-            'badge'      => '25% Off',
-            'category'   => 'international',
-            'tour_type'  => 'Flight Package',
-            'city'       => 'Paris',
-            'theme'      => 'Family/Group',
-            'activities' => ['Cable Car / Rope way', 'Nature'],
-            'overview'   => 'The ultimate European double-header! Explore the romantic streets of Paris and then escape to the breathtaking Swiss Alps. Eiffel Tower, Louvre, Jungfraujoch, and Interlaken await.',
-            'highlights' => [
-                'Eiffel Tower visit with skip-the-line tickets',
-                'Louvre Museum guided tour',
-                'Swiss Alps — Jungfraujoch (Top of Europe)',
-                'Interlaken adventure activities',
-                'Seine River dinner cruise',
-            ],
-            'included'   => ['6 nights hotel (3 Paris + 3 Switzerland)', 'Breakfast daily', 'Europe Schengen visa assistance', 'All transfers', 'City tours'],
-            'excluded'   => ['International flights', 'Travel insurance', 'Personal shopping'],
-            'itinerary'  => [
-                ['title' => 'Arrive Paris', 'desc' => 'Land at Charles de Gaulle, hotel check-in, evening Seine cruise.'],
-                ['title' => 'Paris City Tour', 'desc' => 'Eiffel Tower, Louvre Museum, Notre Dame, Champs-Élysées.'],
-                ['title' => 'Versailles Day Trip', 'desc' => 'Palace of Versailles and gardens tour.'],
-                ['title' => 'Paris to Zurich', 'desc' => 'High-speed train to Switzerland. Check in at Interlaken.'],
-                ['title' => 'Jungfraujoch Excursion', 'desc' => 'Top of Europe — snow, glaciers, and panoramic Alps views.'],
-                ['title' => 'Lucerne Free Day', 'desc' => 'Chapel Bridge, Lion Monument, shopping, lake cruise.'],
-                ['title' => 'Departure', 'desc' => 'Transfer to Zurich airport for your return flight.'],
-            ],
-        ],
-    ];
-
-    // Try to find the package in the database by matching title slugs efficiently
-    $matched = DB::table('packages')->select('id', 'title')->get()->first(function($p) use ($slug) {
-        return \Illuminate\Support\Str::slug($p->title) === $slug;
-    });
-
-    $dbPkg = $matched ? DB::table('packages')->where('id', $matched->id)->first() : null;
-
-    if ($dbPkg) {
-        // Track package view for logged-in users
-        if (\Illuminate\Support\Facades\Auth::check()) {
-            try {
-                DB::table('user_viewed_packages')->updateOrInsert(
-                    ['user_id' => \Illuminate\Support\Facades\Auth::id(), 'package_id' => $dbPkg->id],
-                    ['viewed_at' => now(), 'updated_at' => now()]
-                );
-            } catch (\Exception $e) {}
+        $dbPkg = \App\Models\Package::find($slug);
+        if (!$dbPkg && !is_numeric($slug)) {
+            $dbPkg = \App\Models\Package::where('title', 'LIKE', str_replace('-', ' ', $slug))->first();
         }
-
-        $gallery = [];
-        if ($dbPkg->gallery) {
-            $gallery = json_decode($dbPkg->gallery, true) ?: [];
-        }
-        $included = [];
-        if ($dbPkg->included) {
-            $included = json_decode($dbPkg->included, true) ?: [];
-        }
-        $excluded = [];
-        if ($dbPkg->excluded) {
-            $excluded = json_decode($dbPkg->excluded, true) ?: [];
-        }
-        $itinerary = [];
-        if ($dbPkg->itinerary) {
-            $itinerary = json_decode($dbPkg->itinerary, true) ?: [];
-        }
-
-        $package = [
-            'id'         => $dbPkg->id,
-            'slug'       => $slug,
-            'title'      => $dbPkg->title,
-            'image'      => $dbPkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
-            'duration'   => $dbPkg->duration,
-            'groupSize'  => $dbPkg->group_size ?? '4-6 guest',
-            'rating'     => $dbPkg->rating ?? '4.8',
-            'reviews'    => $dbPkg->reviews ?? '10',
-            'price'      => $dbPkg->price,
-            'oldPrice'   => $dbPkg->old_price,
-            'currency'   => property_exists($dbPkg, 'currency') && $dbPkg->currency ? $dbPkg->currency : 'INR',
-            'badge'      => $dbPkg->badge,
-            'category'   => $dbPkg->category,
-            'tour_type'  => property_exists($dbPkg, 'group_size') ? $dbPkg->group_size : null,
-            'city'       => $dbPkg->location,
-            'theme'      => property_exists($dbPkg, 'theme') ? $dbPkg->theme : null,
-            'holiday_type'=> property_exists($dbPkg, 'holiday_type') ? $dbPkg->holiday_type : null,
-            'departure_city' => property_exists($dbPkg, 'departure_city') ? $dbPkg->departure_city : null,
-            'departure_state'=> property_exists($dbPkg, 'departure_state') ? $dbPkg->departure_state : null,
-            'activities' => [],
-            'overview'   => "Experience the incredible beauty and culture of {$dbPkg->title}. This package offers an unforgettable journey filled with stunning landscapes, historic sites, and amazing local cuisine.",
-            'highlights' => [
-                "Guided city tour of {$dbPkg->title}",
-                "Visit top attractions and hidden gems",
-                "Authentic local dining experience",
-                "Comfortable 4-star accommodation",
-                "Airport transfers included",
-            ],
-            'gallery'    => $gallery,
-            'brochure'   => $dbPkg->brochure,
-            'included'   => $included,
-            'excluded'   => $excluded,
-            'itinerary'  => $itinerary,
-            'agent'      => is_string($dbPkg->agent) ? json_decode($dbPkg->agent, true) : ($dbPkg->agent ?? 'Miths Holidays'),
-            'validity'   => property_exists($dbPkg, 'validity') ? $dbPkg->validity : null,
-            'sightseeing'=> property_exists($dbPkg, 'sightseeing') ? $dbPkg->sightseeing : null,
-            'hotels'     => property_exists($dbPkg, 'hotels') && json_decode($dbPkg->hotels, true) ? json_decode($dbPkg->hotels, true) : [],
-            'amenities'  => json_decode($dbPkg->amenities, true) ?: [],
-            'meals'      => json_decode($dbPkg->meals, true) ?: [],
-            'transfers'  => json_decode($dbPkg->transfers, true) ?: [],
-            'keywords'   => json_decode($dbPkg->keywords, true) ?: [],
-            'editorial_itinerary' => property_exists($dbPkg, 'editorial_itinerary') ? $dbPkg->editorial_itinerary : null,
-            'about_tours' => property_exists($dbPkg, 'about_tours') ? $dbPkg->about_tours : null,
-            'terms' => property_exists($dbPkg, 'terms') ? $dbPkg->terms : null,
-        ];
-
-        // Fill defaults if empty
-        if (empty($package['gallery'])) {
-            $package['gallery'] = [
-                $package['image'],
-                'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=1200',
-                'https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&q=80&w=1200',
-                'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?auto=format&fit=crop&q=80&w=1200',
-                'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=1200'
-            ];
-        } else {
-            array_unshift($package['gallery'], $package['image']);
-            $package['gallery'] = array_values(array_unique($package['gallery']));
-        }
-        if (empty($package['included'])) {
-            $package['included'] = ['Hotel Stay', 'Daily Breakfast', 'Tour Guide', 'Transfers'];
-        }
-        if (empty($package['excluded'])) {
-            $package['excluded'] = ['Flights', 'Personal Expenses', 'Visa Fees'];
-        }
-        if (empty($package['itinerary'])) {
-            $package['itinerary'] = [
-                ['title' => 'Arrival & Check-in', 'desc' => "Arrive at {$dbPkg->title}, transfer to your hotel and relax."],
-                ['title' => 'City Exploration', 'desc' => 'Full day guided tour exploring major landmarks.'],
-                ['title' => 'Leisure & Departure', 'desc' => 'Free time for shopping before transferring to the airport.'],
-            ];
-        }
-
-        $agentPackages = [];
-        $agentId = null;
-        $agentName = null;
-        if ($dbPkg->agent) {
-            $parsedAgent = is_string($dbPkg->agent) ? json_decode($dbPkg->agent, true) : $dbPkg->agent;
-            if (is_array($parsedAgent)) {
-                $agentId = $parsedAgent['id'] ?? null;
-                $agentName = $parsedAgent['name'] ?? null;
-            }
-        }
-
-        if ($agentId || $agentName) {
-            $agentPackages = \App\Models\Package::where('status', 'Active')
-                ->where('id', '!=', $dbPkg->id)
-                ->get()
-                ->filter(function($p) use ($agentId, $agentName) {
-                    $pAgent = is_string($p->agent) ? json_decode($p->agent, true) : $p->agent;
-                    if (!is_array($pAgent)) return false;
-                    if ($agentId && isset($pAgent['id']) && $pAgent['id'] == $agentId) return true;
-                    if ($agentName && isset($pAgent['name']) && strtolower(trim($pAgent['name'])) == strtolower(trim($agentName))) return true;
-                    return false;
-                })
-                ->take(8)
-                ->values()
-                ->toArray();
-        }
-
-        if (empty($agentPackages)) {
-            $agentPackages = \App\Models\Package::where('status', 'Active')
-                ->where('id', '!=', $dbPkg->id)
-                ->inRandomOrder()
-                ->take(8)
-                ->get()
-                ->toArray();
-        }
-        
-        // Fetch similar packages based on location and title
-        $similarPackagesQuery = \App\Models\Package::where('status', 'Active')
-            ->where('id', '!=', $dbPkg->id);
-            
-        $similarPackagesQuery->where(function($query) use ($dbPkg) {
-            if (!empty($dbPkg->location)) {
-                $query->orWhere('location', 'like', '%' . $dbPkg->location . '%');
-            }
-            if (!empty($dbPkg->title)) {
-                $words = array_filter(explode(' ', str_replace(['-','_'], ' ', $dbPkg->title)), function($word) {
-                    return strlen($word) > 3 && !in_array(strtolower($word), ['tour', 'package', 'trip', 'holiday', 'with', 'from']);
-                });
-                foreach ($words as $word) {
-                    $query->orWhere('title', 'like', '%' . $word . '%');
-                }
-            }
-        });
-        
-        $similarPackages = $similarPackagesQuery->inRandomOrder()->take(8)->get()->toArray();
-
-        return view('packages.show', ['package' => $package, 'agentPackages' => $agentPackages, 'similarPackages' => $similarPackages]);
-    }
-
-    if (!isset($allPackages[$slug])) {
-        $title = ucwords(str_replace('-', ' ', $slug));
-        $allPackages[$slug] = [
-            'slug'       => $slug,
-            'title'      => $title . ' Experience',
-            'image'      => 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
-            'duration'   => '4 days 3 nights',
-            'groupSize'  => '2-4 guest',
-            'rating'     => '4.8',
-            'reviews'    => '320',
-            'price'      => rand(15000, 50000),
-            'oldPrice'   => null,
-            'badge'      => 'Popular',
-            'category'   => 'international',
-            'tour_type'  => 'Flight Package',
-            'city'       => $title,
-            'theme'      => 'Honeymoon',
-            'activities' => ['Nature', 'Sightseeing'],
-            'overview'   => "Experience the incredible beauty and culture of $title. This package offers an unforgettable journey filled with stunning landscapes, historic sites, and amazing local cuisine.",
-            'highlights' => [
-                "Guided city tour of $title",
-                "Visit top attractions and hidden gems",
-                "Authentic local dining experience",
-                "Comfortable 4-star accommodation",
-                "Airport transfers included",
-            ],
-            'included'   => ['Hotel Stay', 'Daily Breakfast', 'Tour Guide', 'Transfers'],
-            'excluded'   => ['Flights', 'Personal Expenses', 'Visa Fees'],
-            'terms'      => null,
-            'validity'   => null,
-            'sightseeing'=> null,
-            'hotels'     => [],
-            'amenities'  => [],
-            'meals'      => [],
-            'transfers'  => [],
-            'keywords'   => [],
-            'itinerary'  => [
-                ['title' => 'Arrival & Check-in', 'desc' => "Arrive at $title, transfer to your hotel and relax."],
-                ['title' => 'City Exploration', 'desc' => 'Full day guided tour exploring major landmarks.'],
-                ['title' => 'Leisure & Departure', 'desc' => 'Free time for shopping before transferring to the airport.'],
-            ],
-        ];
-    }
-
-    try {
-        $dbPkg = \App\Models\Package::where('slug', $slug)->first();
         if ($dbPkg) {
             $dbPkg->increment('clicks');
+            
+            if (\Illuminate\Support\Facades\Auth::check()) {
+                try {
+                    \Illuminate\Support\Facades\DB::table('user_viewed_packages')->updateOrInsert(
+                        ['user_id' => \Illuminate\Support\Facades\Auth::id(), 'package_id' => $dbPkg->id],
+                        ['viewed_at' => now(), 'updated_at' => now()]
+                    );
+                } catch (\Exception $e) {}
+            }
+            
+            $gallery = [];
+            if ($dbPkg->gallery) {
+                $gallery = json_decode($dbPkg->gallery, true) ?: [];
+            }
+            $included = [];
+            if ($dbPkg->included) {
+                $included = json_decode($dbPkg->included, true) ?: [];
+            }
+            $excluded = [];
+            if ($dbPkg->excluded) {
+                $excluded = json_decode($dbPkg->excluded, true) ?: [];
+            }
+            $itinerary = [];
+            if ($dbPkg->itinerary) {
+                $itinerary = json_decode($dbPkg->itinerary, true) ?: [];
+            }
+            
+            $package = [
+                'id'         => $dbPkg->id,
+                'slug'       => $slug,
+                'title'      => $dbPkg->title,
+                'image'      => $dbPkg->image ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1200',
+                'duration'   => $dbPkg->duration,
+                'groupSize'  => $dbPkg->group_size ?? '4-6 guest',
+                'rating'     => $dbPkg->rating ?? '4.8',
+                'reviews'    => $dbPkg->reviews ?? '10',
+                'price'      => $dbPkg->price,
+                'oldPrice'   => $dbPkg->old_price,
+                'currency'   => $dbPkg->currency ?? 'INR',
+                'badge'      => $dbPkg->badge,
+                'category'   => $dbPkg->category,
+                'tour_type'  => $dbPkg->group_size ?? null,
+                'city'       => $dbPkg->location,
+                'theme'      => $dbPkg->theme ?? null,
+                'holiday_type'=> $dbPkg->holiday_type ?? null,
+                'departure_city' => $dbPkg->departure_city ?? null,
+                'departure_state'=> $dbPkg->departure_state ?? null,
+                'activities' => [],
+                'overview'   => $dbPkg->overview ?? "Experience the incredible beauty and culture of {$dbPkg->title}. This package offers an unforgettable journey filled with stunning landscapes, historic sites, and amazing local cuisine.",
+                'highlights' => !empty($dbPkg->highlights) ? json_decode($dbPkg->highlights, true) : [
+                    "Guided city tour of {$dbPkg->title}",
+                    "Visit top attractions and hidden gems",
+                    "Authentic local dining experience",
+                    "Comfortable 4-star accommodation",
+                    "Airport transfers included",
+                ],
+                'gallery'    => $gallery,
+                'brochure'   => $dbPkg->brochure,
+                'included'   => $included,
+                'excluded'   => $excluded,
+                'itinerary'  => $itinerary,
+                'agent'      => is_string($dbPkg->agent) ? json_decode($dbPkg->agent, true) : ($dbPkg->agent ?? 'Miths Holidays'),
+                'validity'   => $dbPkg->validity ?? null,
+                'sightseeing'=> $dbPkg->sightseeing ?? null,
+                'sightseeing_list'=> json_decode($dbPkg->sightseeing_list ?? '[]', true) ?: [],
+                'hotels'     => json_decode($dbPkg->hotels ?? '[]', true) ?: [],
+                'amenities'  => json_decode($dbPkg->amenities ?? '[]', true) ?: [],
+                'meals'      => json_decode($dbPkg->meals ?? '[]', true) ?: [],
+                'transfers'  => json_decode($dbPkg->transfers ?? '[]', true) ?: [],
+                'keywords'   => json_decode($dbPkg->keywords ?? '[]', true) ?: [],
+                'editorial_itinerary' => $dbPkg->editorial_itinerary ?? null,
+                'about_tours' => $dbPkg->about_tours ?? null,
+                'terms' => $dbPkg->terms ?? null,
+            ];
+
+            if (empty($package['gallery'])) {
+                $package['gallery'] = [$package['image']];
+            } else {
+                array_unshift($package['gallery'], $package['image']);
+                $package['gallery'] = array_values(array_unique($package['gallery']));
+            }
+
+            $agentPackages = [];
+            $agentId = null;
+            $agentName = null;
+            if ($dbPkg->agent) {
+                $parsedAgent = is_string($dbPkg->agent) ? json_decode($dbPkg->agent, true) : $dbPkg->agent;
+                if (is_array($parsedAgent)) {
+                    $agentId = $parsedAgent['id'] ?? null;
+                    $agentName = $parsedAgent['name'] ?? null;
+                }
+            }
+
+            if ($agentId || $agentName) {
+                $agentPackages = \App\Models\Package::where('status', 'Active')
+                    ->where('id', '!=', $dbPkg->id)
+                    ->get()
+                    ->filter(function($p) use ($agentId, $agentName) {
+                        $pAgent = is_string($p->agent) ? json_decode($p->agent, true) : $p->agent;
+                        if (!is_array($pAgent)) return false;
+                        if ($agentId && isset($pAgent['id']) && $pAgent['id'] == $agentId) return true;
+                        if ($agentName && isset($pAgent['name']) && strtolower(trim($pAgent['name'])) == strtolower(trim($agentName))) return true;
+                        return false;
+                    })
+                    ->take(8)
+                    ->values()
+                    ->toArray();
+            }
+
+            if (empty($agentPackages)) {
+                $agentPackages = \App\Models\Package::where('status', 'Active')
+                    ->where('id', '!=', $dbPkg->id)
+                    ->inRandomOrder()
+                    ->take(8)
+                    ->get()
+                    ->toArray();
+            }
+            
+            $similarPackages = [];
+            
+            $hasFilters = false;
+            $similarPackagesQuery = \App\Models\Package::where('status', 'Active')
+                ->where('id', '!=', $dbPkg->id);
+                
+            $similarPackagesQuery->where(function($query) use ($dbPkg, &$hasFilters) {
+                if (!empty($dbPkg->title)) {
+                    $words = array_filter(explode(' ', str_replace(['-','_'], ' ', $dbPkg->title)), function($word) {
+                        return strlen(trim($word)) > 2 && !in_array(strtolower(trim($word)), ['tour', 'package', 'trip', 'holiday', 'with', 'from', 'for']);
+                    });
+                    foreach ($words as $word) {
+                        $query->orWhere('title', 'like', '%' . trim($word) . '%');
+                        $hasFilters = true;
+                    }
+                }
+            });
+            
+            if ($hasFilters) {
+                $similarPackages = $similarPackagesQuery->inRandomOrder()->take(8)->get()->toArray();
+            }
+
+            return view('packages.show', ['package' => $package, 'agentPackages' => $agentPackages, 'similarPackages' => $similarPackages]);
         }
     } catch (\Exception $e) {}
-
-    return view('packages.show', ['package' => $allPackages[$slug], 'similarPackages' => []]);
+    
+    abort(404);
 })->name('packages.show');
 
 Route::get('/audio/bg_music.mp3', function () { return response()->file(public_path('audio/bg_music.mp3')); });
@@ -927,4 +650,7 @@ Route::get('/resume/view/{path}', function ($path) {
     }
     abort(404);
 })->where('path', '.*');
+
+
+
 

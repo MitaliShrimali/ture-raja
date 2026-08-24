@@ -207,9 +207,7 @@
             this.days.push({ title: '', desc: '' });
         },
         removeDay(index) {
-            if (this.days.length > 1) {
-                this.days.splice(index, 1);
-            }
+            this.days.splice(index, 1);
         },
         handleGalleryChange(event) {
             const files = event.target.files;
@@ -887,12 +885,6 @@
             <div class="space-y-8 mt-8">
 
                 <!-- ── Full-width row: Upload Brochure  OR  Itinerary (Day-by-Day Plan) ── -->
-                <div class="flex items-center gap-2 mb-[-1rem]">
-                    <span class="text-xs font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                        ! Upload brochure or Write Itinerary <span class="text-red-500 text-sm ml-1">*</span>
-                    </span>
-                </div>
                 <div class="flex flex-row gap-4 items-stretch w-full overflow-hidden">
 
                     <!-- Brochure card -->
@@ -1226,7 +1218,7 @@
                                             <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-all">
                                                 <td class="py-4 px-6 align-top">
                                                     <div>
-                                                        <input :required="!brochureName" type="text" name="itinerary_titles[]"
+                                                        <input type="text" name="itinerary_titles[]"
                                                             x-model="day.title"
                                                             @input="let w = $el.value.trim().split(/\s+/); if(w.length > 10 && w[0] !== '') { day.title = w.slice(0,10).join(' ') + ' '; }"
                                                             class="w-full bg-transparent border-none outline-none font-bold text-gray-800 focus:ring-0 p-0 text-sm"
@@ -1238,7 +1230,7 @@
                                                 </td>
                                                 <td class="py-4 px-6 align-top">
                                                     <div>
-                                                        <input :required="!brochureName" type="text"
+                                                        <input type="text"
                                                             name="itinerary_descriptions[]" x-model="day.desc"
                                                             @input="let w = $el.value.trim().split(/\s+/); if(w.length > 20 && w[0] !== '') { day.desc = w.slice(0,20).join(' ') + ' '; }"
                                                             class="w-full bg-transparent border-none outline-none text-gray-500 focus:ring-0 p-0 text-sm"

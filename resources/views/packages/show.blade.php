@@ -32,6 +32,16 @@
                 $sightseeingPills = array_filter(array_map('trim', explode(',', $package['sightseeing'])));
             }
         }
+
+        if (empty($sightseeingPills) && !empty($package['sightseeing_list']) && is_array($package['sightseeing_list'])) {
+            foreach ($package['sightseeing_list'] as $item) {
+                if (is_string($item) && trim($item)) {
+                    $sightseeingPills[] = trim($item);
+                } elseif (is_array($item) && isset($item['title'])) {
+                    $sightseeingPills[] = trim($item['title']);
+                }
+            }
+        }
         
         if (!empty($package['itinerary']) && is_array($package['itinerary'])) {
             foreach ($package['itinerary'] as $day) {
@@ -765,10 +775,10 @@
                         {{-- Itinerary Timeline --}}
                         @if(!empty($package['editorial_itinerary']))
                             <div id="itinerary" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
-                                <h2 class="font-black text-gray-900 mb-8 section-heading text-xl">Itinerary</h2>
+                                <h2 class="font-black text-gray-900 mb-8 section-heading text-xl">Itinerary (Day-by-Day Plan)</h2>
                                 <div class="relative">
                                     <div id="itinerary-content" class="relative transition-all duration-500 overflow-hidden" style="max-height: 380px;">
-                                        <div class="prose max-w-none standard-body-text">
+                                        <div class="prose max-w-none standard-body-text text-sm text-gray-600">
                                             {!! $package['editorial_itinerary'] !!}
                                         </div>
                                         
@@ -827,14 +837,14 @@
                                     <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
                                         <div class="flex items-center gap-2 mb-5">
                                             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                                                <i data-lucide="check-circle-2" size="20" class="text-green-600"></i>
+                                                <i data-lucide="check-circle-2" size="24" class="text-green-600"></i>
                                             </div>
-                                            <h4 class="text-xl font-black text-green-900">What's Included</h4>
+                                            <h4 class="text-3xl font-black text-green-900">What's Included</h4>
                                         </div>
                                         <ul class="space-y-3">
                                             @foreach($package['included'] as $item)
-                                                <li class="flex items-start gap-2 text-lg text-green-800 font-medium leading-relaxed">
-                                                    <i data-lucide="check" size="18" class="text-green-600 mt-0.5 shrink-0"></i>
+                                                <li class="flex items-start gap-2 text-2xl text-green-800 font-medium leading-relaxed">
+                                                    <i data-lucide="check" size="24" class="text-green-600 mt-1 shrink-0"></i>
                                                     <span>{{ $item }}</span>
                                                 </li>
                                             @endforeach
@@ -846,14 +856,14 @@
                                     <div class="bg-red-50 rounded-2xl p-6 border border-red-100 shadow-sm">
                                         <div class="flex items-center gap-2 mb-5">
                                             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                                                <i data-lucide="x-circle" size="20" class="text-red-600"></i>
+                                                <i data-lucide="x-circle" size="24" class="text-red-600"></i>
                                             </div>
-                                            <h4 class="text-xl font-black text-red-900">What's Excluded</h4>
+                                            <h4 class="text-3xl font-black text-red-900">What's Excluded</h4>
                                         </div>
                                         <ul class="space-y-3">
                                             @foreach($package['excluded'] as $item)
-                                                <li class="flex items-start gap-2 text-lg text-red-800 font-medium leading-relaxed">
-                                                    <i data-lucide="x" size="18" class="text-red-600 mt-0.5 shrink-0"></i>
+                                                <li class="flex items-start gap-2 text-2xl text-red-800 font-medium leading-relaxed">
+                                                    <i data-lucide="x" size="24" class="text-red-600 mt-1 shrink-0"></i>
                                                     <span>{{ $item }}</span>
                                                 </li>
                                             @endforeach
@@ -1046,8 +1056,8 @@
                                         </div>
                                         
                                         @if(!empty($dbAgent->since))
-                                        <div class="flex items-center gap-2 text-sm font-black text-[#e85d26] uppercase tracking-wider h-max mt-12 relative z-20">
-                                            <i data-lucide="calendar" class="w-4 h-4"></i> Since {{ $dbAgent->since }}
+                                        <div class="flex items-center gap-2 text-lg font-black text-[#e85d26] uppercase tracking-wider h-max mt-12 relative z-20">
+                                            <i data-lucide="calendar" class="w-6 h-6"></i> Since {{ $dbAgent->since }}
                                         </div>
                                         @endif
                                     </div>

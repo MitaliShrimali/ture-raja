@@ -273,7 +273,7 @@ class ListingController extends Controller
         if (!empty($searchVal)) {
             $search = strtolower(is_array($searchVal) ? implode(' ', $searchVal) : (string)$searchVal);
             
-            $packages = $packages->map(function($pkg) use ($search) {
+            $packages = $packages->map(function($pkg) use ($search, $request) {
                 $pkgArray = (array) $pkg;
                 $title = strtolower((string)($pkgArray['title'] ?? ''));
                 $location = strtolower((string)($pkgArray['location'] ?? ''));
@@ -313,31 +313,61 @@ class ListingController extends Controller
                 
                 $score = 0;
                 
-                if ($search === $title || $search === $location || $search === $city) {
-                    $score += 1000;
-                }
-                
-                if (str_contains($title, $search)) $score += 500;
-                if (str_contains($location, $search) || str_contains($city, $search)) $score += 400;
-                if ($agent && str_contains($agent, $search)) $score += 200;
-                if ($keywords && str_contains($keywords, $search)) $score += 100;
+                $locationType = $request->input('location_type');
+                $matchedSpecificType = false;
 
-                // --- Improved term-by-term matching ---
-                $searchTerms = array_filter(array_map('trim', preg_split('/[\s,]+/', $search)));
-                $keywordTerms = array_filter(array_map('trim', preg_split('/[\s,]+/', $keywords)));
-
-                foreach ($searchTerms as $term) {
-                    if (strlen($term) > 2) {
-                        if (str_contains($title, $term)) $score += 50;
-                        if (str_contains($location, $term) || str_contains($city, $term)) $score += 40;
-                        if ($agent && str_contains($agent, $term)) $score += 20;
-                        if ($keywords && str_contains($keywords, $term)) $score += 80;
+                if ($locationType && in_array($locationType, ['city', 'state', 'country'])) {
+                    if (isset($pkgArray['keywords'])) {
+                        $kws = is_string($pkgArray['keywords']) ? json_decode($pkgArray['keywords'], true) : $pkgArray['keywords'];
+                        if (is_array($kws)) {
+                            foreach ($kws as $kw) {
+                                $kwParts = array_map('trim', explode(',', $kw));
+                                $c_city = strtolower($kwParts[0] ?? '');
+                                $c_state = strtolower($kwParts[1] ?? '');
+                                $c_country = strtolower($kwParts[2] ?? '');
+                                
+                                if ($locationType === 'city' && str_contains($c_city, $search)) {
+                                    $matchedSpecificType = true;
+                                    $score += 2000;
+                                } elseif ($locationType === 'state' && str_contains($c_state, $search)) {
+                                    $matchedSpecificType = true;
+                                    $score += 2000;
+                                } elseif ($locationType === 'country' && str_contains($c_country, $search)) {
+                                    $matchedSpecificType = true;
+                                    $score += 2000;
+                                }
+                            }
+                        }
                     }
                 }
 
-                foreach ($keywordTerms as $kTerm) {
-                    if (strlen($kTerm) > 2 && str_contains($search, $kTerm)) {
-                        $score += 80;
+                if (!$locationType || ($locationType && $matchedSpecificType)) {
+                    if ($search === $title || $search === $location || $search === $city) {
+                        $score += 1000;
+                    }
+                    
+                    if (str_contains($title, $search)) $score += 500;
+                    if (str_contains($location, $search) || str_contains($city, $search)) $score += 400;
+                    if ($agent && str_contains($agent, $search)) $score += 200;
+                    if ($keywords && str_contains($keywords, $search)) $score += 100;
+
+                    // --- Improved term-by-term matching ---
+                    $searchTerms = array_filter(array_map('trim', preg_split('/[\s,]+/', $search)));
+                    $keywordTerms = array_filter(array_map('trim', preg_split('/[\s,]+/', $keywords)));
+
+                    foreach ($searchTerms as $term) {
+                        if (strlen($term) > 2) {
+                            if (str_contains($title, $term)) $score += 50;
+                            if (str_contains($location, $term) || str_contains($city, $term)) $score += 40;
+                            if ($agent && str_contains($agent, $term)) $score += 20;
+                            if ($keywords && str_contains($keywords, $term)) $score += 80;
+                        }
+                    }
+
+                    foreach ($keywordTerms as $kTerm) {
+                        if (strlen($kTerm) > 2 && str_contains($search, $kTerm)) {
+                            $score += 80;
+                        }
                     }
                 }
                 

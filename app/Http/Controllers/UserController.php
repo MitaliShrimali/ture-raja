@@ -1199,13 +1199,18 @@ class UserController extends Controller
                         ->get();
                     
                     foreach ($packagesData as $pkg) {
-                        // Match Location
+                        // Match Location (fallback if no precise keywords)
                         if (!empty($pkg->location)) {
                             $parts = explode(',', $pkg->location);
                             foreach ($parts as $part) {
                                 $part = trim($part);
                                 if ($part && stripos($part, $q) !== false) {
-                                    $places[] = $part;
+                                    $places[] = [
+                                        'text' => $part,
+                                        'value' => $part,
+                                        'location_type' => 'city',
+                                        'priority' => 1
+                                    ];
                                 }
                             }
                         }
@@ -1215,13 +1220,38 @@ class UserController extends Controller
                             $keywords = json_decode($pkg->keywords, true);
                             if (is_array($keywords)) {
                                 foreach ($keywords as $kw) {
-                                    // Split by comma in case they entered City, State, Country as one string
-                                    $kwParts = explode(',', $kw);
-                                    foreach ($kwParts as $kwPart) {
-                                        $kwPart = trim($kwPart);
-                                        if ($kwPart && stripos($kwPart, $q) !== false) {
-                                            $places[] = $kwPart;
-                                        }
+                                    $kwParts = array_map('trim', explode(',', $kw));
+                                    $c_city = $kwParts[0] ?? '';
+                                    $c_state = $kwParts[1] ?? '';
+                                    $c_country = $kwParts[2] ?? '';
+
+                                    if ($c_city && stripos($c_city, $q) !== false) {
+                                        $label = $c_city;
+                                        if ($c_state) $label .= ", $c_state";
+                                        $places[] = [
+                                            'text' => $label,
+                                            'value' => $c_city,
+                                            'location_type' => 'city',
+                                            'priority' => 1
+                                        ];
+                                    }
+                                    if ($c_state && stripos($c_state, $q) !== false) {
+                                        $label = $c_state;
+                                        if ($c_country) $label .= ", $c_country";
+                                        $places[] = [
+                                            'text' => $label,
+                                            'value' => $c_state,
+                                            'location_type' => 'state',
+                                            'priority' => 2
+                                        ];
+                                    }
+                                    if ($c_country && stripos($c_country, $q) !== false) {
+                                        $places[] = [
+                                            'text' => $c_country,
+                                            'value' => $c_country,
+                                            'location_type' => 'country',
+                                            'priority' => 3
+                                        ];
                                     }
                                 }
                             }
@@ -1233,30 +1263,44 @@ class UserController extends Controller
                 $staticDestinations = ['Bali', 'Singapore', 'Monaco', 'Vietnam', 'Char Dham', 'Goa', 'Spiti Valley', 'Kerala', 'Dubai', 'Ubud', 'Seminyak', 'Uluwatu', 'New Delhi'];
                 foreach ($staticDestinations as $sd) {
                     if (stripos($sd, $q) !== false) {
-                        $places[] = $sd;
+                        $places[] = [
+                            'text' => $sd,
+                            'value' => $sd,
+                            'location_type' => 'city',
+                            'priority' => 1
+                        ];
                     }
                 }
 
-                $places = array_values(array_unique(array_filter($places)));
+                // Filter out duplicates based on text
+                $uniquePlaces = [];
+                foreach ($places as $p) {
+                    $uniquePlaces[$p['text']] = $p;
+                }
+                $places = array_values($uniquePlaces);
                 
-                // Prioritize Indian destinations
+                // Prioritize Indian destinations and then by priority
                 usort($places, function($a, $b) {
                     $indianKeywords = ['india', 'delhi', 'mumbai', 'bangalore', 'kolkata', 'chennai', 'pune', 'hyderabad', 'jaipur', 'goa', 'dehradun', 'kerala', 'ahmedabad', 'gujarat', 'maharashtra', 'kashmir', 'ladakh', 'spiti', 'rishikesh', 'manali', 'shimla', 'kasol'];
                     $aIsIndian = false;
                     $bIsIndian = false;
                     foreach ($indianKeywords as $kw) {
-                        if (stripos($a, $kw) !== false) $aIsIndian = true;
-                        if (stripos($b, $kw) !== false) $bIsIndian = true;
+                        if (stripos($a['text'], $kw) !== false) $aIsIndian = true;
+                        if (stripos($b['text'], $kw) !== false) $bIsIndian = true;
                     }
                     if ($aIsIndian && !$bIsIndian) return -1;
                     if (!$aIsIndian && $bIsIndian) return 1;
-                    // Also favor shorter matches that match the query better? Or just keep original order.
+                    
+                    if ($a['priority'] != $b['priority']) return $a['priority'] <=> $b['priority'];
+                    
                     return 0;
                 });
 
                 foreach (array_slice($places, 0, 15) as $place) {
                     $results[] = [
-                        'text' => $place,
+                        'text' => $place['text'],
+                        'value' => $place['value'],
+                        'location_type' => $place['location_type'],
                         'type' => 'place',
                         'icon' => 'map-pin'
                     ];

@@ -500,6 +500,9 @@ class AdminController extends Controller
             ]);
         }
 
+        $locParts = array_filter([$request->departure_city, $request->departure_state, $request->departure_country]);
+        $calculatedLocation = !empty($locParts) ? implode(', ', $locParts) : 'Global';
+
         DB::table('packages')->insert([
             'title' => $request->title,
             'departure_city' => $request->departure_city ?? null,
@@ -508,8 +511,7 @@ class AdminController extends Controller
             'terms' => $request->terms ?? null,
             'sightseeing_list' => json_encode($sightseeing_list),
             'currency' => $request->currency ?? '₹',
-
-            'location' => $request->location ?? 'Global',
+            'location' => $calculatedLocation,
             'price' => $request->price,
             'old_price' => $request->old_price,
             'rating' => $request->rating ?? 4.8,
@@ -518,6 +520,8 @@ class AdminController extends Controller
             'group_size' => $request->group_size ?? '4-6 guest',
             'hide_price' => $request->has('hide_price') ? 1 : 0,
             'about_tours' => $request->about_tours ?? null,
+            'overview' => $request->overview ?? null,
+            'highlights' => $request->highlights ? json_encode($request->highlights) : null,
             'image' => $imageUrl ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=800',
             'category' => $request->category ?? 'domestic',
             'categories_list' => is_array($request->categories_list) ? json_encode($request->categories_list) : null,
@@ -729,6 +733,9 @@ class AdminController extends Controller
                 ]);
             }
 
+            $locParts = array_filter([$request->departure_city, $request->departure_state, $request->departure_country]);
+            $calculatedLocation = !empty($locParts) ? implode(', ', $locParts) : ($oldPkg->location ?? 'Global');
+
             DB::table('packages')->where('id', $request->id)->update([
                 'title' => $request->title,
                 'departure_city' => $request->departure_city ?? null,
@@ -737,7 +744,7 @@ class AdminController extends Controller
                 'terms' => $request->terms ?? null,
                 'sightseeing_list' => json_encode($sightseeing_list),
                 'currency' => $request->currency ?? '₹',
-                'location' => $request->location ?? $oldPkg->location ?? 'Global',
+                'location' => $calculatedLocation,
                 'price' => $request->price,
                 'old_price' => $request->old_price,
                 'rating' => $request->rating ?? 4.8,
@@ -746,6 +753,8 @@ class AdminController extends Controller
                 'group_size' => $request->group_size ?? '4-6 guest',
                 'hide_price' => $request->has('hide_price') ? 1 : 0,
                 'about_tours' => $request->about_tours ?? null,
+                'overview' => $request->overview ?? null,
+                'highlights' => $request->highlights ? json_encode($request->highlights) : null,
                 'image' => $imageUrl,
                 'category' => $request->category ?? 'domestic',
                 'categories_list' => is_array($request->categories_list) ? json_encode($request->categories_list) : null,

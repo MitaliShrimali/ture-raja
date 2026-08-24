@@ -463,8 +463,22 @@
                 }
 
                 function selectSuggestion(item) {
-                    input.value = item.text;
+                    input.value = item.value || item.text;
                     dropdown.style.display = 'none';
+
+                    if (item.location_type) {
+                        let form = input.closest('form');
+                        if (form) {
+                            let hiddenInput = form.querySelector('input[name="location_type"]');
+                            if (!hiddenInput) {
+                                hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = 'location_type';
+                                form.appendChild(hiddenInput);
+                            }
+                            hiddenInput.value = item.location_type;
+                        }
+                    }
 
                     // Dispatch input event so AJAX filter listener triggers correctly
                     input.dispatchEvent(new Event('input', { bubbles: true }));
