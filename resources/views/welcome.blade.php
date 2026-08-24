@@ -174,21 +174,6 @@
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const slider = document.getElementById('domestic-ads-slider');
-                if (slider) {
-                    setInterval(() => {
-                        let cardWidth = slider.children.length > 0 ? slider.children[0].offsetWidth : 300;
-                        if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
-                            slider.scrollTo({left: 0, behavior: 'smooth'});
-                        } else {
-                            slider.scrollBy({left: cardWidth, behavior: 'smooth'});
-                        }
-                    }, 2000); // Scroll every 2s for readability
-                }
-            });
-        </script>
     </section>
     @endif
 
@@ -258,35 +243,6 @@
                 </div>
             </div>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const slider = document.getElementById('promo-slider');
-                if (slider) {
-                    let isHovered = false;
-                    slider.addEventListener('mousedown', () => isHovered = true);
-                    slider.addEventListener('mouseup', () => isHovered = false);
-                    slider.addEventListener('mouseleave', () => isHovered = false);
-                    slider.addEventListener('touchstart', () => isHovered = true);
-                    slider.addEventListener('touchend', () => isHovered = false);
-                    
-                    // Start in the middle so we can seamlessly scroll left
-                    setTimeout(() => {
-                        slider.scrollLeft = slider.scrollWidth / 2;
-                    }, 50);
-
-                    function autoScroll() {
-                        if (!isHovered) {
-                            slider.scrollLeft -= 1;
-                            if (slider.scrollLeft <= 0) {
-                                slider.scrollLeft = slider.scrollWidth / 2;
-                            }
-                        }
-                        requestAnimationFrame(autoScroll);
-                    }
-                    requestAnimationFrame(autoScroll);
-                }
-            });
-        </script>
     </section>
     @endif
 
@@ -726,160 +682,10 @@
             <!-- Load More Button -->
             <div class="mt-4 md:mt-6 flex justify-center animate-fade-up" id="load-more-container">
                 <a href="{{ url('/discover') }}" class="bg-black text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-premium inline-block text-center">
-                    Load More Packages
-                </a>
+                        </a>
             </div>
         </div>
     </section>
-
-
-    <!-- Section 7.5: Top Categories Packages -->
-    <section class="py-6 md:py-10 lg:pt-8 lg:pb-12 bg-white">
-        <div class="container-custom">
-            <!-- Header -->
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
-                <div class="space-y-1">
-                    <h2 class="text-xl md:text-[32px] font-black text-foreground tracking-tight leading-tight">Top Categories Packages</h2>
-                    <p class="text-gray-500 text-sm md:text-base">Favorite destinations based on customer reviews</p>
-                </div>
-                <a href="{{ url('/discover') }}" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gray-200 text-[10px] font-bold hover:bg-gray-300 transition-colors self-start md:self-auto mt-2 md:mt-0">
-                    View More 
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </a>
-            </div>
-
-            <!-- Grid -->
-            <style>
-                @media (max-width: 767px) {
-                    .mobile-category-grid {
-                        display: grid !important;
-                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                        gap: 0.75rem !important; /* equivalent to gap-3 */
-                    }
-                }
-            </style>
-            <div class="mobile-category-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-                <!-- Card 1: Mountain -->
-                <a href="{{ url('/discover?categories[]=Mountain') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
-                    <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80" alt="Mountain" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="px-2 pb-2 flex items-end justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-[16px] mb-1">Mountain</h3>
-                            </div>
-                        <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Card 2: Safari -->
-                <a href="{{ url('/discover?categories[]=Safari') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
-                    <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?auto=format&fit=crop&w=400&q=80" alt="Safari" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="px-2 pb-2 flex items-end justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-[16px] mb-1">Safari</h3>
-                            </div>
-                        <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Card 3: Desert -->
-                <a href="{{ url('/discover?categories[]=Desert') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
-                    <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1473580044384-7ba9967e16a0?auto=format&fit=crop&w=400&q=80" alt="Desert" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="px-2 pb-2 flex items-end justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-[16px] mb-1">Desert</h3>
-                            </div>
-                        <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Card 4: Flower -->
-                <a href="{{ url('/discover?categories[]=Flower') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
-                    <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=400&q=80" alt="Flower" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="px-2 pb-2 flex items-end justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-[16px] mb-1">Flower</h3>
-                            </div>
-                        <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Card 5: Beach -->
-                <a href="{{ url('/discover?categories[]=Beach') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
-                    <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=400&q=80" alt="Beach" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="px-2 pb-2 flex items-end justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-[16px] mb-1">Beach</h3>
-                            </div>
-                        <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Card 6: Temples -->
-                <a href="{{ url('/discover?categories[]=Temples') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
-                    <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1528181304800-259b08848526?auto=format&fit=crop&w=400&q=80" alt="Temples" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="px-2 pb-2 flex items-end justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-[16px] mb-1">Temples</h3>
-                            </div>
-                        <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Card 7: Yacht -->
-                <a href="{{ url('/discover?categories[]=Yacht') }}" class="bg-white rounded-[24px] p-3 border border-gray-100 shadow-[0_2px_10px_rgba(0,0,0,0.04)] hover:shadow-md transition-shadow group block">
-                    <div class="w-full h-36 rounded-2xl overflow-hidden mb-4">
-                        <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80" alt="Yacht" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    <div class="px-2 pb-2 flex items-end justify-between">
-                        <div>
-                            <h3 class="font-bold text-gray-900 text-[16px] mb-1">Yacht</h3>
-                            </div>
-                        <div class="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- Card 8: Crafting CTA -->
-                <a href="{{ url('/discover') }}" class="rounded-[24px] p-6 flex flex-col justify-between group block hover:shadow-md transition-shadow" style="background-color: #E85D26;">
-                    <h3 class="text-white text-[22px] font-bold leading-tight pt-2">Crafting Your<br>Perfect Travel<br>Experience</h3>
-                    
-                    <div class="bg-[#111111] rounded-xl p-3 mt-6 flex items-center justify-between group-hover:bg-black transition-colors shadow-sm">
-                        <div class="text-white">
-                            <span class="block text-[10px] text-gray-400 font-medium">Browse</span>
-                            <span class="block text-sm font-bold">All destinations</span>
-                        </div>
-                        <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-black">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                    </div>
-                </a>
-
-            </div>
         </div>
     </section>
 
