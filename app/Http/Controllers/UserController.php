@@ -916,6 +916,9 @@ class UserController extends Controller
         
         $user = DB::table('users')->where('email', $request->email)->first();
         if (!$user) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'No account found with this email.'], 404);
+            }
             return back()->with('error', 'No account found with this email.');
         }
 
@@ -935,9 +938,15 @@ class UserController extends Controller
                 $message->subject('Reset Your Tour Raja Password');
             });
         } catch (\Exception $e) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Failed to send reset link. Please check email configuration.'], 500);
+            }
             return back()->with('error', 'Failed to send reset link. Please check email configuration.');
         }
 
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true, 'message' => 'We have emailed your password reset link!']);
+        }
         return back()->with('success', 'We have emailed your password reset link!');
     }
 

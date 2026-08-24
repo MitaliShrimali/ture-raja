@@ -64,14 +64,31 @@
                     this.loading = true;
                     this.errorMessage = '';
                     this.successMessage = '';
-                    setTimeout(() => {
+                    const formData = new FormData(e.target);
+                    try {
+                        const response = await fetch('/forgot-password', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+                        const data = await response.json();
+                        if (response.ok) {
+                            this.successMessage = data.message || 'If your email is registered, a reset link has been sent.';
+                            setTimeout(() => {
+                                this.showForgotPassword = false;
+                                this.successMessage = '';
+                                e.target.reset();
+                            }, 4000);
+                        } else {
+                            this.errorMessage = data.message || 'Failed to send reset link.';
+                        }
+                    } catch (error) {
+                        this.errorMessage = 'An error occurred. Please try again.';
+                    } finally {
                         this.loading = false;
-                        this.successMessage = 'If your email is registered, a reset link has been sent.';
-                        setTimeout(() => {
-                            this.showForgotPassword = false;
-                            this.successMessage = '';
-                        }, 4000);
-                    }, 1500);
+                    }
                 },
                 async submitLogin(e) {
                     this.loading = true;
