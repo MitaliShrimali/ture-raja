@@ -6,6 +6,19 @@
     {{-- Popular Transits is now inside the hero component --}}
 
     <!-- Section 4: International Packages — small card grid (Image 1 style) -->
+    @php
+        $intl = [];
+        if(isset($homeInternational) && $homeInternational->count() > 0) {
+            $intl = $homeInternational->map(function($pkg) {
+                return [
+                    'title' => $pkg->title,
+                    'image' => $pkg->image,
+                ];
+            })->toArray();
+        }
+    @endphp
+
+    @if(count($intl) > 0)
     <section class="py-3 md:py-10 bg-white relative overflow-hidden">
         <!-- Floating Decorations -->
         <img src="{{ asset('images/weather.gif') }}" alt="Weather" class="absolute -top-4 md:top-2 -left-4 md:left-4 w-12 h-12 md:w-24 md:h-24 z-10 pointer-events-none animate-[pulse_3s_ease-in-out_infinite] opacity-30 md:opacity-90" />
@@ -23,35 +36,9 @@
                 </a>
             </div>
 
-
             <div class="overflow-hidden relative w-full pt-1 pb-2 md:pt-2 md:pb-4">
-                @php
-                    if(isset($homeInternational) && $homeInternational->count() > 0) {
-                        $intl = $homeInternational->map(function($pkg) {
-                            return [
-                                'title' => $pkg->title,
-                                'image' => $pkg->image,
-                            ];
-                        })->toArray();
-                    } else {
-                        $intl = [
-                            ['title' => 'Bangkok',   'image' => 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Dubai',     'image' => 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Las Vegas', 'image' => 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Rome',      'image' => 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Bali',      'image' => 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Andaman',   'image' => 'https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&q=80&w=400'],
-                        ];
-                    }
-                @endphp
-                @php 
-                    // Duplicate multiple times to ensure enough width for seamless scrolling
-                    $scrollingIntl = array_merge($intl, $intl, $intl, $intl); 
-                    // Calculate exact duration to maintain a constant, identical speed for any number of cards
-                    $intlDuration = count($intl) * 8;
-                @endphp
                 <div id="intl-slider" class="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-5 pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
-                @foreach($scrollingIntl as $pkg)
+                @foreach($intl as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
                    class="relative rounded-xl overflow-hidden block group w-[45vw] sm:w-[260px]" style="height:150px; flex-shrink: 0;">
                     <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}"
@@ -66,33 +53,23 @@
                 </div>
             </div>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const slider = document.getElementById('intl-slider');
-                if (slider) {
-                    let isHovered = false;
-                    slider.addEventListener('mousedown', () => isHovered = true);
-                    slider.addEventListener('mouseup', () => isHovered = false);
-                    slider.addEventListener('mouseleave', () => isHovered = false);
-                    slider.addEventListener('touchstart', () => isHovered = true);
-                    slider.addEventListener('touchend', () => isHovered = false);
-                    
-                    function autoScroll() {
-                        if (!isHovered) {
-                            slider.scrollLeft += 1;
-                            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1) {
-                                slider.scrollLeft = 0;
-                            }
-                        }
-                        requestAnimationFrame(autoScroll);
-                    }
-                    requestAnimationFrame(autoScroll);
-                }
-            });
-        </script>
     </section>
+    @endif
 
     <!-- Section 5: Domestic Packages — small card grid (Image 1 style) -->
+    @php
+        $dom = [];
+        if(isset($homeDomestic) && $homeDomestic->count() > 0) {
+            $dom = $homeDomestic->map(function($pkg) {
+                return [
+                    'title' => $pkg->title,
+                    'image' => $pkg->image,
+                ];
+            })->toArray();
+        }
+    @endphp
+
+    @if(count($dom) > 0)
     <section class="py-3 md:py-10 bg-white border-t border-gray-100 relative overflow-hidden">
         <!-- Floating Decorations -->
         <img src="{{ asset('images/small-banner-decoration-3.png') }}" alt="Decoration 3" class="absolute -top-4 md:top-2 -left-4 md:left-4 w-10 h-10 md:w-20 md:h-20 z-10 pointer-events-none animate-[pulse_3s_ease-in-out_infinite] opacity-30 md:opacity-90" />
@@ -112,32 +89,8 @@
 
             {{-- 6 small cards auto-scroll --}}
             <div class="overflow-hidden relative w-full pt-1 pb-2 md:pt-2 md:pb-4">
-                @php
-                    if(isset($homeDomestic) && $homeDomestic->count() > 0) {
-                        $dom = $homeDomestic->map(function($pkg) {
-                            return [
-                                'title' => $pkg->title,
-                                'image' => $pkg->image,
-                            ];
-                        })->toArray();
-                    } else {
-                        $dom = [
-                            ['title' => 'Goa',     'image' => 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Kerala',  'image' => 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Jaipur',  'image' => 'https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Kutch',   'image' => 'https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Mumbai',  'image' => 'https://images.unsplash.com/photo-1566552881560-0be862a7c445?auto=format&fit=crop&q=80&w=400'],
-                            ['title' => 'Srinagar','image' => 'https://images.unsplash.com/photo-1562979314-bee7453e911c?auto=format&fit=crop&q=80&w=400'],
-                        ];
-                    }
-                @endphp
-                @php 
-                    $scrollingDom = array_merge($dom, $dom, $dom, $dom); 
-                    // Calculate exact duration to maintain a constant, identical speed for any number of cards
-                    $domDuration = count($dom) * 8;
-                @endphp
                 <div id="dom-slider" class="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-5 pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
-                @foreach($scrollingDom as $pkg)
+                @foreach($dom as $pkg)
                 <a href="{{ url('/discover?destination='.urlencode($pkg['title'])) }}"
                    class="relative rounded-xl overflow-hidden block group w-[45vw] sm:w-[260px]" style="height:150px; flex-shrink: 0;">
                     <img src="{{ asset($pkg['image']) }}" alt="{{ $pkg['title'] }}"
@@ -152,31 +105,8 @@
                 </div>
             </div>
         </div>
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const slider = document.getElementById('dom-slider');
-                if (slider) {
-                    let isHovered = false;
-                    slider.addEventListener('mousedown', () => isHovered = true);
-                    slider.addEventListener('mouseup', () => isHovered = false);
-                    slider.addEventListener('mouseleave', () => isHovered = false);
-                    slider.addEventListener('touchstart', () => isHovered = true);
-                    slider.addEventListener('touchend', () => isHovered = false);
-                    
-                    function autoScroll() {
-                        if (!isHovered) {
-                            slider.scrollLeft += 1;
-                            if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1) {
-                                slider.scrollLeft = 0;
-                            }
-                        }
-                        requestAnimationFrame(autoScroll);
-                    }
-                    requestAnimationFrame(autoScroll);
-                }
-            });
-        </script>
     </section>
+    @endif
 
     @if(isset($domesticAds) && $domesticAds->count() > 0)
     <!-- Section: Ads under Domestic Packages -->
@@ -262,6 +192,7 @@
     </section>
     @endif
 
+    @if(isset($offerStickers) && $offerStickers->count() > 0)
     <!-- Section 7: Offer Stickers -->
     <section class="pt-2 md:pt-10 pb-1 md:pb-4 relative" style="background-color: #FFF4CE;">
         <div class="container-custom">
@@ -300,13 +231,7 @@
                     @media (min-width: 1024px) { .sticker-card-custom { width: calc(25% - 18px); max-width: none; } }
                 </style>
                 <div id="promo-slider" class="flex-1 min-w-0 flex items-center justify-start overflow-x-auto hide-scrollbar z-10 relative pb-4" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
-                            @if(isset($offerStickers) && $offerStickers->count() > 0)
-                                {{-- Dynamic stickers from admin --}}
-                                @php
-                                    $stickerArray = $offerStickers->all();
-                                    $seamlessStickers = array_merge($stickerArray, $stickerArray);
-                                @endphp
-                                @foreach($seamlessStickers as $sticker)
+                                @foreach($offerStickers as $sticker)
                                     <a href="{{ url($sticker->link ?? '/discover') }}"
                                        class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6">
 
@@ -330,84 +255,6 @@
                                         </div>
                                     </a>
                                 @endforeach
-                            @else
-                                {{-- Static fallback cards (shown when no stickers added from admin yet) --}}
-                                @for($i = 0; $i < 2; $i++)
-                                <!-- Card 1 -->
-                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6">
-                                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img1offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Travel">
-                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                        <div class="text-right">
-                                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-white mb-2 ml-auto transform -rotate-45" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                                            <h3 class="text-white text-[10px] font-bold leading-tight">We Make Every<br>Trips Special</h3>
-                                        </div>
-                                        <div class="mt-auto text-right">
-                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <!-- Card 2 -->
-                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6" style="background-color: #FCE08F;">
-                                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/img2offer.png" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Attractions">
-                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                        <div class="max-w-[150px] mt-2">
-                                            <span class="text-[11px] font-bold text-gray-800 mb-1 block">Limited Offers</span>
-                                            <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Buy 1, Get 1 Free<br>Attractions</h3>
-                                        </div>
-                                        <div class="mt-auto">
-                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #E85D26;">View More &rarr;</span>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <!-- Card 3 -->
-                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6">
-                                    <img src="https://6a0bf3ee063c0d21459114f4.imgix.net/images3offer.jpg" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Mountain Lake">
-                                    <div class="absolute inset-0 bg-black/20"></div>
-                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                        <div class="flex flex-col items-start space-y-[3px]">
-                                            <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Limited Offers</span>
-                                            <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Buy 1, Get 1 Free</span>
-                                            <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #e7602e;">Attractions</span>
-                                        </div>
-                                        <div class="mt-auto">
-                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #e7602e;">View More &rarr;</span>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <!-- Card 4 -->
-                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6">
-                                    <img src="https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Beach Vacations">
-                                    <div class="absolute inset-0 bg-black/30"></div>
-                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                        <div class="flex flex-col items-start space-y-[3px]">
-                                            <span class="text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Special Discount</span>
-                                            <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">20% Off Family</span>
-                                            <span class="text-white text-[16px] md:text-[18px] font-bold px-2 py-0.5 rounded shadow-sm" style="background-color: #3b82f6;">Vacations</span>
-                                        </div>
-                                        <div class="mt-auto">
-                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #3b82f6;">View More &rarr;</span>
-                                        </div>
-                                    </div>
-                                </a>
-
-                                <!-- Card 5 -->
-                                <a href="{{ url('/discover') }}" class="sticker-card-custom h-48 md:h-52 rounded-[24px] overflow-hidden relative group block hover:-translate-y-1 transition-transform duration-300 shadow-sm mr-4 md:mr-6" style="background-color: #FFC0CB;">
-                                    <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" class="absolute right-0 bottom-0 w-1/2 h-full object-cover object-center opacity-90 transition-transform duration-500 group-hover:scale-105" style="mask-image: linear-gradient(to right, transparent, black 40%); -webkit-mask-image: linear-gradient(to right, transparent, black 40%);" alt="Honeymoon">
-                                    <div class="absolute inset-0 p-6 flex flex-col justify-between z-10">
-                                        <div class="max-w-[150px] mt-2">
-                                            <span class="text-[11px] font-bold text-gray-800 mb-1 block">Couples Only</span>
-                                            <h3 class="text-gray-900 text-[18px] md:text-[20px] font-black leading-tight">Romantic<br>Getaways</h3>
-                                        </div>
-                                        <div class="mt-auto">
-                                            <span class="inline-block text-white text-[10px] font-bold px-3 py-1 rounded-full hover:opacity-90 transition-opacity" style="background-color: #db2777;">View More &rarr;</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                @endfor
-                        @endif
                 </div>
             </div>
         </div>
@@ -441,6 +288,7 @@
             });
         </script>
     </section>
+    @endif
 
     <!-- Section 3: Why Travel With Tour Raja -->
     <div class="max-w-7xl mx-auto px-6 pt-2 pb-4 md:pb-8 lg:pb-10">
