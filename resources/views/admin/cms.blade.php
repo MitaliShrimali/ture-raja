@@ -3,7 +3,7 @@
 @section('admin_title', 'Cms')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data>
+<div class="space-y-10 pb-12" x-data="{ showAddModal: false }">
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="space-y-2">
             <h2 class="font-black text-foreground tracking-tight">Content Management</h2>
@@ -15,6 +15,9 @@
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden">
         <div class="p-8 border-b border-border-soft flex items-center justify-between">
             <h3 class="text-xl font-black">Platform Pages</h3>
+            <button @click="showAddModal = true" class="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-2xl font-black text-sm transition-all shadow-xl shadow-primary/20 flex items-center gap-2">
+                <i data-lucide="plus" size="18"></i> Add New Page
+            </button>
         </div>
         <div class="admin-table-container">
             <table class="w-full text-left">
@@ -103,5 +106,54 @@
             </div>
         </div>
     </div>
+
+    {{-- ===== ADD MODAL ===== --}}
+    <template x-teleport="body">
+    <div x-show="showAddModal" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+        style="display: none;">
+        <div @click.away="showAddModal = false" class="bg-white rounded-[40px] shadow-premium border border-border-soft max-w-2xl w-full overflow-hidden p-10 space-y-8">
+            <div class="flex items-center justify-between border-b border-border-soft pb-4">
+                <h3 class="text-2xl font-black text-foreground">Add New Page</h3>
+                <button @click="showAddModal = false" class="p-2 text-muted-text hover:text-primary transition-colors"><i data-lucide="x" size="24"></i></button>
+            </div>
+            
+            <form action="{{ url('/admin/cms/store') }}" method="POST" class="space-y-6">
+                @csrf
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Page Title<span class="text-primary">*</span></label>
+                        <input required type="text" name="title" placeholder="e.g., Anti-Fraud Policy" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">URL Slug<span class="text-primary">*</span></label>
+                        <input required type="text" name="slug" placeholder="e.g., anti-fraud-policy" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm" />
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Status</label>
+                    <select name="status" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm appearance-none">
+                        <option value="Published">Published</option>
+                        <option value="Draft">Draft</option>
+                    </select>
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Content (Basic)</label>
+                    <textarea name="content" rows="4" placeholder="Initial content... You can format this later using the Edit button." class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm"></textarea>
+                </div>
+
+                {{-- Buttons --}}
+                <div class="flex items-center justify-end gap-4 pt-4 border-t border-border-soft">
+                    <button type="button" @click="showAddModal = false" class="px-6 py-3 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-black text-muted-text uppercase tracking-widest transition-all">Cancel</button>
+                    <button type="submit" class="px-8 py-3 bg-primary text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:bg-primary-hover transition-all">Create Page</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </template>
 </div>
 @endsection
