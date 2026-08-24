@@ -12,11 +12,8 @@ class HomeController extends Controller
     {
         try {
             $packages = Package::where('status', 'Active')->get();
-            if ($packages->isEmpty()) {
-                $packages = collect($this->getStaticPackages());
-            }
         } catch (\Exception $e) {
-            $packages = collect($this->getStaticPackages());
+            $packages = collect();
         }
 
         // Pull home packages for International and Domestic sections
@@ -102,11 +99,8 @@ class HomeController extends Controller
     {
         try {
             $packages = Package::where('status', 'Active')->get();
-            if ($packages->isEmpty()) {
-                $packages = collect($this->getStaticPackages());
-            }
         } catch (\Exception $e) {
-            $packages = collect($this->getStaticPackages());
+            $packages = collect();
         }
 
         return view('profile', compact('packages'));

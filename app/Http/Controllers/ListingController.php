@@ -8,24 +8,15 @@ class ListingController extends Controller
 {
     public function index(Request $request)
     {
-        // Try to fetch from DB first
         try {
             $dbPackages = \App\Models\Package::where('status', 'Active')->get()->toArray();
         } catch (\Exception $e) {
             $dbPackages = [];
         }
 
-        // Use DB packages and merge with static list to ensure fallback and demo packages are searchable and viewable!
-        $static = $this->getStaticPackages();
-        
-        // Fast agent lookup map by slug
+        $static = [];
         $staticAgents = [];
-        foreach ($static as $sPkg) {
-            if (isset($sPkg['slug']) && isset($sPkg['agent'])) {
-                $staticAgents[strtolower($sPkg['slug'])] = $sPkg['agent'];
-            }
-        }
-
+        
         $stateMapping = [
             'manali' => 'Himachal Pradesh',
             'shimla' => 'Himachal Pradesh',
@@ -91,17 +82,6 @@ class ListingController extends Controller
         }, $dbPackages);
 
         $merged = $dbPackages;
-        
-        if (empty($dbPackages)) {
-            $dbTitles = array_map(fn($p) => strtolower($p['title'] ?? ''), $dbPackages);
-            $dbSlugs = array_map(fn($p) => strtolower($p['slug'] ?? ''), $dbPackages);
-            
-            foreach ($static as $sPkg) {
-                if (!in_array(strtolower($sPkg['title'] ?? ''), $dbTitles) && !in_array(strtolower($sPkg['slug'] ?? ''), $dbSlugs)) {
-                    $merged[] = $sPkg;
-                }
-            }
-        }
 
         $packages = collect($merged);
 

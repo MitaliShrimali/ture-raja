@@ -13,10 +13,10 @@ class PackageController extends Controller
         try {
             $pkg = Package::where('id', $id)->where('status', 'Active')->first();
             if (!$pkg) {
-                $pkg = $this->getStaticPackage($id);
+                abort(404);
             }
         } catch (\Exception $e) {
-            $pkg = $this->getStaticPackage($id);
+            abort(404);
         }
 
         // Track package view for logged-in users

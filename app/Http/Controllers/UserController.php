@@ -61,11 +61,8 @@ class UserController extends Controller
     {
         try {
             $packages = Package::where('status', 'Active')->get();
-            if ($packages->isEmpty()) {
-                $packages = collect($this->getStaticPackages());
-            }
         } catch (\Exception $e) {
-            $packages = collect($this->getStaticPackages());
+            $packages = collect();
         }
 
         // Fetch all agents to check their tiers
@@ -505,8 +502,7 @@ class UserController extends Controller
             $searchHistory = collect();
         }
 
-        // Fallback static packages for wishlist when DB not available
-        $packages = collect($this->getStaticPackages());
+        $packages = collect();
 
         // Merge DB packages if available
         try {
