@@ -2,12 +2,47 @@
         // Combine both sources of sightseeing details
         $sightseeingPills = [];
         if (!empty($package['sightseeing'])) {
-            $sightseeingPills = array_filter(array_map('trim', explode(',', $package['sightseeing'])));
+            $sightseeingData = is_string($package['sightseeing']) ? json_decode($package['sightseeing'], true) : $package['sightseeing'];
+            if (is_array($sightseeingData)) {
+                // If it's the new format (array of objects)
+                if (isset($sightseeingData[0]) && is_array($sightseeingData[0]) && isset($sightseeingData[0]['location'])) {
+                    foreach ($sightseeingData as $item) {
+                        $loc = trim($item['location'] ?? '');
+                        $act = trim($item['activity'] ?? '');
+                        if ($loc || $act) {
+                            $text = '';
+                            if ($loc && $act) {
+                                $text = $loc . ' - ' . $act;
+                            } else {
+                                $text = $loc ?: $act;
+                            }
+                            $sightseeingPills[] = $text;
+                        }
+                    }
+                } else {
+                    // It might be a flat array of strings if it was stored differently before
+                    foreach ($sightseeingData as $item) {
+                        if (is_string($item) && trim($item)) {
+                            $sightseeingPills[] = trim($item);
+                        }
+                    }
+                }
+            } else {
+                // Fallback for old comma separated string format
+                $sightseeingPills = array_filter(array_map('trim', explode(',', $package['sightseeing'])));
+            }
         }
+        
         if (!empty($package['itinerary']) && is_array($package['itinerary'])) {
             foreach ($package['itinerary'] as $day) {
-                if (!empty($day['title'])) {
-                    $sightseeingPills[] = $day['title'];
+                $loc = trim($day['title'] ?? '');
+                $act = trim($day['desc'] ?? '');
+                if ($loc || $act) {
+                    if ($loc && $act) {
+                        $sightseeingPills[] = $loc . ' - ' . $act;
+                    } else {
+                        $sightseeingPills[] = $loc ?: $act;
+                    }
                 }
             }
         }
@@ -419,6 +454,28 @@
 
                                 {{-- ── Below-Gallery Row 2: Badge pills + Departure City ── --}}
                                 <div class="mt-3 flex flex-wrap items-center gap-2">
+                                    {{-- Premium Services Badges --}}
+                                    @php
+                                        $pkgAmenities = [];
+                                        if (!empty($package['amenities'])) {
+                                            $pkgAmenities = is_string($package['amenities']) ? json_decode($package['amenities'], true) : $package['amenities'];
+                                            if (!is_array($pkgAmenities)) {
+                                                $pkgAmenities = array_map('trim', explode(',', $package['amenities']));
+                                            }
+                                        }
+                                        $hasChef = is_array($pkgAmenities) && in_array('Private Chef Included', $pkgAmenities);
+                                        $hasManager = is_array($pkgAmenities) && in_array('Tour Manager Included', $pkgAmenities);
+                                    @endphp
+                                    @if($hasChef)
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 text-purple-700 text-[11px] font-black tracking-wide shadow-sm">
+                                            <i data-lucide="chef-hat" class="w-3.5 h-3.5"></i> PRIVATE CHEF
+                                        </span>
+                                    @endif
+                                    @if($hasManager)
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-gradient-to-r from-indigo-50 to-indigo-100 border border-indigo-200 text-indigo-700 text-[11px] font-black tracking-wide shadow-sm">
+                                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i> TOUR MANAGER
+                                        </span>
+                                    @endif
                                     {{-- Category badge --}}
                                     @if(!empty($package['category']))
                                         <span class="inline-flex items-center px-3 py-1.5 rounded border border-gray-300 text-gray-700 text-[11px] font-semibold bg-white">
@@ -685,11 +742,11 @@
                         @if(!empty($package['overview']) && trim(strip_tags(str_replace('&nbsp;', '', $package['overview']))) !== '')
                         {{-- Tour Overview & Editorial --}}
                         <div id="overview" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 mb-8" style="scroll-margin-top: 180px;">
-                            <h2 class="font-black text-gray-900 mb-4 section-heading">Tour Overview</h2>
+                            <h2 class="font-black text-gray-900 mb-4 section-heading">Overview</h2>
                             <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
 
                             @if(!empty($package['highlights']) && count($package['highlights']) > 0)
-                            <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Tour Highlights</h3>
+                            <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Highlights</h3>
                             <ul class="space-y-2">
                                 @foreach($package['highlights'] as $hl)
                                     <li class="flex items-start gap-2 standard-body-text">
@@ -770,14 +827,14 @@
                                     <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
                                         <div class="flex items-center gap-2 mb-5">
                                             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                                                <i data-lucide="check-circle-2" size="16" class="text-green-600"></i>
+                                                <i data-lucide="check-circle-2" size="20" class="text-green-600"></i>
                                             </div>
-                                            <h4 class="text-base font-black text-green-900">What's Included</h4>
+                                            <h4 class="text-xl font-black text-green-900">What's Included</h4>
                                         </div>
                                         <ul class="space-y-3">
                                             @foreach($package['included'] as $item)
-                                                <li class="flex items-start gap-2 text-sm text-green-800 font-medium leading-relaxed">
-                                                    <i data-lucide="check" size="14" class="text-green-600 mt-0.5 shrink-0"></i>
+                                                <li class="flex items-start gap-2 text-lg text-green-800 font-medium leading-relaxed">
+                                                    <i data-lucide="check" size="18" class="text-green-600 mt-0.5 shrink-0"></i>
                                                     <span>{{ $item }}</span>
                                                 </li>
                                             @endforeach
@@ -789,14 +846,14 @@
                                     <div class="bg-red-50 rounded-2xl p-6 border border-red-100 shadow-sm">
                                         <div class="flex items-center gap-2 mb-5">
                                             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                                                <i data-lucide="x-circle" size="16" class="text-red-600"></i>
+                                                <i data-lucide="x-circle" size="20" class="text-red-600"></i>
                                             </div>
-                                            <h4 class="text-base font-black text-red-900">What's Excluded</h4>
+                                            <h4 class="text-xl font-black text-red-900">What's Excluded</h4>
                                         </div>
                                         <ul class="space-y-3">
                                             @foreach($package['excluded'] as $item)
-                                                <li class="flex items-start gap-2 text-sm text-red-800 font-medium leading-relaxed">
-                                                    <i data-lucide="x" size="14" class="text-red-600 mt-0.5 shrink-0"></i>
+                                                <li class="flex items-start gap-2 text-lg text-red-800 font-medium leading-relaxed">
+                                                    <i data-lucide="x" size="18" class="text-red-600 mt-0.5 shrink-0"></i>
                                                     <span>{{ $item }}</span>
                                                 </li>
                                             @endforeach
@@ -923,6 +980,9 @@
 
                             $agentPackagesUrl = url('/listing/holiday-list?agent_id=' . $agentId . '&tab=packages');
                             $agentProfileUrl  = url('/listing/holiday-list?agent_id=' . $agentId . '&tab=profile');
+
+                            $avgRating = \DB::table('agent_feedback')->where('agent_id', $agentId)->avg('rating');
+                            $displayRating = $avgRating ? number_format((float)$avgRating, 1) : 'No rating';
                         @endphp
                         <!-- FontAwesome CDN for social media icons -->
                         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -961,9 +1021,9 @@
                                 <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
                                 
                                 <!-- Text confined strictly to the right area -->
-                                <div class="relative z-10 pl-4" style="width: 65%; max-width: 280px; margin-left: auto;">
+                                <div class="relative z-10 pl-4" style="width: 75%; max-width: 450px; margin-left: auto;">
                                     @if(!empty($dbAgent->about))
-                                        <p class="text-white font-medium drop-shadow-sm" style="font-size: 11px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                        <p class="text-white font-medium drop-shadow-sm" style="font-size: 13px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
                                             {{ $dbAgent->about }}
                                         </p>
                                     @endif
@@ -986,15 +1046,15 @@
                                         </div>
                                         
                                         @if(!empty($dbAgent->since))
-                                        <div class="flex items-center gap-1.5 text-[10px] font-black text-[#e85d26] uppercase tracking-wider bg-orange-50/80 px-2 py-1.5 rounded border border-orange-100 h-max mt-12 relative z-20 shadow-sm">
-                                            <i data-lucide="calendar" class="w-3 h-3"></i> Since {{ $dbAgent->since }}
+                                        <div class="flex items-center gap-2 text-sm font-black text-[#e85d26] uppercase tracking-wider h-max mt-12 relative z-20">
+                                            <i data-lucide="calendar" class="w-4 h-4"></i> Since {{ $dbAgent->since }}
                                         </div>
                                         @endif
                                     </div>
                                     
                                     <div class="flex items-center gap-1.5 bg-gray-100/80 backdrop-blur-md px-3 py-1.5 rounded-full mb-2 border border-gray-200/50 shrink-0">
                                         <span class="text-yellow-500 text-sm leading-none">★</span>
-                                        <span class="text-xs font-black text-gray-700">4.9</span>
+                                        <span class="text-xs font-black text-gray-700">{{ $displayRating }}</span>
                                     </div>
                                 </div>
 
@@ -1158,6 +1218,39 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- Premium Services Highlight --}}
+                        @if(isset($hasChef) && isset($hasManager) && ($hasChef || $hasManager))
+                        <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl border border-purple-100 p-5 shadow-sm mt-6 mb-6">
+                            <h4 class="text-[11px] font-black text-purple-900 uppercase tracking-widest mb-3 flex items-center gap-1.5">
+                                <i data-lucide="sparkles" class="w-4 h-4 text-purple-600"></i> Premium Services Included
+                            </h4>
+                            <div class="space-y-2.5">
+                                @if($hasChef)
+                                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-purple-100/50 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                                    <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center shrink-0 border border-purple-100">
+                                        <i data-lucide="chef-hat" class="w-5 h-5 text-purple-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-black text-gray-900">Private Chef</div>
+                                        <div class="text-[10px] font-bold text-purple-600 uppercase tracking-wider">Included</div>
+                                    </div>
+                                </div>
+                                @endif
+                                @if($hasManager)
+                                <div class="flex items-center gap-3 bg-white p-3 rounded-xl border border-indigo-100/50 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md">
+                                    <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center shrink-0 border border-indigo-100">
+                                        <i data-lucide="user-check" class="w-5 h-5 text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-black text-gray-900">Tour Manager</div>
+                                        <div class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Included</div>
+                                    </div>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
 
                         {{-- Get in Touch --}}
                         <div class="bg-white rounded-lg border border-gray-100 shadow-md p-6 space-y-5 scroll-mt-24" id="contact-form">

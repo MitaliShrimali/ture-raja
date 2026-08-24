@@ -177,23 +177,35 @@
                             @php
                                 $validFrom = 'N/A';
                                 $validTo = 'N/A';
+                                $isExpired = false;
+                                if (!empty($pkg->expiry_date)) {
+                                    $isExpired = \Carbon\Carbon::parse($pkg->expiry_date)->endOfDay()->isPast();
+                                }
                                 if (!empty($pkg->validity)) {
                                     if (strpos($pkg->validity, ' to ') !== false) {
                                         $parts = explode(' to ', $pkg->validity);
                                         $validFrom = \Carbon\Carbon::parse(trim($parts[0]))->format('M d, Y');
                                         $validTo = \Carbon\Carbon::parse(trim($parts[1]))->format('M d, Y');
+                                        if (empty($pkg->expiry_date)) {
+                                            try { $isExpired = \Carbon\Carbon::parse(trim($parts[1]))->endOfDay()->isPast(); } catch(\Exception $e) {}
+                                        }
                                     } else {
                                         $validFrom = \Carbon\Carbon::parse(trim($pkg->validity))->format('M d, Y');
                                         $validTo = $validFrom;
+                                        if (empty($pkg->expiry_date)) {
+                                            try { $isExpired = \Carbon\Carbon::parse(trim($pkg->validity))->endOfDay()->isPast(); } catch(\Exception $e) {}
+                                        }
                                     }
                                 }
+                                $displayStatus = $isExpired ? 'Expired' : $pkg->status;
+                                $statusClass = $isExpired ? 'bg-red-50 text-red-500 hover:bg-red-100' : ($pkg->status === 'Active' ? 'bg-green-50 text-green-500 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100');
                             @endphp
                             <td class="py-6 px-8 text-sm font-medium text-muted-text">{{ $validFrom }}</td>
                             <td class="py-6 px-8 text-sm font-medium text-muted-text">{{ $validTo }}</td>
                             <td class="py-6 px-8">
                                 <a href="{{ url('/admin/packages/toggle/' . $pkg->id) }}" class="inline-block">
-                                    <span class="px-3 py-1 rounded-full {{ $pkg->status === 'Active' ? 'bg-green-50 text-green-500 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100' }} text-[10px] font-black uppercase tracking-wider transition-all">
-                                        {{ $pkg->status }}
+                                    <span class="px-3 py-1 rounded-full {{ $statusClass }} text-[10px] font-black uppercase tracking-wider transition-all">
+                                        {{ $displayStatus }}
                                     </span>
                                 </a>
                             </td>

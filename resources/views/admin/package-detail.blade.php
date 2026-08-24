@@ -2,12 +2,43 @@
     $itinerary = $pkg->itinerary ? (json_decode($pkg->itinerary, true) ?: []) : [];
     $sightseeingPills = [];
     if (!empty($pkg->sightseeing)) {
-        $sightseeingPills = array_filter(array_map('trim', explode(',', $pkg->sightseeing)));
+        $sightseeingData = is_string($pkg->sightseeing) ? json_decode($pkg->sightseeing, true) : $pkg->sightseeing;
+        if (is_array($sightseeingData)) {
+            if (isset($sightseeingData[0]) && is_array($sightseeingData[0]) && isset($sightseeingData[0]['location'])) {
+                foreach ($sightseeingData as $item) {
+                    $loc = trim($item['location'] ?? '');
+                    $act = trim($item['activity'] ?? '');
+                    if ($loc || $act) {
+                        $text = '';
+                        if ($loc && $act) {
+                            $text = $loc . ' - ' . $act;
+                        } else {
+                            $text = $loc ?: $act;
+                        }
+                        $sightseeingPills[] = $text;
+                    }
+                }
+            } else {
+                foreach ($sightseeingData as $item) {
+                    if (is_string($item) && trim($item)) {
+                        $sightseeingPills[] = trim($item);
+                    }
+                }
+            }
+        } else {
+            $sightseeingPills = array_filter(array_map('trim', explode(',', $pkg->sightseeing)));
+        }
     }
     if (!empty($itinerary) && is_array($itinerary)) {
         foreach ($itinerary as $day) {
-            if (!empty($day['title'])) {
-                $sightseeingPills[] = $day['title'];
+            $loc = trim($day['title'] ?? '');
+            $act = trim($day['desc'] ?? '');
+            if ($loc || $act) {
+                if ($loc && $act) {
+                    $sightseeingPills[] = $loc . ' - ' . $act;
+                } else {
+                    $sightseeingPills[] = $loc ?: $act;
+                }
             }
         }
     }

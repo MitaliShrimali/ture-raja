@@ -18,21 +18,14 @@
                             <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">TRAVEL COMPANY / AGENCY NAME *</label>
                             <div class="relative">
                                 <i class="far fa-building absolute left-5 top-1/2 -translate-y-1/2 text-gray-300"></i>
-                                @php
-                                    $agentName = session('agent_name');
-                                    if(session('agent_id')) {
-                                        $dbAgent = \DB::table('agents')->where('id', session('agent_id'))->first();
-                                        if($dbAgent) $agentName = $dbAgent->name;
-                                    }
-                                @endphp
-                                <input type="text" name="agency_name" value="{{ old('agency_name', $branch ? $branch->agency_name : $agentName) }}" readonly required placeholder="e.g. Horizon Ascent Bali" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-100 text-gray-500 cursor-not-allowed border-none text-xs font-bold">
+                                <input type="text" name="agency_name" value="{{ old('agency_name', $branch ? $branch->agency_name : '') }}" required placeholder="e.g. Horizon Ascent Bali" class="w-full pl-12 pr-6 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                             </div>
                         </div>
                         <div>
                             <label class="block text-[9px] font-bold text-gray-400 uppercase mb-3 tracking-widest">PHONE *</label>
                             <div class="flex gap-2 items-center">
-                                <div class="relative w-28 shrink-0">
-                                    <select class="phone-country-code w-full px-3 py-4 rounded-[20px] bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
+                                <div class="relative w-24 shrink-0">
+                                    <select class="phone-country-code w-full px-2 py-4 rounded-[20px] bg-gray-50 border-none text-[11px] font-medium focus:ring-2 focus:ring-primary/20 appearance-none">
                                         <option value="+91" data-len="10" selected>🇮🇳 +91</option>
                                         <option value="+1" data-len="10">🇺🇸 +1</option>
                                         <option value="+44" data-len="10">🇬🇧 +44</option>

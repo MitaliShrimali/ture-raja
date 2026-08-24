@@ -44,9 +44,48 @@
     @php
         $isActive = $pkg->status === 'Active';
         $isPending = $pkg->status === 'Pending';
+        
+        $validityText = $pkg->validity ?? '';
+        $daysLeft = null;
+        $isExpired = false;
+        $validityDisplay = '—';
+        
+        if (!empty($pkg->expiry_date)) {
+            $endDate = \Carbon\Carbon::parse($pkg->expiry_date)->endOfDay();
+        } elseif ($validityText) {
+            $dates = explode(' to ', $validityText);
+            $endDateStr = count($dates) > 1 ? trim($dates[1]) : trim($dates[0]);
+            try {
+                $endDate = \Carbon\Carbon::parse($endDateStr)->endOfDay();
+            } catch (\Exception $e) {
+                $endDate = null;
+            }
+        } else {
+            $endDate = null;
+        }
+
+        if ($endDate) {
+            if ($endDate->isPast()) {
+                $isExpired = true;
+                $validityDisplay = 'Expired';
+            } else {
+                $diff = now()->diffInDays($endDate, false);
+                $daysLeft = max(0, (int) ceil($diff));
+                $validityDisplay = $daysLeft . ' Days Left';
+            }
+        } else {
+            $validityDisplay = $validityText ?: '—';
+        }
+
         $statusColor = $isActive ? 'bg-green-50 text-green-600 border-green-100' : ($isPending ? 'bg-yellow-50 text-yellow-600 border-yellow-100' : 'bg-orange-50 text-[#e85d26] border-orange-100');
+        $displayStatus = $pkg->status;
+        
+        if ($isExpired) {
+            $statusColor = 'bg-red-50 text-red-600 border-red-200';
+            $displayStatus = 'Expired';
+        }
     @endphp
-    <div class="bg-white rounded-[32px] p-4 shadow-sm border border-gray-100 group hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500 package-card" data-name="{{ strtolower($pkg->title) }}" id="pkg-card-{{ $pkg->id }}">
+    <div class="bg-white rounded-[32px] p-4 border group hover:shadow-xl transition-all duration-500 package-card {{ ($isActive || $isPending) ? 'border-[#e85d26]/50 shadow-md shadow-orange-100/50 scale-[1.02] hover:scale-[1.04]' : 'border-gray-100 shadow-sm hover:scale-[1.02]' }}" data-name="{{ strtolower($pkg->title) }}" id="pkg-card-{{ $pkg->id }}">
         <div class="relative mb-4 overflow-hidden rounded-[24px]">
             <img src="{{ asset($pkg->image ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=500') }}" class="w-full h-40 object-cover group-hover:scale-110 transition-transform duration-700" alt="{{ $pkg->title }}">
             @if(!$isPending)
@@ -56,13 +95,13 @@
             </button>
             @endif
             @if($isPending)
-            <div class="absolute top-3 left-3 bg-yellow-500 text-white text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-wider">Pending Review</div>
+            <div class="absolute top-3 left-3 bg-yellow-500 text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest shadow-lg shadow-yellow-500/50 animate-pulse border border-yellow-400">Pending Review</div>
             @endif
         </div>
 
         <div class="flex items-center space-x-2 mb-1">
-            <h4 class="text-sm font-bold text-gray-800 truncate flex-1">{{ $pkg->title }}</h4>
-            <span class="text-[8px] font-bold px-2 py-0.5 rounded-full border uppercase italic tracking-tighter {{ $statusColor }}">{{ $pkg->status }}</span>
+            <h4 class="text-base font-extrabold text-gray-900 truncate flex-1">{{ $pkg->title }}</h4>
+            <span class="text-[10px] font-extrabold px-3 py-1 rounded-full border uppercase tracking-wider {{ $statusColor }}">{{ $displayStatus }}</span>
         </div>
         <p class="text-[9px] text-gray-400 font-medium mb-3">{{ ucfirst($pkg->category) }} • {{ $pkg->group_size ?? 'Direct Flight' }} • {{ $pkg->location }}</p>
 
@@ -77,7 +116,7 @@
             </div>
             <div>
                 <p class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">Validity</p>
-                <p class="text-[10px] font-bold text-gray-800">{{ $pkg->stock ?? '—' }}</p>
+                <p class="text-[10px] font-bold {{ $isExpired ? 'text-red-500' : 'text-green-600' }}">{{ $validityDisplay }}</p>
             </div>
             <div>
                 <p class="text-[8px] font-bold text-gray-300 uppercase tracking-widest">Price</p>

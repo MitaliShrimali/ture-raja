@@ -1510,7 +1510,7 @@ class AgentController extends Controller
         $agentName = session('agent_name', '');
 
         // Fetch packages belonging to this agent (by matching agent JSON name)
-        $allPackages = DB::table('packages')->select('id', 'title', 'location', 'image', 'price', 'agent', 'status', 'created_at', 'category', 'group_size', 'duration', 'stock', 'currency', 'badge')->orderBy('created_at', 'desc')->get();
+        $allPackages = DB::table('packages')->select('id', 'title', 'location', 'image', 'price', 'agent', 'status', 'created_at', 'category', 'group_size', 'duration', 'stock', 'currency', 'badge', 'validity', 'expiry_date')->orderBy('created_at', 'desc')->get();
         $packages = $allPackages->filter(function ($pkg) use ($agentId, $agentName) {
             if (!$pkg->agent) return false;
             $agentData = json_decode($pkg->agent, true);
@@ -1733,6 +1733,7 @@ class AgentController extends Controller
             'why_us' => $request->input('why_us'),
             'website' => $request->input('website'),
             'gst_number' => $request->input('gst_number'),
+            'sac_hsn_code' => $request->input('sac_hsn_code'),
             'about' => $request->input('about'),
             'facebook' => $request->input('facebook'),
             'twitter' => $request->input('twitter'),

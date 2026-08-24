@@ -51,7 +51,6 @@
                 <p class="text-[10px] text-gray-400 font-medium leading-relaxed mb-8">{{ $feedback->message }}</p>
                 
                 <div class="flex space-x-3">
-                    <button @click="editModal({{ $feedback->id }}, '{{ addslashes($feedback->customer_name) }}', {{ $feedback->rating }}, '{{ addslashes($feedback->message) }}')" class="bg-primary text-white px-4 py-1.5 rounded-lg text-[10px] font-bold flex items-center"><i class="fas fa-edit mr-2"></i> Edit</button>
                     <a href="{{ route('agent.feedback.delete', $feedback->id) }}" onclick="confirmDelete(event, this.href)" class="bg-gray-100 text-gray-400 p-1.5 rounded-lg hover:text-red-500 transition-colors"><i class="far fa-trash-alt"></i></a>
                 </div>
             </div>

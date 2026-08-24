@@ -195,7 +195,7 @@
                         </div>
 
                         <div class="pt-8 border-t border-gray-100">
-                            <h3 class="section-heading text-gray-900 mb-4">Tour Overview</h3>
+                            <h3 class="section-heading text-gray-900 mb-4">Overview</h3>
                             <p class="standard-body-text">
                                 Experience the ultimate luxury with our {{ $pkg['title'] }} package. This carefully curated journey takes you through the most stunning landscapes and cultural landmarks, ensuring every moment is filled with wonder. From premium accommodations to expert-guided tours, we've handled all the details so you can focus on creating memories that last a lifetime.
                             </p>

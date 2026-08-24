@@ -1944,6 +1944,10 @@ class AdminController extends Controller
                 'service_guaranteed' => DB::table('agents')
                     ->select('service_guaranteed')
                     ->whereColumn('agents.email', 'payments.email')
+                    ->limit(1),
+                'sac_hsn_code' => DB::table('agents')
+                    ->select('sac_hsn_code')
+                    ->whereColumn('agents.email', 'payments.email')
                     ->limit(1)
             ])
             ->where('payments.id', $id)
@@ -1994,7 +1998,7 @@ class AdminController extends Controller
                     [
                         'name' => $payment->plan_type,
                         'description' => 'Subscription package fee for ' . $payment->plan_type,
-                        'sac_hsn' => '998522',
+                        'sac_hsn' => $payment->sac_hsn_code ?: '998522',
                         'qty' => 1,
                         'price' => $price,
                         'total' => $price
@@ -2027,7 +2031,7 @@ class AdminController extends Controller
                     [
                         'name' => $payment->plan_type,
                         'description' => 'Subscription package fee for ' . $payment->plan_type,
-                        'sac_hsn' => '998522',
+                        'sac_hsn' => $payment->sac_hsn_code ?: '998522',
                         'qty' => 1,
                         'price' => $price,
                         'total' => $price

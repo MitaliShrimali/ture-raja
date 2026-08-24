@@ -149,6 +149,10 @@
                                                 <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">GST NUMBER</label>
                                                 <input type="text" name="gst_number" value="{{ $agent->gst_number ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium uppercase focus:ring-2 focus:ring-primary/20">
                                             </div>
+                                            <div>
+                                                <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">SAC/HSN CODE</label>
+                                                <input type="text" name="sac_hsn_code" value="{{ $agent->sac_hsn_code ?? '' }}" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium uppercase focus:ring-2 focus:ring-primary/20">
+                                            </div>
                                             <div class="md:col-span-2">
                                                 <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">ABOUT TRAVEL AGENT (Max 160 characters - Fits in Orange Header) <span class="text-red-500">*</span></label>
                                                 <textarea name="about" required rows="3" maxlength="160" placeholder="Describe your agency in 3-4 sentences..." class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">{{ $agent->about ?? '' }}</textarea>
