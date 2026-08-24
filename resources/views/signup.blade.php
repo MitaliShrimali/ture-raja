@@ -237,14 +237,14 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Phone Number*</label>
                     <div style="display: flex; gap: 8px;">
-                        <select name="country_code" id="country_code" class="input-field bg-white" style="width: 100px; flex-shrink: 0;" required>
+                        <select name="country_code" id="country_code" class="input-field bg-white" style="width: 100px; flex-shrink: 0;" required onchange="let p = document.getElementById('phone'); if(this.value === '+91') { p.value = p.value.slice(0, 10); }">
                             <option value="+91">+91 (IN)</option>
                             <option value="+1">+1 (US/CA)</option>
                             <option value="+44">+44 (UK)</option>
                             <option value="+61">+61 (AU)</option>
                             <option value="+971">+971 (AE)</option>
                         </select>
-                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" required placeholder="Phone number" class="input-field @error('phone') !border-red-500 @enderror" style="flex: 1;" minlength="7" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')" title="Please enter a valid phone number (digits only)" onblur="checkUniqueness('phone', document.getElementById('country_code').value + this.value, 'customer')" />
+                        <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" required placeholder="Phone number" class="input-field @error('phone') !border-red-500 @enderror" style="flex: 1;" minlength="7" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(document.getElementById('country_code').value === '+91') { this.value = this.value.slice(0, 10); }" title="Please enter a valid phone number (digits only)" onblur="checkUniqueness('phone', document.getElementById('country_code').value + this.value, 'customer')" />
                     </div>
                     <span id="phone-error" class="text-[10px] text-red-500 font-bold hidden mt-1"><i class="fas fa-exclamation-circle"></i> This number is already used.</span>
                     @error('phone') <span class="text-[10px] text-red-500 font-medium block mt-1">{{ $message }}</span> @enderror
