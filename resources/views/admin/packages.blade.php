@@ -175,28 +175,14 @@
                             </td>
                             <td class="py-6 px-8 text-sm font-black text-foreground">{{ $pkg->currency ?? '₹' }}{{ number_format($pkg->price, 2) }}</td>
                             @php
-                                $validFrom = 'N/A';
-                                $validTo = 'N/A';
+                                $validFrom = !empty($pkg->created_at) ? \Carbon\Carbon::parse($pkg->created_at)->format('M d, Y') : 'N/A';
+                                $validTo = !empty($pkg->expiry_date) ? \Carbon\Carbon::parse($pkg->expiry_date)->format('M d, Y') : 'N/A';
                                 $isExpired = false;
+                                
                                 if (!empty($pkg->expiry_date)) {
                                     $isExpired = \Carbon\Carbon::parse($pkg->expiry_date)->endOfDay()->isPast();
                                 }
-                                if (!empty($pkg->validity)) {
-                                    if (strpos($pkg->validity, ' to ') !== false) {
-                                        $parts = explode(' to ', $pkg->validity);
-                                        $validFrom = \Carbon\Carbon::parse(trim($parts[0]))->format('M d, Y');
-                                        $validTo = \Carbon\Carbon::parse(trim($parts[1]))->format('M d, Y');
-                                        if (empty($pkg->expiry_date)) {
-                                            try { $isExpired = \Carbon\Carbon::parse(trim($parts[1]))->endOfDay()->isPast(); } catch(\Exception $e) {}
-                                        }
-                                    } else {
-                                        $validFrom = \Carbon\Carbon::parse(trim($pkg->validity))->format('M d, Y');
-                                        $validTo = $validFrom;
-                                        if (empty($pkg->expiry_date)) {
-                                            try { $isExpired = \Carbon\Carbon::parse(trim($pkg->validity))->endOfDay()->isPast(); } catch(\Exception $e) {}
-                                        }
-                                    }
-                                }
+                                
                                 $displayStatus = $isExpired ? 'Expired' : $pkg->status;
                                 $statusClass = $isExpired ? 'bg-red-50 text-red-500 hover:bg-red-100' : ($pkg->status === 'Active' ? 'bg-green-50 text-green-500 hover:bg-green-100' : 'bg-gray-50 text-gray-400 hover:bg-gray-100');
                             @endphp
