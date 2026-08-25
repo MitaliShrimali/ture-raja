@@ -1106,6 +1106,17 @@
             <!-- ==================== STEP 2: ITINERARY, MEALS & PHOTOS ==================== -->
             <div class="space-y-8 mt-8">
 
+                <!-- Note Message -->
+                <div class="bg-orange-50 border border-orange-100 rounded-2xl p-4 flex gap-3 items-start w-full">
+                    <div class="mt-0.5 text-orange-500">
+                        <i data-lucide="info" size="18"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-orange-800">Note: You only need to provide ONE of these.</p>
+                        <p class="text-xs text-orange-700 mt-1 font-medium">Either upload a PDF Brochure <b class="font-black text-orange-900">OR</b> write a Day-by-Day Itinerary. If you upload a Brochure, the Itinerary section is not required.</p>
+                    </div>
+                </div>
+
                 <!-- ── Full-width row: Upload Brochure  OR  Itinerary (Day-by-Day Plan) ── -->
                 <div class="flex flex-row gap-4 items-stretch w-full overflow-hidden">
 
