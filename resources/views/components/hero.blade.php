@@ -53,14 +53,9 @@
   }
 
   .hero-ad-container {
-    width: 375px;
+    width: 100%;
     height: 98px;
     margin: 0 auto;
-  }
-  @media (max-width: 380px) {
-    .hero-ad-container {
-      width: 100%;
-    }
   }
   @media (min-width: 768px) {
     .hero-ad-container {
@@ -198,35 +193,35 @@
           class="flex flex-col md:flex-row items-center gap-0 overflow-visible p-1">
 
           {{-- Destination Field --}}
-          <div class="relative flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-3 py-2 md:px-6 md:py-4 hero-search-divider transition-all hover:bg-gray-50/50 rounded-lg group">
-            <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
+          <div class="relative flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 hero-search-divider transition-all hover:bg-gray-50/50 rounded-lg group">
+            <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg> 
             <div class="w-full relative">
                 <input type="text" name="destination" id="where-to-input" placeholder="Where You Go !!!" autocomplete="off"
-                  class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
+                  class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[14px] md:text-[15px] font-bold outline-none w-full"
                   style="box-shadow: none;" value="{{ request('destination') }}">
             </div>
           </div>
 
           {{-- Agent/City Field --}}
-          <div class="relative flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-3 py-2 md:px-6 md:py-4 transition-all hover:bg-gray-50/50 rounded-lg group">
-            <svg class="w-4 h-4 md:w-5 md:h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
+          <div class="relative flex items-center gap-2 md:gap-3 flex-1 w-full md:w-auto px-4 py-3 md:px-6 md:py-4 transition-all hover:bg-gray-50/50 rounded-lg group">
+            <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
             <div class="w-full relative">
                 <input type="text" name="from_city" id="agent-city-input" placeholder="Search agent from your city/near by location" autocomplete="off"
-                  class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[13px] md:text-[15px] font-bold outline-none w-full"
+                  class="bg-transparent border-none focus:ring-0 text-[#ea580c] placeholder-gray-500 text-[14px] md:text-[15px] font-bold outline-none w-full"
                   style="box-shadow: none;" value="{{ request('from_city') }}">
             </div>
           </div>
 
           {{-- Search Button --}}
-          <div class="px-2 py-2 flex-shrink-0 w-full md:w-auto">
+          <div class="px-3 py-3 flex-shrink-0 w-full md:w-auto">
             <button type="submit" style="background:#ea580c;"
-              class="rounded-xl px-4 py-2.5 md:px-10 md:py-4 text-white font-black text-sm hover:bg-orange-600 transition-colors w-full sm:w-auto shadow-md hover:shadow-lg">
+              class="rounded-xl px-4 py-3 md:px-10 md:py-4 text-white font-black text-[15px] md:text-base hover:bg-orange-600 transition-colors w-full sm:w-auto shadow-md hover:shadow-lg">
               Search Now
             </button>
           </div>
@@ -518,7 +513,7 @@
             <!-- Dots -->
             <div class="flex justify-center gap-2 mt-4" id="homeAdDots">
                 @foreach($homeAd as $index => $ad)
-                    <button class="w-2.5 h-2.5 rounded-full {{ $index === 0 ? 'bg-[#e85d26]' : 'bg-gray-300' }} transition-colors" onclick="goToHomeAd({{ $index }})"></button>
+                    <button class="w-1.5 h-1.5 md:w-2.5 md:h-2.5 rounded-full {{ $index === 0 ? 'bg-[#e85d26]' : 'bg-gray-300' }} transition-colors" onclick="goToHomeAd({{ $index }})"></button>
                 @endforeach
             </div>
             <script>
