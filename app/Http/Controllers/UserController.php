@@ -80,8 +80,13 @@ class UserController extends Controller
             $agentsByName = [];
         }
 
+        $paidPlanIds = [];
+        try {
+            $paidPlanIds = \Illuminate\Support\Facades\DB::table('plans')->where('price', '>', 0)->pluck('id')->toArray();
+        } catch (\Exception $e) {}
+
         // Shuffle all packages first for randomization, then sort by tier
-        $packages = $packages->shuffle()->sortByDesc(function ($p) use ($agentsById, $agentsByName) {
+        $packages = $packages->shuffle()->sortByDesc(function ($p) use ($agentsById, $agentsByName, $paidPlanIds) {
             $pkg = (array) $p;
             $tier = 1; // Default: unpaid / basic account
             
@@ -123,11 +128,6 @@ class UserController extends Controller
                     $agentInfo = $agentsByName[$agentKey];
                 }
             }
-
-            $paidPlanIds = [];
-            try {
-                $paidPlanIds = \Illuminate\Support\Facades\DB::table('plans')->where('price', '>', 0)->pluck('id')->toArray();
-            } catch (\Exception $e) {}
 
             if ($agentInfo) {
                 // 2: Paid plan

@@ -26,7 +26,7 @@
         
         <div class="container-custom relative z-20">
             <div class="flex flex-row items-center justify-between mb-0 md:mb-2 gap-2 md:gap-3">
-                <h2 class="font-bold text-[#1a1a1a] m-0 text-[16px] md:text-[28px] leading-tight">
+                <h2 class="font-bold text-[#1a1a1a] m-0 md:text-[28px] leading-tight mobile-heading-18">
                     Top International Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=international') }}"
@@ -77,7 +77,7 @@
         
         <div class="container-custom relative z-20">
             <div class="flex flex-row items-center justify-between mb-0 md:mb-2 gap-2 md:gap-3">
-                <h2 class="font-bold text-[#1a1a1a] m-0 text-[16px] md:text-[28px] leading-tight">
+                <h2 class="font-bold text-[#1a1a1a] m-0 md:text-[28px] leading-tight mobile-heading-18">
                     Top Domestic Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=domestic') }}"
@@ -123,9 +123,9 @@
                 @media (min-width: 768px) { .ad-card-custom { width: calc(50% - 12px); max-width: none; } }
                 @media (min-width: 1024px) { .ad-card-custom { width: calc(25% - 18px); max-width: none; } }
             </style>
-            <div id="domestic-ads-slider" class="flex-1 min-w-0 flex flex-row flex-nowrap gap-4 md:gap-6 overflow-x-auto hide-scrollbar pb-2 snap-x snap-mandatory scroll-smooth {{ $domesticAds->count() < 4 ? 'lg:justify-center' : '' }}" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important; scroll-snap-type: x mandatory !important;">
+            <div id="domestic-ads-slider" class="flex-1 min-w-0 flex flex-row flex-nowrap gap-4 md:gap-6 overflow-x-auto hide-scrollbar pb-2 {{ $domesticAds->count() < 4 ? 'lg:justify-center' : '' }}" style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; overflow-x: auto !important;">
                 @foreach($domesticAds as $ad)
-                <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 24px; box-shadow: 0 8px 24px -8px rgba(0,0,0,0.06); padding: 12px; display: flex; gap: 12px; box-sizing: border-box; transition: shadow 0.3s; scroll-snap-align: start !important;" class="group hover:shadow-md relative snap-start ad-card-custom">
+                <div style="background: #ffffff; border: 1px solid #f0f0f0; border-radius: 24px; box-shadow: 0 8px 24px -8px rgba(0,0,0,0.06); padding: 12px; display: flex; gap: 12px; box-sizing: border-box; transition: shadow 0.3s;" class="group hover:shadow-md relative ad-card-custom">
                     <!-- Left: Ad Image -->
                     <div style="width: 100px; height: 100px; border-radius: 16px; overflow: hidden; flex-shrink: 0; position: relative;">
                         <img src="{{ asset($ad->image ?? 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=300') }}" 
@@ -249,7 +249,7 @@
     <!-- Section 3: Why Travel With Tour Raja -->
     <div class="max-w-7xl mx-auto px-6 pt-2 pb-4 md:pb-8 lg:pb-10">
         <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-0 mb-4">
-            <span style="font-size: 34px; line-height: 1; display: block; margin-top: 0;">Why tour raja !!!</span>
+            <span class="md:text-[34px] leading-none block mt-0 mobile-heading-18">Why tour raja !!!</span>
         </x-section-title>
 
         <style>
@@ -368,7 +368,7 @@
     <!-- Section 6: Browse by Travel Theme -->
     <section class="py-6 md:py-10 bg-white border-t border-border-soft/30 animate-fade-up">
         <div class="container-custom">
-            <h2 class="font-black text-foreground text-center mb-4 tracking-tight font-heading" style="font-size: 28px;">Browse by Travel Theme</h2>
+            <h2 class="font-black text-foreground text-center mb-4 tracking-tight font-heading md:text-[28px] mobile-heading-18">Browse by Travel Theme</h2>
 
             <div class="relative w-full group/slider px-2 md:px-8">
                 <!-- Left Arrow -->
@@ -443,7 +443,7 @@
             <!-- Header with Filters -->
             <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-4" style="z-index: 40; position: relative;">
                 <div class="space-y-2">
-                    <h2 class="text-2xl md:text-4xl font-black text-foreground tracking-tight font-heading">
+                    <h2 class="md:text-4xl font-black text-foreground tracking-tight font-heading whitespace-nowrap mobile-heading-18">
                         Featured Travel Packages
                     </h2>
                     <p class="text-text-muted font-medium text-lg">
@@ -694,7 +694,7 @@
         <div class="container-custom">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-1 animate-fade-up gap-6">
                 <div class="space-y-1">
-                    <h2 class="text-3xl md:text-4xl lg:text-6xl font-black text-foreground tracking-tight font-heading">What Our Clients Say!!!</h2>
+                    <h2 class="md:text-4xl lg:text-6xl font-black text-foreground tracking-tight font-heading mobile-heading-18">What Our Clients Say!!!</h2>
                     <p class="text-text-muted text-base md:text-lg font-medium">They Love Tour Raja!</p>
                 </div>
 
@@ -910,7 +910,7 @@
 
             function initSlidersAndFilters() {
                 // ── Sliders ──────────────────────────────────────────────
-                const setupSlider = (sliderId, prevBtnId, nextBtnId, fallbackScroll = 340, autoSwipe = true, continuous = false) => {
+                const setupSlider = (sliderId, prevBtnId, nextBtnId, scrollAmount, autoSwipe, continuous, reverseContinuous = false) => {
                     const slider = document.getElementById(sliderId);
                     const prevBtn = document.getElementById(prevBtnId);
                     const nextBtn = document.getElementById(nextBtnId);
@@ -1029,9 +1029,16 @@
 
                         const autoScroll = () => {
                             if (!isDown && !isTouching && !isHovered) {
-                                slider.scrollLeft += 1;
-                                if (Math.ceil(slider.scrollLeft) >= slider.scrollWidth - slider.clientWidth) {
-                                    slider.scrollLeft = 0;
+                                if (reverseContinuous) {
+                                    slider.scrollLeft -= 1;
+                                    if (slider.scrollLeft <= 0) {
+                                        slider.scrollLeft = slider.scrollWidth - slider.clientWidth;
+                                    }
+                                } else {
+                                    slider.scrollLeft += 1;
+                                    if (slider.scrollLeft >= slider.scrollWidth - slider.clientWidth - 1.5) {
+                                        slider.scrollLeft = 0;
+                                    }
                                 }
                             }
                             requestAnimationFrame(autoScroll);
@@ -1059,10 +1066,10 @@
                         }, {passive: true});
                     }
                 };
-                
-                setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, true);
-                setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, true);
-                setupSlider('promo-slider', 'prev-promo', 'next-promo', 360, true);
+                setupSlider('intl-slider', 'prev-intl', 'next-intl', 374, false, true);
+                setupSlider('dom-slider', 'prev-dom', 'next-dom', 374, false, true);
+                setupSlider('domestic-ads-slider', null, null, 300, false, true, true);
+                setupSlider('promo-slider', 'prev-promo', 'next-promo', 360, false, true, true);
                 setupSlider('testi-slider', null, null, 474, false, true);
 
                 // ── Close dropdowns when clicking outside ─────────────────

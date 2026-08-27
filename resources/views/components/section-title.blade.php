@@ -14,7 +14,7 @@
 
 <div {{ $attributes->merge(['class' => 'max-w-3xl space-y-4 ' . $alignmentClasses[$align]]) }}>
     @if($subtitle)
-        <span class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-widest animate-fade-in">
+        <span class="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] md:text-xs font-black uppercase tracking-widest animate-fade-in">
             {{ $subtitle }}
         </span>
     @endif

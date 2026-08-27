@@ -7028,3 +7028,9 @@
     }
   }
 }
+
+@media (max-width: 767px) {
+    .mobile-heading-18 {
+        font-size: 18px !important;
+    }
+}
