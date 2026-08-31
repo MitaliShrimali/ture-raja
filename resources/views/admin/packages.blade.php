@@ -21,7 +21,7 @@
 
     $pendingPackages = DB::table('packages')->where('status', 'Pending')->count();
     
-    $totalRevenue = DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount') ?: 0;
+    $totalRevenue = (request()->getHost() === 'tour-raja.com' || app()->environment('production')) ? 0 : (DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount') ?: 0);
     $totalRevenueFormatted = $totalRevenue >= 100000 ? '₹' . number_format($totalRevenue / 1000, 1) . 'k' : '₹' . number_format($totalRevenue);
 @endphp
 

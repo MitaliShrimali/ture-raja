@@ -14,7 +14,8 @@ class AdminController extends Controller
     public function dashboard()
     {
         // 1. Get Live Metrics
-        $totalRev = DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount');
+        $isLive = request()->getHost() === 'tour-raja.com' || app()->environment('production');
+        $totalRev = $isLive ? 0 : DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount');
         $totalProfit = $totalRev; // Assuming profit is total revenue for platform subscriptions
         $activeAgentsCount = DB::table('agents')->count();
         $activePackagesCount = DB::table('packages')->where('status', 'Active')->count();
@@ -1918,6 +1919,11 @@ class AdminController extends Controller
 
         if ($request->filled('generate_bill')) {
             $query->where('payments.generate_bill', $request->generate_bill);
+        }
+
+        $isLive = request()->getHost() === 'tour-raja.com' || app()->environment('production');
+        if ($isLive) {
+            $query->whereRaw('1 = 0');
         }
 
         $payments = $query->orderBy('payments.id', 'desc')->paginate(10);
