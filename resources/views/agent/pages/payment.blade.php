@@ -11,9 +11,6 @@
             <h1 class="text-3xl font-black text-gray-900 tracking-tight mb-2">Billing & Promotions</h1>
             <p class="text-gray-500 text-sm font-medium">Manage your advertising credits, boost your travel packages, and review your historical transactions.</p>
         </div>
-        <button onclick="document.getElementById('bankDetailsModal').classList.remove('hidden')" class="w-10 h-10 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:text-[#ea580c] hover:border-orange-200 hover:bg-orange-50 transition-colors shadow-sm">
-            <i class="fas fa-pencil-alt"></i>
-        </button>
     </div>
 
     <!-- Top Cards Row -->
@@ -66,8 +63,8 @@
                     </div>
                 </div>
                 
-                <button onclick="document.getElementById('upgradeModal').classList.remove('hidden')" class="text-[#ea580c] font-bold text-sm hover:text-orange-700 transition-colors cursor-pointer mt-4 sm:mt-0">
-                    Manage Plan
+                <button onclick="document.getElementById('upgradeModal').classList.remove('hidden')" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 shadow-lg shadow-orange-500/30 hover:scale-105 border border-orange-300 uppercase tracking-widest flex items-center gap-2 cursor-pointer mt-4 sm:mt-0">
+                    Manage Plan <i class="fas fa-crown"></i>
                 </button>
             </div>
         </div>
