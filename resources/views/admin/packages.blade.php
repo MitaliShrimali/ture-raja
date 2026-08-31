@@ -158,7 +158,7 @@
                             </td>
                             <td class="py-6 px-8">
                                 @php
-                                    $agentData = is_array(\$pkg->agent) ? \$pkg->agent : (\$pkg->agent ? json_decode(\$pkg->agent, true) : null);
+                                    $agentData = is_array($pkg->agent) ? $pkg->agent : ($pkg->agent ? json_decode($pkg->agent, true) : null);
                                     $agentName = $agentData['name'] ?? 'Unknown Agent';
                                     if (is_string($agentName) && str_starts_with(trim($agentName), '{')) {
                                         $agentName = 'Unknown Agent';

@@ -199,11 +199,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- Save Button -->
-                                    <div class="flex justify-end pt-4">
-                                        <button type="submit" class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-orange-100 transition-all">Save Profile Settings</button>
-                                    </div>
-
                                     <!-- Business Card Card -->
                                     <div class="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 mt-8 relative overflow-hidden group">
                                         <div class="absolute top-0 left-0 w-full h-1 bg-orange-800"></div>
@@ -266,7 +261,7 @@
                                                     <button type="button" onclick="document.getElementById('business_card_back_file').click()" class="flex-1 py-3 bg-primary hover:bg-orange-600 text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-sm transition-all">
                                                         <i class="fas fa-upload mr-1"></i> Back
                                                     </button>
-                                                    <button type="button" id="delete_card_back_btn" onclick="deleteCardBack()" class="{{ ($agent && $agent->business_card_back) ? '' : 'hidden' }} flex-1 py-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">
+                                                    <button type="button" id="delete_card_back_btn" onclick="deleteCardBack()" class="{{ ($agent && ($agent->business_card_back) ? '' : 'hidden' }} flex-1 py-3 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">
                                                         <i class="fas fa-trash-alt mr-1"></i> Delete
                                                     </button>
                                                 </div>
@@ -274,6 +269,11 @@
                                                 <input type="hidden" name="delete_card_back" id="delete_card_back" value="0">
                                             </div>
                                         </div>
+                                    </div>
+
+                                    <!-- Save Button -->
+                                    <div class="flex justify-end pt-8">
+                                        <button type="submit" class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-orange-100 transition-all">Save Profile Settings</button>
                                     </div>
                                 </div>
 
