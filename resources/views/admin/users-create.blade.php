@@ -245,20 +245,6 @@
 
         
 
-        <!-- Super Admin Warning Banner -->
-        <div x-show="role === 'SUPER ADMIN'" class="p-6 bg-orange-50/40 rounded-[32px] border border-orange-100/70 flex items-start gap-5 transition-all duration-300 shadow-sm" x-transition>
-            <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center flex-shrink-0 border border-orange-100 text-[#b13c0b]">
-                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            </div>
-            <div class="space-y-1">
-                <h5 class="text-sm font-black text-gray-800" style="color: #b13c0b !important;">Security Profile: Full Access</h5>
-                <p class="text-xs text-gray-500 leading-relaxed font-semibold">
-                    The Super Admin role has unrestricted access to all modules including system configuration, financial reports, user access management, and global data deletion. All actions performed by this user are logged in the master audit trail.
-                </p>
-            </div>
-        </div>
-
-
         <!-- Sticky Footer bar -->
         <div class="p-6 bg-orange-50 rounded-[32px] border border-orange-100 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md">
             <div class="flex items-center gap-3">

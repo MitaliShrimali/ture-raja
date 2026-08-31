@@ -593,23 +593,28 @@
                         }
 
                         row.onclick = () => {
-                            if (onSelect) {
-                                onSelect(res);
-                            } else {
-                                if (type === 'city') {
-                                    input.value = res.city;
-                                    const stateEl = document.getElementById('departureState');
-                                    const countryEl = document.getElementById('departureCountry');
+                            if (type === 'city') {
+                                input.value = res.city;
+                                const stateEl = document.getElementById('departureState');
+                                const countryEl = document.getElementById('departureCountry');
+                                if (!onSelect) {
                                     if (stateEl) stateEl.value = res.state;
                                     if (countryEl) countryEl.value = res.country;
-                                } else if (type === 'state') {
-                                    input.value = res.state;
-                                    const countryEl = document.getElementById('departureCountry');
-                                    if (countryEl) countryEl.value = res.country;
-                                } else {
-                                    input.value = res.country;
                                 }
+                            } else if (type === 'state') {
+                                input.value = res.state;
+                                const countryEl = document.getElementById('departureCountry');
+                                if (!onSelect) {
+                                    if (countryEl) countryEl.value = res.country;
+                                }
+                            } else {
+                                input.value = res.country;
                             }
+                            
+                            if (onSelect) {
+                                onSelect(res);
+                            }
+                            
                             input.dispatchEvent(new Event('input', { bubbles: true }));
                             suggestionsDiv.classList.add('hidden');
                         };
@@ -1922,6 +1927,8 @@
                 height: 400,
                 setup: function (editor) {
                     editor.on('init change keyup setcontent input', function () {
+                    });
+                }
             });
         }); // End DOMContentLoaded for tinymce
 
