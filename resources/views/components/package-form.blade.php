@@ -220,6 +220,7 @@
                 }
             });
         },
+        get hasItineraryData() { return this.itineraryContent.trim() !== '' || this.days.some(d => (d.title || '').trim() !== '' || (d.desc || '').trim() !== ''); },
         days: {{ ($itinerary && count($itinerary) > 0) ? json_encode($itinerary) : json_encode([['title' => '', 'desc' => '', 'duration' => '']]) }},
         addDay() {
             this.days.push({ title: '', desc: '' });
@@ -841,7 +842,7 @@
                                 <template x-for="(hl, i) in highlights" :key="i">
                                     <li class="flex justify-between items-center bg-[#F5F5F5] rounded-xl py-2 px-4 shadow-sm group border border-transparent hover:border-blue-100 transition-colors">
                                         <div class="flex items-center gap-2 flex-1 pr-4">
-                                            <i data-lucide="check-circle" size="14" class="text-blue-400 shrink-0"></i>
+                                            <i data-lucide="circle-check" size="14" class="text-blue-400 shrink-0"></i>
                                             <span class="text-xs font-semibold text-gray-700" x-text="hl"></span>
                                         </div>
                                         <button type="button" @click="removeHighlight(i)"
@@ -1147,7 +1148,7 @@
 
                     <!-- Brochure card -->
                     <div
-                        class="w-1/2 lg:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="brochureName || !itineraryContent">
+                        class="w-1/2 lg:w-[40%] bg-white rounded-[28px] border border-gray-100 p-6 space-y-4 shadow-sm flex flex-col transition-all duration-300" x-show="!hasItineraryData">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
                                 <i data-lucide="file-text" size="16" class="text-primary"></i>
@@ -1531,7 +1532,7 @@
                                 style="background-color: #F0FAF5 !important; border-color: #d3f9d8 !important;">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2 text-[#2f9e44]">
-                                        <i data-lucide="check-circle" size="20"></i>
+                                        <i data-lucide="circle-check" size="20"></i>
                                         <h4 class="text-sm font-bold">Inclusions</h4>
                                     </div>
                                 </div>
@@ -1613,7 +1614,7 @@
                                 style="background-color: #FFF5F5 !important; border-color: #ffe3e3 !important;">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2 text-[#e03131]">
-                                        <i data-lucide="x-circle" size="20"></i>
+                                        <i data-lucide="circle-x" size="20"></i>
                                         <h4 class="text-sm font-bold">Exclusions</h4>
                                     </div>
                                 </div>
@@ -1973,6 +1974,7 @@
             setupAutocomplete('departureCountry', 'departureCountrySuggestions', 'country');
         });
     </script>
+
 
 
 

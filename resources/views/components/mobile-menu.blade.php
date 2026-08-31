@@ -105,9 +105,9 @@
 
         <!-- Footer -->
         <div class="mt-auto pt-8 flex items-center justify-center gap-6 text-text-muted">
-            <a href="#" class="hover:text-primary transition-colors"><i data-lucide="facebook"></i></a>
-            <a href="#" class="hover:text-primary transition-colors"><i data-lucide="instagram"></i></a>
-            <a href="#" class="hover:text-primary transition-colors"><i data-lucide="twitter"></i></a>
+            <a href="#" class="hover:text-primary transition-colors"><i data-lucide="globe"></i></a>
+            <a href="#" class="hover:text-primary transition-colors"><i data-lucide="camera"></i></a>
+            <a href="#" class="hover:text-primary transition-colors"><i data-lucide="message-square"></i></a>
         </div>
     </div>
 </div>

@@ -125,8 +125,8 @@
                             <input required type="text" name="name" placeholder="Ascent Global Ventures" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="space-y-1.5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-1.5 md:col-span-2">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Primary Mobile <span class="text-red-500">*</span></label>
                                 <div class="flex gap-2 items-center">
                                     <div class="relative w-[4.5rem] shrink-0">
@@ -297,13 +297,13 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="facebook" class="w-4 h-4"></i>
+                                    <i data-lucide="globe" class="w-4 h-4"></i>
                                 </div>
                                 <input type="text" name="facebook" placeholder="Facebook URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="twitter" class="w-4 h-4"></i>
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
                                 </div>
                                 <input type="text" name="twitter" placeholder="Twitter URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
@@ -312,13 +312,13 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="linkedin" class="w-4 h-4"></i>
+                                    <i data-lucide="briefcase" class="w-4 h-4"></i>
                                 </div>
                                 <input type="text" name="linkedin" placeholder="LinkedIn URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                    <i data-lucide="instagram" class="w-4 h-4"></i>
+                                    <i data-lucide="camera" class="w-4 h-4"></i>
                                 </div>
                                 <input type="text" name="instagram" placeholder="Instagram URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>

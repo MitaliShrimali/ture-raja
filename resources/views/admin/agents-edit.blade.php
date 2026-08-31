@@ -155,8 +155,8 @@
                                     class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="space-y-1.5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="space-y-1.5 md:col-span-2">
                                     <label
                                         class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Primary
                                         Mobile <span class="text-red-500">*</span></label>
@@ -379,7 +379,7 @@
                                 <div class="relative flex items-center">
                                     <div
                                         class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                        <i data-lucide="facebook" class="w-4 h-4"></i>
+                                        <i data-lucide="globe" class="w-4 h-4"></i>
                                     </div>
                                     <input type="text" name="facebook" value="{{ trim($agent->facebook) }}"
                                         placeholder="Facebook URL"
@@ -388,7 +388,7 @@
                                 <div class="relative flex items-center">
                                     <div
                                         class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                        <i data-lucide="twitter" class="w-4 h-4"></i>
+                                        <i data-lucide="message-square" class="w-4 h-4"></i>
                                     </div>
                                     <input type="text" name="twitter" value="{{ trim($agent->twitter) }}"
                                         placeholder="Twitter URL"
@@ -400,7 +400,7 @@
                                 <div class="relative flex items-center">
                                     <div
                                         class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                        <i data-lucide="linkedin" class="w-4 h-4"></i>
+                                        <i data-lucide="briefcase" class="w-4 h-4"></i>
                                     </div>
                                     <input type="text" name="linkedin" value="{{ trim($agent->linkedin) }}"
                                         placeholder="LinkedIn URL"
@@ -409,7 +409,7 @@
                                 <div class="relative flex items-center">
                                     <div
                                         class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
-                                        <i data-lucide="instagram" class="w-4 h-4"></i>
+                                        <i data-lucide="camera" class="w-4 h-4"></i>
                                     </div>
                                     <input type="text" name="instagram" value="{{ trim($agent->instagram) }}"
                                         placeholder="Instagram URL"

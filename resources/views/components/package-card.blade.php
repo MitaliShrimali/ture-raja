@@ -115,7 +115,8 @@
     // Initials for avatar fallback
     $initials = strtoupper(implode('', array_map(fn($w) => $w[0] ?? '', array_slice(explode(' ', trim($agentName)), 0, 2))));
 
-    $detailUrl = $slug ? url('packages/' . $slug) : '#';
+    $pkgId = $pkgArr['id'] ?? null;
+    $detailUrl = $pkgId ? url('packages/' . $pkgId) : ($slug ? url('packages/' . $slug) : '#');
 @endphp
 
 <div onclick="window.open('{{ $detailUrl }}', '_blank')" {{ $attributes->merge(['class' => 'cursor-pointer group bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-1 flex flex-col border border-border-soft/50 package-card-inner']) }}>
@@ -147,8 +148,8 @@
 
         {{-- Wishlist top-right --}}
         <button
-            onclick="toggleWishlist(event, { slug: '{{ $slug }}', title: '{{ addslashes($title) }}', image: '{{ $image }}', price: '{{ $price }}', currency: '{{ $currency ?? '₹' }}' })"
-            data-wishlist-slug="{{ $slug }}"
+            onclick="toggleWishlist(event, { type: 'package', id: '{{ $pkgId }}', slug: '{{ $pkgId ?? $slug }}', title: '{{ addslashes($title) }}', image: '{{ $image }}', price: '{{ $price }}', currency: '{{ $currency ?? '₹' }}' })"
+            data-wishlist-slug="{{ $pkgId ?? $slug }}"
             class="wishlist-btn absolute top-3 right-3 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-primary transition-all duration-300 border border-white/30"
         >
             <i data-lucide="heart" size="16"></i>

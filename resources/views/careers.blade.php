@@ -238,7 +238,7 @@
                     <!-- Point 1 -->
                     <div class="flex items-start gap-4">
                         <div class="bg-white/20 p-2 rounded-full shrink-0 mt-1">
-                            <i data-lucide="check-circle" class="w-5 h-5 text-white"></i>
+                            <i data-lucide="circle-check" class="w-5 h-5 text-white"></i>
                         </div>
                         <div>
                             <h4 class="text-white font-bold text-base">Find Trusted Travel Agents</h4>
@@ -376,7 +376,7 @@
                     @if(session('success'))
                         <div
                             class="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm font-bold flex items-center gap-3">
-                            <i data-lucide="check-circle" size="20" class="shrink-0"></i>
+                            <i data-lucide="circle-check" size="20" class="shrink-0"></i>
                             <p>{{ session('success') }}</p>
                         </div>
                     @endif
@@ -384,7 +384,7 @@
                     @if(session('error'))
                         <div
                             class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-bold flex items-center gap-3">
-                            <i data-lucide="alert-circle" size="20" class="shrink-0"></i>
+                            <i data-lucide="circle-alert" size="20" class="shrink-0"></i>
                             <p>{{ session('error') }}</p>
                         </div>
                     @endif

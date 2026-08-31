@@ -481,6 +481,7 @@ Route::get('/tour/{slug}', function($slug) {
     return view('tour.show', compact('slug'));
 })->name('tour.show');
 
+Route::redirect('/packages', '/search');
 Route::get('/package/{id}', [PackageController::class, 'show']);
 
 Route::get('/packages/{slug}', function ($slug) {
@@ -488,6 +489,11 @@ Route::get('/packages/{slug}', function ($slug) {
         $dbPkg = \App\Models\Package::find($slug);
         if (!$dbPkg && !is_numeric($slug)) {
             $dbPkg = \App\Models\Package::where('title', 'LIKE', str_replace('-', ' ', $slug))->first();
+            
+            // Fallback for slugs ending with an ID like "america-tour-94"
+            if (!$dbPkg && preg_match('/-(\d+)$/', $slug, $matches)) {
+                $dbPkg = \App\Models\Package::find($matches[1]);
+            }
         }
         if ($dbPkg) {
             $dbPkg->increment('clicks');
@@ -633,7 +639,10 @@ Route::get('/packages/{slug}', function ($slug) {
 
             return view('packages.show', ['package' => $package, 'agentPackages' => $agentPackages, 'similarPackages' => $similarPackages]);
         }
-    } catch (\Exception $e) {}
+    } catch (\Exception $e) {
+        \Illuminate\Support\Facades\Log::error($e);
+        throw $e;
+    }
     
     abort(404);
 })->name('packages.show');
@@ -655,6 +664,7 @@ Route::get('/resume/view/{path}', function ($path) {
     }
     abort(404);
 })->where('path', '.*');
+
 
 
 

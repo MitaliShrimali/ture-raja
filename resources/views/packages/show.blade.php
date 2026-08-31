@@ -655,7 +655,7 @@
                                         @if(count($package['included'] ?? []) > 0 || count($package['excluded'] ?? []) > 0)
                                             <a href="#inclusions"
                                                 class="shrink-0 inline-flex items-center gap-2 px-5 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-700 hover:border-[#e85d26] hover:text-[#e85d26] transition-colors focus:ring-2 focus:ring-[#e85d26]/50">
-                                                <i data-lucide="check-circle-2" class="w-4 h-4"></i> Inclusions/Exclusions
+                                                <i data-lucide="circle-check" class="w-4 h-4"></i> Inclusions/Exclusions
                                             </a>
                                         @endif
                                         @if(!empty($package['hotels']) && (is_array($package['hotels']) || trim(strip_tags(str_replace('&nbsp;', '', $package['hotels']))) !== ''))
@@ -837,7 +837,7 @@
                                     <div class="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm">
                                         <div class="flex items-center gap-2 mb-5">
                                             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                                                <i data-lucide="check-circle-2" size="24" class="text-green-600"></i>
+                                                <i data-lucide="circle-check" size="24" class="text-green-600"></i>
                                             </div>
                                             <h4 class="text-3xl font-black text-green-900">What's Included</h4>
                                         </div>
@@ -856,7 +856,7 @@
                                     <div class="bg-red-50 rounded-2xl p-6 border border-red-100 shadow-sm">
                                         <div class="flex items-center gap-2 mb-5">
                                             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
-                                                <i data-lucide="x-circle" size="24" class="text-red-600"></i>
+                                                <i data-lucide="circle-x" size="24" class="text-red-600"></i>
                                             </div>
                                             <h4 class="text-3xl font-black text-red-900">What's Excluded</h4>
                                         </div>
@@ -1273,14 +1273,14 @@
                             @if(session('success'))
                                 <div
                                     class="p-3 bg-green-50 border border-green-100 rounded-xl text-green-700 font-bold text-xs flex items-center gap-2">
-                                    <i data-lucide="check-circle" size="16"></i>
+                                    <i data-lucide="circle-check" size="16"></i>
                                     {{ session('success') }}
                                 </div>
                             @endif
                             @if(session('error'))
                                 <div
                                     class="p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 font-bold text-xs flex items-center gap-2">
-                                    <i data-lucide="alert-circle" size="16"></i>
+                                    <i data-lucide="circle-alert" size="16"></i>
                                     {{ session('error') }}
                                 </div>
                             @endif
@@ -1368,7 +1368,7 @@
                             @if(session('feedback_success'))
                                 <div
                                     class="p-3 bg-green-50 border border-green-100 rounded-xl text-green-700 font-bold text-xs flex items-center gap-2">
-                                    <i data-lucide="check-circle" size="16"></i>
+                                    <i data-lucide="circle-check" size="16"></i>
                                     {{ session('feedback_success') }}
                                 </div>
                             @endif

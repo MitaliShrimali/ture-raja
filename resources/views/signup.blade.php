@@ -202,7 +202,7 @@
             @endif
 
             <div x-show="formError" style="display: none;" class="mb-5 p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-xs font-semibold flex items-center gap-2">
-                <i data-lucide="alert-circle" size="14" class="shrink-0"></i>
+                <i data-lucide="circle-alert" size="14" class="shrink-0"></i>
                 <span x-text="formError"></span>
             </div>
 

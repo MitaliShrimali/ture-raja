@@ -242,7 +242,7 @@
                             class="fixed top-8 right-8 z-[100] max-w-sm w-full bg-white rounded-3xl shadow-premium border {{ session('success') ? 'border-green-100' : 'border-red-100' }} p-6 flex items-start gap-4">
                             <div
                                 class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 {{ session('success') ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500' }}">
-                                <i data-lucide="{{ session('success') ? 'check-circle-2' : 'alert-circle' }}" size="20"></i>
+                                <i data-lucide="{{ session('success') ? 'circle-check' : 'circle-alert' }}" size="20"></i>
                             </div>
                             <div class="flex-1 space-y-1">
                                 <h4 class="text-sm font-black text-foreground">
@@ -370,10 +370,10 @@
         class="fixed bottom-6 right-6 z-[999] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-premium border border-white/10 max-w-md"
         :class="type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'" style="display: none;">
         <template x-if="type === 'success'">
-            <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
+            <i data-lucide="circle-check" class="w-5 h-5 shrink-0"></i>
         </template>
         <template x-if="type === 'error'">
-            <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+            <i data-lucide="circle-alert" class="w-5 h-5 shrink-0"></i>
         </template>
         <div class="text-xs font-black tracking-tight" x-text="message"></div>
         <button @click="show = false" class="ml-auto text-white/80 hover:text-white">

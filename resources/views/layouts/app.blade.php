@@ -168,7 +168,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
+            try {
+                lucide.createIcons();
+            } catch (e) {
+                console.error("Lucide failed to load icons:", e);
+            }
             updateWishlistUI();
         });
 
@@ -250,12 +254,15 @@
                 if (wishlist.length === 0) {
                     itemsEl.innerHTML = '<p class="text-center text-text-muted text-xs py-8 font-bold">Your wishlist is empty</p>';
                 } else {
-                    itemsEl.innerHTML = wishlist.map(item => `
-                        <a href="/packages/${item.slug}" class="flex items-center gap-3 group/item" style="text-decoration:none;color:inherit">
+                    itemsEl.innerHTML = wishlist.map(item => {
+                        let link = `/packages/${item.slug}`;
+                        if(item.type === 'package') link = `/packages/${item.id}`;
+                        return `
+                        <a href="${link}" class="flex items-center gap-3 group/item" style="text-decoration:none;color:inherit">
                             <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
                             <div class="flex-1 min-w-0">
                                 <h5 class="text-xs font-black text-foreground truncate">${item.title}</h5>
-                                <p class="text-[10px] text-primary font-bold">${item.currency || '₹'}${Number(item.price).toLocaleString()}</p>
+                                <p class="text-[10px] text-primary font-bold">${item.currency || '\u20B9'}${Number(item.price).toLocaleString()}</p>
                             </div>
                             <button onclick="event.preventDefault();event.stopPropagation();toggleWishlist(event,{slug:'${item.slug}'})" class="text-gray-300 hover:text-primary transition-colors flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -266,7 +273,7 @@
 </svg>
                             </button>
                         </a>
-                    `).join('');
+                    `}).join('');
                 }
             }
 
@@ -275,12 +282,15 @@
                 if (wishlist.length === 0) {
                     itemsElMobile.innerHTML = '<p class="text-xs text-text-muted font-bold italic">No items yet</p>';
                 } else {
-                    itemsElMobile.innerHTML = wishlist.map(item => `
-                        <a href="/packages/${item.slug}" class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-soft" style="text-decoration:none;color:inherit">
+                    itemsElMobile.innerHTML = wishlist.map(item => {
+                        let link = `/packages/${item.slug}`;
+                        if(item.type === 'package') link = `/packages/${item.id}`;
+                        return `
+                        <a href="${link}" class="flex items-center gap-3 bg-white p-2 rounded-xl shadow-soft" style="text-decoration:none;color:inherit">
                             <img src="${item.image}" class="w-12 h-12 rounded-lg object-cover flex-shrink-0">
                             <div class="flex-1 min-w-0">
                                 <h5 class="text-[10px] font-black text-foreground truncate">${item.title}</h5>
-                                <p class="text-[10px] text-primary font-bold">${item.currency || '₹'}${Number(item.price).toLocaleString()}</p>
+                                <p class="text-[10px] text-primary font-bold">${item.currency || '\u20B9'}${Number(item.price).toLocaleString()}</p>
                             </div>
                             <button onclick="event.preventDefault();event.stopPropagation();toggleWishlist(event,{slug:'${item.slug}'})" class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-all flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -291,11 +301,15 @@
 </svg>
                             </button>
                         </a>
-                    `).join('');
+                    `}).join('');
                 }
             }
 
-            lucide.createIcons();
+            try {
+                lucide.createIcons();
+            } catch (e) {
+                console.error("Lucide failed to load icons in wishlist update:", e);
+            }
 
             // Update Button States
             document.querySelectorAll('.wishlist-btn').forEach(btn => {

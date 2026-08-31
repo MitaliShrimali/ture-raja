@@ -29,7 +29,7 @@
                             
                             @if(session('success') && str_contains(session('success'), 'subscrib'))
                                 <div class="p-4 bg-green-50 border border-green-100 rounded-2xl text-green-700 font-bold text-sm flex items-center gap-3">
-                                    <i data-lucide="check-circle" size="20"></i>
+                                    <i data-lucide="circle-check" size="20"></i>
                                     {{ session('success') }}
                                 </div>
                             @endif

@@ -87,7 +87,7 @@
             </div>
         @else
             <div class="py-8 text-center text-sm text-muted-text font-medium bg-gray-50/40 rounded-2xl border border-dashed border-gray-200">
-                <i data-lucide="music-off" size="28" class="mx-auto mb-2 text-gray-300"></i>
+                <i data-lucide="volume-x" size="28" class="mx-auto mb-2 text-gray-300"></i>
                 <p>No transit music added yet. Click <strong>+ Add Music</strong> to get started.</p>
             </div>
         @endif

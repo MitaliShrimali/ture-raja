@@ -197,18 +197,18 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="relative group">
-                            <i data-lucide="facebook" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
+                            <i data-lucide="globe" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
                             <input type="url" name="facebook_url" placeholder="Facebook URL" class="w-full bg-[#F8F9FA] border-none rounded-xl py-3 pl-10 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground text-sm" />
                         </div>
                         <div class="relative group">
-                            <i data-lucide="twitter" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
+                            <i data-lucide="message-square" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
                             <input type="url" name="twitter_url" placeholder="Twitter URL" class="w-full bg-[#F8F9FA] border-none rounded-xl py-3 pl-10 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground text-sm" />
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="relative group">
-                            <i data-lucide="linkedin" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
+                            <i data-lucide="briefcase" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
                             <input type="url" name="linkedin_url" placeholder="LinkedIn URL" class="w-full bg-[#F8F9FA] border-none rounded-xl py-3 pl-10 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground text-sm" />
                         </div>
                         <div class="relative group">
@@ -219,7 +219,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="relative group">
-                            <i data-lucide="instagram" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
+                            <i data-lucide="camera" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size="16"></i>
                             <input type="url" name="instagram_url" placeholder="Instagram URL" class="w-full bg-[#F8F9FA] border-none rounded-xl py-3 pl-10 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground text-sm" />
                         </div>
                         <div class="relative group">
