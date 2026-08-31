@@ -683,8 +683,8 @@
                             $selectedAgentName = old('agent');
                             if (!$selectedAgentName && isset($pkg) && !empty($pkg->agent)) {
                                 $agentData = json_decode($pkg->agent, true);
-                                if (is_array($agentData) && isset($agentData['name'])) {
-                                    $selectedAgentName = $agentData['name'];
+                                if (is_array($agentData)) {
+                                    $selectedAgentName = $agentData['name'] ?? '';
                                 } else {
                                     $selectedAgentName = $pkg->agent;
                                 }

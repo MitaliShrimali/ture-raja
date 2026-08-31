@@ -160,6 +160,9 @@
                                 @php
                                     $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
                                     $agentName = $agentData['name'] ?? 'Unknown Agent';
+                                    if (is_string($agentName) && str_starts_with(trim($agentName), '{')) {
+                                        $agentName = 'Unknown Agent';
+                                    }
                                     $agentLogo = $agentData['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
                                 @endphp
                                 <div class="flex items-center gap-2">

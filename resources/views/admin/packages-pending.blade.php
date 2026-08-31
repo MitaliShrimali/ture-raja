@@ -86,6 +86,9 @@
                             $srNoFormatted = str_pad($srNo, 2, '0', STR_PAD_LEFT);
                             $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
                             $agentName = $agentData['name'] ?? 'Unknown Agent';
+                            if (is_string($agentName) && str_starts_with(trim($agentName), '{')) {
+                                $agentName = 'Unknown Agent';
+                            }
                             $agentLogo = $agentData['logo'] ?? 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($agentName);
                         @endphp
                         <tr class="group hover:bg-orange-50/20 transition-colors">
