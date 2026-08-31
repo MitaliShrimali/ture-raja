@@ -1283,6 +1283,14 @@ class AdminController extends Controller
 
     public function storeAgent(Request $request)
     {
+        if ($request->filled('website')) {
+            $website = $request->input('website');
+            if (!preg_match("~^(?:f|ht)tps?://~i", $website)) {
+                $website = "http://" . $website;
+            }
+            $request->merge(['website' => $website]);
+        }
+
         $request->validate([
             'name' => 'required',
             'phone' => 'required',
@@ -1362,6 +1370,19 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        DB::table('paid_users')->updateOrInsert(
+            ['email' => $request->email],
+            [
+                'name' => $request->name,
+                'avatar' => $logoUrl ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($request->name),
+                'plan' => $request->tier ?? 'Premium',
+                'joined_date' => now()->toDateString(),
+                'amount' => $planRecordForDuration ? $planRecordForDuration->price : 99.00,
+                'status' => $request->status ?? 'Active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
 
         $this->logActivity('Platform Action', 'New Travel Agent onboarded successfully!');
         return redirect('/admin/registered-agents')->with('success', 'New Travel Agent onboarded successfully!');
@@ -1408,6 +1429,14 @@ class AdminController extends Controller
 
     public function updateAgent(Request $request)
     {
+        if ($request->filled('website')) {
+            $website = $request->input('website');
+            if (!preg_match("~^(?:f|ht)tps?://~i", $website)) {
+                $website = "http://" . $website;
+            }
+            $request->merge(['website' => $website]);
+        }
+
         $request->validate([
             'id' => 'required',
             'name' => 'required',
@@ -1496,13 +1525,30 @@ class AdminController extends Controller
 
         DB::table('agents')->where('id', $request->id)->update($updateData);
 
+        DB::table('paid_users')->updateOrInsert(
+            ['email' => $agent->email],
+            [
+                'name' => $request->name,
+                'email' => $request->email,
+                'avatar' => $logoUrl ?? 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($request->name),
+                'plan' => $request->tier ?? 'Premium',
+                'amount' => $planRecordForDuration ? $planRecordForDuration->price : 99.00,
+                'status' => $request->status ?? 'Active',
+                'updated_at' => now(),
+            ]
+        );
+
         $this->logActivity('Platform Action', 'Travel Agent updated successfully!');
         return redirect('/admin/registered-agents')->with('success', 'Travel Agent updated successfully!');
     }
 
     public function deleteAgent($id)
     {
-        DB::table('agents')->where('id', $id)->delete();
+        $agent = DB::table('agents')->where('id', $id)->first();
+        if ($agent) {
+            DB::table('paid_users')->where('email', $agent->email)->delete();
+            DB::table('agents')->where('id', $id)->delete();
+        }
         $this->logActivity('Platform Action', 'Agent removed successfully!');
         return redirect()->back()->with('success', 'Agent removed successfully!');
     }

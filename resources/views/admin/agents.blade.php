@@ -3,7 +3,7 @@
 @section('admin_title', 'Agents')
 
 @section('content')
-<div class="space-y-10 pb-12" x-data="{ tier: 'Premium', status: 'Active', showCustomPlanModal: false, customAgentSearch: '', customPlanTier: '', customSacHsn: '', customSaleType: 'Direct Sale' }">
+<div class="space-y-10 pb-12" x-data="{ tier: '{{ old('tier', 'Premium') }}', status: '{{ old('status', 'Active') }}', showCustomPlanModal: false, customAgentSearch: '', customPlanTier: '', customSacHsn: '', customSaleType: 'Direct Sale' }">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border-soft pb-6">
         <div class="flex items-center gap-4">
@@ -122,7 +122,7 @@
                     <div class="space-y-5">
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Company Name <span class="text-red-500">*</span></label>
-                            <input required type="text" name="name" placeholder="Ascent Global Ventures" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                            <input required type="text" name="name" value="{{ old('name') }}" placeholder="Ascent Global Ventures" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -146,7 +146,7 @@
                                         <input type="tel" required placeholder="Primary Mobile"
                                             class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                                     </div>
-                                    <input type="hidden" class="phone-full-val" name="phone">
+                                    <input type="hidden" class="phone-full-val" name="phone" value="{{ old('phone') }}">
                                 </div>
                             </div>
                             <div class="space-y-1.5">
@@ -169,19 +169,23 @@
                                         <input type="tel" placeholder="Secondary Mobile"
                                             class="phone-number-val w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                                     </div>
-                                    <input type="hidden" class="phone-full-val" name="secondary_phone">
+                                    <input type="hidden" class="phone-full-val" name="secondary_phone" value="{{ old('secondary_phone') }}">
                                 </div>
                             </div>
                             <div class="space-y-1.5">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Landline Number</label>
-                                <input type="text" name="landline" placeholder="e.g. +91-79-12345678" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                <input type="text" name="landline" value="{{ old('landline') }}" placeholder="e.g. +91-79-12345678" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                             </div>
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Official Email <span class="text-red-500">*</span></label>
-                            <input required type="email" name="email" placeholder="admin@company.com" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                            <input required type="email" name="email" value="{{ old('email') }}" placeholder="admin@company.com" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                         </div>
+
+                        @error('password')
+                            <p class="text-red-500 text-xs font-bold pl-1 mb-2">{{ $message }}</p>
+                        @enderror
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="space-y-1.5">
@@ -199,9 +203,9 @@
                             suggestions: [],
                             loading: false,
                             showSuggestions: false,
-                            city: '',
-                            state: '',
-                            country: '',
+                            city: '{{ old('city') }}',
+                            state: '{{ old('state') }}',
+                            country: '{{ old('country') }}',
                             async fetchSuggestions() {
                                 if(this.city.length < 2) {
                                     this.suggestions = [];
@@ -254,14 +258,14 @@
                                 </div>
                                 <div class="space-y-1.5">
                                     <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Pincode/Zip <span class="text-red-500">*</span></label>
-                                    <input required type="text" name="pincode" placeholder="94105" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
+                                    <input required type="text" name="pincode" value="{{ old('pincode') }}" placeholder="94105" class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm">
                                 </div>
                             </div>
                         </div>
 
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">Full Address</label>
-                            <textarea name="address" rows="3" placeholder="Suite 400, 101 California St." class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm resize-none"></textarea>
+                            <textarea name="address" rows="3" placeholder="Suite 400, 101 California St." class="w-full bg-[#F5F5F5] border-2 border-transparent focus:border-primary/20 focus:bg-white rounded-2xl py-3.5 px-5 outline-none transition-all font-bold text-foreground text-sm resize-none">{{ old('address') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -291,7 +295,7 @@
                     <div class="space-y-4">
                         <div class="space-y-1.5">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider pl-1">About Us / Bio</label>
-                            <textarea name="about" rows="3" placeholder="Brief description of the agency's mission and history..." class="w-full border border-gray-200 rounded-2xl py-3.5 px-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm resize-none"></textarea>
+                            <textarea name="about" rows="3" placeholder="Brief description of the agency's mission and history..." class="w-full border border-gray-200 rounded-2xl py-3.5 px-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm resize-none">{{ old('about') }}</textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -299,13 +303,13 @@
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="globe" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="facebook" placeholder="Facebook URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="facebook" value="{{ old('facebook') }}" placeholder="Facebook URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="message-square" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="twitter" placeholder="Twitter URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="twitter" value="{{ old('twitter') }}" placeholder="Twitter URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                         </div>
 
@@ -314,13 +318,13 @@
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="briefcase" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="linkedin" placeholder="LinkedIn URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="linkedin" value="{{ old('linkedin') }}" placeholder="LinkedIn URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                             <div class="relative flex items-center">
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="camera" class="w-4 h-4"></i>
                                 </div>
-                                <input type="text" name="instagram" placeholder="Instagram URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
+                                <input type="text" name="instagram" value="{{ old('instagram') }}" placeholder="Instagram URL" class="w-full border border-gray-200 rounded-2xl py-3 px-4 pl-11 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-xs">
                             </div>
                         </div>
 
@@ -330,7 +334,7 @@
                                 <div class="absolute left-4 text-gray-400 flex items-center justify-center pointer-events-none">
                                     <i data-lucide="globe" class="w-4 h-4"></i>
                                 </div>
-                                <input required type="text" name="website" placeholder="https://www.example.com" class="w-full border border-gray-200 rounded-2xl py-3.5 pl-11 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm">
+                                <input required type="text" name="website" value="{{ old('website') }}" placeholder="https://www.example.com" class="w-full border border-gray-200 rounded-2xl py-3.5 pl-11 pr-5 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-semibold text-foreground text-sm">
                             </div>
                         </div>
                     </div>
