@@ -104,12 +104,28 @@
         newExclusion: '',
         editingInclusionIndex: null,
         editingExclusionIndex: null,
-        amenitiesList: {{ json_encode(json_decode($pkg->amenities ?? '[]', true) ?: []) }},
+        amenitiesList: (() => {
+            const defaultAmenities = [
+                'Kitchen facilities', 'Dining', 'Casino', 'Wi-Fi', 
+                'Health & Beauty treatments', 'Television', 'Parking', 
+                'Workouts', 'Fitness Center', 'Bar & Lounge', 'Towels', 
+                'Swimming pools', 'Room Service', 'Express Laundry'
+            ];
+            const savedAmenities = JSON.parse(atob('{{ base64_encode(json_encode(json_decode($pkg->amenities ?? "[]", true) ?: [])) }}'));
+            const allAmenities = [...new Set([...defaultAmenities, ...savedAmenities])];
+            return allAmenities.map(name => ({
+                name: name,
+                selected: savedAmenities.includes(name)
+            }));
+        })(),
         newAmenity: '',
         editingAmenityIndex: null,
         addAmenity() {
             if (this.newAmenity.trim()) {
-                this.amenitiesList.push(this.newAmenity.trim());
+                this.amenitiesList.push({
+                    name: this.newAmenity.trim(),
+                    selected: true
+                });
                 this.newAmenity = '';
             }
         },
@@ -1733,12 +1749,15 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                                 <template x-for="(am, idx) in amenitiesList" :key="idx">
                                     <div class="flex items-center gap-2 text-xs font-medium text-gray-700 bg-gray-50 p-2.5 rounded-xl border border-gray-200/60 shadow-sm w-full">
+                                        <div class="flex items-center shrink-0">
+                                            <input type="checkbox" x-model="amenitiesList[idx].selected" class="w-4 h-4 text-primary bg-white border-gray-300 rounded focus:ring-primary/20 cursor-pointer">
+                                        </div>
                                         <div class="flex-1">
                                             <template x-if="editingAmenityIndex !== idx">
-                                                <span x-text="am" class="cursor-pointer hover:underline" @click="editingAmenityIndex = idx"></span>
+                                                <span x-text="am.name" class="cursor-pointer hover:underline" @click="editingAmenityIndex = idx"></span>
                                             </template>
                                             <template x-if="editingAmenityIndex === idx">
-                                                <input type="text" x-model="amenitiesList[idx]"
+                                                <input type="text" x-model="amenitiesList[idx].name"
                                                     @keydown.enter.prevent="editingAmenityIndex = null"
                                                     @blur="editingAmenityIndex = null"
                                                     class="w-full bg-white border border-gray-200 rounded-lg py-1 px-2 text-xs outline-none focus:ring-1 focus:ring-primary/20"
@@ -1753,7 +1772,9 @@
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                             </button>
                                         </div>
-                                        <input type="hidden" name="amenities[]" :value="am">
+                                        <template x-if="am.selected">
+                                            <input type="hidden" name="amenities[]" :value="am.name">
+                                        </template>
                                     </div>
                                 </template>
                             </div>
@@ -1819,7 +1840,7 @@
             <div class="flex items-center justify-between pt-8 border-t border-gray-100 mt-8">
                 <div></div> <!-- Spacer -->
                 <div class="flex items-center gap-3 ml-auto">
-                    <a href="{{ url('/agent/packages') }}"
+                    <a href="{{ request()->is('admin/*') ? url('/admin/packages') : url('/agent/my-packages') }}"
                         class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer">
                         Discard
                     </a>
