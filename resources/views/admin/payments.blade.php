@@ -48,9 +48,10 @@
 
     <!-- Financial Overview Metrics -->
     @php
-        $totalRevenue = \DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount');
-        $pendingRevenue = \DB::table('payments')->where('status', 'Pending')->sum('amount');
-        $availableBalance = $totalRevenue - \DB::table('payments')->where('status', 'Failed')->sum('amount');
+        $isLive = request()->getHost() === 'tour-raja.com' || app()->environment('production');
+        $totalRevenue = $isLive ? 0 : \DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount');
+        $pendingRevenue = $isLive ? 0 : \DB::table('payments')->where('status', 'Pending')->sum('amount');
+        $availableBalance = $isLive ? 0 : ($totalRevenue - \DB::table('payments')->where('status', 'Failed')->sum('amount'));
     @endphp
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div class="bg-white p-8 rounded-[40px] shadow-soft border border-border-soft flex items-center gap-6">
