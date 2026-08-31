@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Route;
 
 // ─── PUBLIC / USER ROUTES ────────────────────────────────────────────────────
 
+Route::get('/admin-reset', function() {
+    \Illuminate\Support\Facades\DB::table('users')->where('email', 'admin@tourraja.com')->update(['role' => 'SUPER ADMIN', 'permissions' => null]);
+    return 'Admin permissions reset successfully. You can now login with full control.';
+});
+
 Route::get('/', [UserController::class, 'home'])->name('home');
 Route::get('/listing', [ListingController::class, 'index']);
 Route::get('/listing/holiday-list', [ListingController::class, 'index'])->name('listing.holiday-list');

@@ -136,7 +136,7 @@
         </div>
 
         <!-- Permission Matrix Card -->
-        <div class="bg-white rounded-[40px] shadow-premium border border-border-soft p-10 space-y-10">
+        <div x-show="role !== 'SUPER ADMIN'" class="bg-white rounded-[40px] shadow-premium border border-border-soft p-10 space-y-10" x-transition>
             <div class="flex items-center gap-3 border-b border-border-soft pb-5">
                 <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center">
                     <svg class="w-5 h-5" style="color: #b13c0b !important;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
