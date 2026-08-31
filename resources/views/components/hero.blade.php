@@ -367,7 +367,7 @@
 {{-- ── Popular Transits (below hero, white bg) ── --}}
 <section id="popular-transits-section" class="bg-white pt-8 pb-4 md:pt-12 md:pb-6">
   <div class="container-custom">
-    <h2 class="font-black text-foreground tracking-tight font-heading mb-2 md:mb-4 text-center md:text-[28px] text-[14px]">Popular Transits</h2>
+    <h2 class="font-black text-foreground tracking-tight font-heading mb-2 md:mb-4 text-center md:!text-[28px] !text-[18px]">Popular Transits</h2>
     <style>
       @media (max-width: 767px) {
           .mobile-transits-grid {
