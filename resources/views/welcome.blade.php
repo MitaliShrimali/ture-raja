@@ -26,7 +26,7 @@
         
         <div class="container-custom relative z-20">
             <div class="flex flex-row items-center justify-between mb-0 md:mb-2 gap-2 md:gap-3">
-                <h2 class="font-bold text-[#1a1a1a] m-0 md:text-[28px] leading-tight mobile-heading-18">
+                <h2 class="font-bold text-[#1a1a1a] m-0 md:text-[28px] leading-tight text-[14px]">
                     Top International Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=international') }}"
@@ -77,7 +77,7 @@
         
         <div class="container-custom relative z-20">
             <div class="flex flex-row items-center justify-between mb-0 md:mb-2 gap-2 md:gap-3">
-                <h2 class="font-bold text-[#1a1a1a] m-0 md:text-[28px] leading-tight mobile-heading-18">
+                <h2 class="font-bold text-[#1a1a1a] m-0 md:text-[28px] leading-tight text-[14px]">
                     Top Domestic Ready Packages
                 </h2>
                 <a href="{{ url('/discover?category=domestic') }}"
@@ -249,7 +249,7 @@
     <!-- Section 3: Why Travel With Tour Raja -->
     <div class="max-w-7xl mx-auto px-6 pt-2 pb-4 md:pb-8 lg:pb-10">
         <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-0 mb-4">
-            <span class="md:text-[34px] leading-none block mt-0 mobile-heading-18">Why tour raja !!!</span>
+            <span class="md:text-[34px] leading-none block mt-0 text-[14px]">Why tour raja !!!</span>
         </x-section-title>
 
         <style>
@@ -368,7 +368,7 @@
     <!-- Section 6: Browse by Travel Theme -->
     <section class="py-6 md:py-10 bg-white border-t border-border-soft/30 animate-fade-up">
         <div class="container-custom">
-            <h2 class="font-black text-foreground text-center mb-4 tracking-tight font-heading md:text-[28px] mobile-heading-18">Browse by Travel Theme</h2>
+            <h2 class="font-black text-foreground text-center mb-4 tracking-tight font-heading md:text-[28px] text-[14px]">Browse by Travel Theme</h2>
 
             <div class="relative w-full group/slider px-2 md:px-8">
                 <!-- Left Arrow -->
@@ -443,7 +443,7 @@
             <!-- Header with Filters -->
             <div class="relative flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-4" style="z-index: 40; position: relative;">
                 <div class="space-y-2">
-                    <h2 class="md:text-4xl font-black text-foreground tracking-tight font-heading whitespace-nowrap mobile-heading-18">
+                    <h2 class="md:text-4xl font-black text-foreground tracking-tight font-heading whitespace-nowrap text-[14px]">
                         Featured Travel Packages
                     </h2>
                     <p class="text-text-muted font-medium text-lg">
@@ -694,7 +694,7 @@
         <div class="container-custom">
             <div class="flex flex-col md:flex-row md:items-center justify-between mb-1 animate-fade-up gap-6">
                 <div class="space-y-1">
-                    <h2 class="md:text-4xl lg:text-6xl font-black text-foreground tracking-tight font-heading mobile-heading-18">What Our Clients Say!!!</h2>
+                    <h2 class="md:text-4xl lg:text-6xl font-black text-foreground tracking-tight font-heading text-[14px]">What Our Clients Say!!!</h2>
                     <p class="text-text-muted text-base md:text-lg font-medium">They Love Tour Raja!</p>
                 </div>
 
