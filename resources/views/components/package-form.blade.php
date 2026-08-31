@@ -37,6 +37,8 @@
 
     <div class="space-y-4 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
         step: 1,
+        showGalleryError: false,
+        showBrochureError: false,
         category: {{ json_encode($pkg->category ?? 'domestic') }},
         title: {{ json_encode($pkg->title ?? '') }},
         location: {{ json_encode($pkg->location ?? '') }},
@@ -634,6 +636,7 @@
     };
 </script>
 <form id="packageMainForm" action="{{ $action }}" method="POST" enctype="multipart/form-data"
+            @submit.prevent="if(!brochureName && !itineraryContent) { showBrochureError = true; document.getElementById('brochure-itinerary-section').scrollIntoView({behavior: 'smooth', block: 'center'}); } else if(galleryPreviews.length === 0) { showGalleryError = true; document.getElementById('gallery-portfolio-section').scrollIntoView({behavior: 'smooth', block: 'center'}); } else { $el.submit(); }"
             class="space-y-10">
             @csrf
             @if(strtoupper($method) !== 'POST')
@@ -1046,7 +1049,7 @@
                             </div>
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Tag Name</label>
-                                <input type="text" name="badge" placeholder="e.g. 25% Off" value="{{ $pkg->badge ?? '' }}"
+                                <input type="text" name="badge" maxlength="9" placeholder="e.g. 25% Off" value="{{ $pkg->badge ?? '' }}"
                                     class="w-full bg-[#F5F5F5] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm" />
                             </div>
                         </div>
@@ -1122,8 +1125,9 @@
                     </div>
                 </div>
 
-                <!-- ── Full-width row: Upload Brochure  OR  Itinerary (Day-by-Day Plan) ── -->
-                <div class="flex flex-row gap-4 items-stretch w-full overflow-hidden">
+                <!-- ⚡ Full-width row: Upload Brochure  OR  Itinerary (Day-by-Day Plan) ⚡ -->
+                <p x-show="showBrochureError && !brochureName && !itineraryContent" x-cloak class="text-[12px] text-red-500 font-bold mb-2">This is a required section. Please upload a Brochure OR provide an Itinerary.</p>
+                <div id="brochure-itinerary-section" class="flex flex-row gap-4 items-stretch w-full overflow-hidden">
 
                     <!-- Brochure card -->
                     <div
@@ -1760,13 +1764,14 @@
                         </div>
 
                         <!-- Gallery Portfolio Card -->
-                        <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-8 shadow-sm">
+                        <div id="gallery-portfolio-section" class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-8 shadow-sm">
                             <div class="space-y-4">
                                 <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Gallery
                                     Portfolio <span class="text-red-500 text-sm">*</span></h4>
                                 <p class="text-[10px] text-gray-400 font-medium pl-1 -mt-3">Search image regarding your package/choose image or uplod your package imgaes</p>
+                                <p x-show="showGalleryError && galleryPreviews.length === 0" x-cloak class="text-[11px] text-red-500 font-bold pl-1 -mt-2">This is a required section. Please select or upload at least one image.</p>
 
-                                <div class="grid grid-cols-3 gap-3">
+                                <div class="grid grid-cols-3 gap-3 relative">
                                     <template x-for="(img, idx) in galleryPreviews" :key="idx">
                                         <div
                                             class="relative aspect-[4/3] rounded-2xl overflow-hidden group border border-gray-100 shadow-sm">
@@ -1815,11 +1820,11 @@
                 <div></div> <!-- Spacer -->
                 <div class="flex items-center gap-3 ml-auto">
                     <a href="{{ url('/agent/packages') }}"
-                        class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all">
+                        class="px-6 py-3.5 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer">
                         Discard
                     </a>
                     <button type="submit"
-                        class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20"
+                        class="px-8 py-3.5 bg-primary hover:bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-orange-700/20 cursor-pointer"
                         style="background-color: #e85d26 !important; color: #ffffff !important;">
                         Save Package
                     </button>
@@ -1927,6 +1932,7 @@
                 height: 400,
                 setup: function (editor) {
                     editor.on('init change keyup setcontent input', function () {
+                        window.dispatchEvent(new CustomEvent('itinerary-updated', { detail: editor.getContent({format: 'text'}).trim() }));
                     });
                 }
             });
