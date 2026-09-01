@@ -544,6 +544,7 @@ Route::get('/packages/{slug}', function ($slug) {
                 'holiday_type'=> $dbPkg->holiday_type ?? null,
                 'departure_city' => $dbPkg->departure_city ?? null,
                 'departure_state'=> $dbPkg->departure_state ?? null,
+                'departure_dates'=> $dbPkg->departure_dates ?? null,
                 'activities' => [],
                 'overview'   => $dbPkg->overview ?? "Experience the incredible beauty and culture of {$dbPkg->title}. This package offers an unforgettable journey filled with stunning landscapes, historic sites, and amazing local cuisine.",
                 'highlights' => !empty($dbPkg->highlights) ? json_decode($dbPkg->highlights, true) : [

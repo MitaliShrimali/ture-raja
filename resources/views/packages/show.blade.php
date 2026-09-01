@@ -141,7 +141,7 @@
                 font-size: 30px !important;
                 font-family: 'Poppins', sans-serif !important;
                 line-height: 1.3 !important;
-                font-weight: 900 !important;
+                font-weight: 700 !important;
                 position: relative;
                 padding-bottom: 8px;
                 display: inline-block;
@@ -752,11 +752,11 @@
                         @if(!empty($package['overview']) && trim(strip_tags(str_replace('&nbsp;', '', $package['overview']))) !== '')
                         {{-- Tour Overview & Editorial --}}
                         <div id="overview" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 mb-8" style="scroll-margin-top: 180px;">
-                            <h2 class="font-black text-gray-900 mb-4 section-heading">Overview</h2>
+                            <h2 class="font-bold text-gray-900 mb-4 section-heading">Overview</h2>
                             <p class="standard-body-text detail-overview-text">{{ $package['overview'] }}</p>
 
                             @if(!empty($package['highlights']) && count($package['highlights']) > 0)
-                            <h3 class="font-black text-gray-900 mt-6 mb-3 section-heading">Highlights</h3>
+                            <h3 class="font-bold text-gray-900 mt-6 mb-3 section-heading">Highlights</h3>
                             <ul class="space-y-2">
                                 @foreach($package['highlights'] as $hl)
                                     <li class="flex items-start gap-2 standard-body-text">
@@ -772,10 +772,64 @@
                         </div>
                         @endif
 
+                        {{-- Departure Dates Section --}}
+                        @php
+                            $departureDates = !empty($package['departure_dates']) ? json_decode($package['departure_dates'], true) : [];
+                            if (!is_array($departureDates)) $departureDates = [];
+                            
+                            $formattedDepartureMonths = [];
+                            foreach ($departureDates as $item) {
+                                if (empty($item['month'])) continue;
+                                // Parse YYYY-MM
+                                $dateObj = \DateTime::createFromFormat('Y-m', $item['month']);
+                                if (!$dateObj) {
+                                    $dateObj = \DateTime::createFromFormat('m-Y', $item['month']);
+                                }
+                                if ($dateObj) {
+                                    $monthName = $dateObj->format('M');
+                                    $yearName = $dateObj->format('Y');
+                                    $currentYear = date('Y');
+                                    $label = $monthName . ($yearName != $currentYear ? ' ' . $yearName : '');
+                                    $formattedDepartureMonths[] = [
+                                        'label' => $label,
+                                        'dates' => array_map(function($d) { return str_pad($d, 2, '0', STR_PAD_LEFT); }, $item['dates'] ?? [])
+                                    ];
+                                }
+                            }
+                        @endphp
+
+                        @if(count($formattedDepartureMonths) > 0)
+                        <div class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 mb-8" x-data="{ selectedMonthIdx: 0 }">
+                            <h2 class="font-bold text-gray-900 mb-4 section-heading">Departure Dates</h2>
+                            <!-- Month Selection Tabs -->
+                            <div class="flex flex-wrap gap-5 mb-4 items-center">
+                                @foreach($formattedDepartureMonths as $index => $monthData)
+                                    <button type="button" 
+                                        @click="selectedMonthIdx = {{ $index }}"
+                                        class="text-sm font-bold transition-colors"
+                                        :class="selectedMonthIdx === {{ $index }} ? 'text-[#ea580c]' : 'text-gray-400 hover:text-gray-600'">
+                                        {{ $monthData['label'] }}
+                                    </button>
+                                @endforeach
+                            </div>
+
+                            <!-- Dates Grid/Circles -->
+                            @foreach($formattedDepartureMonths as $index => $monthData)
+                                <div x-show="selectedMonthIdx === {{ $index }}" class="flex flex-wrap gap-3 mt-3" style="display: none;">
+                                    @foreach($monthData['dates'] as $date)
+                                        <div class="w-12 h-12 rounded-full border border-[#ea580c] flex items-center justify-center text-[#ea580c] font-bold text-sm bg-orange-50 hover:bg-[#ea580c] hover:text-white transition-colors shadow-sm">
+                                            {{ $date }}
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
+                        @endif
+
                         {{-- Itinerary Timeline --}}
                         @if(!empty($package['editorial_itinerary']))
                             <div id="itinerary" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
-                                <h2 class="font-black text-gray-900 mb-8 section-heading text-xl">Itinerary (Day-by-Day Plan)</h2>
+                                <h2 class="font-bold text-gray-900 mb-8 section-heading text-xl">Itinerary (Day-by-Day Plan)</h2>
                                 <div class="relative">
                                     <div id="itinerary-content" class="relative transition-all duration-500 overflow-hidden" style="max-height: 380px;">
                                         <div class="prose max-w-none standard-body-text text-sm text-gray-600">
@@ -818,7 +872,7 @@
                         {{-- Sightseeing Section --}}
                         @if(count($sightseeingPills) > 0)
                             <div id="sightseeing" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
-                                <h2 class="font-black text-gray-900 mb-6 section-heading text-xl">Sightseeing</h2>
+                                <h2 class="font-bold text-gray-900 mb-6 section-heading text-xl">Sightseeing</h2>
                                 <div class="flex flex-wrap gap-2">
                                     @foreach($sightseeingPills as $pill)
                                         <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-50 text-blue-700 border border-blue-100">
@@ -839,7 +893,7 @@
                                             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
                                                 <i data-lucide="circle-check" size="24" class="text-green-600"></i>
                                             </div>
-                                            <h4 class="text-3xl font-black text-green-900">What's Included</h4>
+                                            <h4 class="text-3xl font-bold text-green-900">What's Included</h4>
                                         </div>
                                         <ul class="space-y-3">
                                             @foreach($package['included'] as $item)
@@ -858,7 +912,7 @@
                                             <div class="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-sm">
                                                 <i data-lucide="circle-x" size="24" class="text-red-600"></i>
                                             </div>
-                                            <h4 class="text-3xl font-black text-red-900">What's Excluded</h4>
+                                            <h4 class="text-3xl font-bold text-red-900">What's Excluded</h4>
                                         </div>
                                         <ul class="space-y-3">
                                             @foreach($package['excluded'] as $item)
@@ -876,7 +930,7 @@
                         {{-- Hotels --}}
                         @if(!empty($package['hotels']) && (is_array($package['hotels']) || trim(strip_tags(str_replace('&nbsp;', '', $package['hotels']))) !== ''))
                             <div id="hotels" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
-                                <h2 class="font-black text-gray-900 mb-4 section-heading text-xl">Hotels</h2>
+                                <h2 class="font-bold text-gray-900 mb-4 section-heading text-xl">Hotels</h2>
                                 @if(is_array($package['hotels']))
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         @foreach($package['hotels'] as $hotel)
@@ -908,7 +962,7 @@
                         {{-- Amenities --}}
                         @if(!empty($package['amenities']) && (is_array($package['amenities']) || trim(strip_tags(str_replace('&nbsp;', '', $package['amenities']))) !== ''))
                             <div id="amenities" class="bg-white rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
-                                <h2 class="font-black text-gray-900 mb-4 section-heading text-xl">Amenities</h2>
+                                <h2 class="font-bold text-gray-900 mb-4 section-heading text-xl">Amenities</h2>
                                 @if(is_array($package['amenities']))
                                     <div class="flex flex-wrap gap-2">
                                         @foreach($package['amenities'] as $amenity)
@@ -931,7 +985,7 @@
                         {{-- About Tours --}}
                         @if(!empty($package['about_tours']) && trim(strip_tags(str_replace('&nbsp;', '', $package['about_tours']))) !== '')
                             <div id="about-tours" class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8">
-                                <h2 class="font-black text-gray-900 mb-6 section-heading text-xl">About Tours</h2>
+                                <h2 class="font-bold text-gray-900 mb-6 section-heading text-xl">About Tours</h2>
                                 <div class="prose max-w-none standard-body-text text-sm text-gray-600 leading-relaxed">
                                     {!! $package['about_tours'] !!}
                                 </div>
@@ -942,7 +996,7 @@
                         @if(!empty($package['terms']) && trim(strip_tags(str_replace('&nbsp;', '', $package['terms']))) !== '')
                             <div id="terms" class="bg-[#F8F9FA] rounded-lg border border-gray-100 shadow-sm p-6 sm:p-8 mb-8" style="scroll-margin-top: 180px;">
                                 <div class="flex items-center gap-3 mb-6">
-                                    <h2 class="font-black text-gray-900 section-heading !mb-0 text-xl pb-2">Terms & Conditions</h2>
+                                    <h2 class="font-bold text-gray-900 section-heading !mb-0 text-xl pb-2">Terms & Conditions</h2>
                                 </div>
                                 <div class="text-sm text-gray-600 leading-relaxed mt-4">
                                     {!! nl2br(e($package['terms'])) !!}

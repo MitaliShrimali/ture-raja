@@ -28,7 +28,7 @@
     $keywords = ($pkg->keywords ?? null) ? json_decode($pkg->keywords, true) : [];
     if (!is_array($keywords)) $keywords = [];
     
-    $itinerary = ($pkg->itinerary ?? null) ? json_decode($pkg->itinerary, true) : [];
+    $itinerary = ($pkg->itinerary ?? null) ? json_decode($pkg->itinerary, true) : []; $departureDates = ($pkg->departure_dates ?? null) ? json_decode($pkg->departure_dates, true) : []; if (!is_array($departureDates)) $departureDates = [];
 @endphp
 
     <!-- Load AlpineJS and Lucide for this view -->
@@ -97,7 +97,7 @@
                 this.newHighlight = '';
             }
         },
-        removeHighlight(i) { this.highlights.splice(i, 1); },
+        removeHighlight(i) { this.highlights.splice(i, 1); }, departureDates: {{ json_encode($departureDates) }}, addDepartureRow() { this.departureDates.push({ month: '', dates: [] }); }, removeDepartureRow(i) { this.departureDates.splice(i, 1); },
         inclusions: {{ json_encode($included) }},
         exclusions: {{ json_encode($excluded) }},
         newInclusion: '',
@@ -871,6 +871,81 @@
                                 <input type="hidden" name="highlights[]" :value="hl">
                             </template>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Departure Dates Card -->
+                <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-orange-50 text-[#ea580c] rounded-xl flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-gray-800">Departure Dates</h3>
+                            <p class="text-xs text-gray-400 font-medium mt-0.5">Set the month, year, and specific departure days for this package</p>
+                        </div>
+                    </div>
+
+                    <!-- Hidden JSON field for backend submit -->
+                    <input type="hidden" name="departure_dates" :value="JSON.stringify(departureDates)">
+
+                    <div class="space-y-4">
+                        <template x-for="(row, idx) in departureDates" :key="idx">
+                            <div class="flex flex-col md:flex-row items-stretch md:items-start gap-4 p-4 bg-gray-50 rounded-2xl relative" x-data="{ showCalendar: false, tempDates: [...row.dates] }">
+                                <!-- Month & Year Input -->
+                                <div class="w-full md:w-1/3 space-y-2">
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Month & Year *</label>
+                                    <input required type="month" x-model="row.month" 
+                                        class="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm shadow-sm" />
+                                </div>
+
+                                <!-- Dates Input & Picker Overlay -->
+                                <div class="w-full md:w-2/3 space-y-2 relative">
+                                    <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Departure Days *</label>
+                                    <div class="relative">
+                                        <input readonly required type="text" 
+                                            :value="row.dates.sort((a,b)=>a-b).join(', ')" 
+                                            placeholder="Example: 1, 5, 10, 15, 21" 
+                                            @click="showCalendar = !showCalendar; tempDates = [...row.dates]"
+                                            class="w-full bg-white border border-gray-200 rounded-xl py-3 px-4 pr-10 outline-none focus:ring-2 focus:ring-primary/25 transition-all font-bold text-gray-800 text-sm shadow-sm cursor-pointer" />
+                                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+                                        </div>
+                                    </div>
+
+                                    <!-- Day Picker Overlay -->
+                                    <div x-show="showCalendar" @click.outside="showCalendar = false" 
+                                        class="absolute z-[60] left-0 mt-1 bg-white border border-gray-200 rounded-2xl shadow-xl p-4 w-72 max-w-full" style="display: none;">
+                                        <div class="grid grid-cols-7 gap-1.5 text-center mb-4">
+                                            <!-- Calendar days grid 1-31 -->
+                                            <template x-for="day in 31" :key="day">
+                                                <button type="button" 
+                                                    @click="if(tempDates.includes(day)) { tempDates = tempDates.filter(d => d !== day) } else { tempDates.push(day) }"
+                                                    class="w-8 h-8 flex items-center justify-center text-xs font-bold rounded-lg transition-all"
+                                                    :class="tempDates.includes(day) ? 'bg-[#ea580c] text-white' : 'bg-gray-50 hover:bg-gray-100 text-gray-700'">
+                                                    <span x-text="day"></span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                        <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+                                            <button type="button" @click="showCalendar = false" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-xs font-bold transition-all">Cancel</button>
+                                            <button type="button" @click="row.dates = [...tempDates]; showCalendar = false" class="px-3 py-1.5 bg-[#ea580c] hover:bg-orange-600 text-white rounded-lg text-xs font-bold transition-all">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Delete Button -->
+                                <div class="absolute right-4 top-4 md:static md:mt-7 flex items-center justify-center">
+                                    <button type="button" @click="removeDepartureRow(idx)" class="w-10 h-10 bg-red-50 border border-red-100 hover:bg-red-100 hover:border-red-200 text-red-500 rounded-xl flex items-center justify-center transition-colors shadow-sm" title="Delete Row">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <button type="button" @click="addDepartureRow" class="bg-orange-50 hover:bg-orange-100 text-[#ea580c] px-5 py-3 rounded-2xl font-bold text-xs transition-colors flex items-center gap-2 border border-orange-100">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg> Add more
+                        </button>
                     </div>
                 </div>
 
