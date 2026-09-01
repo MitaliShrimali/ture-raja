@@ -366,6 +366,11 @@
                         const res = await fetch(`{{ url('/api/search-suggestions') }}?q=${encodeURIComponent(query)}&type=${typeParam}`);
                         const data = await res.json();
 
+                        // Prevent late AJAX responses from reopening the dropdown if the user has already selected something
+                        if (input.value !== query || query === lastSelectedValue) {
+                            return;
+                        }
+
                         if (data.length === 0) {
                             dropdown.innerHTML = '';
                             dropdown.style.display = 'none';
@@ -423,8 +428,18 @@
                     }
                 }, 150);
 
+                let isSelecting = false;
+                let lastSelectedValue = null;
+
                 input.addEventListener('input', (e) => {
-                    fetchSuggestions(e.target.value);
+                    if (isSelecting) {
+                        isSelecting = false;
+                        return;
+                    }
+                    if (e.target.value !== lastSelectedValue) {
+                        lastSelectedValue = null;
+                        fetchSuggestions(e.target.value);
+                    }
                 });
 
                 input.addEventListener('keydown', (e) => {
@@ -460,7 +475,7 @@
                 });
 
                 input.addEventListener('focus', () => {
-                    if (input.value.length > 0) {
+                    if (input.value.length > 0 && input.value !== lastSelectedValue) {
                         fetchSuggestions(input.value);
                     }
                 });
@@ -477,7 +492,9 @@
                 }
 
                 function selectSuggestion(item) {
-                    input.value = item.value || item.text;
+                    const selectedVal = item.value || item.text;
+                    input.value = selectedVal;
+                    lastSelectedValue = selectedVal;
                     dropdown.style.display = 'none';
 
                     if (item.location_type) {
@@ -495,6 +512,7 @@
                     }
 
                     // Dispatch input event so AJAX filter listener triggers correctly
+                    isSelecting = true;
                     input.dispatchEvent(new Event('input', { bubbles: true }));
                 }
             });
