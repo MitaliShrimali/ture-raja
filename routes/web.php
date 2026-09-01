@@ -459,6 +459,8 @@ Route::prefix('agent')->name('agent.')->group(function () {
         Route::get('/payment', [AgentController::class, 'payment'])->name('payment');
         Route::get('/checkout', [AgentController::class, 'checkout'])->name('checkout');
         Route::post('/checkout/process', [AgentController::class, 'processCheckout'])->name('checkout.process');
+        Route::get('/checkout/success', [AgentController::class, 'checkoutSuccess'])->name('checkout.success');
+        Route::get('/checkout/invoice/{id}', [AgentController::class, 'downloadInvoice'])->name('checkout.invoice');
         Route::post('/payment/payu-success', [AgentController::class, 'payuSuccess'])->name('payment.payu-success');
         Route::post('/payment/payu-failure', [AgentController::class, 'payuFailure'])->name('payment.payu-failure');
         Route::post('/payment', [AgentController::class, 'upgradePlan']);

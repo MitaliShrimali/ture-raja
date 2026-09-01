@@ -48,7 +48,7 @@
 
     <!-- Financial Overview Metrics -->
     @php
-        $isLive = request()->getHost() === 'tour-raja.com' || app()->environment('production');
+        $isLive = in_array(request()->getHost(), ['tour-raja.com', 'www.tour-raja.com']);
         $totalRevenue = $isLive ? 0 : \DB::table('payments')->whereIn('status', ['Completed', 'Success'])->sum('amount');
         $pendingRevenue = $isLive ? 0 : \DB::table('payments')->where('status', 'Pending')->sum('amount');
         $availableBalance = $isLive ? 0 : ($totalRevenue - \DB::table('payments')->where('status', 'Failed')->sum('amount'));
@@ -84,6 +84,7 @@
         </div>
     </div>
 
+    @if(!$isLive)
     <!-- Table -->
     <div class="bg-white rounded-[40px] shadow-premium border border-border-soft overflow-hidden print-section">
         <div class="p-8 border-b border-border-soft flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -265,6 +266,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- ================= MODALS ================= -->
 

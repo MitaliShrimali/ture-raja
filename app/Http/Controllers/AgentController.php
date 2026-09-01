@@ -195,6 +195,13 @@ class AgentController extends Controller
             return redirect()->route('agent.login')->with('error', 'Please log in.');
         }
 
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        $branchesCount = DB::table('branches')->where('agent_id', $agentId)->count();
+        $permService = new \App\Services\PlanPermissionService();
+        if ($permService->hasReachedLimit($agent, 'limit_branches', $branchesCount)) {
+            return redirect()->back()->with('error', 'You have reached your branch limit. Please upgrade your plan to add more branches.');
+        }
+
         $request->validate([
             'agency_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
@@ -652,20 +659,16 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         if ($agentId) {
             $agent = DB::table('agents')->where('id', $agentId)->first();
-            $freePlanId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 5;
-            $plan = DB::table('plans')->where('id', $agent->plan_id ?? $freePlanId)->first();
-            $limit = $plan ? $plan->package_limit : 1;
             
             $allPackages = DB::table('packages')->select('agent')->get();
             $packagesCount = $allPackages->filter(function ($pkg) use ($agentId) {
-                if (!$pkg->agent) return false;
-                $agentData = json_decode($pkg->agent, true);
-                if (!$agentData) return false;
-                return isset($agentData['id']) && $agentData['id'] == $agentId;
+                $pkgAgentIds = json_decode($pkg->agent, true);
+                return is_array($pkgAgentIds) && in_array($agentId, $pkgAgentIds);
             })->count();
 
-            if ($packagesCount >= $limit) {
-                return redirect()->route('agent.payment')->with('error', 'You have reached your package limit. Please upgrade your plan to add more packages.');
+            $permService = new \App\Services\PlanPermissionService();
+            if ($permService->hasReachedLimit($agent, 'limit_packages', $packagesCount)) {
+                return redirect()->back()->with('error', 'You have reached your package limit. Please upgrade your plan to add more packages.');
             }
         }
 
@@ -913,6 +916,16 @@ class AgentController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
+        $agentId = session('agent_id');
+        if ($agentId) {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+            $feedbackCount = DB::table('agent_feedback')->where('agent_id', $agentId)->count();
+            $permService = new \App\Services\PlanPermissionService();
+            if ($permService->hasReachedLimit($agent, 'limit_customer_feedback', $feedbackCount)) {
+                return redirect()->back()->with('error', 'You have reached your feedback limit. Please upgrade your plan to add more feedback.');
+            }
+        }
+
         $imagePath = null;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
@@ -1106,6 +1119,13 @@ class AgentController extends Controller
             return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
         }
 
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        $mediaCount = \App\Models\AgentMedia::where('agent_id', $agentId)->count();
+        $permService = new \App\Services\PlanPermissionService();
+        if ($permService->hasReachedLimit($agent, 'limit_gallery_images', $mediaCount)) {
+            return redirect()->back()->with('error', 'You have reached your gallery limit. Please upgrade your plan to upload more images.');
+        }
+
         if ($request->parent_id) {
             $parent = AgentMedia::where('id', $request->parent_id)->first();
             if (!$parent) {
@@ -1233,12 +1253,18 @@ class AgentController extends Controller
                 || (isset($agentData['name']) && $agentData['name'] === $agentName);
         })->values();
 
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        $hotelsCount = DB::table('hotels')->where('agent_id', $agentId)->count();
+        $permService = new \App\Services\PlanPermissionService();
+        $hotelLimitReached = $permService->hasReachedLimit($agent, 'limit_hotel_options', $hotelsCount);
+
         return view('agent.pages.hotels', [
             'page_title'      => 'Hotels',
             'page_breadcrumb' => 'Pages / Hotels',
             'hotels'          => $hotels,
             'hotelCategories' => $hotelCategories,
             'packages'        => $packages,
+            'hotelLimitReached' => $hotelLimitReached,
         ]);
     }
     
@@ -1247,6 +1273,13 @@ class AgentController extends Controller
         $request->validate(['name' => 'required', 'location' => 'required', 'category' => 'required']);
 
         $agentId = session('agent_id');
+        
+        $agent = DB::table('agents')->where('id', $agentId)->first();
+        $hotelsCount = DB::table('hotels')->where('agent_id', $agentId)->count();
+        $permService = new \App\Services\PlanPermissionService();
+        if ($permService->hasReachedLimit($agent, 'limit_hotel_options', $hotelsCount)) {
+            return redirect()->back()->with('error', 'You have reached your hotel limit. Please upgrade your plan to add more hotels.');
+        }
 
         $hotelId = DB::table('hotels')->insertGetId([
             'agent_id'   => $agentId,
@@ -1579,7 +1612,7 @@ class AgentController extends Controller
             $activePlan = DB::table('plans')->where('id', $freePlanId)->first(); // Fallback to Basic
         }
 
-        $plans = DB::table('plans')->where('status', 'Active')->orderBy('price', 'asc')->get();
+        $plans = \App\Models\Plan::where('status', 'Active')->orderBy('price', 'asc')->with('permissions')->get();
         $payments = DB::table('payments')
             ->where(function($q) use ($agentId, $agent) {
                 $q;
@@ -2209,7 +2242,7 @@ class AgentController extends Controller
         $payuService = new \App\Services\PayUService();
         
         if (!$payuService->verifyResponseHash($request->all())) {
-            return redirect()->route('payment')->with('error', 'Invalid Transaction Hash. Please try again');
+            return redirect()->route('agent.payment')->with('error', 'Invalid Transaction Hash. Please try again');
         }
 
         $status = $request->input('status');
@@ -2222,7 +2255,7 @@ class AgentController extends Controller
         $mihpayid = $request->input('mihpayid');
         
         if ($status !== 'success') {
-            return redirect()->route('payment')->with('error', 'Payment was not successful. Status: ' . $status);
+            return redirect()->route('agent.payment')->with('error', 'Payment was not successful. Status: ' . $status);
         }
 
         $parts = explode('-', $productinfo);
@@ -2247,7 +2280,7 @@ class AgentController extends Controller
 
         $existing = DB::table('payments')->where('payment_id', $txnid)->first();
         if ($existing) {
-            return redirect()->route('payment')->with('success', 'Payment was already processed!');
+            return redirect()->route('agent.payment')->with('success', 'Payment was already processed!');
         }
 
         if ($type == 'plan') {
@@ -2299,7 +2332,7 @@ class AgentController extends Controller
             'mihpayid' => $mihpayid
         ]);
 
-        DB::table('payments')->insert([
+        $paymentId = DB::table('payments')->insertGetId([
             'agent_id'       => $agentId,
             'user_name'      => $firstname,
             'email'          => $email,
@@ -2315,7 +2348,22 @@ class AgentController extends Controller
             'invoice_data'   => $invoiceData
         ]);
 
-        return redirect()->route('payment')->with('success', 'Payment successful for ' . $itemName . '!');
+        return redirect()->route('checkout.success')->with('payment_id', $paymentId);
+    }
+
+    public function checkoutSuccess()
+    {
+        $paymentId = session('payment_id');
+        if (!$paymentId) {
+            return redirect()->route('agent.payment');
+        }
+
+        $payment = DB::table('payments')->where('id', $paymentId)->first();
+        if (!$payment) {
+            return redirect()->route('agent.payment');
+        }
+
+        return view('agent.pages.checkout-success', compact('payment'));
     }
 
     public function payuFailure(Request $request)
@@ -2323,13 +2371,13 @@ class AgentController extends Controller
         $payuService = new \App\Services\PayUService();
         
         if (!$payuService->verifyResponseHash($request->all())) {
-            return redirect()->route('payment')->with('error', 'Invalid Transaction Hash. Please try again');
+            return redirect()->route('agent.payment')->with('error', 'Invalid Transaction Hash. Please try again');
         }
         
         $txnid = $request->input('txnid');
         $amount = $request->input('amount');
         
         \Log::warning('PayU Payment Failed. TxnID: ' . $txnid . ' Amount: ' . $amount);
-        return redirect()->route('payment')->with('error', 'Payment failed or was cancelled. Please try again.');
+        return redirect()->route('agent.payment')->with('error', 'Payment failed or was cancelled. Please try again.');
     }
 }

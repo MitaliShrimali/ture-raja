@@ -53,7 +53,7 @@
                 <div class="flex items-center space-x-12">
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Current Plan</p>
-                        <p class="text-sm font-black text-gray-900">₹{{ $activePlan ? number_format($activePlan->price) : '0' }}/mo</p>
+                        <p class="text-sm font-black text-gray-900">₹{{ $activePlan ? number_format($activePlan->price, 0) : '0' }}/year</p>
                     </div>
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Status</p>
@@ -121,7 +121,7 @@
                             <button class="bg-orange-100 text-[#ea580c] font-bold text-xs px-6 py-2.5 rounded-full cursor-default inline-block border border-orange-200" disabled>Active</button>
                         @else
                             @if($boosts->isNotEmpty())
-                            <a href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id, 'boost_id' => $boosts->first()->id]) }}" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 inline-block shadow-lg shadow-orange-500/40 hover:scale-105 border border-orange-300">Boost <i class="fas fa-rocket ml-1"></i></a>
+                            <a target="_blank" href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id, 'boost_id' => $boosts->first()->id]) }}" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 inline-block shadow-lg shadow-orange-500/40 hover:scale-105 border border-orange-300">Boost <i class="fas fa-rocket ml-1"></i></a>
                             @endif
                         @endif
                     </div>
@@ -160,7 +160,7 @@
                 @if(isset($agent) && $agent->service_guaranteed)
                     <button class="w-full bg-blue-200 text-blue-800 font-bold text-sm py-4 rounded-xl cursor-default border border-blue-300 block text-center relative z-10">Active - Trusted Agent</button>
                 @else
-                    <a href="{{ route('agent.checkout', ['type' => 'ad', 'id' => 'blue_tick', 'name' => $taOpt->name, 'amount' => $taOpt->price]) }}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-sm py-4 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg block text-center shadow-blue-500/50 relative z-10">Get Verified - ₹{{ number_format($taOpt->price, 2) }} @if($taOpt->duration_days) ({{ $taOpt->duration_days }} Days) @endif</a>
+                    <a target="_blank" href="{{ route('agent.checkout', ['type' => 'ad', 'id' => 'blue_tick', 'name' => $taOpt->name, 'amount' => $taOpt->price]) }}" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-black text-sm py-4 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg block text-center shadow-blue-500/50 relative z-10">Get Verified - ₹{{ number_format($taOpt->price, 2) }} @if($taOpt->duration_days) ({{ $taOpt->duration_days }} Days) @endif</a>
                 @endif
             </div>
             @endforeach
@@ -173,7 +173,7 @@
                 </div>
                 <p class="text-xs text-gray-500 font-medium mb-6 leading-relaxed">Secure prime real estate and triple your package impressions.</p>
                 
-                <form action="{{ route('agent.checkout') }}" method="GET">
+                <form target="_blank" action="{{ route('agent.checkout') }}" method="GET">
                     <input type="hidden" name="type" value="ad">
                     
                     <div class="mb-4">
@@ -293,40 +293,80 @@
             @foreach($plans as $plan)
             <div class="bg-white rounded-[2rem] p-6 shadow-sm border {{ ($activePlan && $activePlan->id == $plan->id) ? 'border-[#ea580c] ring-2 ring-[#ea580c]/20' : 'border-gray-100' }} hover:shadow-xl transition-all duration-500 flex flex-col h-full relative group">
                 @if($activePlan && $activePlan->id == $plan->id)
-                <div class="absolute top-4 right-4 bg-[#ea580c] text-white text-[10px] font-black uppercase tracking-widest py-1 px-3 rounded-full">
-                    Current
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#ea580c] text-white text-[10px] font-black uppercase tracking-widest py-1 px-4 rounded-full shadow-md z-10 whitespace-nowrap">
+                    Current Plan
                 </div>
                 @endif
                 
-                <h4 class="text-lg font-bold text-gray-800 mb-1">{{ $plan->name }}</h4>
-                <p class="text-xs text-gray-400 font-medium mb-4">{{ $plan->description }}</p>
+                <h4 class="text-lg font-bold text-gray-800 mb-4">{{ $plan->name }}</h4>
                 <div class="mb-6">
-                    <span class="text-3xl font-black text-gray-800">₹{{ number_format($plan->price) }}</span>
-                    <span class="text-xs text-gray-400 font-bold">/ {{ $plan->duration }}</span>
+                    <span class="text-3xl font-black text-gray-800">₹{{ number_format($plan->price, 0) }}</span>
+                    <span class="text-xs text-gray-400 font-bold">/ year</span>
                 </div>
                 
                 <div class="flex-grow mb-6 space-y-3">
                     @php
-                        $featuresList = json_decode($plan->features, true) ?? [];
-                        if (empty($featuresList) && !empty($plan->features)) {
-                            $featuresList = array_filter(array_map('trim', explode("\n", $plan->features)));
-                        }
+                        $features = [
+                            ['key' => 'feat_business_profile', 'label' => 'Business Profile', 'type' => 'boolean'],
+                            ['key' => 'package_limit', 'label' => 'Package Listings', 'type' => 'numeric_dropdown'],
+                            ['key' => 'feat_domestic_packages', 'label' => 'Domestic Packages', 'type' => 'boolean'],
+                            ['key' => 'feat_international_packages', 'label' => 'International Packages', 'type' => 'boolean'],
+                            ['key' => 'limit_package_photos', 'label' => 'Package Photos', 'type' => 'numeric_dropdown'],
+                            ['key' => 'limit_hotel_options', 'label' => 'Hotel Options', 'type' => 'numeric'],
+                            ['key' => 'feat_add_gallery', 'label' => 'Add Gallery', 'type' => 'boolean'],
+                            ['key' => 'feat_theme_options', 'label' => 'Holiday / Theme Options', 'type' => 'boolean'],
+                            ['key' => 'feat_hide_package_price', 'label' => 'Hide Package Price', 'type' => 'boolean'],
+                            ['key' => 'feat_website_on_profile', 'label' => 'Website on Profile', 'type' => 'boolean'],
+                            ['key' => 'feat_email_on_profile', 'label' => 'Email on Profile', 'type' => 'boolean'],
+                            ['key' => 'feat_whatsapp_on_profile', 'label' => 'WhatsApp on Profile', 'type' => 'boolean'],
+                            ['key' => 'feat_package_boosting', 'label' => 'Package Boosting', 'type' => 'boolean'],
+                            ['key' => 'feat_featured_destination', 'label' => 'Featured Destination', 'type' => 'boolean'],
+                            ['key' => 'feat_trusted_seller', 'label' => 'Trusted Seller Badge', 'type' => 'boolean'],
+                            ['key' => 'feat_reviews_ratings', 'label' => 'Reviews & Ratings', 'type' => 'boolean'],
+                            ['key' => 'feat_profile_analytics', 'label' => 'Profile Analytics', 'type' => 'boolean'],
+                            ['key' => 'limit_branches', 'label' => 'Multiple Branches', 'type' => 'numeric_dropdown'],
+                        ];
+                        $planPerms = $plan->permissions ? $plan->permissions->keyBy('permission_key') : collect();
+                        $visibleKeys = json_decode($plan->features, true) ?? [];
                     @endphp
-                    @foreach($featuresList as $feature)
-                    <div class="flex items-start">
-                        <i class="fas fa-check-circle text-green-500 mt-0.5 mr-2 shrink-0"></i>
-                        <span class="text-sm text-gray-600 font-medium">{{ $feature }}</span>
-                    </div>
+
+                    @foreach($features as $feat)
+                        @if(!in_array($feat['key'], $visibleKeys)) @continue @endif
+                        <div class="flex items-center justify-between pb-1 border-b border-gray-50/50 last:border-0">
+                            <span class="text-xs text-gray-600 font-medium">{{ $feat['label'] }}</span>
+                            
+                            @if($feat['type'] === 'boolean')
+                                @php
+                                    $hasFeat = isset($planPerms[$feat['key']]) && $planPerms[$feat['key']]->boolean_value;
+                                @endphp
+                                @if($hasFeat)
+                                    <i class="fas fa-check-circle text-green-500"></i>
+                                @else
+                                    <i class="fas fa-times-circle text-red-300"></i>
+                                @endif
+                            @else
+                                @php
+                                    if ($feat['key'] === 'package_limit') {
+                                        $limitVal = $plan->package_limit ?? 0;
+                                    } else {
+                                        $limitVal = isset($planPerms[$feat['key']]) ? $planPerms[$feat['key']]->limit_value : 0;
+                                    }
+                                @endphp
+                                <span class="text-[10px] font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded-md uppercase">
+                                    {{ $limitVal == 0 ? 'Unlimited' : $limitVal }}
+                                </span>
+                            @endif
+                        </div>
                     @endforeach
                 </div>
                 @if($activePlan && $activePlan->id == $plan->id && $agent->plan_id)
                     <button class="w-full py-3 bg-gray-100 text-gray-400 text-xs font-black rounded-xl uppercase tracking-widest cursor-not-allowed" disabled>Active</button>
                 @elseif($plan->price == 0 && empty($agent->plan_id))
-                    <a href="{{ route('agent.checkout', ['type' => 'plan', 'id' => $plan->id]) }}" class="w-full py-3 bg-[#ea580c] text-white text-xs font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex justify-center items-center">Select Free Plan</a>
+                    <a target="_blank" href="{{ route('agent.checkout', ['type' => 'plan', 'id' => $plan->id]) }}" class="w-full py-3 bg-[#ea580c] text-white text-xs font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex justify-center items-center">Select Free Plan</a>
                 @elseif($plan->price == 0)
                     <button class="w-full py-3 bg-gray-100 text-gray-400 text-xs font-black rounded-xl uppercase tracking-widest cursor-not-allowed" disabled>Free Tier</button>
                 @else
-                    <a href="{{ route('agent.checkout', ['type' => 'plan', 'id' => $plan->id]) }}" class="w-full py-3 bg-[#ea580c] text-white text-xs font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex justify-center items-center">Upgrade Now</a>
+                    <a target="_blank" href="{{ route('agent.checkout', ['type' => 'plan', 'id' => $plan->id]) }}" class="w-full py-3 bg-[#ea580c] text-white text-xs font-black rounded-xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all active:scale-[0.98] uppercase tracking-widest flex justify-center items-center">Upgrade Now</a>
                 @endif
             </div>
             @endforeach

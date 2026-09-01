@@ -2376,14 +2376,9 @@ class AdminController extends Controller
             'gst' => 'nullable|numeric|min:0'
         ]);
 
-        $features = [];
-        if ($request->filled('features')) {
-            $features = array_filter(array_map('trim', explode("\n", $request->features)));
-        } else {
-            $features = [$request->package_limit . ' package listings'];
-        }
+        $features = $request->input('visible_features', []);
 
-        DB::table('plans')->insert([
+        $planId = DB::table('plans')->insertGetId([
             'name' => $request->name,
             'price' => $request->price,
             'package_limit' => $request->package_limit,
@@ -2395,6 +2390,8 @@ class AdminController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        $this->savePlanPermissions($planId, $request);
 
         $this->logActivity('Platform Action', 'Plan created successfully!');
         return redirect('/admin/plans')->with('success', 'Plan created successfully!');
@@ -2419,12 +2416,7 @@ class AdminController extends Controller
             'gst' => 'nullable|numeric|min:0'
         ]);
 
-        $features = [];
-        if ($request->filled('features')) {
-            $features = array_filter(array_map('trim', explode("\n", $request->features)));
-        } else {
-            $features = [$request->package_limit . ' package listings'];
-        }
+        $features = $request->input('visible_features', []);
 
         DB::table('plans')->where('id', $request->id)->update([
             'name' => $request->name,
@@ -2437,6 +2429,8 @@ class AdminController extends Controller
             'status' => $request->has('status') ? 'Active' : 'Inactive',
             'updated_at' => now(),
         ]);
+
+        $this->savePlanPermissions($request->id, $request);
 
         $this->logActivity('Platform Action', 'Plan updated successfully!');
         return redirect('/admin/plans')->with('success', 'Plan updated successfully!');
@@ -2456,7 +2450,7 @@ class AdminController extends Controller
             return redirect('/admin/plans')->with('error', 'Plan not found!');
         }
 
-        DB::table('plans')->insert([
+        $newPlanId = DB::table('plans')->insertGetId([
             'name' => $plan->name . ' (Copy)',
             'price' => $plan->price,
             'package_limit' => $plan->package_limit,
@@ -2469,8 +2463,53 @@ class AdminController extends Controller
             'updated_at' => now(),
         ]);
 
+        $permissions = \App\Models\PlanPermission::where('plan_id', $id)->get();
+        foreach ($permissions as $perm) {
+            \App\Models\PlanPermission::create([
+                'plan_id' => $newPlanId,
+                'permission_key' => $perm->permission_key,
+                'permission_type' => $perm->permission_type,
+                'boolean_value' => $perm->boolean_value,
+                'limit_value' => $perm->limit_value,
+            ]);
+        }
+
         $this->logActivity('Platform Action', 'Plan duplicated successfully!');
         return redirect('/admin/plans')->with('success', 'Plan duplicated successfully!');
+    }
+
+    private function savePlanPermissions($planId, \Illuminate\Http\Request $request)
+    {
+        $permissions = \App\Services\PlanPermissionService::PERMISSIONS;
+
+        foreach ($permissions as $key => $config) {
+            $type = $config['type'];
+            
+            if ($type === 'boolean') {
+                $value = filter_var($request->input('permissions.' . $key, false), FILTER_VALIDATE_BOOLEAN);
+                
+                \App\Models\PlanPermission::updateOrCreate(
+                    ['plan_id' => $planId, 'permission_key' => $key],
+                    [
+                        'permission_type' => 'boolean',
+                        'boolean_value' => $value,
+                        'limit_value' => null
+                    ]
+                );
+            } elseif ($type === 'numeric') {
+                $inputValue = $request->input('permissions.' . $key);
+                $value = ($inputValue === '' || $inputValue === null) ? null : (int)$inputValue;
+                
+                \App\Models\PlanPermission::updateOrCreate(
+                    ['plan_id' => $planId, 'permission_key' => $key],
+                    [
+                        'permission_type' => 'numeric',
+                        'boolean_value' => false,
+                        'limit_value' => $value
+                    ]
+                );
+            }
+        }
     }
 
     public function previewPlan(Request $request, $id)

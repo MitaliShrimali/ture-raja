@@ -19,13 +19,27 @@
 
     <!-- Hotel Table Container -->
     <div class="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
             <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest">Hotels</h3>
-            <a href="javascript:void(0)" onclick="toggleHotelModal()"
-                class="bg-primary text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-orange-100 hover:scale-105 transition-all w-fit">
-                + Add Hotel
-            </a>
+            @if(isset($hotelLimitReached) && $hotelLimitReached)
+                <a href="{{ route('agent.payment') }}"
+                    class="bg-red-500 text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-red-100 hover:scale-105 transition-all w-fit flex items-center gap-2">
+                    <i class="fas fa-lock"></i> Upgrade to Add Hotel
+                </a>
+            @else
+                <a href="javascript:void(0)" onclick="toggleHotelModal()"
+                    class="bg-primary text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-orange-100 hover:scale-105 transition-all w-fit">
+                    + Add Hotel
+                </a>
+            @endif
         </div>
+
+        @if(isset($hotelLimitReached) && $hotelLimitReached)
+            <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3">
+                <i class="fas fa-exclamation-circle"></i>
+                <span class="text-sm font-medium">This is the limitation of your current plan. Upgrade now to add more hotels!</span>
+            </div>
+        @endif
 
         <div class="overflow-x-auto">
             <table class="w-full text-left">

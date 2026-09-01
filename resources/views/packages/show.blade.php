@@ -774,7 +774,11 @@
 
                         {{-- Departure Dates Section --}}
                         @php
-                            $departureDates = !empty($package['departure_dates']) ? json_decode($package['departure_dates'], true) : [];
+                            $departureDatesStr = $package['departure_dates'] ?? '';
+                            $departureDates = !empty($departureDatesStr) ? json_decode($departureDatesStr, true) : [];
+                            if (is_string($departureDates)) {
+                                $departureDates = json_decode($departureDates, true);
+                            }
                             if (!is_array($departureDates)) $departureDates = [];
                             
                             $formattedDepartureMonths = [];
