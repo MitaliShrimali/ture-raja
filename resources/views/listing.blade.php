@@ -543,7 +543,22 @@
                         </div>
 
                         <div class="shrink-0 relative z-10 flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agent->phone ?? '') }}" target="_blank"
+                            @php
+                                $adminWhatsappTemplate = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'whatsapp_message_template')->value('value');
+                                if ($adminWhatsappTemplate) {
+                                    $custName = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::user()->name : '';
+                                    $agtName = $agent->name ?? '';
+                                    $adminWhatsappTemplate = str_replace('{{CustomerName}}', $custName, $adminWhatsappTemplate);
+                                    $adminWhatsappTemplate = str_replace('{{AgentName}}', $agtName, $adminWhatsappTemplate);
+                                    $adminWhatsappTemplate = str_replace('{{BookingID}}', '', $adminWhatsappTemplate);
+                                    $adminWhatsappTemplate = str_replace('{{TourDate}}', '', $adminWhatsappTemplate);
+                                }
+                                $cleanPhone = preg_replace('/[^0-9]/', '', $agent->phone ?? '');
+                                $whatsappUrl = $adminWhatsappTemplate 
+                                    ? "https://api.whatsapp.com/send?phone={$cleanPhone}&text=" . rawurlencode($adminWhatsappTemplate) . "&type=phone_number&app_absent=0"
+                                    : "https://api.whatsapp.com/send?phone={$cleanPhone}&type=phone_number&app_absent=0";
+                            @endphp
+                            <a href="{{ $whatsappUrl }}" target="_blank"
                                 class="w-full sm:w-auto px-6 py-4 bg-green-500 hover:bg-green-600 rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-green-500/20 text-center flex items-center justify-center gap-2">
                                 <i data-lucide="message-circle" size="16"></i> Chat on WhatsApp
                             </a>

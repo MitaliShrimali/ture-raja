@@ -1213,7 +1213,22 @@
 
                                 <!-- Action Grid -->
                                 <div class="grid grid-cols-2 gap-2.5 mb-6">
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" target="_blank" class="flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
+                                    @php
+                                        $adminWhatsappTemplate = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'whatsapp_message_template')->value('value');
+                                        if ($adminWhatsappTemplate) {
+                                            $custName = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::user()->name : '';
+                                            $agtName = $agentName ?? '';
+                                            $adminWhatsappTemplate = str_replace('{{CustomerName}}', $custName, $adminWhatsappTemplate);
+                                            $adminWhatsappTemplate = str_replace('{{AgentName}}', $agtName, $adminWhatsappTemplate);
+                                            $adminWhatsappTemplate = str_replace('{{BookingID}}', '', $adminWhatsappTemplate);
+                                            $adminWhatsappTemplate = str_replace('{{TourDate}}', '', $adminWhatsappTemplate);
+                                        }
+                                        $cleanPhone = preg_replace('/[^0-9]/', '', $agentPhone);
+                                        $whatsappUrl = $adminWhatsappTemplate 
+                                            ? "https://api.whatsapp.com/send?phone={$cleanPhone}&text=" . rawurlencode($adminWhatsappTemplate) . "&type=phone_number&app_absent=0"
+                                            : "https://api.whatsapp.com/send?phone={$cleanPhone}&type=phone_number&app_absent=0";
+                                    @endphp
+                                    <a href="{{ $whatsappUrl }}" target="_blank" class="flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                                         <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
                                     </a>
                                     <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">

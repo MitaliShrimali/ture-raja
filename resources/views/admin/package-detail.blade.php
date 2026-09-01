@@ -399,7 +399,22 @@
                     </div>
                 </div>
                 @if($agentPhone)
-                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentPhone) }}" target="_blank"
+                @php
+                    $adminWhatsappTemplate = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'whatsapp_message_template')->value('value');
+                    if ($adminWhatsappTemplate) {
+                        $custName = \Illuminate\Support\Facades\Auth::check() ? \Illuminate\Support\Facades\Auth::user()->name : '';
+                        $agtName = $agentName ?? '';
+                        $adminWhatsappTemplate = str_replace('{{CustomerName}}', $custName, $adminWhatsappTemplate);
+                        $adminWhatsappTemplate = str_replace('{{AgentName}}', $agtName, $adminWhatsappTemplate);
+                        $adminWhatsappTemplate = str_replace('{{BookingID}}', '', $adminWhatsappTemplate);
+                        $adminWhatsappTemplate = str_replace('{{TourDate}}', '', $adminWhatsappTemplate);
+                    }
+                    $cleanPhone = preg_replace('/[^0-9]/', '', $agentPhone);
+                    $whatsappUrl = $adminWhatsappTemplate 
+                        ? "https://api.whatsapp.com/send?phone={$cleanPhone}&text=" . rawurlencode($adminWhatsappTemplate) . "&type=phone_number&app_absent=0"
+                        : "https://api.whatsapp.com/send?phone={$cleanPhone}&type=phone_number&app_absent=0";
+                @endphp
+                <a href="{{ $whatsappUrl }}" target="_blank"
                    class="flex items-center gap-2 text-xs font-bold text-green-600 hover:text-green-700 transition-colors">
                     <i data-lucide="message-circle" size="14"></i> Contact via WhatsApp
                 </a>

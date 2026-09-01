@@ -3,9 +3,13 @@
 @section('admin_title', 'Whatsapp Template')
 
 @section('content')
+@php
+    $defaultWhatsapp = "Hi {{CustomerName}}! 👋\n\nThank you for choosing Tour raja for your next expedition. We are thrilled to confirm your booking {{BookingID}} for the upcoming adventure on {{TourDate}}.\n\nOur team is currently preparing all the details to ensure you have a premium experience. Your assigned expert, {{AgentName}}, will be in touch shortly with the full itinerary";
+    $whatsappTemplate = $settings['whatsapp_message_template'] ?? $defaultWhatsapp;
+@endphp
 <div class="space-y-8 pb-12" x-data="{
     templateName: 'Booking Confirmation - Premium Tours',
-    messageBody: 'Hi @{{CustomerName}}! 👋\n\nThank you for choosing Tour raja for your next expedition. We are thrilled to confirm your booking @{{BookingID}} for the upcoming adventure on @{{TourDate}}.\n\nOur team is currently preparing all the details to ensure you have a premium experience. Your assigned expert, @{{AgentName}}, will be in touch shortly with the full itinerary',
+    messageBody: {{ json_encode($whatsappTemplate) }},
     
     // Live preview token replacements
     get previewText() {
@@ -83,7 +87,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {{-- Left: Configuration & Message Content Editor --}}
-        <div class="lg:col-span-2 space-y-6">
+        <form action="{{ url('admin/settings/whatsapp-template/update') }}" method="POST" class="lg:col-span-2 space-y-6">
+            @csrf
             
             <div class="space-y-1 pl-2">
                 <h2 class="text-2xl font-black text-gray-900 tracking-tight">Whatsapp Template</h2>
@@ -142,6 +147,7 @@
                     <textarea 
                         x-ref="editorTextarea" 
                         x-model="messageBody" 
+                        name="whatsapp_message_template"
                         rows="12" 
                         class="w-full border-none outline-none resize-none font-bold text-gray-700 text-sm bg-transparent focus:ring-0 leading-relaxed"
                         placeholder="Write your WhatsApp template body here..."
@@ -154,7 +160,7 @@
                 <a href="{{ url('admin/settings') }}" class="text-xs font-black text-gray-400 hover:text-gray-600 uppercase tracking-widest pl-2">
                     Discard Draft
                 </a>
-                <button type="button" style="background-color: #b13c0b;" class="hover:opacity-90 text-white px-8 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl transition-all">
+                <button type="submit" style="background-color: #b13c0b;" class="hover:opacity-90 text-white px-8 py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl transition-all">
                     Save Template
                 </button>
             </div>
@@ -169,7 +175,7 @@
                 </p>
             </div>
 
-        </div>
+        </form>
 
         {{-- Right: Live Preview & Compliance --}}
         <div class="space-y-6">
