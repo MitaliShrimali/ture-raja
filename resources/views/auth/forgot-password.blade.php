@@ -95,7 +95,7 @@
         <div class="hidden lg:flex lg:w-[55%] gradient-side items-center justify-center relative">
             <div class="text-center space-y-4 w-full px-12">
                 <div class="flex items-center justify-center mb-6">
-                    <x-logo white="true" class="h-20 sm:h-28 w-auto" />
+                    <x-logo localWhite="true" class="h-20 sm:h-28 w-auto" />
                 </div>
                 <h3 class="text-3xl font-bold tracking-tight" style="color: #E8460A;">Forgot Password?</h3>
                 <p class="max-w-md mx-auto" style="color: #E8460A;">Don't worry, we'll help you get back on track.</p>

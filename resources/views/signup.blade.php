@@ -154,7 +154,7 @@
         <!-- Floating Navbar -->
         <div class="max-w-5xl mx-auto px-6 pt-6 pb-4">
             <div class="navbar-pill rounded-full px-6 py-3 flex items-center justify-between">
-                <x-logo white="true" class="h-8 w-auto" />
+                <x-logo localWhite="true" class="h-8 w-auto" />
                 <div class="hidden md:flex items-center gap-6">
                     <a href="{{ url('/signup') }}" class="nav-link flex items-center gap-1.5" style="color:#fff;">
                         <i data-lucide="user-plus" size="14"></i> Sign Up

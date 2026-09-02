@@ -192,7 +192,7 @@
             <div class="text-center space-y-4 w-full px-12">
                 <!-- Large Logo -->
                 <div class="flex items-center justify-center">
-                    <x-logo white="true" class="h-24 sm:h-32 w-auto" />
+                    <x-logo localWhite="true" class="h-24 sm:h-32 w-auto" />
                 </div>
             </div>
 

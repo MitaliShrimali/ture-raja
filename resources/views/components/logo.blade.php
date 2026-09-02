@@ -1,11 +1,13 @@
-@props(['white' => false])
+@props(['white' => false, 'localWhite' => false])
 
 @php
     $agencyLogo = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'agency_logo')->value('value');
     $agencyLogoWhite = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'agency_logo_white')->value('value');
 @endphp
 
-@if($white)
+@if($localWhite)
+    <img src="{{ asset('images/logo/tourraja_white.svg') }}" {{ $attributes->merge(['class' => 'w-auto h-12']) }} alt="Tour Raja">
+@elseif($white)
     @if(!empty($agencyLogoWhite))
         <img src="{{ asset($agencyLogoWhite) }}" {{ $attributes->merge(['class' => 'w-auto h-12']) }} alt="Tour Raja">
     @else
