@@ -414,6 +414,10 @@ Route::prefix('agent')->name('agent.')->group(function () {
     Route::get('/reset-password/{token}', [AgentController::class, 'resetPassword'])->name('reset-password');
     Route::post('/reset-password', [AgentController::class, 'resetPasswordSubmit'])->name('reset-password.submit');
 
+    // --- Payment Callbacks (must be public to receive POST from PayU without session) ---
+    Route::post('/payment/payu-success', [AgentController::class, 'payuSuccess'])->name('payment.payu-success');
+    Route::post('/payment/payu-failure', [AgentController::class, 'payuFailure'])->name('payment.payu-failure');
+
     // --- Protected agent pages ---
     Route::middleware(['agent.auth', 'agent.profile_complete'])->group(function () {
         Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
@@ -461,8 +465,6 @@ Route::prefix('agent')->name('agent.')->group(function () {
         Route::post('/checkout/process', [AgentController::class, 'processCheckout'])->name('checkout.process');
         Route::get('/checkout/success', [AgentController::class, 'checkoutSuccess'])->name('checkout.success');
         Route::get('/checkout/invoice/{id}', [AgentController::class, 'downloadInvoice'])->name('checkout.invoice');
-        Route::post('/payment/payu-success', [AgentController::class, 'payuSuccess'])->name('payment.payu-success');
-        Route::post('/payment/payu-failure', [AgentController::class, 'payuFailure'])->name('payment.payu-failure');
         Route::post('/payment', [AgentController::class, 'upgradePlan']);
         Route::post('/payment/upgrade', [AgentController::class, 'upgradePlan'])->name('payment.upgrade');
         Route::get('/profile', function() { return redirect()->route('agent.settings'); })->name('profile');

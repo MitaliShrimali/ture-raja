@@ -2171,7 +2171,7 @@ class AgentController extends Controller
             'productinfo' => $productinfo,
             'firstname' => $firstname,
             'email' => $email,
-            'udf1' => '',
+            'udf1' => $agentId,
             'udf2' => $udf2,
             'udf3' => '',
             'udf4' => '',
@@ -2265,8 +2265,15 @@ class AgentController extends Controller
         
         $agentId = session('agent_id');
         if (!$agentId) {
-            $agent = DB::table('agents')->where('email', $email)->first();
-            if($agent) {
+            $returnedAgentId = $request->input('udf1');
+            $agent = null;
+            if ($returnedAgentId) {
+                $agent = DB::table('agents')->where('id', $returnedAgentId)->first();
+            }
+            if (!$agent && $email) {
+                $agent = DB::table('agents')->where('email', $email)->first();
+            }
+            if ($agent) {
                 $agentId = $agent->id;
                 session(['agent_id' => $agentId, 'agent_name' => $agent->name, 'agent_email' => $agent->email]);
             }
@@ -2368,10 +2375,18 @@ class AgentController extends Controller
 
     public function payuFailure(Request $request)
     {
+        $returnedAgentId = $request->input('udf1');
         $email = $request->input('email');
         $agentId = session('agent_id');
-        if (!$agentId && $email) {
-            $agent = DB::table('agents')->where('email', $email)->first();
+        
+        if (!$agentId) {
+            $agent = null;
+            if ($returnedAgentId) {
+                $agent = DB::table('agents')->where('id', $returnedAgentId)->first();
+            }
+            if (!$agent && $email) {
+                $agent = DB::table('agents')->where('email', $email)->first();
+            }
             if ($agent) {
                 session(['agent_id' => $agent->id, 'agent_name' => $agent->name, 'agent_email' => $agent->email]);
             }
