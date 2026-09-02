@@ -91,7 +91,7 @@
 
             /* Ensure the page itself doesn't overflow */
             body {
-                overflow-x: hidden !important;
+                overflow-x: clip !important;
             }
 
             /* Package list container: take full width */
@@ -596,50 +596,48 @@
                         class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors"
                         size="18"></i>
                 </div>
+                <style>
+                    @media (max-width: 767px) {
+                        .mobile-sticky-filter-bar {
+                            position: sticky !important;
+                            top: 84px !important;
+                            z-index: 45 !important;
+                        }
+                    }
+                </style>
                 <!-- Top Bar -->
-                <div class="bg-white rounded-lg shadow-soft w-full overflow-hidden">
+                <div class="bg-white rounded-lg shadow-soft w-full overflow-hidden mobile-sticky-filter-bar md:static md:z-auto">
                     <!-- Single-row on mobile, flex on desktop -->
-                    <div class="flex items-center gap-1.5 px-2 py-2 md:hidden w-full max-w-full overflow-hidden">
-                        <!-- 1. Package Count Pill -->
+                    <div class="flex items-center justify-between px-2 py-2 md:hidden w-full max-w-full overflow-hidden">
+                        <!-- Left: Package Count Pill (Select State) -->
                         <button type="button" @click="stateModalOpen = true"
-                            class="flex items-center gap-0.5 px-2 py-1.5 bg-white border border-[#e85d26] rounded-md text-xs font-black text-foreground shadow-sm hover:bg-orange-50 shrink-0">
+                            class="flex items-center gap-0.5 px-3 py-1.5 bg-white border border-[#e85d26] rounded-md text-xs font-black text-foreground shadow-sm hover:bg-orange-50 shrink-0">
                             <span>(<span id="results-count">{{ is_countable($packages) ? count($packages) : 0 }}</span>)</span>
                             <i data-lucide="chevron-down" size="12" class="text-[#e85d26]"></i>
                         </button>
-                        <!-- 2. Filters Button -->
-                        <button type="button" @click="mobileFiltersOpen = true"
-                            class="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1.5 rounded-md text-xs font-black shrink-0">
-                            <i data-lucide="sliders-horizontal" size="12"></i>
-                            Filters
-                        </button>
-                        <!-- 3. Sort By (flex-1 to take remaining space) -->
-                        <div class="relative flex-1 min-w-0 max-w-full overflow-hidden" style="min-width: 0; flex: 1 1 0%;">
-                            <select name="sort" onchange="this.form.submit()"
-                                class="w-full bg-white border border-[#e85d26] rounded-md py-1.5 pl-2 pr-5 text-xs font-semibold focus:outline-none appearance-none cursor-pointer text-[#e85d26] truncate"
-                                style="max-width: 100%; width: 100%; min-width: 0;">
-                                <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
-                                <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' ? 'selected' : '' }}>Guaranteed</option>
-                                <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' ? 'selected' : '' }}>Price ↑</option>
-                                <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' ? 'selected' : '' }}>Price ↓</option>
-                                <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' ? 'selected' : '' }}>Duration ↑</option>
-                                <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' ? 'selected' : '' }}>Duration ↓</option>
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-1 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="11"></i>
+                        
+                        <!-- Right: Filters & Sort By -->
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <!-- Sort By -->
+                            <div class="relative shrink-0" style="width: 100px;">
+                                <select name="sort" onchange="this.form.submit()"
+                                    class="w-full bg-white border border-[#e85d26] rounded-md py-1.5 pl-2 pr-5 text-[11px] font-semibold focus:outline-none appearance-none cursor-pointer text-[#e85d26] truncate">
+                                    <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
+                                    <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' ? 'selected' : '' }}>Guaranteed</option>
+                                    <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' ? 'selected' : '' }}>Price ↑</option>
+                                    <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' ? 'selected' : '' }}>Price ↓</option>
+                                    <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' ? 'selected' : '' }}>Duration ↑</option>
+                                    <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' ? 'selected' : '' }}>Duration ↓</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-1 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="11"></i>
+                            </div>
+                            <!-- Filters Button -->
+                            <button type="button" @click="mobileFiltersOpen = true"
+                                class="flex items-center gap-1 text-[#e85d26] px-1 py-1.5 rounded-md text-xs font-black shrink-0">
+                                <i data-lucide="list-filter" size="14"></i>
+                                Filter
+                            </button>
                         </div>
-                        @if(!isset($agent))
-                        <!-- 4. Grid Icon — at the end -->
-                        <button @click="viewStyle = 'grid'" type="button"
-                            :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400'"
-                            class="p-0.5 transition-all duration-300 shrink-0">
-                            <i data-lucide="layout-grid" size="16"></i>
-                        </button>
-                        <!-- 5. List Icon — at the end -->
-                        <button @click="viewStyle = 'list'" type="button"
-                            :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400'"
-                            class="p-0.5 transition-all duration-300 shrink-0">
-                            <i data-lucide="list" size="16"></i>
-                        </button>
-                        @endif
                     </div>
                     <!-- Desktop layout (unchanged) -->
                     <div class="hidden md:flex md:flex-row md:items-center md:justify-between px-4 py-3 gap-4">
