@@ -7,7 +7,8 @@
         <!-- Logo -->
         <div class="flex items-center justify-start flex-shrink-0 z-10">
             <a href="{{ url('/') }}" class="flex items-center group">
-                <x-logo x-bind:class="(isScrolled || !isHome) ? 'text-foreground' : 'text-white'" class="h-8 sm:h-10 md:h-12 w-auto transition-colors duration-300" />
+                <img :src="(isScrolled || !isHome) ? '{{ asset('images/logo/tourraja_orange_black.svg') }}' : '{{ asset('images/logo/tourraja_orange_white.svg') }}'" 
+                     class="h-8 sm:h-10 md:h-12 w-auto transition-all duration-300" alt="Tour Raja">
             </a>
         </div>
 

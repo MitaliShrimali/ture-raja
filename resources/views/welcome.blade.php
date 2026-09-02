@@ -784,7 +784,7 @@
             @foreach($footerAds as $ad)
                 <div class="w-full flex justify-center">
                     <a href="{{ route('ad.click', $ad->id) }}" target="_blank" class="block w-full h-[80px] md:h-[100px] lg:h-[120px] bg-gray-100 rounded-[20px] shadow-sm hover:shadow-md transition-shadow overflow-hidden group flex items-center justify-center relative">
-                        <img src="{{ asset($ad->image) }}" alt="{{ $ad->campaign_name }}" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset($ad->image) }}" alt="{{ $ad->campaign_name }}" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500">
                         <span class="absolute top-3 left-3 bg-black/60 text-white font-extrabold uppercase text-[9px] tracking-widest px-2 py-0.5 rounded-md backdrop-blur-xs">AD</span>
                     </a>
                 </div>

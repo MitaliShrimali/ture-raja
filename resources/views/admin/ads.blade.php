@@ -193,9 +193,10 @@
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Placement Position</label>
                         <select name="position" x-model="addPosition" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                             <option value="Home Hero">Home Hero</option>
-                            <option value="Package Sidebar">Package Sidebar</option>
+                            <option value="Package Sidebar">Discover Page</option>
                             <option value="Footer Banner">Footer Banner</option>
                             <option value="Under Domestic Packages">Under Domestic Packages</option>
+                            <option value="Top Discover Page">Top Discover Page</option>
                         </select>
                     </div>
                     
@@ -297,9 +298,10 @@
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Ad Placement Position</label>
                         <select name="position" x-model="editAd.position" class="w-full bg-gray-50 border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium text-foreground shadow-sm">
                             <option value="Home Hero">Home Hero</option>
-                            <option value="Package Sidebar">Package Sidebar</option>
+                            <option value="Package Sidebar">Discover Page</option>
                             <option value="Footer Banner">Footer Banner</option>
                             <option value="Under Domestic Packages">Under Domestic Packages</option>
+                            <option value="Top Discover Page">Top Discover Page</option>
                         </select>
                     </div>
 

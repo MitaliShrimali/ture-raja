@@ -1160,8 +1160,15 @@ class ListingController extends Controller
                 ->whereIn('ads.position', ['Package Sidebar', 'Package Details Sidebar'])
                 ->orderBy('ads.id', 'desc')
                 ->get();
+                
+            $topDiscoverAd = \DB::table('ads')
+                ->where('status', 'Active')
+                ->where('position', 'Top Discover Page')
+                ->orderBy('id', 'desc')
+                ->first();
         } catch (\Exception $e) {
             $sidebarAds = collect();
+            $topDiscoverAd = null;
         }
 
         // If no packages or limited packages (< 4), provide suggestions
@@ -1239,6 +1246,7 @@ class ListingController extends Controller
                 'suggestedPackages' => $suggestedPackages,
                 'agent' => $agent,
                 'sidebarAds' => $sidebarAds,
+                'topDiscoverAd' => $topDiscoverAd,
                 'locationCatalog' => $locationCatalog,
                 'filterCounts' => $filterCounts,
                 'branches' => $branches,
@@ -1252,6 +1260,7 @@ class ListingController extends Controller
             'suggestedPackages' => $suggestedPackages,
             'agent' => $agent,
             'sidebarAds' => $sidebarAds,
+            'topDiscoverAd' => $topDiscoverAd,
             'locationCatalog' => $locationCatalog,
             'filterCounts' => $filterCounts
         ]);

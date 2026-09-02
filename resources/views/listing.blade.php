@@ -598,97 +598,117 @@
                 </div>
                 <style>
                     @media (max-width: 767px) {
-                        .mobile-sticky-filter-bar {
+                        .mobile-sticky-container {
                             position: sticky !important;
                             top: 84px !important;
                             z-index: 45 !important;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 16px;
                         }
                     }
                 </style>
-                <!-- Top Bar -->
-                <div class="bg-white rounded-lg shadow-soft w-full overflow-hidden mobile-sticky-filter-bar md:static md:z-auto">
-                    <!-- Single-row on mobile, flex on desktop -->
-                    <div class="flex items-center justify-between px-2 py-2 md:hidden w-full max-w-full overflow-hidden">
-                        <!-- Left: Package Count Pill (Select State) -->
-                        <button type="button" @click="stateModalOpen = true"
-                            class="flex items-center gap-0.5 px-3 py-1.5 bg-white border border-[#e85d26] rounded-md text-xs font-black text-foreground shadow-sm hover:bg-orange-50 shrink-0">
-                            <span>(<span id="results-count">{{ is_countable($packages) ? count($packages) : 0 }}</span>)</span>
-                            <i data-lucide="chevron-down" size="12" class="text-[#e85d26]"></i>
-                        </button>
-                        
-                        <!-- Right: Filters & Sort By -->
-                        <div class="flex items-center gap-1.5 shrink-0">
-                            <!-- Sort By -->
-                            <div class="relative shrink-0" style="width: 100px;">
-                                <select name="sort" onchange="this.form.submit()"
-                                    class="w-full bg-white border border-[#e85d26] rounded-md py-1.5 pl-2 pr-5 text-[11px] font-semibold focus:outline-none appearance-none cursor-pointer text-[#e85d26] truncate">
-                                    <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
-                                    <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' ? 'selected' : '' }}>Guaranteed</option>
-                                    <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' ? 'selected' : '' }}>Price ↑</option>
-                                    <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' ? 'selected' : '' }}>Price ↓</option>
-                                    <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' ? 'selected' : '' }}>Duration ↑</option>
-                                    <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' ? 'selected' : '' }}>Duration ↓</option>
-                                </select>
-                                <i data-lucide="chevron-down" class="absolute right-1 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="11"></i>
-                            </div>
-                            <!-- Filters Button -->
-                            <button type="button" @click="mobileFiltersOpen = true"
-                                class="flex items-center gap-1 text-[#e85d26] px-1 py-1.5 rounded-md text-xs font-black shrink-0">
-                                <i data-lucide="list-filter" size="14"></i>
-                                Filter
-                            </button>
-                        </div>
-                    </div>
-                    <!-- Desktop layout (unchanged) -->
-                    <div class="hidden md:flex md:flex-row md:items-center md:justify-between px-4 py-3 gap-4">
-                        <!-- Left: Package Count -->
-                        <div class="flex items-center">
+                <div class="mobile-sticky-container md:contents">
+                    <!-- Top Bar -->
+                    <div class="bg-white rounded-lg shadow-soft w-full overflow-hidden md:static md:z-auto">
+                        <!-- Single-row on mobile, flex on desktop -->
+                        <div class="flex items-center justify-between px-2 py-2 md:hidden w-full max-w-full overflow-hidden">
+                            <!-- Left: Package Count Pill (Select State) -->
                             <button type="button" @click="stateModalOpen = true"
-                                class="flex items-center justify-between w-auto min-w-[90px] px-4 py-2 bg-white border border-[#e85d26] rounded-md text-base font-black text-foreground transition-all shadow-sm hover:bg-orange-50">
-                                <span>(<span>{{ is_countable($packages) ? count($packages) : 0 }}</span>)</span>
-                                <i data-lucide="chevron-down" size="18" class="text-[#e85d26] ml-3"></i>
+                                class="flex items-center gap-0.5 px-3 py-1.5 bg-white border border-[#e85d26] rounded-md text-xs font-black text-foreground shadow-sm hover:bg-orange-50 shrink-0">
+                                <span>(<span id="results-count">{{ is_countable($packages) ? count($packages) : 0 }}</span>)</span>
+                                <i data-lucide="chevron-down" size="12" class="text-[#e85d26]"></i>
                             </button>
-                        </div>
-                        <!-- Middle: Filters -->
-                        <div class="flex items-center">
-                            <button type="button" @click="mobileFiltersOpen = true"
-                                class="lg:hidden flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2.5 rounded-md text-[12px] font-black transition-all">
-                                <i data-lucide="sliders-horizontal" size="14"></i>
-                                Filters
-                            </button>
-                        </div>
-                        <!-- Right Side: Sort By & View Toggle -->
-                        <div class="flex items-center gap-4 ml-auto">
-                            <!-- Sort By -->
-                            <div class="relative w-48">
-                                <select name="sort"
-                                    class="w-full bg-white border border-[#e85d26] rounded-md py-2 pl-4 pr-10 text-sm font-semibold focus:outline-none appearance-none cursor-pointer hover:bg-orange-50 transition-all text-[#e85d26]">
-                                    <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
-                                    <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' || request('sort') == 'Recommended' || request('sort') == 'GUARANTEED SERVICE' ? 'selected' : '' }}>Guaranteed Service</option>
-                                    <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' || request('sort') == 'PRICE (LOW TO HIGH)' ? 'selected' : '' }}>Price (Low to High)</option>
-                                    <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' || request('sort') == 'PRICE (HIGH TO LOW)' ? 'selected' : '' }}>Price (High to Low)</option>
-                                    <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' || request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>Duration (Low to High)</option>
-                                    <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' || request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>Duration (High to Low)</option>
-                                </select>
-                                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="18"></i>
-                            </div>
-                            <!-- View Toggle -->
-                            @if(!isset($agent))
-                            <div class="flex items-center gap-1 shrink-0">
-                                <button @click="viewStyle = 'grid'" type="button"
-                                    :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
-                                    class="p-1.5 transition-all duration-300">
-                                    <i data-lucide="layout-grid" size="24"></i>
-                                </button>
-                                <button @click="viewStyle = 'list'" type="button"
-                                    :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
-                                    class="p-1.5 transition-all duration-300">
-                                    <i data-lucide="list" size="24"></i>
+                            
+                            <!-- Right: Filters & Sort By -->
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                <!-- Sort By -->
+                                <div class="relative shrink-0" style="width: 100px;">
+                                    <select name="sort" onchange="this.form.submit()"
+                                        class="w-full bg-white border border-[#e85d26] rounded-md py-1.5 pl-2 pr-5 text-[11px] font-semibold focus:outline-none appearance-none cursor-pointer text-[#e85d26] truncate">
+                                        <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
+                                        <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' ? 'selected' : '' }}>Guaranteed</option>
+                                        <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' ? 'selected' : '' }}>Price ↑</option>
+                                        <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' ? 'selected' : '' }}>Price ↓</option>
+                                        <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' ? 'selected' : '' }}>Duration ↑</option>
+                                        <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' ? 'selected' : '' }}>Duration ↓</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-1 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="11"></i>
+                                </div>
+                                <!-- Filters Button -->
+                                <button type="button" @click="mobileFiltersOpen = true"
+                                    class="flex items-center gap-1 text-[#e85d26] px-1 py-1.5 rounded-md text-xs font-black shrink-0">
+                                    <i data-lucide="list-filter" size="14"></i>
+                                    Filter
                                 </button>
                             </div>
-                            @endif
+                        </div>
+                        <!-- Desktop layout (unchanged) -->
+                        <div class="hidden md:flex md:flex-row md:items-center md:justify-between px-4 py-3 gap-4">
+                            <!-- Left: Package Count -->
+                            <div class="flex items-center">
+                                <button type="button" @click="stateModalOpen = true"
+                                    class="flex items-center justify-between w-auto min-w-[90px] px-4 py-2 bg-white border border-[#e85d26] rounded-md text-base font-black text-foreground transition-all shadow-sm hover:bg-orange-50">
+                                    <span>(<span>{{ is_countable($packages) ? count($packages) : 0 }}</span>)</span>
+                                    <i data-lucide="chevron-down" size="18" class="text-[#e85d26] ml-3"></i>
+                                </button>
+                            </div>
+                            <!-- Middle: Filters -->
+                            <div class="flex items-center">
+                                <button type="button" @click="mobileFiltersOpen = true"
+                                    class="lg:hidden flex items-center justify-center gap-2 bg-primary/10 hover:bg-primary/20 text-primary px-4 py-2.5 rounded-md text-[12px] font-black transition-all">
+                                    <i data-lucide="sliders-horizontal" size="14"></i>
+                                    Filters
+                                </button>
+                            </div>
+                            <!-- Right Side: Sort By & View Toggle -->
+                            <div class="flex items-center gap-4 ml-auto">
+                                <!-- Sort By -->
+                                <div class="relative w-48">
+                                    <select name="sort"
+                                        class="w-full bg-white border border-[#e85d26] rounded-md py-2 pl-4 pr-10 text-sm font-semibold focus:outline-none appearance-none cursor-pointer hover:bg-orange-50 transition-all text-[#e85d26]">
+                                        <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
+                                        <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' || request('sort') == 'Recommended' || request('sort') == 'GUARANTEED SERVICE' ? 'selected' : '' }}>Guaranteed Service</option>
+                                        <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' || request('sort') == 'PRICE (LOW TO HIGH)' ? 'selected' : '' }}>Price (Low to High)</option>
+                                        <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' || request('sort') == 'PRICE (HIGH TO LOW)' ? 'selected' : '' }}>Price (High to Low)</option>
+                                        <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' || request('sort') == 'DURATION (LOW TO HIGH)' ? 'selected' : '' }}>Duration (Low to High)</option>
+                                        <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' || request('sort') == 'DURATION (HIGH TO LOW)' ? 'selected' : '' }}>Duration (High to Low)</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="18"></i>
+                                </div>
+                                <!-- View Toggle -->
+                                @if(!isset($agent))
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button @click="viewStyle = 'grid'" type="button"
+                                        :class="viewStyle === 'grid' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
+                                        class="p-1.5 transition-all duration-300">
+                                        <i data-lucide="layout-grid" size="24"></i>
+                                    </button>
+                                    <button @click="viewStyle = 'list'" type="button"
+                                        :class="viewStyle === 'list' ? 'text-[#e85d26]' : 'text-gray-400 hover:text-[#e85d26] transition-colors'"
+                                        class="p-1.5 transition-all duration-300">
+                                        <i data-lucide="list" size="24"></i>
+                                    </button>
+                                </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
+
+                    @if(isset($topDiscoverAd) && !empty($topDiscoverAd->image))
+                        <div x-data="{ showTopAd: true }" x-show="showTopAd" class="w-full relative group transition-all rounded-lg overflow-hidden bg-transparent h-24 md:h-32 lg:h-40 shadow-sm border border-gray-100">
+                            <!-- Close Button -->
+                            <button @click="showTopAd = false" type="button" class="absolute top-1.5 right-1.5 z-10 bg-gray-600/70 hover:bg-gray-700/90 text-white rounded p-0.5 backdrop-blur-md transition-all shadow-sm">
+                                <i data-lucide="x" size="12" stroke-width="3"></i>
+                            </button>
+                            
+                            <a href="{{ route('ad.click', $topDiscoverAd->id) }}" target="_blank" class="block w-full h-full relative">
+                                <img src="{{ asset($topDiscoverAd->image) }}" alt="{{ $topDiscoverAd->campaign_name }}"
+                                    class="w-full h-full object-cover object-center">
+                                <span class="absolute top-2 left-2 bg-black/60 text-white font-extrabold uppercase text-[10px] tracking-widest px-2 py-1 rounded-md backdrop-blur-xs">AD</span>
+                            </a>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Grid -->
