@@ -861,7 +861,7 @@ class ListingController extends Controller
             'services' => ['private_chef' => 0, 'tour_manager' => 0],
         ];
 
-        foreach ($packages as $pkg) {
+        foreach ($basePackages as $pkg) {
             $pkgArray = is_object($pkg) && method_exists($pkg, 'toArray') ? $pkg->toArray() : (array)$pkg;
 
             $title = strtolower((string)($pkgArray['title'] ?? ''));
