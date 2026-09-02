@@ -122,16 +122,18 @@
         <div>
             <h3 class="font-bold text-gray-900 mb-3 tracking-wide" style="font-size: 20px;">Services</h3>
             <div class="space-y-3">
-                <label class="flex items-center gap-3 cursor-pointer group bg-rose-50/70 hover:bg-rose-100 px-3 py-2 rounded-lg border border-rose-100 transition-colors">
-                    <input type="checkbox" name="private_chef" value="1" {{ request('private_chef') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-rose-300 text-rose-500 focus:ring-rose-500/50 cursor-pointer">
-                    <span class="text-rose-700 text-base font-bold group-hover:text-rose-800 transition-colors flex items-center gap-1.5">
-                        <i data-lucide="utensils" class="w-4 h-4 text-rose-500 group-hover:text-rose-600 transition-colors"></i> Private Chef Included (<span data-filter-count="services.private_chef">{{ $filterCounts['services']['private_chef'] ?? 0 }}</span>)
+                <label class="flex items-center gap-3 cursor-pointer group bg-rose-50/70 hover:bg-rose-100 px-3 py-2 rounded-lg border border-rose-100 transition-colors overflow-hidden">
+                    <input type="checkbox" name="private_chef" value="1" {{ request('private_chef') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 shrink-0 rounded border-rose-300 text-rose-500 focus:ring-rose-500/50 cursor-pointer">
+                    <span class="text-rose-700 text-[13px] md:text-sm font-bold group-hover:text-rose-800 transition-colors flex items-center gap-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                        <i data-lucide="utensils" class="w-4 h-4 shrink-0 text-rose-500 group-hover:text-rose-600 transition-colors"></i>
+                        <span>Private Chef Included (<span data-filter-count="services.private_chef">{{ $filterCounts['services']['private_chef'] ?? 0 }}</span>)</span>
                     </span>
                 </label>
-                <label class="flex items-center gap-3 cursor-pointer group bg-blue-50/70 hover:bg-blue-100 px-3 py-2 rounded-lg border border-blue-100 transition-colors">
-                    <input type="checkbox" name="tour_manager" value="1" {{ request('tour_manager') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 rounded border-blue-300 text-blue-500 focus:ring-blue-500/50 cursor-pointer">
-                    <span class="text-blue-700 text-base font-bold group-hover:text-blue-800 transition-colors flex items-center gap-1.5">
-                        <i data-lucide="user" class="w-4 h-4 text-blue-500 group-hover:text-blue-600 transition-colors"></i> Tour Manager Included (<span data-filter-count="services.tour_manager">{{ $filterCounts['services']['tour_manager'] ?? 0 }}</span>)
+                <label class="flex items-center gap-3 cursor-pointer group bg-blue-50/70 hover:bg-blue-100 px-3 py-2 rounded-lg border border-blue-100 transition-colors overflow-hidden">
+                    <input type="checkbox" name="tour_manager" value="1" {{ request('tour_manager') == 1 ? 'checked' : '' }} onchange="this.form.dispatchEvent(new Event('submit'))" class="w-4 h-4 shrink-0 rounded border-blue-300 text-blue-500 focus:ring-blue-500/50 cursor-pointer">
+                    <span class="text-blue-700 text-[13px] md:text-sm font-bold group-hover:text-blue-800 transition-colors flex items-center gap-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                        <i data-lucide="user" class="w-4 h-4 shrink-0 text-blue-500 group-hover:text-blue-600 transition-colors"></i>
+                        <span>Tour Manager Included (<span data-filter-count="services.tour_manager">{{ $filterCounts['services']['tour_manager'] ?? 0 }}</span>)</span>
                     </span>
                 </label>
             </div>

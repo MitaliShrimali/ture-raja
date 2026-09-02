@@ -59,6 +59,10 @@
         isScrolled = window.pageYOffset > 50;
         let pt = document.getElementById('popular-transits-section');
         isPastTransits = pt ? (window.pageYOffset > (pt.offsetTop + pt.offsetHeight - 80)) : isScrolled;
+    " x-init="
+        isScrolled = window.pageYOffset > 50;
+        let pt = document.getElementById('popular-transits-section');
+        isPastTransits = pt ? (window.pageYOffset > (pt.offsetTop + pt.offsetHeight - 80)) : isScrolled;
     " @open-login-modal.window="showLoginModal = true"
     @open-chef-modal.window="showChefModal = true; setTimeout(() => { showChefModal = false }, 5000)"
     @open-gallery.window="globalShowGallery = true; globalLightboxOpen = false; globalSlides = $event.detail.slides; globalGalleryTitle = $event.detail.title"

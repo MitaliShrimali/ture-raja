@@ -2368,6 +2368,15 @@ class AgentController extends Controller
 
     public function payuFailure(Request $request)
     {
+        $email = $request->input('email');
+        $agentId = session('agent_id');
+        if (!$agentId && $email) {
+            $agent = DB::table('agents')->where('email', $email)->first();
+            if ($agent) {
+                session(['agent_id' => $agent->id, 'agent_name' => $agent->name, 'agent_email' => $agent->email]);
+            }
+        }
+
         $payuService = new \App\Services\PayUService();
         
         if (!$payuService->verifyResponseHash($request->all())) {

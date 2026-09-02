@@ -248,7 +248,7 @@
 
     <!-- Section 3: Why Travel With Tour Raja -->
     <div class="max-w-7xl mx-auto px-6 pt-2 pb-4 md:pb-8 lg:pb-10">
-        <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-0 mb-4">
+        <x-section-title subtitle="The Tour Raja Advantage" align="center" class="!space-y-2 mb-4">
             <span class="md:!text-[34px] leading-none block mt-0 !text-[18px]">Why tour raja !!!</span>
         </x-section-title>
 
@@ -682,7 +682,8 @@
             <!-- Load More Button -->
             <div class="mt-4 md:mt-6 flex justify-center animate-fade-up" id="load-more-container">
                 <a href="{{ url('/discover') }}" class="bg-black text-white px-10 py-4 rounded-full font-black text-sm uppercase tracking-widest hover:bg-primary transition-all duration-300 shadow-premium inline-block text-center">
-                        </a>
+                    View All Packages
+                </a>
             </div>
         </div>
     </section>
