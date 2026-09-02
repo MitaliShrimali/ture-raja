@@ -7,7 +7,11 @@
         <!-- Logo -->
         <div class="flex items-center justify-start flex-shrink-0 z-10">
             <a href="{{ url('/') }}" class="flex items-center group">
-                <img :src="(isScrolled || !isHome) ? '{{ asset('images/logo/tourraja_orange_black.svg') }}' : '{{ asset('images/logo/tourraja_orange_white.svg') }}'" 
+                @php
+                    $agencyLogo = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'agency_logo')->value('value');
+                    $agencyLogoWhite = \Illuminate\Support\Facades\DB::table('settings')->where('key', 'agency_logo_white')->value('value');
+                @endphp
+                <img :src="(isScrolled || !isHome) ? '{{ !empty($agencyLogo) ? asset($agencyLogo) : asset('images/logo/tourraja_orange_black.svg') }}' : '{{ !empty($agencyLogoWhite) ? asset($agencyLogoWhite) : asset('images/logo/tourraja_orange_white.svg') }}'" 
                      class="h-8 sm:h-10 md:h-12 w-auto transition-all duration-300" alt="Tour Raja">
             </a>
         </div>
