@@ -39,6 +39,6 @@ php artisan up
 
 # 📂 Setting permissions
 echo "📂 Setting permissions..."
-chmod -R 775 storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache public/uploads || true
 
 echo "✅ Deployment finished successfully!"
