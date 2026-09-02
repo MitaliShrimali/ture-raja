@@ -244,18 +244,36 @@
                     </div>
 
                     <!-- Agency Logo Upload Box -->
-                    <div class="space-y-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Agency Logo</label>
-                        <div class="relative group border-2 border-dashed border-gray-200 rounded-[24px] p-6 bg-[#FBFBFA] flex flex-col items-center justify-center hover:border-[#B23B06]/30 transition-colors cursor-pointer" onclick="document.getElementById('agency_logo_input').click()">
-                            <input type="file" id="agency_logo_input" name="agency_logo" class="hidden" onchange="previewLogo(this)">
-                            
-                            @if(!empty($settings['agency_logo']))
-                                <img id="agency_logo_preview" src="{{ asset($settings['agency_logo']) }}" alt="Agency Logo" class="max-h-28 object-contain rounded-lg">
-                            @else
-                                <div id="agency_logo_preview_container" class="w-28 h-28 bg-[#0A5C66] rounded-xl flex items-center justify-center p-4">
-                                    <span class="text-white text-xs font-black tracking-tight text-center">AGENCY<br><span class="text-[8px] opacity-70 font-semibold">SAFE FOR WORK</span></span>
-                                </div>
-                            @endif
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Logo (Dark/Color for scrolled navbar)</label>
+                            <div class="relative group border-2 border-dashed border-gray-200 rounded-[24px] p-6 bg-[#FBFBFA] flex flex-col items-center justify-center hover:border-[#B23B06]/30 transition-colors cursor-pointer" onclick="document.getElementById('agency_logo_input').click()">
+                                <input type="file" id="agency_logo_input" name="agency_logo" class="hidden" onchange="previewLogo(this, 'agency_logo_preview')">
+                                
+                                @if(!empty($settings['agency_logo']))
+                                    <img id="agency_logo_preview" src="{{ asset($settings['agency_logo']) }}" alt="Agency Logo" class="max-h-28 object-contain rounded-lg">
+                                @else
+                                    <div id="agency_logo_preview_container" class="w-full h-28 bg-[#F5F4F2] rounded-xl flex items-center justify-center p-4">
+                                        <span class="text-gray-400 text-xs font-black tracking-tight text-center">UPLOAD DARK LOGO</span>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- White Logo Upload Box -->
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-wider block">Logo (White for top navbar)</label>
+                            <div class="relative group border-2 border-dashed border-gray-200 rounded-[24px] p-6 bg-[#0A5C66] flex flex-col items-center justify-center hover:border-[#B23B06]/30 transition-colors cursor-pointer" onclick="document.getElementById('agency_logo_white_input').click()">
+                                <input type="file" id="agency_logo_white_input" name="agency_logo_white" class="hidden" onchange="previewLogo(this, 'agency_logo_white_preview')">
+                                
+                                @if(!empty($settings['agency_logo_white']))
+                                    <img id="agency_logo_white_preview" src="{{ asset($settings['agency_logo_white']) }}" alt="Agency Logo White" class="max-h-28 object-contain rounded-lg">
+                                @else
+                                    <div id="agency_logo_white_preview_container" class="w-full h-28 bg-[#0A5C66] rounded-xl flex items-center justify-center p-4">
+                                        <span class="text-white text-xs font-black tracking-tight text-center">UPLOAD WHITE LOGO</span>
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -399,18 +417,18 @@
 </div>
 
 <script>
-    function previewLogo(input) {
+    function previewLogo(input, previewId) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function(e) {
-                var preview = document.getElementById('agency_logo_preview');
+                var preview = document.getElementById(previewId);
                 if (preview) {
                     preview.src = e.target.result;
                 } else {
-                    var container = document.getElementById('agency_logo_preview_container');
+                    var container = document.getElementById(previewId + '_container');
                     if (container) {
                         var img = document.createElement('img');
-                        img.id = 'agency_logo_preview';
+                        img.id = previewId;
                         img.src = e.target.result;
                         img.className = 'max-h-28 object-contain rounded-lg';
                         container.parentNode.replaceChild(img, container);
