@@ -31,6 +31,9 @@
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
 
 <body x-data="{ 

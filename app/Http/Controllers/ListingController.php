@@ -1083,10 +1083,21 @@ class ListingController extends Controller
         }
 
         // ── Sort ───────────────────────────────────────────────────
-        $sort = $request->input('sort', 'SHOW ALL');
+        $sortRaw = $request->input('sort', 'SHOW ALL');
+        if (is_array($sortRaw)) {
+            $filteredSort = array_filter($sortRaw, function($v) {
+                $s = strtolower(trim((string)$v));
+                return $s !== 'sort by' && $s !== 'sort' && $s !== '';
+            });
+            $sort = !empty($filteredSort) ? (string)reset($filteredSort) : (string)end($sortRaw);
+        } else {
+            $sort = (string)$sortRaw;
+        }
+
+        $sortLower = strtolower(trim($sort));
 
         // When GUARANTEED SERVICE is selected, filter to only show verified (blue-tick) agent packages
-        if (strtolower($sort) === 'guaranteed service' || strtolower($sort) === 'recommended') {
+        if (str_contains($sortLower, 'guaranteed') || str_contains($sortLower, 'recommended')) {
             $packages = $packages->filter(function($p) use ($agentsById, $agentsByName) {
                 $pkg = (array) $p;
                 $agentId   = null;
@@ -1120,35 +1131,45 @@ class ListingController extends Controller
                 }
 
                 return $agentInfo && !empty($agentInfo->service_guaranteed);
-            });
-        } elseif (strtolower($sort) === 'price (low to high)' || strtolower($sort) === 'price: low to high') {
-            $packages = $packages->sortBy(fn($p) => ((array)$p)['price'] ?? 0);
-        } elseif (strtolower($sort) === 'price (high to low)' || strtolower($sort) === 'price: high to low') {
-            $packages = $packages->sortByDesc(fn($p) => ((array)$p)['price'] ?? 0);
-        } elseif (strtolower($sort) === 'duration (low to high)') {
+            })->values();
+        } elseif (str_contains($sortLower, 'price') && str_contains($sortLower, 'low to high')) {
+            $packages = $packages->sortBy(function($p) {
+                $priceStr = ((array)$p)['price'] ?? 0;
+                return (int) preg_replace('/[^0-9]/', '', (string)$priceStr);
+            })->values();
+        } elseif (str_contains($sortLower, 'price') && str_contains($sortLower, 'high to low')) {
+            $packages = $packages->sortByDesc(function($p) {
+                $priceStr = ((array)$p)['price'] ?? 0;
+                return (int) preg_replace('/[^0-9]/', '', (string)$priceStr);
+            })->values();
+        } elseif (str_contains($sortLower, 'duration') && str_contains($sortLower, 'low to high')) {
             $packages = $packages->sortBy(function($pkg) {
                 $pkg = (array) $pkg;
                 $nights = $pkg['nights'] ?? 0;
                 if (!$nights && isset($pkg['duration'])) {
                     if (preg_match('/(\d+)\s*nights?/', strtolower($pkg['duration']), $matches)) {
                         $nights = (int)$matches[1];
+                    } elseif (preg_match('/(\d+)\s*days?/', strtolower($pkg['duration']), $matches)) {
+                        $nights = max(0, (int)$matches[1] - 1);
                     }
                 }
-                return $nights;
-            });
-        } elseif (strtolower($sort) === 'duration (high to low)') {
+                return (int)$nights;
+            })->values();
+        } elseif (str_contains($sortLower, 'duration') && str_contains($sortLower, 'high to low')) {
             $packages = $packages->sortByDesc(function($pkg) {
                 $pkg = (array) $pkg;
                 $nights = $pkg['nights'] ?? 0;
                 if (!$nights && isset($pkg['duration'])) {
                     if (preg_match('/(\d+)\s*nights?/', strtolower($pkg['duration']), $matches)) {
                         $nights = (int)$matches[1];
+                    } elseif (preg_match('/(\d+)\s*days?/', strtolower($pkg['duration']), $matches)) {
+                        $nights = max(0, (int)$matches[1] - 1);
                     }
                 }
-                return $nights;
-            });
-        } elseif ($sort === 'Top Rated') {
-            $packages = $packages->sortByDesc(fn($p) => ((array)$p)['rating'] ?? 0);
+                return (int)$nights;
+            })->values();
+        } elseif (str_contains($sortLower, 'top rated') || str_contains($sortLower, 'rating')) {
+            $packages = $packages->sortByDesc(fn($p) => ((array)$p)['rating'] ?? 0)->values();
         }
 
         // Fetch active ads for Package Sidebar

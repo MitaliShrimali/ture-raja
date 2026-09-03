@@ -54,7 +54,7 @@
             <audio id="transitBgMusic" src="{{ asset($transitMusic->music_file) }}" loop></audio>
 
             {{-- Floating circular button: bottom-right, raised to avoid overlap with scroll-up arrow --}}
-            <div class="fixed select-none" style="z-index: 9999; bottom: 90px; right: 20px;">
+            <div class="fixed select-none" x-show="!mobileFiltersOpen" style="z-index: 30; bottom: 90px; right: 20px;">
 
                 <button type="button" onclick="toggleTransitSound()" id="transitSoundToggle"
                     class="w-8 h-8 rounded-full bg-[#e85d26] hover:bg-orange-600 flex items-center justify-center text-white transition-all shadow-md focus:outline-none border-[1.5px] border-white"
@@ -401,7 +401,7 @@
             }
 
             /* Container takes exact remaining height below the header */
-            .container-custom.pt-8.pb-16 {
+            .container-custom.pb-16 {
                 height: calc(100vh - 90px) !important;
                 overflow: hidden !important;
                 padding-top: 1.5rem !important;
@@ -446,29 +446,18 @@
         }
     </style>
 
-    <div class="container-custom pt-8 pb-16"
+    <div class="container-custom pt-2 md:pt-8 pb-16"
         x-data="{ viewStyle: {{ isset($agent) ? "'grid'" : "localStorage.getItem('tour raja_view_style') || 'grid'" }}, mobileFiltersOpen: false, stateModalOpen: false, expandedStates: {}, activeTab: new URLSearchParams(window.location.search).get('tab') || 'both' }"
         x-init="$watch('viewStyle', value => { localStorage.setItem('tour raja_view_style', value); $nextTick(() => lucide.createIcons()) }); $watch('mobileFiltersOpen', value => { if (value) { document.body.classList.add('overflow-hidden'); } else { document.body.classList.remove('overflow-hidden'); } })">
 
         <form id="filter-form" action="{{ url('/listing') }}" method="GET"
             class="flex flex-col lg:flex-row gap-12 w-full items-start">
             <!-- Sidebar Wrapper (Responsive: Slide-over Drawer on Mobile, Sticky Column on Desktop) -->
-            <div x-show="activeTab === 'packages' || activeTab === 'both'" :class="mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-                class="desktop-sidebar-reset fixed inset-y-0 left-0 w-[85vw] sm:w-[400px] lg:w-1/4 lg:sticky lg:top-[90px] lg:max-h-[calc(100vh-100px)] bg-white lg:bg-transparent z-50 lg:z-0 shadow-2xl lg:shadow-none p-6 lg:p-0 transition-transform duration-300 overflow-y-auto shrink-0">
-                <!-- Mobile Drawer Header -->
-                <div class="flex items-center justify-between lg:hidden border-b border-gray-100 pb-4 mb-6">
-                    <h3 class="text-sm font-black">Filters</h3>
-                    <div class="flex items-center gap-4">
-                        <button type="button" onclick="clearAllFilters()"
-                            class="text-xs font-black text-primary hover:text-primary-hover bg-primary/10 px-3 py-1.5 rounded-full transition-colors">
-                            Clear All
-                        </button>
-                        <button type="button" @click="mobileFiltersOpen = false"
-                            class="text-gray-400 hover:text-primary transition-colors">
-                            <i data-lucide="x" size="24"></i>
-                        </button>
-                    </div>
-                </div>
+            <div x-show="(activeTab === 'packages' || activeTab === 'both') && (mobileFiltersOpen || (typeof window !== 'undefined' && window.innerWidth >= 1024))"
+                x-cloak
+                :class="mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
+                class="-translate-x-full lg:translate-x-0 desktop-sidebar-reset fixed inset-y-0 left-0 w-[85vw] sm:w-[400px] lg:w-1/4 lg:sticky lg:top-[90px] lg:max-h-[calc(100vh-100px)] bg-white lg:bg-transparent z-[9999] lg:z-0 shadow-2xl lg:shadow-none p-6 lg:p-0 transition-transform duration-300 overflow-y-auto shrink-0">
+
 
                 <x-filter-sidebar :filter-counts="$filterCounts" />
 
@@ -483,11 +472,11 @@
             </div>
 
             <!-- Dark Overlay for Mobile Drawer -->
-            <div x-show="mobileFiltersOpen" x-transition:opacity @click="mobileFiltersOpen = false"
-                class="lg:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40" style="display: none;"></div>
+            <div x-show="mobileFiltersOpen" x-cloak x-transition:opacity @click="mobileFiltersOpen = false"
+                class="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[9990]" style="display: none;"></div>
 
             <!-- Main Content -->
-            <div class="flex-1 space-y-8">
+            <div class="flex-1 space-y-3 md:space-y-8">
                 @if(isset($agent))
                     <div x-show="activeTab === 'profile' || activeTab === 'both'" x-cloak
                         class="bg-gradient-to-r from-orange-600 via-primary to-orange-500 rounded-[40px] p-8 md:p-10 shadow-premium border border-primary/20 text-white flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden animate-in fade-in slide-in-from-top-6 duration-500">
@@ -586,7 +575,7 @@
                 </div>
                 @endif
 
-                <div x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak class="space-y-8">
+                <div x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak class="space-y-3 md:space-y-8">
                 <!-- Mobile Search Input (Visible only on mobile/tablet) -->
                 <div class="relative group hidden w-full">
                     <input type="text" name="mobile_search" placeholder="Search destination or package..."
@@ -604,7 +593,7 @@
                             z-index: 45 !important;
                             display: flex;
                             flex-direction: column;
-                            gap: 16px;
+                            gap: 6px !important;
                         }
                     }
                 </style>
@@ -616,22 +605,22 @@
                             <!-- Left: Package Count Pill (Select State) -->
                             <button type="button" @click="stateModalOpen = true"
                                 class="flex items-center gap-0.5 px-3 py-1.5 bg-white border border-[#e85d26] rounded-md text-xs font-black text-foreground shadow-sm hover:bg-orange-50 shrink-0">
-                                <span>(<span id="results-count">{{ is_countable($packages) ? count($packages) : 0 }}</span>)</span>
+                                <span>({{ is_countable($packages) ? count($packages) : 0 }})</span>
                                 <i data-lucide="chevron-down" size="12" class="text-[#e85d26]"></i>
                             </button>
                             
                             <!-- Right: Filters & Sort By -->
                             <div class="flex items-center gap-1.5 shrink-0">
                                 <!-- Sort By -->
-                                <div class="relative shrink-0" style="width: 100px;">
-                                    <select name="sort" onchange="this.form.submit()"
+                                <div class="relative shrink-0" style="width: 125px;">
+                                    <select id="mobile-sort-select" name="sort" onchange="syncAndSubmitSort(this)"
                                         class="w-full bg-white border border-[#e85d26] rounded-md py-1.5 pl-2 pr-5 text-[11px] font-semibold focus:outline-none appearance-none cursor-pointer text-[#e85d26] truncate">
                                         <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
                                         <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' ? 'selected' : '' }}>Guaranteed</option>
-                                        <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' ? 'selected' : '' }}>Price ↑</option>
-                                        <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' ? 'selected' : '' }}>Price ↓</option>
-                                        <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' ? 'selected' : '' }}>Duration ↑</option>
-                                        <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' ? 'selected' : '' }}>Duration ↓</option>
+                                        <option value="Price (Low to High)" {{ strtolower(request('sort')) == 'price (low to high)' ? 'selected' : '' }}>Price: Low to High</option>
+                                        <option value="Price (High to Low)" {{ strtolower(request('sort')) == 'price (high to low)' ? 'selected' : '' }}>Price: High to Low</option>
+                                        <option value="Duration (Low to High)" {{ strtolower(request('sort')) == 'duration (low to high)' ? 'selected' : '' }}>Duration: Low to High</option>
+                                        <option value="Duration (High to Low)" {{ strtolower(request('sort')) == 'duration (high to low)' ? 'selected' : '' }}>Duration: High to Low</option>
                                     </select>
                                     <i data-lucide="chevron-down" class="absolute right-1 top-1/2 -translate-y-1/2 text-[#e85d26] pointer-events-none" size="11"></i>
                                 </div>
@@ -665,7 +654,7 @@
                             <div class="flex items-center gap-4 ml-auto">
                                 <!-- Sort By -->
                                 <div class="relative w-48">
-                                    <select name="sort"
+                                    <select id="desktop-sort-select" name="sort" onchange="syncAndSubmitSort(this)"
                                         class="w-full bg-white border border-[#e85d26] rounded-md py-2 pl-4 pr-10 text-sm font-semibold focus:outline-none appearance-none cursor-pointer hover:bg-orange-50 transition-all text-[#e85d26]">
                                         <option value="Sort by" {{ !request('sort') || request('sort') == 'Sort by' ? 'selected' : '' }}>Sort By</option>
                                         <option value="Guaranteed Service" {{ strtolower(request('sort')) == 'guaranteed service' || request('sort') == 'Recommended' || request('sort') == 'GUARANTEED SERVICE' ? 'selected' : '' }}>Guaranteed Service</option>
@@ -696,7 +685,7 @@
                     </div>
 
                     @if(isset($topDiscoverAd) && !empty($topDiscoverAd->image))
-                        <div x-data="{ showTopAd: true }" x-show="showTopAd" class="w-full relative group transition-all rounded-lg overflow-hidden bg-transparent h-24 md:h-32 lg:h-40 shadow-sm border border-gray-100">
+                        <div x-data="{ showTopAd: true }" x-show="showTopAd" class="w-full relative group transition-all rounded-xl overflow-hidden bg-transparent h-20 md:h-24 lg:h-28 my-2 md:my-6 shadow-sm border border-gray-100">
                             <!-- Close Button -->
                             <button @click="showTopAd = false" type="button" class="absolute top-1.5 right-1.5 z-10 bg-gray-600/70 hover:bg-gray-700/90 text-white rounded p-0.5 backdrop-blur-md transition-all shadow-sm">
                                 <i data-lucide="x" size="12" stroke-width="3"></i>
@@ -713,7 +702,7 @@
 
                 <!-- Grid -->
                 <div id="packages-list-container"
-                    :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8' : 'flex flex-col gap-6'">
+                    :class="viewStyle === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-8' : 'flex flex-col gap-4 md:gap-6'">
                     @php $adIndex = 0; @endphp
                     @forelse($packages as $index => $pkg)
                         <div class="package-item {{ $index >= 25 ? 'hidden' : '' }}"
@@ -885,6 +874,24 @@
                     if (btn) btn.style.display = 'none';
                 }
             }
+
+            function syncAndSubmitSort(el) {
+                const val = el.value;
+                const mobileSort = document.getElementById('mobile-sort-select');
+                const desktopSort = document.getElementById('desktop-sort-select');
+                if (mobileSort) mobileSort.value = val;
+                if (desktopSort) desktopSort.value = val;
+
+                const form = document.getElementById('filter-form');
+                if (form) {
+                    if (typeof form.requestSubmit === 'function') {
+                        form.requestSubmit();
+                    } else {
+                        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                    }
+                }
+            }
+            window.syncAndSubmitSort = syncAndSubmitSort;
 
             document.addEventListener('DOMContentLoaded', () => {
                 const form = document.getElementById('filter-form');

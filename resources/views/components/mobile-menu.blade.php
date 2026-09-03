@@ -1,6 +1,7 @@
 <div 
     x-show="isMobileMenuOpen" 
     x-cloak
+    style="display: none;"
     class="fixed inset-0 z-[100] lg:hidden"
     role="dialog" 
     aria-modal="true"
@@ -8,6 +9,8 @@
     <!-- Backdrop -->
     <div 
         x-show="isMobileMenuOpen"
+        x-cloak
+        style="display: none;"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
@@ -21,6 +24,8 @@
     <!-- Drawer -->
     <div 
         x-show="isMobileMenuOpen"
+        x-cloak
+        style="display: none;"
         x-transition:enter="transition ease-out duration-400"
         x-transition:enter-start="translate-x-full"
         x-transition:enter-end="translate-x-0"

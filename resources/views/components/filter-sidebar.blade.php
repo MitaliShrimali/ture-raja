@@ -71,9 +71,14 @@
     <!-- Header -->
     <div class="bg-primary text-white py-4 px-5 flex items-center justify-between rounded-t-lg shrink-0">
         <h2 class="font-bold uppercase tracking-wide" style="font-size: 26px;">Filters</h2>
-        <button type="button" onclick="clearAllFilters()" class="text-[10px] font-bold bg-white/20 hover:bg-white text-white hover:text-primary px-3 py-1.5 rounded-lg transition-all uppercase tracking-wider">
-            Clear All
-        </button>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="clearAllFilters()" class="text-[10px] font-bold bg-white/20 hover:bg-white text-white hover:text-primary px-3 py-1.5 rounded-lg transition-all uppercase tracking-wider">
+                Clear All
+            </button>
+            <button type="button" @click="mobileFiltersOpen = false" class="lg:hidden text-white/80 hover:text-white p-1 transition-colors flex items-center justify-center">
+                <i data-lucide="x" size="22"></i>
+            </button>
+        </div>
     </div>
 
     <div class="p-5 space-y-6 flex-1 overflow-y-auto custom-sidebar-scroll"> 

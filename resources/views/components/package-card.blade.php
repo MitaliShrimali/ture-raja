@@ -119,6 +119,17 @@
     $detailUrl = $pkgId ? url('packages/' . $pkgId) : ($slug ? url('packages/' . $slug) : '#');
 @endphp
 
+<style>
+@media (max-width: 767px) {
+    /* Mobile UI only: Fit card image to exact landscape height as requested */
+    body:not(.list-view-active) .package-card-inner .package-image-container,
+    .package-item:not(.list-view-wrapper) .package-card-inner .package-image-container {
+        aspect-ratio: 1.85 / 1 !important;
+        max-height: 175px !important;
+    }
+}
+</style>
+
 <div onclick="window.open('{{ $detailUrl }}', '_blank')" {{ $attributes->merge(['class' => 'cursor-pointer group bg-white rounded-2xl overflow-hidden shadow-soft hover:shadow-premium transition-all duration-500 hover:-translate-y-1 flex flex-col border border-border-soft/50 package-card-inner']) }}>
 
     @php
