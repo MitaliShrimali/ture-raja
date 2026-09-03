@@ -575,16 +575,6 @@
                 </div>
                 @endif
 
-                <div x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak class="space-y-3 md:space-y-8">
-                <!-- Mobile Search Input (Visible only on mobile/tablet) -->
-                <div class="relative group hidden w-full">
-                    <input type="text" name="mobile_search" placeholder="Search destination or package..."
-                        value="{{ request('search') ?: request('mobile_search') }}"
-                        class="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 shadow-soft focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-bold text-foreground placeholder:text-muted-text/40 text-sm">
-                    <i data-lucide="search"
-                        class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors"
-                        size="18"></i>
-                </div>
                 <style>
                     @media (max-width: 767px) {
                         .mobile-sticky-container {
@@ -597,7 +587,17 @@
                         }
                     }
                 </style>
-                <div class="mobile-sticky-container md:contents">
+                <div x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak class="space-y-3 md:space-y-8">
+                <!-- Mobile Search Input (Visible only on mobile/tablet) -->
+                <div class="relative group hidden w-full">
+                    <input type="text" name="mobile_search" placeholder="Search destination or package..."
+                        value="{{ request('search') ?: request('mobile_search') }}"
+                        class="w-full bg-white border border-gray-100 rounded-2xl py-4 pl-12 pr-4 shadow-soft focus:ring-2 focus:ring-primary/10 focus:border-primary transition-all font-bold text-foreground placeholder:text-muted-text/40 text-sm">
+                    <i data-lucide="search"
+                        class="absolute left-4 top-1/2 -translate-y-1/2 text-muted-text group-focus-within:text-primary transition-colors"
+                        size="18"></i>
+                </div>
+                <div class="mobile-sticky-container">
                     <!-- Top Bar -->
                     <div class="bg-white rounded-lg shadow-soft w-full overflow-hidden md:static md:z-auto">
                         <!-- Single-row on mobile, flex on desktop -->
