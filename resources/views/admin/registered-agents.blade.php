@@ -168,10 +168,10 @@
                             
                             <!-- Status -->
                             <td class="py-6 px-8 text-center">
-                                 <a href="{{ url('/admin/agents/toggle/' . $agent->id) }}" class="inline-flex items-center cursor-pointer">
+                                 <a href="{{ url('/admin/agents/toggle/' . $agent->id) }}" class="inline-flex items-center cursor-pointer" title="Click to Toggle Status">
                                      <div class="relative inline-flex items-center">
-                                         <input type="checkbox" class="sr-only peer" {{ strtolower($agent->status) === 'active' ? 'checked' : '' }} disabled>
-                                         <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                         <input type="checkbox" class="sr-only peer" {{ in_array(strtolower((string)$agent->status), ['active', '1', 'true']) || $agent->status == 1 ? 'checked' : '' }}>
+                                         <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary pointer-events-none"></div>
                                      </div>
                                  </a>
                              </td>

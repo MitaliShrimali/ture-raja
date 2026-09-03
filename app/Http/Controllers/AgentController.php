@@ -77,7 +77,7 @@ class AgentController extends Controller
             'email'       => $request->email,
             'phone'       => $request->phone,
             'password'    => Hash::make($request->password),
-            'status'      => 1,
+            'status'      => 'Active',
             'pending'     => 1,
             'approved'    => 0,
             'plan_id'     => null,

@@ -88,7 +88,7 @@ class ListingController extends Controller
         // Fetch all agents to check their tiers + location for card display
         try {
             $agentsList = \Illuminate\Support\Facades\DB::table('agents')
-                ->select('id', 'name', 'service_guaranteed', 'plan_id', 'city', 'state', 'country', 'logo')
+                ->select('id', 'name', 'status', 'service_guaranteed', 'plan_id', 'city', 'state', 'country', 'logo')
                 ->get();
                 
             $agentsById = $agentsList->keyBy('id')->toArray();
@@ -201,6 +201,48 @@ class ListingController extends Controller
             }
 
             return $pkg;
+        });
+
+        // Filter out packages of inactive agents
+        $packages = $packages->filter(function($pkg) use ($agentsById, $agentsByName) {
+            $agentData = $pkg['agent'] ?? null;
+            $agentId   = null;
+            $agentName = null;
+
+            if (is_string($agentData)) {
+                $decoded = json_decode($agentData, true);
+                if (is_array($decoded)) {
+                    $agentId   = $decoded['id']   ?? null;
+                    $agentName = $decoded['name'] ?? null;
+                } else {
+                    $agentName = $agentData;
+                }
+            } elseif (is_array($agentData)) {
+                $agentId   = $agentData['id']   ?? null;
+                $agentName = $agentData['name'] ?? null;
+            } elseif (is_object($agentData)) {
+                $agentId   = $agentData->id   ?? null;
+                $agentName = $agentData->name ?? null;
+            }
+
+            $dbAgent = null;
+            if ($agentId && isset($agentsById[$agentId])) {
+                $dbAgent = (array) $agentsById[$agentId];
+            } elseif ($agentName) {
+                $key = strtolower(trim($agentName));
+                if (isset($agentsByName[$key])) {
+                    $dbAgent = (array) $agentsByName[$key];
+                }
+            }
+
+            if ($dbAgent && isset($dbAgent['status'])) {
+                $st = strtolower((string)$dbAgent['status']);
+                if ($st === 'inactive' || $st === '0' || $st === 'disabled' || $st === 'blocked') {
+                    return false;
+                }
+            }
+
+            return true;
         });
 
         // Shuffle all packages first for randomization, then sort by tier

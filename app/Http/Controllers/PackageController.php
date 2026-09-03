@@ -15,7 +15,42 @@ class PackageController extends Controller
             if (!$pkg) {
                 abort(404);
             }
+
+            // Check if agent is inactive
+            $agentData = $pkg->agent;
+            $agentId = null;
+            $agentName = null;
+
+            if (is_string($agentData)) {
+                $decoded = json_decode($agentData, true);
+                if (is_array($decoded)) {
+                    $agentId = $decoded['id'] ?? null;
+                    $agentName = $decoded['name'] ?? null;
+                } else {
+                    $agentName = $agentData;
+                }
+            } elseif (is_array($agentData)) {
+                $agentId = $agentData['id'] ?? null;
+                $agentName = $agentData['name'] ?? null;
+            }
+
+            $dbAgent = null;
+            if ($agentId) {
+                $dbAgent = DB::table('agents')->where('id', $agentId)->first();
+            } elseif ($agentName) {
+                $dbAgent = DB::table('agents')->whereRaw('LOWER(name) = ?', [strtolower(trim($agentName))])->first();
+            }
+
+            if ($dbAgent && isset($dbAgent->status)) {
+                $st = strtolower((string)$dbAgent->status);
+                if ($st === 'inactive' || $st === '0' || $st === 'disabled' || $st === 'blocked') {
+                    abort(404);
+                }
+            }
         } catch (\Exception $e) {
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                throw $e;
+            }
             abort(404);
         }
 
