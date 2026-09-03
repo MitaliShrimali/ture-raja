@@ -474,6 +474,7 @@ Route::prefix('agent')->name('agent.')->group(function () {
         Route::post('/services/add', [AgentController::class, 'addAgentService'])->name('services.add');
         Route::get('/settings', [AgentController::class, 'settings'])->name('settings');
         Route::post('/settings/update', [AgentController::class, 'updateSettings'])->name('settings.update');
+        Route::post('/settings/notifications', [AgentController::class, 'updateNotifications'])->name('settings.notifications');
         Route::post('/settings/password', [AgentController::class, 'updatePassword'])->name('settings.password');
         Route::post('/settings/password/verify', [AgentController::class, 'verifyPasswordOtp'])->name('settings.password.verify');
         Route::get('/settings/profile-images', [AgentController::class, 'profileImages'])->name('profile-images');

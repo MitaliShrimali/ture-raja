@@ -429,34 +429,57 @@
                     <!-- Notifications Section -->
                     <div id="content-notifications" class="tab-content hidden space-y-8">
                         <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
-                            <h3 class="text-xl font-bold text-gray-800 mb-8">Notification Preferences</h3>
-                            <div class="space-y-4">
-                                <?php 
-                                $notifs = [
-                                    ['title' => 'Email Notifications', 'desc' => 'Receive emails about your account activity', 'icon' => 'fas fa-envelope', 'checked' => true],
-                                    ['title' => 'Desktop Notifications', 'desc' => 'Show desktop alerts for new leads', 'icon' => 'fas fa-desktop', 'checked' => false],
-                                    ['title' => 'SMS Alerts', 'desc' => 'Get urgent updates via SMS', 'icon' => 'fas fa-mobile-alt', 'checked' => true],
-                                    ['title' => 'Marketing Emails', 'desc' => 'Receive news and promotional offers', 'icon' => 'fas fa-percentage', 'checked' => false],
-                                ];
-                                foreach($notifs as $n):
-                                ?>
-                                <div class="flex items-center justify-between p-5 bg-gray-50 rounded-[2rem] hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all border border-transparent hover:border-gray-100">
-                                    <div class="flex items-center space-x-5">
-                                        <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm text-lg">
-                                            <i class="<?php echo $n['icon']; ?>"></i>
+                            <div class="flex items-center justify-between mb-8">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800">Notification Preferences</h3>
+                                    <p class="text-xs text-gray-400 mt-1">Control how you receive activity updates and alerts.</p>
+                                </div>
+                            </div>
+
+                            <form action="{{ route('agent.settings.notifications') }}" method="POST">
+                                @csrf
+                                <div class="space-y-5">
+                                    <!-- Email Notifications -->
+                                    <div class="flex items-center justify-between p-5 bg-gray-50 rounded-[2rem] hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all border border-transparent hover:border-gray-100">
+                                        <div class="flex items-center space-x-5">
+                                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm text-lg">
+                                                <i class="fas fa-envelope"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-gray-800">Email Notifications</p>
+                                                <p class="text-[11px] text-gray-500 mt-0.5">Receive email alerts about your account activity, package updates, and incoming lead inquiries.</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-gray-800"><?php echo $n['title']; ?></p>
-                                            <p class="text-[10px] text-gray-400"><?php echo $n['desc']; ?></p>
-                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="notify_email" value="1" class="sr-only peer" {{ ($agent && $agent->notify_email != 0) ? 'checked' : '' }}>
+                                            <div class="w-12 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
                                     </div>
-                                    <div class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer" <?php echo $n['checked'] ? 'checked' : ''; ?>>
-                                        <div class="w-12 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+
+                                    <!-- SMS Alerts -->
+                                    <div class="flex items-center justify-between p-5 bg-gray-50 rounded-[2rem] hover:bg-white hover:shadow-xl hover:shadow-gray-100 transition-all border border-transparent hover:border-gray-100">
+                                        <div class="flex items-center space-x-5">
+                                            <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm text-lg">
+                                                <i class="fas fa-mobile-alt"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-bold text-gray-800">SMS Alerts</p>
+                                                <p class="text-[11px] text-gray-500 mt-0.5">Receive SMS notifications on your mobile phone for account activities and lead updates.</p>
+                                            </div>
+                                        </div>
+                                        <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" name="notify_sms" value="1" class="sr-only peer" {{ ($agent && $agent->notify_sms != 0) ? 'checked' : '' }}>
+                                            <div class="w-12 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        </label>
                                     </div>
                                 </div>
-                                <?php endforeach; ?>
-                            </div>
+
+                                <div class="pt-6 flex justify-end">
+                                    <button type="submit" class="px-8 py-3.5 bg-primary text-white text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg shadow-orange-100 hover:bg-orange-600 transition-all cursor-pointer">
+                                        Save Notification Preferences
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
 

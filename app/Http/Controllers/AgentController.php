@@ -1956,6 +1956,22 @@ class AgentController extends Controller
         return redirect()->back()->with('success', 'Profile settings updated successfully!');
     }
 
+    public function updateNotifications(Request $request)
+    {
+        $agentId = session('agent_id');
+        if (!$agentId) {
+            return redirect()->route('agent.login')->with('error', 'Please login first.');
+        }
+
+        DB::table('agents')->where('id', $agentId)->update([
+            'notify_email' => $request->has('notify_email') ? 1 : 0,
+            'notify_sms'   => $request->has('notify_sms') ? 1 : 0,
+            'updated_at'   => now()
+        ]);
+
+        return redirect()->back()->with('success', 'Notification preferences updated successfully!');
+    }
+
     public function profileImages()
     {
         $agentId = session('agent_id');
