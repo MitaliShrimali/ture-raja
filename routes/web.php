@@ -322,6 +322,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/payments/print', [AdminController::class, 'printPayments']);
     Route::get('/payments/invoice', function() { return redirect('/admin/payments'); });
     Route::get('/payments/invoice/{id}', [AdminController::class, 'paymentInvoice']);
+    Route::get('/payments/invoice/{id}/download', [AdminController::class, 'downloadPaymentInvoice']);
     Route::post('/payments/invoice/update', [AdminController::class, 'updatePaymentInvoice']);
 
     Route::post('/ads/store', [AdminController::class, 'storeAd']);

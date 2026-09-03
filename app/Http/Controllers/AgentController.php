@@ -1464,22 +1464,31 @@ class AgentController extends Controller
         $payment = DB::table('payments')
             ->where('id', $id)
             ->where(function($q) use ($agentId, $agent) {
-                $q;
                 if ($agent) {
-                    $q->orWhere('email', $agent->email);
+                    $q->where('email', $agent->email)->orWhere('agent_id', $agentId);
+                } else {
+                    $q->where('agent_id', $agentId);
                 }
             })->first();
             
         if (!$payment) {
-            return redirect()->back()->with('error', 'Invoice not found.');
+            return redirect()->route('agent.invoice')->with('error', 'Invoice not found.');
         }
-        
-        $agent = DB::table('agents')->where('id', $agentId)->first();
+
+        $invoiceData = \App\Http\Controllers\AdminController::prepareInvoiceData($payment);
+        $amountInWords = convertNumberToWords($invoiceData['grand_total'] ?? 0);
 
         return view('agent.pages.print-invoice', [
             'payment' => $payment,
-            'agent' => $agent
+            'agent' => $agent,
+            'invoiceData' => $invoiceData,
+            'amountInWords' => $amountInWords
         ]);
+    }
+
+    public function showInvoice($id)
+    {
+        return $this->downloadInvoice($id);
     }
 
     public function leads()

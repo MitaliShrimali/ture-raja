@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\AgentMedia;
 use Illuminate\Support\Facades\File;
 
+if (!function_exists('convertNumberToWords')) {
+    function convertNumberToWords($number) {
+        return \App\Http\Controllers\AdminController::convertNumberToWords($number);
+    }
+}
+
 class AdminController extends Controller
 {
     public function dashboard()
@@ -1993,193 +1999,277 @@ class AdminController extends Controller
         return view('admin.payments-print', compact('payments', 'settings', 'filters'));
     }
 
-    public function paymentInvoice($id)
+    public static function convertNumberToWords($number)
     {
-        try {
-            DB::statement("SELECT invoice_data FROM payments LIMIT 1");
-        } catch (\Exception $e) {
-            DB::statement("ALTER TABLE payments ADD COLUMN invoice_data LONGTEXT NULL");
+        $number = (float)$number;
+        if ($number <= 0) {
+            return 'Zero Rupees Only';
+        }
+        $decimal = round($number - ($no = floor($number)), 2) * 100;
+        $hundred = null;
+        $digits_length = strlen($no);
+        $i = 0;
+        $str = array();
+        $words = array(
+            0 => '', 1 => 'One', 2 => 'Two',
+            3 => 'Three', 4 => 'Four', 5 => 'Five', 6 => 'Six',
+            7 => 'Seven', 8 => 'Eight', 9 => 'Nine',
+            10 => 'Ten', 11 => 'Eleven', 12 => 'Twelve',
+            13 => 'Thirteen', 14 => 'Fourteen', 15 => 'Fifteen',
+            16 => 'Sixteen', 17 => 'Seventeen', 18 => 'Eighteen',
+            19 => 'Nineteen', 20 => 'Twenty',
+            30 => 'Thirty', 40 => 'Forty', 50 => 'Fifty',
+            60 => 'Sixty', 70 => 'Seventy',
+            80 => 'Eighty', 90 => 'Ninety'
+        );
+        $digits = array('', 'Hundred','Thousand','Lakh', 'Crore');
+        while ($i < $digits_length) {
+            $divider = ($i == 2) ? 10 : 100;
+            $number = floor($no % $divider);
+            $no = floor($no / $divider);
+            $i += $divider == 10 ? 1 : 2;
+            if ($number) {
+                $plural = (($counter = count($str)) && $number > 9) ? 's' : null;
+                $hundred = ($counter == 1 && isset($str[0]) && $str[0]) ? ' and ' : null;
+                $str[] = ($number < 21) ? $words[$number].' '. $digits[$counter]. $plural. $hundred : $words[floor($number / 10) * 10].' '.$words[$number % 10]. ' '.$digits[$counter].$plural.$hundred;
+            } else $str[] = null;
+        }
+        $Rupees = implode(' ', array_filter(explode(' ', implode('', array_reverse(array_filter($str))))));
+        $paise = ($decimal > 0 && isset($words[$decimal / 10]) && isset($words[$decimal % 10])) ? " and " . trim($words[$decimal / 10] . " " . $words[$decimal % 10]) . ' Paise' : '';
+        return trim(($Rupees ? $Rupees . ' Rupees' : '') . $paise) . ' Only';
+    }
+
+    public static function prepareInvoiceData($payment)
+    {
+        $agent = null;
+        if (!empty($payment->agent_id)) {
+            $agent = DB::table('agents')->where('id', $payment->agent_id)->first();
+        }
+        if (!$agent && !empty($payment->email)) {
+            $agent = DB::table('agents')->where('email', $payment->email)->first();
         }
 
-        $payment = DB::table('payments')
-            ->select('payments.*')
-            ->addSelect([
-                'service_guaranteed' => DB::table('agents')
-                    ->select('service_guaranteed')
-                    ->whereColumn('agents.email', 'payments.email')
-                    ->limit(1),
-                'sac_hsn_code' => DB::table('agents')
-                    ->select('sac_hsn_code')
-                    ->whereColumn('agents.email', 'payments.email')
-                    ->limit(1)
-            ])
-            ->where('payments.id', $id)
-            ->first();
+        $planType = $payment->plan_type ?? 'Service Guaranteed';
+        $sacHsn = '-';
+        
+        // Dynamic Plan GST Lookup from plans table
+        $dbPlan = DB::table('plans')->where('name', $planType)->first();
+        if (!$dbPlan && $agent && !empty($agent->plan_id)) {
+            $dbPlan = DB::table('plans')->where('id', $agent->plan_id)->first();
+        }
 
+        if ($dbPlan) {
+            $taxRate = (float)($dbPlan->gst ?? $dbPlan->tax_rate ?? $dbPlan->gst_percentage ?? 18.00);
+            $sacHsn = $dbPlan->sac_hsn ?? '-';
+        } else {
+            $globalTax = DB::table('settings')->where('key', 'gst_percentage')->value('value') ?? DB::table('settings')->where('key', 'tax_percentage')->value('value');
+            $taxRate = $globalTax ? (float)$globalTax : 18.00;
+        }
+
+        if (!empty($payment->invoice_data)) {
+            $data = json_decode($payment->invoice_data, true);
+            if (is_array($data)) {
+                $data['reverse_charge'] = $data['reverse_charge'] ?? 'NA';
+                $data['sale_type'] = $data['sale_type'] ?? 'DEBIT MEMO';
+                if (!isset($data['tax_rate']) || (float)$data['tax_rate'] == 0) {
+                    $data['tax_rate'] = $taxRate;
+                }
+                if (!isset($data['taxable_amt'])) {
+                    $data['taxable_amt'] = (float)($payment->amount ?? 0);
+                }
+                $data['total_tax'] = round(($data['taxable_amt'] * $data['tax_rate']) / 100, 2);
+                $data['grand_total'] = $data['taxable_amt'] + $data['total_tax'];
+                return $data;
+            }
+        }
+
+        $year = date('Y', strtotime($payment->date ?? $payment->created_at ?? now()));
+
+        $invoiceNo = $payment->invoice_number ?? null;
+        if (empty($invoiceNo)) {
+            $countThisYear = DB::table('payments')
+                ->whereNotNull('invoice_number')
+                ->where('invoice_number', 'like', "INV-{$year}-%")
+                ->count();
+            $seq = str_pad($countThisYear + 1, 2, '0', STR_PAD_LEFT);
+            $invoiceNo = 'INV-' . $year . '-' . $seq;
+
+            try {
+                DB::table('payments')->where('id', $payment->id)->update(['invoice_number' => $invoiceNo]);
+            } catch (\Exception $e) {}
+        }
+
+        $invoiceDate = date('d-M-Y', strtotime($payment->date ?? $payment->created_at ?? now()));
+
+        $partyName = $agent->agency_name ?? $agent->company_name ?? $agent->name ?? $payment->user_name ?? 'Miths Holidays';
+        
+        $addrParts = [];
+        if ($agent) {
+            if (!empty($agent->address)) $addrParts[] = $agent->address;
+            if (!empty($agent->city)) $addrParts[] = $agent->city;
+            $statePin = trim(($agent->state ?? 'Gujarat') . (!empty($agent->pincode) ? ' - ' . $agent->pincode : ''));
+            if (!empty($statePin)) $addrParts[] = $statePin;
+        }
+        $partyAddress = !empty($addrParts) ? implode("\n", $addrParts) : "101 GF Nr Trikon Bagh\nGujarat - 360007";
+
+        $partyMobile = $agent->phone ?? $agent->mobile ?? $agent->contact ?? '9725982183';
+        $partyGstin = $agent->gstin ?? $agent->gst_number ?? '-';
+        $placeOfSupply = $agent->state ?? 'Gujarat';
+
+        $packageCount = 0;
+        if ($agent) {
+            $packageCount = DB::table('packages')->where('status', 'Active')->get()->filter(function($p) use ($agent) {
+                $ag = is_string($p->agent) ? json_decode($p->agent, true) : $p->agent;
+                if (is_array($ag)) {
+                    return ($ag['id'] ?? null) == $agent->id || (strtolower(trim($ag['name'] ?? '')) == strtolower(trim($agent->name ?? '')));
+                }
+                return false;
+            })->count();
+        }
+
+        $amount = (float)($payment->amount ?? 0);
+        $taxableAmt = $amount;
+        $totalTax = round(($taxableAmt * $taxRate) / 100, 2);
+        $grandTotal = $taxableAmt + $totalTax;
+
+        return [
+            'invoice_no' => $invoiceNo,
+            'invoice_date' => $invoiceDate,
+            'customer_name' => $partyName,
+            'customer_address' => $partyAddress,
+            'customer_phone' => $partyMobile,
+            'customer_gstin' => $partyGstin,
+            'place_of_supply' => $placeOfSupply,
+            'reverse_charge' => 'NA',
+            'sale_type' => 'DEBIT MEMO',
+            'tax_rate' => $taxRate,
+            'taxable_amt' => $taxableAmt,
+            'total_tax' => $totalTax,
+            'grand_total' => $grandTotal,
+            'services' => [
+                [
+                    'no' => 1,
+                    'name' => $planType,
+                    'sac_hsn' => $sacHsn,
+                    'package_listings' => $packageCount,
+                    'qty' => 1,
+                    'price' => $amount,
+                    'total' => $amount
+                ]
+            ],
+            'notes' => 'We declare that this invoice shows the actual price of the services described and that all particulars are true and correct.'
+        ];
+    }
+
+    public function paymentInvoice($id)
+    {
+        $payment = DB::table('payments')->where('id', $id)->first();
         if (!$payment) {
             abort(404, 'Payment record not found');
         }
 
+        $invoiceData = self::prepareInvoiceData($payment);
+        $amountInWords = convertNumberToWords($invoiceData['grand_total'] ?? 0);
 
+        return view('admin.invoice-overview', compact('payment', 'invoiceData', 'amountInWords'));
+    }
 
-        if (!$payment->generate_bill) {
-            return response()->make("<div style='font-family: system-ui, -apple-system, sans-serif; padding: 40px; text-align: center; max-width: 600px; margin: 100px auto; background: #fff; border-radius: 28px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid #f0f0f0;'>
-                <div style='color: #D35400; font-size: 56px; margin-bottom: 20px;'>⚠️</div>
-                <h2 style='color: #1a1a1a; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.02em;'>Generation Blocked</h2>
-                <p style='color: #666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;'>Invoice cannot be generated because Bill Generate is No.</p>
-                <a href='" . url('/admin/payments') . "' style='display: inline-flex; align-items: center; justify-content: center; padding: 14px 32px; background: #D35400; color: #fff; text-decoration: none; border-radius: 16px; font-weight: bold; font-size: 14px; transition: all 0.2s;'>Back to Payments</a>
-            </div>", 400);
+    public function downloadPaymentInvoice($id)
+    {
+        $payment = DB::table('payments')->where('id', $id)->first();
+        if (!$payment) {
+            abort(404, 'Payment record not found');
         }
 
-        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
-        $prefix = rtrim($settings['invoice_prefix'] ?? 'INV', '-') . '-';
-        $year   = date('Y');
+        $invoiceData = self::prepareInvoiceData($payment);
+        $amountInWords = convertNumberToWords($invoiceData['grand_total'] ?? 0);
 
-        // Count invoices already created this calendar year to get the sequence
-        $countThisYear = DB::table('payments')
-            ->whereYear('created_at', $year)
-            ->count();
-        $sequence = str_pad($countThisYear + 1, 2, '0', STR_PAD_LEFT);
-        $invoiceNo = $prefix . $year . '-' . $sequence;
-
-        $invoiceData = json_decode($payment->invoice_data ?? '', true);
-        if (!$invoiceData) {
-            $price = ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') ? 0 : $payment->amount;
-            $invoiceData = [
-                'invoice_no' => $invoiceNo,
-                'invoice_date' => \Carbon\Carbon::parse($payment->date)->format('F d, Y'),
-                'due_date' => \Carbon\Carbon::parse($payment->date)->addDays(30)->format('F d, Y'),
-                'customer_name' => $payment->user_name,
-                'customer_address' => "12th Floor, Trade Center, Bandra Kurla Complex\nMumbai, Maharashtra - 400051",
-                'customer_gstin' => '27AABCA1234B1Z2',
-                'customer_phone' => '+91 98765 43210',
-                'customer_email' => $payment->email,
-                'place_of_supply' => 'Uttar Pradesh (09)',
-                'state_code' => '09',
-                'payment_due' => 'Net 30 Days (' . \Carbon\Carbon::parse($payment->date)->addDays(30)->format('M d, Y') . ')',
-                'services' => [
-                    [
-                        'name' => $payment->plan_type,
-                        'description' => 'Subscription package fee for ' . $payment->plan_type,
-                        'sac_hsn' => $payment->sac_hsn_code ?: '998522',
-                        'qty' => 1,
-                        'price' => $price,
-                        'total' => $price
-                    ]
-                ],
-                'notes' => "All payments should be made in favor of Tour Raja Private Limited.\nInterest at 18% p.a. will be charged if the bill is not paid by the due date.\nGoods/Services once sold cannot be returned.\nSubject to Noida Jurisdiction only."
-            ];
-        } else {
-            $defaultData = [
-                'invoice_no' => $invoiceNo,
-                'invoice_date' => \Carbon\Carbon::parse($payment->date)->format('F d, Y'),
-                'due_date' => \Carbon\Carbon::parse($payment->date)->addDays(30)->format('F d, Y'),
-                'customer_name' => $payment->user_name,
-                'customer_address' => "12th Floor, Trade Center, Bandra Kurla Complex\nMumbai, Maharashtra - 400051",
-                'customer_gstin' => '27AABCA1234B1Z2',
-                'customer_phone' => '+91 98765 43210',
-                'customer_email' => $payment->email,
-                'place_of_supply' => 'Uttar Pradesh (09)',
-                'state_code' => '09',
-                'payment_due' => 'Net 30 Days (' . \Carbon\Carbon::parse($payment->date)->addDays(30)->format('M d, Y') . ')',
-                'services' => [],
-                'notes' => "All payments should be made in favor of Tour Raja Private Limited.\nInterest at 18% p.a. will be charged if the bill is not paid by the due date.\nGoods/Services once sold cannot be returned.\nSubject to Noida Jurisdiction only."
-            ];
-            $invoiceData = array_merge($defaultData, $invoiceData);
-
-
-            if (empty($invoiceData['services'])) {
-                $price = ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') ? 0 : $payment->amount;
-                $invoiceData['services'] = [
-                    [
-                        'name' => $payment->plan_type,
-                        'description' => 'Subscription package fee for ' . $payment->plan_type,
-                        'sac_hsn' => $payment->sac_hsn_code ?: '998522',
-                        'qty' => 1,
-                        'price' => $price,
-                        'total' => $price
-                    ]
-                ];
-            } else {
-                if ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0') {
-                    foreach ($invoiceData['services'] as &$svc) {
-                        $svc['price'] = 0;
-                        $svc['total'] = 0;
-                    }
-                }
-            }
-        }
-
-        return view('admin.invoice-overview', compact('payment', 'invoiceData'));
+        return view('agent.pages.print-invoice', compact('payment', 'invoiceData', 'amountInWords'));
     }
 
     public function updatePaymentInvoice(Request $request)
     {
         $id = $request->input('id');
-        $payment = DB::table('payments')
-            ->leftJoin('agents', 'payments.email', '=', 'agents.email')
-            ->select('payments.*', 'agents.generate_bill')
-            ->where('payments.id', $id)
-            ->first();
-
-        $isFree = $payment && ($payment->generate_bill === 0 || $payment->generate_bill === false || $payment->generate_bill === '0');
-
-        $invoiceData = [
-            'invoice_no' => $request->input('invoice_no'),
-            'invoice_date' => $request->input('invoice_date'),
-            'due_date' => $request->input('due_date'),
-            'customer_name' => $request->input('customer_name'),
-            'customer_address' => $request->input('customer_address'),
-            'customer_gstin' => $request->input('customer_gstin'),
-            'customer_phone' => $request->input('customer_phone'),
-            'customer_email' => $request->input('customer_email'),
-            'place_of_supply' => $request->input('place_of_supply'),
-            'state_code' => $request->input('state_code'),
-            'payment_due' => $request->input('payment_due'),
-            'services' => [],
-            'notes' => $request->input('notes')
-        ];
+        $payment = DB::table('payments')->where('id', $id)->first();
+        if (!$payment) {
+            return redirect()->back()->with('error', 'Payment not found.');
+        }
 
         $serviceNames = $request->input('service_name', []);
-        $serviceDescriptions = $request->input('service_description', []);
         $serviceSacs = $request->input('service_sac', []);
+        $serviceListings = $request->input('service_listings', []);
         $serviceQtys = $request->input('service_qty', []);
         $servicePrices = $request->input('service_price', []);
 
-        $totalAmount = 0;
+        $services = [];
+        $taxableAmt = 0;
+
         foreach ($serviceNames as $index => $name) {
             if (!empty($name)) {
+                $sac = $serviceSacs[$index] ?? '-';
+                $listings = intval($serviceListings[$index] ?? 0);
                 $qty = intval($serviceQtys[$index] ?? 1);
-                $price = $isFree ? 0 : floatval($servicePrices[$index] ?? 0);
-                $total = $qty * $price;
-                $totalAmount += $total;
+                $price = floatval($servicePrices[$index] ?? 0);
+                $lineTotal = $qty * $price;
+                $taxableAmt += $lineTotal;
 
-                $invoiceData['services'][] = [
+                $services[] = [
+                    'no' => count($services) + 1,
                     'name' => $name,
-                    'description' => $serviceDescriptions[$index] ?? '',
-                    'sac_hsn' => $serviceSacs[$index] ?? '',
+                    'sac_hsn' => $sac,
+                    'package_listings' => $listings,
                     'qty' => $qty,
                     'price' => $price,
-                    'total' => $total
+                    'total' => $lineTotal
                 ];
             }
         }
 
-        // SGST 9%, CGST 9% (18% total GST)
-        $subtotal = $totalAmount;
-        $sgst = round($subtotal * 0.09, 2);
-        $cgst = round($subtotal * 0.09, 2);
-        $grandTotal = $subtotal + $sgst + $cgst;
+        if (empty($services)) {
+            $services[] = [
+                'no' => 1,
+                'name' => $payment->plan_type ?? 'Service Guaranteed',
+                'sac_hsn' => '-',
+                'package_listings' => 0,
+                'qty' => 1,
+                'price' => (float)$payment->amount,
+                'total' => (float)$payment->amount
+            ];
+            $taxableAmt = (float)$payment->amount;
+        }
+
+        $taxRate = floatval($request->input('tax_rate', 0));
+        $totalTax = round(($taxableAmt * $taxRate) / 100, 2);
+        $grandTotal = $taxableAmt + $totalTax;
+
+        $invoiceData = [
+            'invoice_no' => $request->input('invoice_no'),
+            'invoice_date' => $request->input('invoice_date'),
+            'customer_name' => $request->input('customer_name'),
+            'customer_address' => $request->input('customer_address'),
+            'customer_phone' => $request->input('customer_phone'),
+            'customer_gstin' => $request->input('customer_gstin', '-'),
+            'place_of_supply' => $request->input('place_of_supply', 'Gujarat'),
+            'reverse_charge' => $request->input('reverse_charge', 'NA'),
+            'sale_type' => $request->input('sale_type', 'DEBIT MEMO'),
+            'tax_rate' => $taxRate,
+            'taxable_amt' => $taxableAmt,
+            'total_tax' => $totalTax,
+            'grand_total' => $grandTotal,
+            'services' => $services,
+            'notes' => $request->input('notes', 'We declare that this invoice shows the actual price of the services described and that all particulars are true and correct.')
+        ];
 
         DB::table('payments')->where('id', $id)->update([
+            'invoice_number' => $request->input('invoice_no'),
             'amount' => $grandTotal,
-            'plan_type' => $invoiceData['services'][0]['name'] ?? 'Custom Plan',
+            'plan_type' => $services[0]['name'] ?? $payment->plan_type,
             'invoice_data' => json_encode($invoiceData),
             'updated_at' => now()
         ]);
 
         $this->logActivity('Platform Action', 'Invoice details updated successfully!');
-        return redirect()->back()->with('success', 'Invoice details updated successfully!');
+        return redirect()->back()->with('success', 'Invoice details updated successfully! Agent invoice has been updated.');
     }
 
     public function storePayment(Request $request)

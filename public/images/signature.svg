@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 110" width="220" height="75">
+  <g fill="none" stroke="#111827" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Main M cursive loop -->
+    <path d="M 25 65 C 20 35, 35 15, 48 35 C 58 55, 62 25, 75 45 C 85 60, 92 35, 102 55" stroke-width="3"/>
+    <!-- Dot after M -->
+    <circle cx="112" cy="56" r="2.5" fill="#111827"/>
+    <!-- C & h hand-script -->
+    <path d="M 125 55 C 120 35, 140 32, 138 52 C 142 35, 146 15, 148 55 C 152 42, 160 38, 162 52 C 168 45, 175 42, 176 54 C 182 45, 188 42, 190 53 C 196 46, 204 43, 206 53 C 212 45, 218 43, 222 54" stroke-width="2.6"/>
+    <!-- Tail & swirl loop underneath signature -->
+    <path d="M 224 54 C 235 45, 245 42, 248 55 C 245 72, 210 78, 160 76 C 110 74, 50 72, 35 68 C 25 65, 45 62, 75 62 C 120 62, 180 65, 240 68 C 265 69, 285 70, 275 75" stroke-width="2.4"/>
+  </g>
+</svg>
