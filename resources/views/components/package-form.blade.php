@@ -438,7 +438,7 @@
         <!-- Form Container -->
         <script>
     // Define setupAutocompleteElement early so Alpine x-init can use it immediately without race conditions
-    window.setupAutocompleteElement = (input, suggestionsDiv, type, onSelect) => {
+    window.setupAutocompleteElement = (input, suggestionsDiv, type, onSelect, targetStateId, targetCountryId) => {
         if (!input || !suggestionsDiv) return;
 
         let debounceTimer;
@@ -614,17 +614,29 @@
                         row.onclick = () => {
                             if (type === 'city') {
                                 input.value = res.city;
-                                const stateEl = document.getElementById('departureState');
-                                const countryEl = document.getElementById('departureCountry');
+                                const stateEl = document.getElementById(targetStateId || 'departureState');
+                                const countryEl = document.getElementById(targetCountryId || 'departureCountry');
                                 if (!onSelect) {
-                                    if (stateEl) stateEl.value = res.state;
-                                    if (countryEl) countryEl.value = res.country;
+                                    if (stateEl && res.state) {
+                                        stateEl.value = res.state;
+                                        stateEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                        stateEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                    }
+                                    if (countryEl && res.country) {
+                                        countryEl.value = res.country;
+                                        countryEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                        countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                    }
                                 }
                             } else if (type === 'state') {
                                 input.value = res.state;
-                                const countryEl = document.getElementById('departureCountry');
+                                const countryEl = document.getElementById(targetCountryId || 'departureCountry');
                                 if (!onSelect) {
-                                    if (countryEl) countryEl.value = res.country;
+                                    if (countryEl && res.country) {
+                                        countryEl.value = res.country;
+                                        countryEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                        countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                    }
                                 }
                             } else {
                                 input.value = res.country;
@@ -635,6 +647,7 @@
                             }
                             
                             input.dispatchEvent(new Event('input', { bubbles: true }));
+                            input.dispatchEvent(new Event('change', { bubbles: true }));
                             suggestionsDiv.classList.add('hidden');
                         };
                         suggestionsDiv.appendChild(row);

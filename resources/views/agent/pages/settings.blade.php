@@ -178,13 +178,15 @@
                                                     <input type="text" id="settingsCity" name="city" value="{{ $agent->city ?? '' }}" required placeholder="Search city" autocomplete="off" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
                                                     <div id="citySuggestions" class="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto bg-white rounded-2xl border border-gray-100 shadow-xl hidden custom-scroll"></div>
                                                 </div>
-                                                <div>
+                                                <div class="relative">
                                                     <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">STATE <span class="text-red-500">*</span></label>
-                                                    <input type="text" id="settingsState" name="state" value="{{ $agent->state ?? '' }}" required placeholder="State" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    <input type="text" id="settingsState" name="state" value="{{ $agent->state ?? '' }}" required placeholder="State" autocomplete="off" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    <div id="stateSuggestions" class="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto bg-white rounded-2xl border border-gray-100 shadow-xl hidden custom-scroll"></div>
                                                 </div>
-                                                <div>
+                                                <div class="relative">
                                                     <label class="block text-[11px] font-bold text-gray-400 uppercase mb-2 tracking-widest">COUNTRY <span class="text-red-500">*</span></label>
-                                                    <input type="text" id="settingsCountry" name="country" value="{{ $agent->country ?? '' }}" required placeholder="Country" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    <input type="text" id="settingsCountry" name="country" value="{{ $agent->country ?? '' }}" required placeholder="Country" autocomplete="off" class="w-full px-5 py-3.5 rounded-xl bg-gray-50 border-none text-xs font-medium focus:ring-2 focus:ring-primary/20">
+                                                    <div id="countrySuggestions" class="absolute left-0 right-0 z-50 mt-1 max-h-60 overflow-y-auto bg-white rounded-2xl border border-gray-100 shadow-xl hidden custom-scroll"></div>
                                                 </div>
                                             </div>
                                             <div class="w-1/3">
@@ -830,6 +832,247 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // Autocomplete for City, State, Country (matching Package Create Departure City)
+    if (!window.setupAutocompleteElement) {
+        window.setupAutocompleteElement = (input, suggestionsDiv, type, onSelect, targetStateId, targetCountryId) => {
+            if (!input || !suggestionsDiv) return;
+
+            let debounceTimer;
+            input.addEventListener('input', () => {
+                const query = input.value.trim();
+                clearTimeout(debounceTimer);
+                if (!query || query.length < 2) {
+                    suggestionsDiv.innerHTML = '';
+                    suggestionsDiv.classList.add('hidden');
+                    return;
+                }
+
+                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching...</div>';
+                suggestionsDiv.classList.remove('hidden');
+
+                debounceTimer = setTimeout(() => {
+                    const urlIndia = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=40&bbox=68.1,6.7,97.4,35.5`;
+                    const urlGlobal = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=40`;
+
+                    Promise.all([
+                        fetch(urlIndia).then(r => r.json()).catch(() => ({ features: [] })),
+                        fetch(urlGlobal).then(r => r.json()).catch(() => ({ features: [] }))
+                    ]).then(([indiaData, globalData]) => {
+                        suggestionsDiv.innerHTML = '';
+                        const seen = new Set();
+                        let results = [];
+
+                        const features = [...(indiaData.features || []), ...(globalData.features || [])];
+                        features.forEach(f => {
+                            const p = f.properties || {};
+                            let city = p.city || p.town || p.village || p.county || p.name || '';
+                            let state = p.state || '';
+                            let country = p.country || '';
+                            
+                            if (type === 'city') {
+                                if (p.osm_key === 'place' && (p.osm_value === 'country' || p.osm_value === 'state')) return;
+                            }
+                            if (type === 'state') {
+                                if (p.osm_value !== 'state' && p.osm_value !== 'administrative') return;
+                                city = '';
+                                if (p.name) state = p.name;
+                            }
+                            if (type === 'country') {
+                                if (p.osm_value !== 'country' && p.osm_value !== 'administrative') return;
+                                city = '';
+                                state = '';
+                                if (p.name) country = p.name;
+                            }
+
+                            let display_name = [city, state, country].filter(Boolean).join(', ');
+                            const parsed = { city, state, country, display: display_name, importance: p.importance || 0.5 };
+
+                            let key = '';
+                            if (type === 'city') key = `${parsed.city}_${parsed.state}_${parsed.country}`.toLowerCase();
+                            else if (type === 'state') key = `${parsed.state}_${parsed.country}`.toLowerCase();
+                            else key = `${parsed.country}`.toLowerCase();
+
+                            if (!key || seen.has(key)) return;
+                            seen.add(key);
+                            results.push(parsed);
+                        });
+
+                        if (type === 'city') {
+                            const qLower = query.toLowerCase();
+                            const getMatchQuality = (str) => {
+                                const c = (str || '').toLowerCase();
+                                if (c === qLower) return 4;
+                                if (c.startsWith(qLower)) return 3;
+                                if (c.split(/[\s,-]+/).some(w => w.startsWith(qLower))) return 2;
+                                if (c.includes(qLower)) return 1;
+                                return 0;
+                            };
+                            const getLocationPriority = (res) => {
+                                const country = (res.country || '').toLowerCase();
+                                const state = (res.state || '').toLowerCase();
+                                if (country === 'india') {
+                                    if (state === 'gujarat') return 2;
+                                    return 1;
+                                }
+                                return 0;
+                            };
+
+                            results = results.filter(r => getMatchQuality(r.city) > 0);
+
+                            results.sort((a, b) => {
+                                const mqA = getMatchQuality(a.city);
+                                const mqB = getMatchQuality(b.city);
+                                if (mqA !== mqB) return mqB - mqA;
+
+                                const lpA = getLocationPriority(a);
+                                const lpB = getLocationPriority(b);
+                                if (lpA !== lpB) return lpB - lpA;
+                                
+                                return b.importance - a.importance;
+                            });
+                        } else if (type === 'state') {
+                            const qLower = query.toLowerCase();
+                            const getMatchQuality = (str) => {
+                                const c = (str || '').toLowerCase();
+                                if (c === qLower) return 4;
+                                if (c.startsWith(qLower)) return 3;
+                                if (c.split(/[\s,-]+/).some(w => w.startsWith(qLower))) return 2;
+                                if (c.includes(qLower)) return 1;
+                                return 0;
+                            };
+                            results = results.filter(r => getMatchQuality(r.state) > 0);
+
+                            results.sort((a, b) => {
+                                const mqA = getMatchQuality(a.state);
+                                const mqB = getMatchQuality(b.state);
+                                if (mqA !== mqB) return mqB - mqA;
+
+                                const isIndA = (a.country || '').toLowerCase() === 'india' ? 1 : 0;
+                                const isIndB = (b.country || '').toLowerCase() === 'india' ? 1 : 0;
+                                if (isIndA !== isIndB) return isIndB - isIndA;
+                                
+                                return b.importance - a.importance;
+                            });
+                        } else if (type === 'country') {
+                            const qLower = query.toLowerCase();
+                            const getMatchQuality = (str) => {
+                                const c = (str || '').toLowerCase();
+                                if (c === qLower) return 4;
+                                if (c.startsWith(qLower)) return 3;
+                                if (c.split(/[\s,-]+/).some(w => w.startsWith(qLower))) return 2;
+                                if (c.includes(qLower)) return 1;
+                                return 0;
+                            };
+                            results = results.filter(r => getMatchQuality(r.country) > 0);
+
+                            results.sort((a, b) => {
+                                const mqA = getMatchQuality(a.country);
+                                const mqB = getMatchQuality(b.country);
+                                if (mqA !== mqB) return mqB - mqA;
+
+                                const isIndA = (a.country || '').toLowerCase() === 'india' ? 1 : 0;
+                                const isIndB = (b.country || '').toLowerCase() === 'india' ? 1 : 0;
+                                if (isIndA !== isIndB) return isIndB - isIndA;
+                                
+                                return b.importance - a.importance;
+                            });
+                        }
+
+                        results = results.slice(0, 10);
+
+                        if (results.length === 0) {
+                            suggestionsDiv.innerHTML = `<div class="px-4 py-3 text-xs text-gray-400 font-medium">No results found</div>`;
+                            return;
+                        }
+
+                        results.forEach(res => {
+                            const row = document.createElement('div');
+                            row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex flex-col justify-center border-b border-gray-50 last:border-0';
+                            
+                            let mainText = '';
+                            let subText = '';
+                            
+                            if (type === 'city') {
+                                mainText = res.city;
+                                subText = [res.state, res.country].filter(Boolean).join(', ');
+                                row.innerHTML = `<span>${mainText}</span><span class="text-[10px] text-gray-400 font-medium">${subText}</span>`;
+                            } else if (type === 'state') {
+                                mainText = res.state;
+                                subText = res.country;
+                                row.innerHTML = `<span>${mainText}</span><span class="text-[10px] text-gray-400 font-medium">${subText}</span>`;
+                            } else {
+                                mainText = res.country;
+                                row.innerHTML = `<span>${mainText}</span>`;
+                            }
+
+                            row.onclick = () => {
+                                if (type === 'city') {
+                                    input.value = res.city;
+                                    const stateEl = document.getElementById(targetStateId || 'settingsState');
+                                    const countryEl = document.getElementById(targetCountryId || 'settingsCountry');
+                                    if (!onSelect) {
+                                        if (stateEl && res.state) {
+                                            stateEl.value = res.state;
+                                            stateEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                            stateEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                        }
+                                        if (countryEl && res.country) {
+                                            countryEl.value = res.country;
+                                            countryEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                            countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                        }
+                                    }
+                                } else if (type === 'state') {
+                                    input.value = res.state;
+                                    const countryEl = document.getElementById(targetCountryId || 'settingsCountry');
+                                    if (!onSelect) {
+                                        if (countryEl && res.country) {
+                                            countryEl.value = res.country;
+                                            countryEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                            countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                        }
+                                    }
+                                } else {
+                                    input.value = res.country;
+                                }
+                                
+                                if (onSelect) {
+                                    onSelect(res);
+                                }
+                                
+                                input.dispatchEvent(new Event('input', { bubbles: true }));
+                                input.dispatchEvent(new Event('change', { bubbles: true }));
+                                suggestionsDiv.classList.add('hidden');
+                            };
+                            suggestionsDiv.appendChild(row);
+                        });
+                    }).catch(() => {
+                        suggestionsDiv.classList.add('hidden');
+                    });
+                }, 350);
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+        };
+    }
+
+    const setupAutocomplete = (inputId, suggestionsId, type, stateId, countryId) => {
+        const input = document.getElementById(inputId);
+        const suggestionsDiv = document.getElementById(suggestionsId);
+        if (input && suggestionsDiv) {
+            window.setupAutocompleteElement(input, suggestionsDiv, type, null, stateId, countryId);
+        }
+    };
+
+    setupAutocomplete('settingsCity', 'citySuggestions', 'city', 'settingsState', 'settingsCountry');
+    setupAutocomplete('settingsState', 'stateSuggestions', 'state', null, 'settingsCountry');
+    setupAutocomplete('settingsCountry', 'countrySuggestions', 'country');
+
     // Initial run
     calculateLiveProgress();
 });

@@ -135,173 +135,162 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const input = document.getElementById('branchCity');
-        const suggestionsDiv = document.getElementById('citySuggestions');
-        let debounceTimer;
+        if (!window.setupAutocompleteElement) {
+            window.setupAutocompleteElement = (input, suggestionsDiv, type, onSelect, targetStateId, targetCountryId) => {
+                if (!input || !suggestionsDiv) return;
 
-        if (input && suggestionsDiv) {
-            input.addEventListener('input', () => {
-                const query = input.value.trim();
-                clearTimeout(debounceTimer);
-                if (!query || query.length < 2) {
-                    suggestionsDiv.innerHTML = '';
-                    suggestionsDiv.classList.add('hidden');
-                    return;
-                }
-
-                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching cities...</div>';
-                suggestionsDiv.classList.remove('hidden');
-
-                debounceTimer = setTimeout(() => {
-                    const base = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&accept-language=en`;
-                    const indiaUrl = `${base}&countrycodes=in&limit=15&q=${encodeURIComponent(query)}`;
-
-                    const parseItem = (item) => {
-                        const address = item.address || {};
-                        let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
-                        if (!city && item.display_name) city = item.display_name.split(',')[0].trim();
-                        const state   = address.state   || address.region || '';
-                        const country = address.country || '';
-                        return { city, state, country };
-                    };
-
-                    const renderRow = (city, state, country) => {
-                        const row = document.createElement('div');
-                        row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
-                        row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
-                        row.onclick = () => {
-                            input.value = city;
-                            const stateEl   = document.getElementById('branchState');
-                            const countryEl = document.getElementById('branchCountry');
-                            if (stateEl)   stateEl.value   = state;
-                            if (countryEl) countryEl.value = country;
-                            suggestionsDiv.classList.add('hidden');
-                        };
-                        return row;
-                    };
-
-                    fetch(indiaUrl).then(r => r.json()).then(indiaData => {
+                let debounceTimer;
+                input.addEventListener('input', () => {
+                    const query = input.value.trim();
+                    clearTimeout(debounceTimer);
+                    if (!query || query.length < 2) {
                         suggestionsDiv.innerHTML = '';
-                        const seen = new Set();
-                        const indiaResults = [];
+                        suggestionsDiv.classList.add('hidden');
+                        return;
+                    }
 
-                        (indiaData || []).forEach(item => {
-                            const { city, state, country } = parseItem(item);
-                            if (!city || !country) return;
-                            const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
-                            if (seen.has(key)) return;
-                            seen.add(key);
-                            indiaResults.push({ city, state, country });
-                        });
+                    suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching...</div>';
+                    suggestionsDiv.classList.remove('hidden');
 
-                        indiaResults.forEach(({ city, state, country }) => {
-                            suggestionsDiv.appendChild(renderRow(city, state, country));
-                        });
+                    debounceTimer = setTimeout(() => {
+                        const urlIndia = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=40&bbox=68.1,6.7,97.4,35.5`;
+                        const urlGlobal = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=40`;
 
-                        if (indiaResults.length < 5) {
-                            const globalUrl = `${base}&limit=10&q=${encodeURIComponent(query)}`;
-                            fetch(globalUrl).then(r => r.json()).then(globalData => {
-                                (globalData || []).forEach(item => {
-                                    const { city, state, country } = parseItem(item);
-                                    if (!city || !country) return;
-                                    if (country.toLowerCase() === 'india') return;
-                                    const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
-                                    if (seen.has(key)) return;
-                                    seen.add(key);
-                                    suggestionsDiv.appendChild(renderRow(city, state, country));
-                                });
-                                if (suggestionsDiv.children.length === 0) {
-                                    suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
-                                }
-                                suggestionsDiv.classList.remove('hidden');
-                            }).catch(() => {});
-                        } else {
-                            suggestionsDiv.classList.remove('hidden');
-                        }
-
-                        if (suggestionsDiv.children.length === 0 && indiaResults.length === 0) {
-                            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching...</div>';
-                        }
-                    }).catch(() => suggestionsDiv.classList.add('hidden'));
-                }, 350);
-            });
-
-            document.addEventListener('click', (e) => {
-                if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
-                    suggestionsDiv.classList.add('hidden');
-                }
-            });
-        }
-    });
-                    suggestionsDiv.innerHTML = '';
-                    suggestionsDiv.classList.add('hidden');
-                    return;
-                }
-
-                // Show loading indicator
-                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-orange-800"></i> Searching cities...</div>';
-                suggestionsDiv.classList.remove('hidden');
-
-                debounceTimer = setTimeout(() => {
-                    fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=10&accept-language=en&q=${encodeURIComponent(query)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        suggestionsDiv.innerHTML = '';
-                        if (data && data.length > 0) {
+                        Promise.all([
+                            fetch(urlIndia).then(r => r.json()).catch(() => ({ features: [] })),
+                            fetch(urlGlobal).then(r => r.json()).catch(() => ({ features: [] }))
+                        ]).then(([indiaData, globalData]) => {
+                            suggestionsDiv.innerHTML = '';
                             const seen = new Set();
-                            data.forEach(item => {
-                                const address = item.address || {};
-                                
-                                // Determine city name
-                                let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
-                                
-                                if (!city && item.display_name) {
-                                    city = item.display_name.split(',')[0].trim();
-                                }
-                                
-                                const state = address.state || address.region || '';
-                                const country = address.country || '';
+                            let results = [];
 
-                                if (city && country) {
-                                    const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
-                                    if (seen.has(key)) return;
-                                    seen.add(key);
-
-                                    const row = document.createElement('div');
-                                    row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
-                                    row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
-                                    row.onclick = () => {
-                                        input.value = city;
-                                        document.getElementById('branchState').value = state;
-                                        document.getElementById('branchCountry').value = country;
-                                        suggestionsDiv.classList.add('hidden');
-                                    };
-                                    suggestionsDiv.appendChild(row);
+                            const features = [...(indiaData.features || []), ...(globalData.features || [])];
+                            features.forEach(f => {
+                                const p = f.properties || {};
+                                let city = p.city || p.town || p.village || p.county || p.name || '';
+                                let state = p.state || '';
+                                let country = p.country || '';
+                                
+                                if (type === 'city') {
+                                    if (p.osm_key === 'place' && (p.osm_value === 'country' || p.osm_value === 'state')) return;
                                 }
+                                if (type === 'state') {
+                                    if (p.osm_value !== 'state' && p.osm_value !== 'administrative') return;
+                                    city = '';
+                                    if (p.name) state = p.name;
+                                }
+                                if (type === 'country') {
+                                    if (p.osm_value !== 'country' && p.osm_value !== 'administrative') return;
+                                    city = '';
+                                    state = '';
+                                    if (p.name) country = p.name;
+                                }
+
+                                let display_name = [city, state, country].filter(Boolean).join(', ');
+                                const parsed = { city, state, country, display: display_name, importance: p.importance || 0.5 };
+
+                                let key = '';
+                                if (type === 'city') key = `${parsed.city}_${parsed.state}_${parsed.country}`.toLowerCase();
+                                else if (type === 'state') key = `${parsed.state}_${parsed.country}`.toLowerCase();
+                                else key = `${parsed.country}`.toLowerCase();
+
+                                if (!key || seen.has(key)) return;
+                                seen.add(key);
+                                results.push(parsed);
                             });
 
-                            if (suggestionsDiv.children.length > 0) {
-                                suggestionsDiv.classList.remove('hidden');
-                            } else {
-                                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
-                            }
-                        } else {
-                            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
-                        }
-                    })
-                    .catch(err => {
-                        console.error('Error fetching cities:', err);
-                        suggestionsDiv.classList.add('hidden');
-                    });
-                }, 400);
-            });
+                            if (type === 'city') {
+                                const qLower = query.toLowerCase();
+                                const getMatchQuality = (str) => {
+                                    const c = (str || '').toLowerCase();
+                                    if (c === qLower) return 4;
+                                    if (c.startsWith(qLower)) return 3;
+                                    if (c.split(/[\s,-]+/).some(w => w.startsWith(qLower))) return 2;
+                                    if (c.includes(qLower)) return 1;
+                                    return 0;
+                                };
+                                const getLocationPriority = (res) => {
+                                    const country = (res.country || '').toLowerCase();
+                                    const state = (res.state || '').toLowerCase();
+                                    if (country === 'india') {
+                                        if (state === 'gujarat') return 2;
+                                        return 1;
+                                    }
+                                    return 0;
+                                };
 
-            // Close suggestions dropdown when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
-                    suggestionsDiv.classList.add('hidden');
-                }
-            });
+                                results = results.filter(r => getMatchQuality(r.city) > 0);
+
+                                results.sort((a, b) => {
+                                    const mqA = getMatchQuality(a.city);
+                                    const mqB = getMatchQuality(b.city);
+                                    if (mqA !== mqB) return mqB - mqA;
+
+                                    const lpA = getLocationPriority(a);
+                                    const lpB = getLocationPriority(b);
+                                    if (lpA !== lpB) return lpB - lpA;
+                                    
+                                    return b.importance - a.importance;
+                                });
+                            }
+
+                            results = results.slice(0, 10);
+
+                            if (results.length === 0) {
+                                suggestionsDiv.innerHTML = `<div class="px-4 py-3 text-xs text-gray-400 font-medium">No results found</div>`;
+                                return;
+                            }
+
+                            results.forEach(res => {
+                                const row = document.createElement('div');
+                                row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex flex-col justify-center border-b border-gray-50 last:border-0';
+                                
+                                let mainText = res.city;
+                                let subText = [res.state, res.country].filter(Boolean).join(', ');
+                                row.innerHTML = `<span>${mainText}</span><span class="text-[10px] text-gray-400 font-medium">${subText}</span>`;
+
+                                row.onclick = () => {
+                                    input.value = res.city;
+                                    const stateEl = document.getElementById(targetStateId || 'branchState');
+                                    const countryEl = document.getElementById(targetCountryId || 'branchCountry');
+                                    if (!onSelect) {
+                                        if (stateEl && res.state) {
+                                            stateEl.value = res.state;
+                                            stateEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                            stateEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                        }
+                                        if (countryEl && res.country) {
+                                            countryEl.value = res.country;
+                                            countryEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                            countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                        }
+                                    }
+                                    
+                                    if (onSelect) onSelect(res);
+                                    input.dispatchEvent(new Event('input', { bubbles: true }));
+                                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                                    suggestionsDiv.classList.add('hidden');
+                                };
+                                suggestionsDiv.appendChild(row);
+                            });
+                        }).catch(() => {
+                            suggestionsDiv.classList.add('hidden');
+                        });
+                    }, 350);
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                        suggestionsDiv.classList.add('hidden');
+                    }
+                });
+            };
+        }
+
+        const input = document.getElementById('branchCity');
+        const suggestionsDiv = document.getElementById('citySuggestions');
+        if (input && suggestionsDiv) {
+            window.setupAutocompleteElement(input, suggestionsDiv, 'city', null, 'branchState', 'branchCountry');
         }
     });
 </script>
