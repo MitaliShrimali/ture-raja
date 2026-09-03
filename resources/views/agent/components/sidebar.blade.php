@@ -62,12 +62,32 @@
                 <span class="text-xs">Add Branch</span>
             </a>
 
+            @php
+                $canAddGallery = true;
+                $agentId = session('agent_id');
+                if ($agentId) {
+                    $agentRecord = \Illuminate\Support\Facades\DB::table('agents')->where('id', $agentId)->first();
+                    $planId = $agentRecord->plan_id ?? null;
+                    if (!$planId) {
+                        $planId = \Illuminate\Support\Facades\DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+                    }
+                    $galleryPerm = \Illuminate\Support\Facades\DB::table('plan_permissions')
+                        ->where('plan_id', $planId)
+                        ->where('permission_key', 'feat_add_gallery')
+                        ->first();
+                    if ($galleryPerm) {
+                        $canAddGallery = (bool)$galleryPerm->boolean_value;
+                    }
+                }
+            @endphp
+            @if($canAddGallery)
             <a href="{{ route('agent.gallery') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.gallery') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
                 <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.gallery') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">
                     <i class="fas fa-images text-xs"></i>
                 </div>
                 <span class="text-xs">Gallery/Images</span>
             </a>
+            @endif
 
             <a href="{{ route('agent.feedback') }}" class="flex items-center px-2.5 py-1.5 rounded-xl transition-all group {{ request()->routeIs('agent.feedback') ? 'bg-orange-50 text-[#e85d26] font-bold' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50' }}">
                 <div class="w-6 h-6 rounded-lg flex items-center justify-center mr-2 transition-all {{ request()->routeIs('agent.feedback') ? 'bg-[#e85d26] text-white' : 'text-gray-400 group-hover:text-gray-600' }}">

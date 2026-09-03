@@ -595,6 +595,19 @@ class AgentController extends Controller
             $imageUrl = $galleryUrls[0];
         }
 
+        if ($agentId) {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+            $planId = $agent ? ($agent->plan_id ?? null) : null;
+            if (!$planId) {
+                $planId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+            }
+            $perms = DB::table('plan_permissions')->where('plan_id', $planId)->get()->keyBy('permission_key');
+            $photoLimit = isset($perms['limit_package_photos']) ? (int)$perms['limit_package_photos']->limit_value : 0;
+            if ($photoLimit > 0 && count($galleryUrls) > $photoLimit) {
+                return redirect()->back()->with('error', 'Your current plan allows a maximum of ' . $photoLimit . ' package photos in Gallery Portfolio.')->withInput();
+            }
+        }
+
         // Brochure Upload
         $brochureUrl = $pkg->brochure;
         if ($request->hasFile('brochure_file')) {
@@ -794,6 +807,19 @@ class AgentController extends Controller
 
         if (count($galleryUrls) > 0) {
             $imageUrl = $galleryUrls[0];
+        }
+
+        if ($agentId) {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+            $planId = $agent ? ($agent->plan_id ?? null) : null;
+            if (!$planId) {
+                $planId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+            }
+            $perms = DB::table('plan_permissions')->where('plan_id', $planId)->get()->keyBy('permission_key');
+            $photoLimit = isset($perms['limit_package_photos']) ? (int)$perms['limit_package_photos']->limit_value : 0;
+            if ($photoLimit > 0 && count($galleryUrls) > $photoLimit) {
+                return redirect()->back()->with('error', 'Your current plan allows a maximum of ' . $photoLimit . ' package photos in Gallery Portfolio.')->withInput();
+            }
         }
 
         // Brochure Upload
@@ -1074,6 +1100,22 @@ class AgentController extends Controller
     public function gallery(Request $request)
     {
         $agentId = session('agent_id');
+        if ($agentId) {
+            $agentRecord = DB::table('agents')->where('id', $agentId)->first();
+            $planId = $agentRecord->plan_id ?? null;
+            if (!$planId) {
+                $planId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+            }
+            $galleryPerm = DB::table('plan_permissions')
+                ->where('plan_id', $planId)
+                ->where('permission_key', 'feat_add_gallery')
+                ->first();
+            $canAddGallery = $galleryPerm ? (bool)$galleryPerm->boolean_value : true;
+            if (!$canAddGallery) {
+                return redirect()->route('agent.dashboard')->with('error', 'Gallery feature is not available on your current plan. Please upgrade your plan.');
+            }
+        }
+
         $parentId = $request->query('folder', null);
 
         // Current folder if any

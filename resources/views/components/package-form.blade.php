@@ -62,9 +62,29 @@
     $itinerary = ($pkg->itinerary ?? null) ? json_decode($pkg->itinerary, true) : []; $departureDates = ($pkg->departure_dates ?? null) ? json_decode($pkg->departure_dates, true) : []; if (!is_array($departureDates)) $departureDates = [];
 @endphp
 
-    <!-- Load AlpineJS and Lucide for this view -->
+    <!-- Load AlpineJS, SweetAlert2 and Lucide for this view -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.showAlertLimit = function(message) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Plan Limit Exceeded',
+                    text: message,
+                    confirmButtonColor: '#e85d26',
+                    confirmButtonText: 'Got It',
+                    customClass: {
+                        popup: 'rounded-[28px]',
+                        confirmButton: 'rounded-xl font-bold px-6 py-3 text-xs uppercase tracking-wider'
+                    }
+                });
+            } else {
+                alert(message);
+            }
+        };
+    </script>
 
     <div class="space-y-4 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
         step: 1,
@@ -226,7 +246,7 @@
         addHotel() {
             if (!Array.isArray(this.hotels)) this.hotels = [];
             if (this.hotelLimit > 0 && this.hotels.length >= this.hotelLimit) {
-                alert('Your plan allows a maximum of ' + this.hotelLimit + ' hotel options per package.');
+                window.showAlertLimit('Your plan allows a maximum of ' + this.hotelLimit + ' hotel options per package.');
                 return;
             }
             if (this.newHotelName && this.newHotelName.trim()) {
@@ -289,7 +309,7 @@
             const files = event.target.files;
             for (let i = 0; i < files.length; i++) {
                 if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
-                    alert('Your plan allows a maximum of ' + this.photoLimit + ' package photos.');
+                    window.showAlertLimit('Your plan allows a maximum of ' + this.photoLimit + ' package photos in Gallery Portfolio.');
                     break;
                 }
                 this.galleryPreviews.push({
@@ -341,7 +361,7 @@
             const index = this.galleryPreviews.findIndex(p => p.url === fullUrl);
             if (index === -1) {
                 if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
-                    alert('Your plan allows a maximum of ' + this.photoLimit + ' package photos.');
+                    window.showAlertLimit('Your plan allows a maximum of ' + this.photoLimit + ' package photos in Gallery Portfolio.');
                     return;
                 }
                 this.galleryPreviews.push({
@@ -1999,13 +2019,13 @@
                                     </template>
 
                                     <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-orange-200 hover:border-primary/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-orange-50/30 hover:bg-orange-50/60"
-                                        @click="openGalleryModal('gallery')">
+                                        @click="if (photoLimit > 0 && galleryPreviews.length >= photoLimit) { window.showAlertLimit('Your plan allows a maximum of ' + photoLimit + ' package photos in Gallery Portfolio.'); } else { openGalleryModal('gallery'); }">
                                         <i data-lucide="image" class="text-primary mb-1" size="20"></i>
                                         <span class="text-xs font-bold text-primary text-center">From<br>Gallery</span>
                                     </div>
                                     
                                     <div class="aspect-[4/3] rounded-2xl border-2 border-dashed border-gray-200 hover:border-primary/50 transition-all flex flex-col items-center justify-center cursor-pointer bg-gray-50 hover:bg-orange-50/20"
-                                        @click="$refs.galleryFilesInput.click()">
+                                        @click="if (photoLimit > 0 && galleryPreviews.length >= photoLimit) { window.showAlertLimit('Your plan allows a maximum of ' + photoLimit + ' package photos in Gallery Portfolio.'); } else { $refs.galleryFilesInput.click(); }">
                                         <i data-lucide="plus" class="text-gray-400 mb-1" size="20"></i>
                                         <span class="text-xs font-bold text-gray-800">Add More</span>
                                         <input type="file" name="gallery_files[]" x-ref="galleryFilesInput" multiple
