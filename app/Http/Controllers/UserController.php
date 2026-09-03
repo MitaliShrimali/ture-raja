@@ -782,10 +782,11 @@ class UserController extends Controller
     // ─── SIGN UP ──────────────────────────────────────────────────────
     public function signupSubmit(Request $request)
     {
+        $emailTable = $request->type == 'admin' ? 'admins' : 'users';
         $request->validate([
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|unique:'.$emailTable.',email',
             'phone' => 'required|string',
             'country_code' => 'required|string',
             'password' => 'required|min:8|confirmed'
@@ -796,7 +797,8 @@ class UserController extends Controller
         // Dynamic avatar generation based on name
         $avatar = 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($name);
 
-        $userId = DB::table('users')->insertGetId([
+        $table = $request->type == 'admin' ? 'admins' : 'users';
+        $userId = DB::table($table)->insertGetId([
             'name' => $name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -808,32 +810,44 @@ class UserController extends Controller
 
         $fullPhone = $request->country_code . ' ' . $request->phone;
 
-        // Create empty profile
-        DB::table('user_profiles')->insert([
-            'user_id' => $userId,
-            'username' => strtolower($request->first_name . '_' . $request->last_name),
-            'phone' => $fullPhone,
-            'avatar' => $avatar,
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        if ($request->type != 'admin') {
+            // Create empty profile
+            DB::table('user_profiles')->insert([
+                'user_id' => $userId,
+                'username' => strtolower($request->first_name . '_' . $request->last_name),
+                'phone' => $fullPhone,
+                'avatar' => $avatar,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
 
-            // If the user is signing up as an admin, do not log them in automatically.
-            if ($request->type == 'admin') {
-                return redirect('/admin/login')
-                    ->with('success', 'Admin account created successfully! Please log in.');
-            }
+        // Send Welcome Email to Customer / User
+        if ($request->type != 'admin') {
+            \App\Services\MailService::sendView(
+                $request->email,
+                'Welcome to Tour Raja! ✈️',
+                'emails.welcome-customer',
+                ['name' => $name]
+            );
+        }
 
-            // For agents and customers, log them in automatically.
-            Auth::loginUsingId($userId);
+        // If the user is signing up as an admin, do not log them in automatically.
+        if ($request->type == 'admin') {
+            return redirect('/admin/login')
+                ->with('success', 'Admin account created successfully! Please log in.');
+        }
 
-            if ($request->type == 'agent') {
-                return redirect('/admin/dashboard')
-                    ->with('success', 'Account created successfully! Welcome, ' . $name);
-            }
+        // For agents and customers, log them in automatically.
+        Auth::loginUsingId($userId);
 
-            return redirect('/')
+        if ($request->type == 'agent') {
+            return redirect('/admin/dashboard')
                 ->with('success', 'Account created successfully! Welcome, ' . $name);
+        }
+
+        return redirect('/')
+            ->with('success', 'Account created successfully! Welcome, ' . $name);
     }
 
     public function loginSubmit(Request $request)
@@ -843,7 +857,10 @@ class UserController extends Controller
             'password' => 'required'
         ]);
 
-        $user = DB::table('users')->where('email', $request->email)->first();
+        $isAdminRoute = $request->routeIs('admin.login.submit');
+        $tableName = $isAdminRoute ? 'admins' : 'users';
+
+        $user = DB::table($tableName)->where('email', $request->email)->first();
 
         if (!$user) {
             if ($request->wantsJson()) {
@@ -852,49 +869,19 @@ class UserController extends Controller
             return redirect()->back()->with('error', 'Account does not exist. Please create an account.')->withInput();
         }
 
-        // Enforce role separation
-        $isCustomerRoute = $request->routeIs('login.submit');
-        $isAdminRoute = $request->routeIs('admin.login.submit');
-        
-        $role = strtoupper($user->role ?? '');
-        $isAdminRole = in_array($role, ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR']);
-        $isCustomerRole = ($role === 'CUSTOMER');
-
-        if ($isCustomerRoute && !$isCustomerRole) {
-            if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'Access denied. Admin credentials cannot be used here.']);
-            }
-            return redirect()->back()->with('error', 'Access denied. Admin credentials cannot be used here. Please use the Admin login portal.')->withInput();
-        }
-
-        if ($isAdminRoute && !$isAdminRole) {
-            if ($request->wantsJson()) {
-                return response()->json(['success' => false, 'message' => 'Access denied. Admin credentials required.']);
-            }
-            return redirect()->back()->with('error', 'Access denied. Admin credentials required.')->withInput();
-        }
-
         if (Hash::check($request->password, $user->password)) {
-            $redirect = '/';
-            $roleStr = strtoupper($user->role ?? '');
-            
-            if (in_array($roleStr, ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR', 'EMPLOYEE'])) {
+            if ($isAdminRoute) {
                 Auth::guard('admin')->loginUsingId($user->id);
                 $redirect = '/admin/dashboard';
             } else {
                 Auth::loginUsingId($user->id);
-            }
-            
-            if (in_array(strtoupper($user->role ?? ''), ['SUPER ADMIN', 'ADMIN', 'MANAGER', 'EDITOR'])) {
-                $redirect = '/admin/dashboard';
+                $redirect = '/';
             }
 
             if ($request->wantsJson()) {
                 session()->flash('success', 'Logged in successfully! Welcome, ' . $user->name);
                 return response()->json(['success' => true, 'redirect' => $redirect]);
             }
-
-            // Normal user login redirects to home page
             return redirect($redirect)->with('success', 'Logged in successfully! Welcome, ' . $user->name);
         }
 

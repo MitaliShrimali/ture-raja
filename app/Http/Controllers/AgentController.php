@@ -95,6 +95,17 @@ class AgentController extends Controller
 
         $id = DB::table('agents')->insertGetId($data);
 
+        // Send Welcome Email to Agent
+        \App\Services\MailService::sendView(
+            $request->email,
+            'Welcome to Tour Raja Partner Network! 🎉',
+            'emails.welcome-agent',
+            [
+                'name'       => $request->name,
+                'agencyName' => $request->agency_name ?? $request->name
+            ]
+        );
+
         // Auto-login the new agent
         session([
             'agent_id' => $id,
@@ -2145,6 +2156,7 @@ class AgentController extends Controller
                 'plan_status' => 'Active',
                 'updated_at' => now()
             ]);
+            $freeTxnId = 'FREE-' . $txnid;
             DB::table('payments')->insert([
                 'agent_id' => $agentId,
                 'user_name' => $firstname,
@@ -2152,12 +2164,30 @@ class AgentController extends Controller
                 'plan_type' => $itemName,
                 'type' => 'plan_upgrade',
                 'amount' => 0,
-                'payment_id' => 'FREE-' . $txnid,
+                'payment_id' => $freeTxnId,
                 'date' => date('Y-m-d'),
                 'status' => 'Completed',
                 'created_at' => now(),
                 'updated_at' => now()
             ]);
+
+            // Send Payment Confirmation Email
+            if (!empty($email)) {
+                \App\Services\MailService::sendView(
+                    $email,
+                    'Payment Receipt: ' . $itemName . ' - Tour Raja',
+                    'emails.payment-confirmation',
+                    [
+                        'name' => $firstname,
+                        'itemName' => $itemName,
+                        'paymentId' => $freeTxnId,
+                        'invoiceNumber' => '',
+                        'amount' => 0,
+                        'date' => date('M d, Y')
+                    ]
+                );
+            }
+
             return redirect()->route('agent.dashboard')->with('success', 'Free plan activated successfully!');
         }
 
@@ -2354,6 +2384,23 @@ class AgentController extends Controller
             'updated_at'     => now(),
             'invoice_data'   => $invoiceData
         ]);
+
+        // Send Payment Receipt Email to Agent
+        if (!empty($email)) {
+            \App\Services\MailService::sendView(
+                $email,
+                'Payment Receipt: ' . $itemName . ' - Tour Raja',
+                'emails.payment-confirmation',
+                [
+                    'name' => $firstname,
+                    'itemName' => $itemName,
+                    'paymentId' => $txnid,
+                    'invoiceNumber' => $invoiceNumber,
+                    'amount' => (float)$amount,
+                    'date' => now()->format('M d, Y')
+                ]
+            );
+        }
 
         return redirect()->route('checkout.success')->with('payment_id', $paymentId);
     }

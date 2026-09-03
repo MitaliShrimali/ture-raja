@@ -1085,7 +1085,7 @@ class AdminController extends Controller
     public function users(Request $request)
     {
         $search = $request->input('search');
-        $query = DB::table('users')->whereIn('role', ['SUPER ADMIN', 'MANAGER', 'EDITOR']);
+        $query = DB::table('admins')->whereIn('role', ['SUPER ADMIN', 'MANAGER', 'EDITOR']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -1106,7 +1106,7 @@ class AdminController extends Controller
 
     public function editAdminUser($id)
     {
-        $user = DB::table('users')->where('id', $id)->first();
+        $user = DB::table('admins')->where('id', $id)->first();
         if (!$user) {
             return redirect('/admin/users')->with('error', 'User not found!');
         }
@@ -1142,7 +1142,7 @@ class AdminController extends Controller
 
     public function storeUser(Request $request)
     {
-        $request->validate(['name' => 'required', 'email' => 'required|email|unique:users,email']);
+        $request->validate(['name' => 'required', 'email' => 'required|email|unique:admins,email']);
 
         $avatarPath = 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($request->name);
         if ($request->hasFile('avatar')) {
@@ -1152,7 +1152,7 @@ class AdminController extends Controller
             $avatarPath = '/uploads/avatars/' . $fileName;
         }
 
-        DB::table('users')->insert([
+        DB::table('admins')->insert([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password ?? 'password123'),
@@ -1210,7 +1210,7 @@ class AdminController extends Controller
             $updateData['password'] = Hash::make($request->password);
         }
 
-        DB::table('users')->where('id', $request->id)->update($updateData);
+        DB::table('admins')->where('id', $request->id)->update($updateData);
 
         $this->logActivity('Platform Action', 'Admin user details updated!');
         return redirect('/admin/users')->with('success', 'Admin user details updated!');
@@ -1222,7 +1222,7 @@ class AdminController extends Controller
         if ($id == 1) {
             return redirect()->back()->with('error', 'Cannot delete primary Super Admin!');
         }
-        DB::table('users')->where('id', $id)->delete();
+        DB::table('admins')->where('id', $id)->delete();
         $this->logActivity('Platform Action', 'Admin user removed!');
         return redirect()->back()->with('success', 'Admin user removed!');
     }
@@ -2828,7 +2828,7 @@ class AdminController extends Controller
             }
             // If target is all admins, broadcast to all admins
             if ($targetAudience === 'all_admins') {
-                $users = DB::table('users')->get();
+                $users = DB::table('admins')->get();
                 foreach ($users as $u) {
                     DB::table('user_notifications')->insert([
                         'user_id' => $u->id,
@@ -2843,7 +2843,7 @@ class AdminController extends Controller
             }
             // If target is specific admin role, broadcast only to that role
             if ($targetAudience === 'specific_admin_role' && $adminRole) {
-                $users = DB::table('users')->where('role', $adminRole)->get();
+                $users = DB::table('admins')->where('role', $adminRole)->get();
                 foreach ($users as $u) {
                     DB::table('user_notifications')->insert([
                         'user_id' => $u->id,
@@ -4632,6 +4632,9 @@ class AdminController extends Controller
             'mail.from.name' => $fromName,
         ]);
 
+        \Illuminate\Support\Facades\Mail::purge($driver);
+        \Illuminate\Support\Facades\Mail::purge('smtp');
+
         try {
             $body = '<h3>SMTP Settings Test Connection</h3><p>Hello! If you are reading this email, your SMTP configuration settings on <strong>Tour Raja</strong> are correct and working perfectly!</p>';
             $subject = 'Test Connection: Tour Raja SMTP Setup';
@@ -4652,6 +4655,57 @@ class AdminController extends Controller
         }
     }
 
+    private function resolveAgentInfo($pkg)
+    {
+        $agentEmail = '';
+        $agentName = '';
+
+        $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
+        if (is_array($agentData)) {
+            if (!empty($agentData['id'])) {
+                $agentDb = DB::table('agents')->where('id', $agentData['id'])->first();
+                if ($agentDb) {
+                    $agentEmail = $agentDb->email ?? '';
+                    $agentName = $agentDb->agency_name ?? $agentDb->name ?? '';
+                }
+            }
+            if (!$agentEmail && !empty($agentData['email'])) {
+                $agentEmail = $agentData['email'];
+            }
+            if (!$agentName && !empty($agentData['name'])) {
+                $agentName = $agentData['name'];
+            }
+        }
+
+        if (!$agentEmail && !empty($pkg->agent)) {
+            $searchName = is_array($agentData) ? ($agentData['name'] ?? '') : $pkg->agent;
+            if ($searchName) {
+                $agentDb = DB::table('agents')
+                    ->where('name', $searchName)
+                    ->orWhere('agency_name', $searchName)
+                    ->first();
+                if ($agentDb) {
+                    $agentEmail = $agentDb->email ?? '';
+                    $agentName = $agentDb->agency_name ?? $agentDb->name ?? '';
+                }
+            }
+        }
+
+        // Fallback: If agent email is still empty, fetch the primary agent's email from agents table
+        if (!$agentEmail) {
+            $firstAgent = DB::table('agents')->whereNotNull('email')->where('email', '!=', '')->first();
+            if ($firstAgent) {
+                $agentEmail = $firstAgent->email;
+                $agentName = $agentName ?: ($firstAgent->agency_name ?? $firstAgent->name);
+            }
+        }
+
+        return [
+            'email' => $agentEmail ?: 'no-email@agent.com',
+            'name'  => $agentName ?: 'Registered Agent',
+        ];
+    }
+
     public function packageReminder(Request $request)
     {
         // Fetch packages expiring within 30 days, or already expired
@@ -4663,25 +4717,9 @@ class AdminController extends Controller
 
         // Attach agent details dynamically
         foreach ($packages as $pkg) {
-            $agentEmail = '';
-            $agentName = '';
-            $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
-            if ($agentData && isset($agentData['id'])) {
-                $agentDb = DB::table('agents')->where('id', $agentData['id'])->first();
-                if ($agentDb) {
-                    $agentEmail = $agentDb->email;
-                    $agentName = $agentDb->name;
-                }
-            }
-            if (!$agentEmail && $agentData) {
-                $agentName = $agentData['name'] ?? 'Unknown Agent';
-                $agentDb = DB::table('agents')->where('name', $agentName)->first();
-                if ($agentDb) {
-                    $agentEmail = $agentDb->email;
-                }
-            }
-            $pkg->agent_email = $agentEmail ?: 'no-email@agent.com';
-            $pkg->agent_name = $agentName ?: 'Unknown Agent';
+            $agentInfo = $this->resolveAgentInfo($pkg);
+            $pkg->agent_email = $agentInfo['email'];
+            $pkg->agent_name = $agentInfo['name'];
         }
 
         return view('admin.package-reminder', compact('packages'));
@@ -4689,38 +4727,7 @@ class AdminController extends Controller
 
     private function sendEmailNotification($toEmail, $subject, $body)
     {
-        $settings = DB::table('settings')->pluck('value', 'key')->toArray();
-        
-        $driver = $settings['mail_driver'] ?? 'smtp';
-        $host = $settings['mail_host'] ?? 'smtp.gmail.com';
-        $port = $settings['mail_port'] ?? '587';
-        $encryption = $settings['mail_encryption'] ?? 'tls';
-        $username = $settings['mail_username'] ?? null;
-        $password = $settings['mail_password'] ?? null;
-        $fromAddress = $settings['mail_from_address'] ?? 'noreply@tour raja.com';
-        $fromName = $settings['mail_from_name'] ?? 'Tour Raja';
-
-        config([
-            'mail.default' => $driver,
-            'mail.mailers.smtp.transport' => $driver === 'none' ? 'smtp' : $driver,
-            'mail.mailers.smtp.host' => $host,
-            'mail.mailers.smtp.port' => $port,
-            'mail.mailers.smtp.encryption' => $encryption === 'none' ? null : $encryption,
-            'mail.mailers.smtp.username' => $username,
-            'mail.mailers.smtp.password' => $password,
-            'mail.from.address' => $fromAddress,
-            'mail.from.name' => $fromName,
-        ]);
-
-        try {
-            \Illuminate\Support\Facades\Mail::mailer($driver)->html($body, function ($message) use ($toEmail, $subject) {
-                $message->to($toEmail)->subject($subject);
-            });
-            return true;
-        } catch (\Exception $e) {
-            \Log::error('Mail sending failed: ' . $e->getMessage());
-            return false;
-        }
+        return \App\Services\MailService::sendHtml($toEmail, $subject, $body);
     }
 
     public function sendPackageReminder(Request $request)
@@ -4731,7 +4738,7 @@ class AdminController extends Controller
             'type' => 'required|in:all,individual',
         ]);
 
-        $subject = $request->input('subject');
+        $subjectTemplate = $request->input('subject');
         $bodyTemplate = $request->input('body');
         $type = $request->input('type');
 
@@ -4749,36 +4756,35 @@ class AdminController extends Controller
         $failedCount = 0;
 
         foreach ($packages as $pkg) {
-            $agentEmail = '';
-            $agentName = '';
-            $agentData = $pkg->agent ? json_decode($pkg->agent, true) : null;
-            if ($agentData && isset($agentData['id'])) {
-                $agentDb = DB::table('agents')->where('id', $agentData['id'])->first();
-                if ($agentDb) {
-                    $agentEmail = $agentDb->email;
-                    $agentName = $agentDb->name;
-                }
-            }
-            if (!$agentEmail && $agentData) {
-                $agentName = $agentData['name'] ?? 'Unknown Agent';
-                $agentDb = DB::table('agents')->where('name', $agentName)->first();
-                if ($agentDb) {
-                    $agentEmail = $agentDb->email;
-                }
-            }
+            $agentInfo = $this->resolveAgentInfo($pkg);
+            $agentEmail = $agentInfo['email'];
+            $agentName = $agentInfo['name'];
 
-            if (!$agentEmail) {
+            if (!$agentEmail || $agentEmail === 'no-email@agent.com') {
                 $failedCount++;
                 continue;
             }
 
+            $expiryFormatted = !empty($pkg->expiry_date) 
+                ? \Carbon\Carbon::parse($pkg->expiry_date)->format('M d, Y') 
+                : 'N/A';
+
+            $personalSubject = str_replace(
+                ['{AGENT_NAME}', '{PACKAGE_TITLE}', '{EXPIRY_DATE}'],
+                [$agentName, $pkg->title, $expiryFormatted],
+                $subjectTemplate
+            );
+
             $personalBody = str_replace(
                 ['{AGENT_NAME}', '{PACKAGE_TITLE}', '{EXPIRY_DATE}'],
-                [$agentName ?: 'Agent', $pkg->title, \Carbon\Carbon::parse($pkg->expiry_date)->format('M d, Y')],
+                [$agentName, $pkg->title, $expiryFormatted],
                 $bodyTemplate
             );
 
-            $success = $this->sendEmailNotification($agentEmail, $subject, $personalBody);
+            // Format plaintext newlines to HTML break tags for clean email display
+            $htmlBody = nl2br(e($personalBody));
+
+            $success = $this->sendEmailNotification($agentEmail, $personalSubject, $htmlBody);
             if ($success) {
                 $sentCount++;
             } else {
@@ -4786,11 +4792,13 @@ class AdminController extends Controller
             }
         }
 
-        if ($failedCount > 0) {
-            return redirect()->back()->with('success', "Reminders sent successfully to {$sentCount} agents. Failed for {$failedCount} agents (check SMTP settings).");
+        if ($failedCount > 0 && $sentCount === 0) {
+            return redirect()->back()->with('error', "Failed to send reminder email(s). Please verify your SMTP Mail configurations in Settings.");
+        } elseif ($failedCount > 0) {
+            return redirect()->back()->with('success', "Reminder email(s) sent successfully to {$sentCount} agent(s). Failed for {$failedCount} agent(s).");
         }
 
-        return redirect()->back()->with('success', "All {$sentCount} package expiry reminders sent successfully!");
+        return redirect()->back()->with('success', "All {$sentCount} package expiry reminder email(s) sent successfully!");
     }
 
     // ─── PAYMENT SETUP ─────────────────────────────────────────────────────────

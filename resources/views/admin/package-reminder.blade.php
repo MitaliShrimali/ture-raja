@@ -67,6 +67,7 @@
                                             <span class="text-[9px] text-[#b13c0b] font-semibold">{{ $pkg->agent_email }}</span>
                                         </div>
                                     </td>
+                                    <td class="py-4 px-4">
                                         @php
                                             $daysLeft = (int)ceil(now()->diffInDays(\Carbon\Carbon::parse($pkg->expiry_date), false));
                                             $isExpired = $daysLeft < 0;
@@ -82,7 +83,7 @@
                                         </div>
                                     </td>
                                     <td class="py-4 px-4 text-right">
-                                        <form action="{{ route('settings.send-reminder') }}" method="POST" class="inline">
+                                        <form action="{{ route('settings.send-reminder') }}" method="POST" class="inline reminder-form" onsubmit="syncTemplateData(this)">
                                             @csrf
                                             <input type="hidden" name="type" value="individual">
                                             <input type="hidden" name="package_id" value="{{ $pkg->id }}">
@@ -127,11 +128,13 @@
                     {{-- Body --}}
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-muted-text uppercase tracking-widest pl-1">Body Text</label>
-                        <textarea id="editor-body" rows="8" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-semibold text-foreground text-xs shadow-sm">Dear {AGENT_NAME},
+                        <textarea id="editor-body" rows="9" class="w-full bg-[#FFF5F2] border-none rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-[#b13c0b]/20 transition-all font-semibold text-foreground text-xs shadow-sm">Dear {AGENT_NAME},
 
-We would like to remind you that your tour package "{PACKAGE_TITLE}" listed on Tour Raja is scheduled to expire on {EXPIRY_DATE}.
+We would like to notify you that your tour package "{PACKAGE_TITLE}" listed on Tour Raja is expiring soon or has expired (Expiry Date: {EXPIRY_DATE}).
 
-To keep this package active and visible to customers, please log in to your agent dashboard and update/renew the validity.
+If you don't want to lose your package appearance and visibility to potential travelers on our platform, please log in to your agent portal and renew your package or upgrade to our latest plan immediately.
+
+Don't miss out on potential customer inquiries!
 
 Best regards,
 Tour Raja Team</textarea>
@@ -149,12 +152,12 @@ Tour Raja Team</textarea>
 
                     {{-- Send All Trigger Form --}}
                     @if($packages->count() > 0)
-                        <form action="{{ route('settings.send-reminder') }}" method="POST" class="pt-2">
+                        <form action="{{ route('settings.send-reminder') }}" method="POST" class="pt-2 reminder-form" onsubmit="syncTemplateData(this)">
                             @csrf
                             <input type="hidden" name="type" value="all">
                             <input type="hidden" name="subject" class="sync-subject">
                             <input type="hidden" name="body" class="sync-body">
-                            <button type="submit" onclick="syncTemplateData(this)" style="background-color: #b13c0b;" class="w-full hover:opacity-90 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl text-center transition-all">
+                            <button type="submit" onclick="syncTemplateData(this)" style="background-color: #b13c0b;" class="w-full hover:opacity-90 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl text-center transition-all flex items-center justify-center gap-2">
                                 <i class="fas fa-paper-plane mr-1.5"></i> Send to All Expiring
                             </button>
                         </form>
@@ -168,14 +171,20 @@ Tour Raja Team</textarea>
 
 <script>
 // Function to sync editor subject/body to form targets before submission
-function syncTemplateData(button) {
+function syncTemplateData(element) {
     const subject = document.getElementById('editor-subject').value;
     const body = document.getElementById('editor-body').value;
     
-    const form = button.closest('form');
+    let form = element;
+    if (element.tagName !== 'FORM') {
+        form = element.closest('form');
+    }
+    
     if (form) {
-        form.querySelector('.sync-subject').value = subject;
-        form.querySelector('.sync-body').value = body;
+        const subjectInput = form.querySelector('.sync-subject');
+        const bodyInput = form.querySelector('.sync-body');
+        if (subjectInput) subjectInput.value = subject;
+        if (bodyInput) bodyInput.value = body;
     }
 }
 </script>
