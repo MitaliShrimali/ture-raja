@@ -2388,9 +2388,26 @@ class AgentController extends Controller
                 'updated_at' => now()
             ]);
         } elseif ($type == 'boost') {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+            $boostDays = 30;
+            if ($agent && $agent->plan_id) {
+                $perm = DB::table('plan_permissions')
+                    ->where('plan_id', $agent->plan_id)
+                    ->where('permission_key', 'feat_package_boosting')
+                    ->first();
+                if ($perm && !empty($perm->limit_value) && intval($perm->limit_value) > 0) {
+                    $boostDays = intval($perm->limit_value);
+                }
+            } else {
+                $boostAddon = \App\Models\AddonPricing::where('type', 'boost')->first();
+                if ($boostAddon && !empty($boostAddon->duration_days)) {
+                    $boostDays = intval($boostAddon->duration_days);
+                }
+            }
+
             DB::table('packages')->where('id', $id)->update([
                 'is_boosted' => 1,
-                'boost_expires_at' => now()->addDays(7),
+                'boost_expires_at' => now()->addDays($boostDays),
                 'updated_at' => now()
             ]);
         } elseif ($type == 'ad') {

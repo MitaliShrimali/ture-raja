@@ -139,7 +139,7 @@
                         ['key' => 'feat_website_on_profile', 'label' => 'Website on Profile', 'type' => 'boolean'],
                         ['key' => 'feat_email_on_profile', 'label' => 'Email on Profile', 'type' => 'boolean'],
                         ['key' => 'feat_whatsapp_on_profile', 'label' => 'WhatsApp on Profile', 'type' => 'boolean'],
-                        ['key' => 'feat_package_boosting', 'label' => 'Package Boosting', 'type' => 'boolean'],
+                        ['key' => 'feat_package_boosting', 'label' => 'Package Boosting', 'type' => 'boolean_with_days'],
                         ['key' => 'feat_featured_destination', 'label' => 'Featured Destination', 'type' => 'boolean'],
                         ['key' => 'feat_trusted_seller', 'label' => 'Trusted Seller Badge', 'type' => 'boolean'],
                         ['key' => 'feat_reviews_ratings', 'label' => 'Reviews & Ratings', 'type' => 'boolean'],
@@ -168,6 +168,40 @@
                                 <button type="button" @click="active = false" :class="!active ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'" class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer border border-transparent">
                                     <i data-lucide="x" size="14" stroke-width="3"></i>
                                 </button>
+                            </div>
+                        @elseif($feat['type'] === 'boolean_with_days')
+                            @php
+                                $isChecked = isset($currentPermissions[$feat['key']]) && $currentPermissions[$feat['key']]->boolean_value;
+                                $savedDays = isset($currentPermissions[$feat['key']]) && $currentPermissions[$feat['key']]->limit_value ? (int)$currentPermissions[$feat['key']]->limit_value : 30;
+                                $daysLabel = $savedDays == 0 ? 'Unlimited' : ($savedDays . ' Days');
+                            @endphp
+                            <div class="flex items-center gap-3" x-data="{ active: {{ $isChecked ? 'true' : 'false' }}, open: false, selectedDays: '{{ $daysLabel }}', daysVal: {{ $savedDays }} }">
+                                <input type="hidden" name="permissions[{{ $feat['key'] }}]" :value="active ? '1' : '0'">
+                                <input type="hidden" name="permissions_limit[{{ $feat['key'] }}]" :value="active ? daysVal : 0">
+                                
+                                <div class="flex items-center gap-1.5 bg-gray-50 p-1 rounded-full border border-gray-100">
+                                    <button type="button" @click="active = true" :class="active ? 'bg-green-100 text-green-600 border border-green-300' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'" class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer">
+                                        <i data-lucide="check" size="14" stroke-width="3"></i>
+                                    </button>
+                                    <button type="button" @click="active = false" :class="!active ? 'bg-red-100 text-red-600 border border-red-300' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'" class="w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer">
+                                        <i data-lucide="x" size="14" stroke-width="3"></i>
+                                    </button>
+                                </div>
+
+                                <div x-show="active" x-transition class="relative w-36 text-left">
+                                    <button type="button" @click="open = !open" class="w-full flex items-center justify-between bg-[#F8F9FA] border border-gray-200 rounded-lg py-2 px-3 outline-none text-xs font-semibold text-foreground focus:border-primary shadow-xs">
+                                        <span x-text="selectedDays"></span>
+                                        <i data-lucide="chevron-down" size="14"></i>
+                                    </button>
+                                    <div x-show="open" @click.away="open = false" style="display: none;" class="absolute right-0 z-50 mt-1 w-full max-h-48 overflow-y-auto bg-white border border-gray-200 rounded-lg shadow-xl">
+                                        @foreach([7, 15, 30, 60, 90, 180, 365] as $days)
+                                            <div @click="selectedDays = '{{ $days }} Days'; daysVal = {{ $days }}; open = false" class="px-3 py-2 text-xs font-semibold cursor-pointer hover:bg-orange-50 hover:text-primary transition-colors">
+                                                {{ $days }} Days
+                                            </div>
+                                        @endforeach
+                                        <div @click="selectedDays = 'Unlimited'; daysVal = 0; open = false" class="px-3 py-2 text-xs font-semibold cursor-pointer hover:bg-orange-50 hover:text-primary transition-colors">Unlimited</div>
+                                    </div>
+                                </div>
                             </div>
                         @elseif($feat['type'] === 'numeric_dropdown')
                             @php

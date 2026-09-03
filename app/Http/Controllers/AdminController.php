@@ -2577,13 +2577,15 @@ class AdminController extends Controller
             
             if ($type === 'boolean') {
                 $value = filter_var($request->input('permissions.' . $key, false), FILTER_VALIDATE_BOOLEAN);
+                $limitInput = $request->input('permissions_limit.' . $key);
+                $limitVal = ($limitInput !== null && $limitInput !== '') ? (int)$limitInput : null;
                 
                 \App\Models\PlanPermission::updateOrCreate(
                     ['plan_id' => $planId, 'permission_key' => $key],
                     [
                         'permission_type' => 'boolean',
                         'boolean_value' => $value,
-                        'limit_value' => null
+                        'limit_value' => $limitVal
                     ]
                 );
             } elseif ($type === 'numeric') {

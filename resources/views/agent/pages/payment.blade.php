@@ -95,7 +95,17 @@
                 
                 <!-- Dynamic Promo Items -->
                 @forelse($agentPackages as $pkg)
-                <div class="p-4 flex flex-wrap sm:flex-nowrap items-center justify-between hover:bg-gray-50 rounded-2xl transition-colors boost-card" data-status="{{ ($pkg->is_boosted ?? false) ? 'active' : 'inactive' }}">
+                @php
+                    $isBoosted = (bool)($pkg->is_boosted ?? false);
+                    $boostExpired = false;
+                    if ($isBoosted && !empty($pkg->boost_expires_at)) {
+                        if (\Carbon\Carbon::parse($pkg->boost_expires_at)->isPast()) {
+                            $boostExpired = true;
+                            $isBoosted = false;
+                        }
+                    }
+                @endphp
+                <div class="p-4 flex flex-wrap sm:flex-nowrap items-center justify-between hover:bg-gray-50 rounded-2xl transition-colors boost-card" data-status="{{ $isBoosted ? 'active' : 'inactive' }}">
                     <div class="flex items-center mb-4 sm:mb-0 cursor-pointer" onclick="window.location.href='{{ url('/packages/edit/' . $pkg->id) }}'">
                         <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden mr-4 shrink-0">
                             @php
@@ -105,7 +115,18 @@
                         </div>
                         <div>
                             <h5 class="text-sm font-bold text-gray-900 hover:text-[#ea580c] transition-colors">{{ $pkg->title }}</h5>
-                            <p class="text-xs text-gray-500 mt-1">{{ $pkg->duration }} • {{ ucfirst($pkg->category) }}</p>
+                            <p class="text-xs text-gray-500 mt-1">
+                                {{ $pkg->duration }} • {{ ucfirst($pkg->category) }}
+                                @if($isBoosted && !empty($pkg->boost_expires_at))
+                                    <span class="text-[10px] font-bold text-green-600 ml-2 bg-green-50 px-2 py-0.5 rounded-md">
+                                        Valid till {{ \Carbon\Carbon::parse($pkg->boost_expires_at)->format('d M, Y') }}
+                                    </span>
+                                @elseif($boostExpired)
+                                    <span class="text-[10px] font-bold text-red-500 ml-2 bg-red-50 px-2 py-0.5 rounded-md">
+                                        Boost Expired
+                                    </span>
+                                @endif
+                            </p>
                         </div>
                     </div>
                     <div class="flex items-center space-x-6">
@@ -117,11 +138,19 @@
                             <p class="text-sm font-black text-[#ea580c]">₹12.50<span class="text-[10px] text-gray-400 font-medium">/day</span></p>
                             @endif
                         </div>
-                        @if($pkg->is_boosted ?? false)
-                            <button class="bg-orange-100 text-[#ea580c] font-bold text-xs px-6 py-2.5 rounded-full cursor-default inline-block border border-orange-200" disabled>Active</button>
+                        @if($isBoosted)
+                            <button class="bg-orange-100 text-[#ea580c] font-bold text-xs px-6 py-2.5 rounded-full cursor-default inline-block border border-orange-200 shadow-xs" disabled>
+                                Active <i class="fas fa-bolt ml-1 text-[#ea580c]"></i>
+                            </button>
                         @else
                             @if($boosts->isNotEmpty())
-                            <a target="_blank" href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id, 'boost_id' => $boosts->first()->id]) }}" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 inline-block shadow-lg shadow-orange-500/40 hover:scale-105 border border-orange-300">Boost <i class="fas fa-rocket ml-1"></i></a>
+                            <a target="_blank" href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id, 'boost_id' => $boosts->first()->id]) }}" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 inline-block shadow-lg shadow-orange-500/40 hover:scale-105 border border-orange-300">
+                                Boost <i class="fas fa-rocket ml-1"></i>
+                            </a>
+                            @else
+                            <a target="_blank" href="{{ route('agent.checkout', ['type' => 'boost', 'id' => $pkg->id]) }}" class="bg-gradient-to-r from-orange-400 to-[#ea580c] hover:from-orange-500 hover:to-orange-700 text-white font-black text-xs px-6 py-2.5 rounded-full transition-all duration-300 inline-block shadow-lg shadow-orange-500/40 hover:scale-105 border border-orange-300">
+                                Boost <i class="fas fa-rocket ml-1"></i>
+                            </a>
                             @endif
                         @endif
                     </div>

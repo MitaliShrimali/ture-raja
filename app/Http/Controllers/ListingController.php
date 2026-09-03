@@ -255,9 +255,19 @@ class ListingController extends Controller
                 $tier = max($tier, 2);
             }
             
-            // 2: Boosted Package
+            // 2: Boosted Package (Check expiration)
             if (!empty($pkg['is_boosted'])) {
-                $tier = max($tier, 3);
+                $isExpired = false;
+                if (!empty($pkg['boost_expires_at'])) {
+                    try {
+                        if (\Carbon\Carbon::parse($pkg['boost_expires_at'])->isPast()) {
+                            $isExpired = true;
+                        }
+                    } catch (\Exception $e) {}
+                }
+                if (!$isExpired) {
+                    $tier = max($tier, 3);
+                }
             }
             
             $agentId = null;
