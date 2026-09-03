@@ -537,6 +537,25 @@ class AgentController extends Controller
             return redirect()->route('agent.my-packages')->with('error', 'Unauthorized access.');
         }
 
+        if ($agentId) {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+            $planId = $agent ? ($agent->plan_id ?? null) : null;
+            if (!$planId) {
+                $planId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+            }
+            $perms = DB::table('plan_permissions')->where('plan_id', $planId)->get()->keyBy('permission_key');
+            $canDomestic = isset($perms['feat_domestic_packages']) ? (bool)$perms['feat_domestic_packages']->boolean_value : true;
+            $canInternational = isset($perms['feat_international_packages']) ? (bool)$perms['feat_international_packages']->boolean_value : true;
+
+            $reqCategory = strtolower($request->input('category', 'domestic'));
+            if ($reqCategory === 'domestic' && !$canDomestic) {
+                return redirect()->back()->with('error', 'Your current plan does not permit Domestic Packages. Please upgrade your plan.')->withInput();
+            }
+            if ($reqCategory === 'international' && !$canInternational) {
+                return redirect()->back()->with('error', 'Your current plan does not permit International Packages. Please upgrade your plan.')->withInput();
+            }
+        }
+
         // Main Image Upload
         $imageUrl = $pkg->image;
         if ($request->has('image') && !empty($request->image)) {
@@ -715,6 +734,23 @@ class AgentController extends Controller
             $permService = new \App\Services\PlanPermissionService();
             if ($permService->hasReachedLimit($agent, 'limit_packages', $packagesCount)) {
                 return redirect()->back()->with('error', 'You have reached your package limit. Please upgrade your plan to add more packages.');
+            }
+
+            // Plan permissions check for destination type
+            $planId = $agent ? ($agent->plan_id ?? null) : null;
+            if (!$planId) {
+                $planId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+            }
+            $perms = DB::table('plan_permissions')->where('plan_id', $planId)->get()->keyBy('permission_key');
+            $canDomestic = isset($perms['feat_domestic_packages']) ? (bool)$perms['feat_domestic_packages']->boolean_value : true;
+            $canInternational = isset($perms['feat_international_packages']) ? (bool)$perms['feat_international_packages']->boolean_value : true;
+
+            $reqCategory = strtolower($request->input('category', 'domestic'));
+            if ($reqCategory === 'domestic' && !$canDomestic) {
+                return redirect()->back()->with('error', 'Your current plan does not permit Domestic Packages. Please upgrade your plan.')->withInput();
+            }
+            if ($reqCategory === 'international' && !$canInternational) {
+                return redirect()->back()->with('error', 'Your current plan does not permit International Packages. Please upgrade your plan.')->withInput();
             }
         }
 

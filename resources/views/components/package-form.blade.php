@@ -11,6 +11,32 @@
         }
     }
 
+    if ($isAdmin) {
+        $canDomestic = true;
+        $canInternational = true;
+        $canAddGallery = true;
+        $canThemeOptions = true;
+        $canHidePrice = true;
+        $photoLimit = 0;
+        $hotelLimit = 0;
+    } else {
+        $agentId = session('agent_id');
+        $agentRecord = $agentId ? \Illuminate\Support\Facades\DB::table('agents')->where('id', $agentId)->first() : null;
+        $planId = $agentRecord->plan_id ?? null;
+        if (!$planId) {
+            $planId = \Illuminate\Support\Facades\DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+        }
+        $perms = \Illuminate\Support\Facades\DB::table('plan_permissions')->where('plan_id', $planId)->get()->keyBy('permission_key');
+        
+        $canDomestic = isset($perms['feat_domestic_packages']) ? (bool)$perms['feat_domestic_packages']->boolean_value : true;
+        $canInternational = isset($perms['feat_international_packages']) ? (bool)$perms['feat_international_packages']->boolean_value : true;
+        $canAddGallery = isset($perms['feat_add_gallery']) ? (bool)$perms['feat_add_gallery']->boolean_value : true;
+        $canThemeOptions = isset($perms['feat_theme_options']) ? (bool)$perms['feat_theme_options']->boolean_value : true;
+        $canHidePrice = isset($perms['feat_hide_package_price']) ? (bool)$perms['feat_hide_package_price']->boolean_value : true;
+        $photoLimit = isset($perms['limit_package_photos']) ? (int)$perms['limit_package_photos']->limit_value : 0;
+        $hotelLimit = isset($perms['limit_hotel_options']) ? (int)$perms['limit_hotel_options']->limit_value : 0;
+    }
+
     $catArray = [];
     if ($pkg && !empty($pkg->categories_list)) {
         $dbCategory = json_decode($pkg->categories_list, true);
@@ -44,7 +70,9 @@
         step: 1,
         showGalleryError: false,
         showBrochureError: false,
-        category: {{ json_encode($pkg->category ?? 'domestic') }},
+        category: {{ json_encode($pkg->category ?? ($canDomestic ? 'domestic' : ($canInternational ? 'international' : 'domestic'))) }},
+        photoLimit: {{ (int)$photoLimit }},
+        hotelLimit: {{ (int)$hotelLimit }},
         title: {{ json_encode($pkg->title ?? '') }},
         location: {{ json_encode($pkg->location ?? '') }},
         duration: {{ json_encode($pkg->duration ?? '') }},
@@ -197,6 +225,10 @@
         editingHotelIndex: null,
         addHotel() {
             if (!Array.isArray(this.hotels)) this.hotels = [];
+            if (this.hotelLimit > 0 && this.hotels.length >= this.hotelLimit) {
+                alert('Your plan allows a maximum of ' + this.hotelLimit + ' hotel options per package.');
+                return;
+            }
             if (this.newHotelName && this.newHotelName.trim()) {
                 this.hotels.push({
                     name: this.newHotelName.trim(),
@@ -256,6 +288,10 @@
         handleGalleryChange(event) {
             const files = event.target.files;
             for (let i = 0; i < files.length; i++) {
+                if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
+                    alert('Your plan allows a maximum of ' + this.photoLimit + ' package photos.');
+                    break;
+                }
                 this.galleryPreviews.push({
                     url: URL.createObjectURL(files[i]),
                     name: files[i].name,
@@ -304,6 +340,10 @@
             
             const index = this.galleryPreviews.findIndex(p => p.url === fullUrl);
             if (index === -1) {
+                if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
+                    alert('Your plan allows a maximum of ' + this.photoLimit + ' package photos.');
+                    return;
+                }
                 this.galleryPreviews.push({
                     url: fullUrl,
                     name: image.name,
@@ -821,11 +861,15 @@
                         <div class="space-y-2">
                             <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">Destination
                                 Type <span class="text-red-500 text-sm">*</span></label>
-                            <div class="segmented-control">
-                                <div class="segmented-btn" :class="category === 'domestic' ? 'active' : ''"
+                            <div class="segmented-control flex gap-2">
+                                @if($canDomestic)
+                                <div class="segmented-btn flex-1 text-center py-3 rounded-2xl cursor-pointer font-bold text-xs transition-all" :class="category === 'domestic' ? 'active' : ''"
                                     @click="category = 'domestic'">Domestic</div>
-                                <div class="segmented-btn" :class="category === 'international' ? 'active' : ''"
+                                @endif
+                                @if($canInternational)
+                                <div class="segmented-btn flex-1 text-center py-3 rounded-2xl cursor-pointer font-bold text-xs transition-all" :class="category === 'international' ? 'active' : ''"
                                     @click="category = 'international'">International</div>
+                                @endif
                             </div>
                             <input type="hidden" name="category" :value="category">
                         </div>
@@ -1128,16 +1172,19 @@
                         </div>
 
                         <!-- Hide Price Toggle -->
+                        @if($canHidePrice || $isAdmin)
                         <label class="flex items-center gap-3 cursor-pointer select-none">
                             <input type="checkbox" name="hide_price" x-model="hidePrice"
                                 class="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/25 cursor-pointer" />
                             <span class="text-xs font-bold text-gray-600">Hide price from package listing</span>
                         </label>
+                        @endif
                     </div>
 
                     <!-- Right Column: Theme, Holiday Type & Tags -->
                     <div class="flex flex-col gap-4">
                         <!-- Theme & Holiday Type Card -->
+                        @if($canThemeOptions || $isAdmin)
                         <div class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-6 shadow-sm">
                             <div class="flex items-center gap-3 mb-2">
                                 <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
@@ -1168,6 +1215,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
 
                         <!-- Tags & Badges Card -->
                         <div class="bg-white rounded-[32px] border border-gray-100 p-8 shadow-sm flex-1">
@@ -1919,6 +1967,7 @@
                         </div>
 
                         <!-- Gallery Portfolio Card -->
+                        @if($canAddGallery || $isAdmin)
                         <div id="gallery-portfolio-section" class="bg-white rounded-[32px] border border-gray-100 p-8 space-y-8 shadow-sm">
                             <div class="space-y-4">
                                 <h4 class="text-sm font-black text-gray-800 uppercase tracking-widest pl-1">Gallery
@@ -1965,6 +2014,15 @@
                                 </div>
                             </div>
                         </div>
+                        @else
+                        <div id="gallery-portfolio-section" class="bg-gray-50 rounded-[32px] border border-gray-200 p-8 space-y-3 shadow-sm text-center">
+                            <div class="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl flex items-center justify-center mx-auto mb-1">
+                                <i data-lucide="lock" size="20"></i>
+                            </div>
+                            <h4 class="text-xs font-black text-gray-700 uppercase tracking-widest">Gallery Portfolio Restricted</h4>
+                            <p class="text-xs text-gray-500 font-medium max-w-sm mx-auto">Gallery photo upload is not included in your current subscription plan. Upgrade your plan to add gallery photos.</p>
+                        </div>
+                        @endif
 
                     </div>
                 </div>
