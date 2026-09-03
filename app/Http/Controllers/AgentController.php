@@ -461,6 +461,7 @@ class AgentController extends Controller
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $transits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
+        $hotelCategories = DB::table('hotel_categories')->where('status', 1)->orderBy('name', 'asc')->get();
         return view('agent.pages.create-package', [
             'page_title' => 'Create Package',
             'page_breadcrumb' => 'Pages / Create Package',
@@ -468,7 +469,8 @@ class AgentController extends Controller
             'hotels' => $hotels,
             'themes' => $themes,
             'holidayTypes' => $holidayTypes,
-            'transits' => $transits
+            'transits' => $transits,
+            'hotelCategories' => $hotelCategories
         ]);
     }
 
@@ -498,6 +500,7 @@ class AgentController extends Controller
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $transits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
+        $hotelCategories = DB::table('hotel_categories')->where('status', 1)->orderBy('name', 'asc')->get();
         return view('agent.pages.edit-package', [
             'page_title' => 'Edit Package',
             'page_breadcrumb' => 'Pages / Edit Package',
@@ -506,7 +509,8 @@ class AgentController extends Controller
             'hotels' => $hotels,
             'themes' => $themes,
             'holidayTypes' => $holidayTypes,
-            'transits' => $transits
+            'transits' => $transits,
+            'hotelCategories' => $hotelCategories
         ]);
     }
 

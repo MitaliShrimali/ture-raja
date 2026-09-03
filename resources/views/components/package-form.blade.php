@@ -1,11 +1,16 @@
-@props(['package' => null, 'isAdmin' => false, 'agents' => [], 'action' => '', 'method' => 'POST', 'categories' => [], 'themes' => [], 'holidayTypes' => [], 'transits' => []])
-
-
-
-
+@props(['package' => null, 'isAdmin' => false, 'agents' => [], 'action' => '', 'method' => 'POST', 'categories' => [], 'themes' => [], 'holidayTypes' => [], 'transits' => [], 'hotelCategories' => []])
 
 @php
     $pkg = $package ?? null;
+    $hotelCategoriesList = $hotelCategories ?? [];
+    if (empty($hotelCategoriesList) || (is_object($hotelCategoriesList) && method_exists($hotelCategoriesList, 'isEmpty') && $hotelCategoriesList->isEmpty())) {
+        try {
+            $hotelCategoriesList = \Illuminate\Support\Facades\DB::table('hotel_categories')->where('status', 1)->orderBy('name', 'asc')->get();
+        } catch (\Exception $e) {
+            $hotelCategoriesList = collect();
+        }
+    }
+
     $catArray = [];
     if ($pkg && !empty($pkg->categories_list)) {
         $dbCategory = json_decode($pkg->categories_list, true);
@@ -177,13 +182,33 @@
         removeExclusion(i) { this.exclusions.splice(i, 1); },
         hidePrice: false,
         transfers: [],
-        hotels: {{ json_encode(is_string($pkg->hotels ?? '') ? json_decode($pkg->hotels ?? '[]', true) : ($pkg->hotels ?? [])) }},
+        hotels: (() => {
+            let h = {{ json_encode($pkg->hotels ?? null) }};
+            if (typeof h === 'string') {
+                try { h = JSON.parse(h); } catch(e) { h = []; }
+            }
+            return Array.isArray(h) ? h : [];
+        })(),
         newTransfer: '',
         newHotelName: '',
         newHotelCity: '',
         newHotelRoom: '',
         newHotelImage: '',
         editingHotelIndex: null,
+        addHotel() {
+            if (!Array.isArray(this.hotels)) this.hotels = [];
+            if (this.newHotelName && this.newHotelName.trim()) {
+                this.hotels.push({
+                    name: this.newHotelName.trim(),
+                    city: (this.newHotelCity || '').trim(),
+                    room: (this.newHotelRoom || '').trim(),
+                    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'
+                });
+                this.newHotelName = '';
+                this.newHotelCity = '';
+                this.newHotelRoom = '';
+            }
+        },
         previewPdf() {
             if (this.$refs.brochureInput && this.$refs.brochureInput.files && this.$refs.brochureInput.files[0]) {
                 window.open(URL.createObjectURL(this.$refs.brochureInput.files[0]), '_blank');
@@ -1406,25 +1431,35 @@
                                                                         <span x-text="(ht.name || '').trim() ? (ht.name || '').trim().split(/\s+/).length : 0" :class="{'text-red-500': ((ht.name || '').trim() ? (ht.name || '').trim().split(/\s+/).length : 0) >= 10}"></span> / 10 words
                                                                     </div>
                                                                 </div>
-                                                                <div>
-                                                                    <input type="text" x-model="ht.city"
+                                                                <div class="relative" x-init="window.setupAutocompleteElement($el.querySelector('input'), $el.querySelector('.suggestions-box'), 'city', (res) => { ht.city = res.city; })">
+                                                                    <input type="text" x-model="ht.city" autocomplete="off"
                                                                         @input="let w = $el.value.trim().split(/\s+/); if(w.length > 5 && w[0] !== '') { ht.city = w.slice(0,5).join(' ') + ' '; }"
                                                                         class="w-full bg-gray-50 border border-gray-100 rounded-lg py-1 px-2 text-[10px] outline-none focus:ring-1 focus:ring-primary/20"
                                                                         placeholder="City..."
                                                                         @keydown.enter.prevent="editingHotelIndex = null" />
+                                                                    <div class="suggestions-box absolute z-50 w-full bg-white rounded-xl shadow-xl border border-gray-100 max-h-48 overflow-y-auto hidden mt-1 left-0"></div>
                                                                     <div class="text-right text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
                                                                         <span x-text="(ht.city || '').trim() ? (ht.city || '').trim().split(/\s+/).length : 0" :class="{'text-red-500': ((ht.city || '').trim() ? (ht.city || '').trim().split(/\s+/).length : 0) >= 5}"></span> / 5 words
                                                                     </div>
                                                                 </div>
-                                                                <div>
-                                                                    <input type="text" x-model="ht.room"
-                                                                        @input="let w = $el.value.trim().split(/\s+/); if(w.length > 10 && w[0] !== '') { ht.room = w.slice(0,10).join(' ') + ' '; }"
-                                                                        class="w-full bg-gray-50 border border-gray-100 rounded-lg py-1 px-2 text-[10px] outline-none focus:ring-1 focus:ring-primary/20"
-                                                                        @keydown.enter.prevent="editingHotelIndex = null" />
-                                                                    <div class="text-right text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">
-                                                                        <span x-text="(ht.room || '').trim() ? (ht.room || '').trim().split(/\s+/).length : 0" :class="{'text-red-500': ((ht.room || '').trim() ? (ht.room || '').trim().split(/\s+/).length : 0) >= 10}"></span> / 10 words
-                                                                    </div>
-                                                                </div>
+                                                                <div class="relative" x-data="{ openRoom: false }">
+                                                                     <button type="button" @click="openRoom = !openRoom" @click.outside="openRoom = false" 
+                                                                         class="w-full bg-gray-50 border border-gray-100 rounded-lg py-1.5 px-2 text-[10px] font-medium text-left flex items-center justify-between outline-none focus:ring-1 focus:ring-primary/20">
+                                                                         <span x-text="ht.room || 'Select Room / Category...'" :class="{'text-gray-400': !ht.room, 'text-gray-800 font-semibold': ht.room}"></span>
+                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 transition-transform text-gray-400" :class="{'rotate-180': openRoom}"><path d="m6 9 6 6 6-6"/></svg>
+                                                                     </button>
+                                                                     <div x-show="openRoom" x-transition.opacity.duration.150ms 
+                                                                         class="absolute z-50 w-full bg-white rounded-xl shadow-xl border border-gray-100 max-h-44 overflow-y-auto mt-1 left-0 py-1 divide-y divide-gray-50">
+                                                                         <div @click="ht.room = ''; openRoom = false" class="px-2.5 py-1.5 text-[10px] text-gray-400 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Select Room / Category...</div>
+                                                                         @foreach($hotelCategoriesList as $cat)
+                                                                             <div @click="ht.room = '{{ $cat->name }}'; openRoom = false" class="px-2.5 py-1.5 text-[10px] text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium" :class="{'bg-orange-50 text-primary font-bold': ht.room === '{{ $cat->name }}'}">{{ $cat->name }}</div>
+                                                                         @endforeach
+                                                                         <div @click="ht.room = 'Standard Room'; openRoom = false" class="px-2.5 py-1.5 text-[10px] text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Standard Room</div>
+                                                                         <div @click="ht.room = 'Deluxe Room'; openRoom = false" class="px-2.5 py-1.5 text-[10px] text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Deluxe Room</div>
+                                                                         <div @click="ht.room = 'Executive Suite'; openRoom = false" class="px-2.5 py-1.5 text-[10px] text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Executive Suite</div>
+                                                                         <div @click="ht.room = 'Luxury Suite'; openRoom = false" class="px-2.5 py-1.5 text-[10px] text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Luxury Suite</div>
+                                                                     </div>
+                                                                 </div>
                                                             </div>
                                                         </template>
                                                     </div>
@@ -1473,25 +1508,35 @@
                                             </div>
                                         </div>
                                         <div class="flex items-start gap-2">
-                                            <div class="flex-1">
-                                                <input type="text" x-model="newHotelCity" placeholder="City..."
+                                            <div class="flex-1 relative" x-init="window.setupAutocompleteElement($el.querySelector('input'), $el.querySelector('.suggestions-box'), 'city', (res) => { newHotelCity = res.city; })">
+                                                <input type="text" x-model="newHotelCity" autocomplete="off" placeholder="City..."
                                                     @input="let w = $el.value.trim().split(/\s+/); if(w.length > 5 && w[0] !== '') { newHotelCity = w.slice(0,5).join(' ') + ' '; }"
                                                     class="w-full bg-white border border-gray-100 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-orange-200" />
+                                                <div class="suggestions-box absolute z-50 w-full bg-white rounded-xl shadow-xl border border-gray-100 max-h-48 overflow-y-auto hidden mt-1 left-0"></div>
                                                 <div class="text-right text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-1">
                                                     <span x-text="(newHotelCity || '').trim() ? (newHotelCity || '').trim().split(/\s+/).length : 0" :class="{'text-red-500': ((newHotelCity || '').trim() ? (newHotelCity || '').trim().split(/\s+/).length : 0) >= 5}"></span> / 5 words
                                                 </div>
                                             </div>
-                                            <div class="flex-1">
-                                                <input type="text" x-model="newHotelRoom"
-                                                    placeholder="Room Details..."
-                                                    @input="let w = $el.value.trim().split(/\s+/); if(w.length > 10 && w[0] !== '') { newHotelRoom = w.slice(0,10).join(' ') + ' '; }"
-                                                    class="w-full bg-white border border-gray-100 rounded-xl py-2 px-3 text-xs font-medium outline-none focus:ring-1 focus:ring-orange-200" />
-                                                <div class="text-right text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-1">
-                                                    <span x-text="(newHotelRoom || '').trim() ? (newHotelRoom || '').trim().split(/\s+/).length : 0" :class="{'text-red-500': ((newHotelRoom || '').trim() ? (newHotelRoom || '').trim().split(/\s+/).length : 0) >= 10}"></span> / 10 words
-                                                </div>
-                                            </div>
+                                            <div class="flex-1 relative" x-data="{ openRoom: false }">
+                                                 <button type="button" @click="openRoom = !openRoom" @click.outside="openRoom = false" 
+                                                     class="w-full bg-white border border-gray-100 rounded-xl py-2 px-3 text-xs font-medium text-left flex items-center justify-between outline-none focus:ring-1 focus:ring-orange-200">
+                                                     <span x-text="newHotelRoom || 'Select Room / Category...'" :class="{'text-gray-400': !newHotelRoom, 'text-gray-800 font-semibold': newHotelRoom}"></span>
+                                                     <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shrink-0 transition-transform text-gray-400" :class="{'rotate-180': openRoom}"><path d="m6 9 6 6 6-6"/></svg>
+                                                 </button>
+                                                 <div x-show="openRoom" x-transition.opacity.duration.150ms 
+                                                     class="absolute z-50 w-full bg-white rounded-xl shadow-xl border border-gray-100 max-h-44 overflow-y-auto mt-1 left-0 py-1 divide-y divide-gray-50">
+                                                     <div @click="newHotelRoom = ''; openRoom = false" class="px-3 py-1.5 text-xs text-gray-400 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Select Room / Category...</div>
+                                                     @foreach($hotelCategoriesList as $cat)
+                                                         <div @click="newHotelRoom = '{{ $cat->name }}'; openRoom = false" class="px-3 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium" :class="{'bg-orange-50 text-primary font-bold': newHotelRoom === '{{ $cat->name }}'}">{{ $cat->name }}</div>
+                                                     @endforeach
+                                                     <div @click="newHotelRoom = 'Standard Room'; openRoom = false" class="px-3 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Standard Room</div>
+                                                     <div @click="newHotelRoom = 'Deluxe Room'; openRoom = false" class="px-3 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Deluxe Room</div>
+                                                     <div @click="newHotelRoom = 'Executive Suite'; openRoom = false" class="px-3 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Executive Suite</div>
+                                                     <div @click="newHotelRoom = 'Luxury Suite'; openRoom = false" class="px-3 py-1.5 text-xs text-gray-700 hover:bg-orange-50 hover:text-primary cursor-pointer font-medium">Luxury Suite</div>
+                                                 </div>
+                                             </div>
                                             <button type="button"
-                                                @click="if(newHotelName.trim()){ hotels.push({ name: newHotelName.trim(), city: newHotelCity.trim(), room: newHotelRoom.trim(), image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100' }); newHotelName=''; newHotelCity=''; newHotelRoom=''; }"
+                                                @click="addHotel()"
                                                 class="w-10 h-10 shrink-0 text-white rounded-xl text-sm font-bold flex items-center justify-center shadow-sm hover:opacity-90 transition-opacity bg-primary"
                                                 style="background-color: #e85d26 !important; color: white !important;">+</button>
                                         </div>

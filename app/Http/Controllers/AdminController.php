@@ -344,7 +344,8 @@ class AdminController extends Controller
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $transits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
-        return view('admin.packages-create', compact('agents', 'themes', 'holidayTypes', 'category', 'transits'));
+        $hotelCategories = DB::table('hotel_categories')->where('status', 1)->orderBy('name', 'asc')->get();
+        return view('admin.packages-create', compact('agents', 'themes', 'holidayTypes', 'category', 'transits', 'hotelCategories'));
     }
 
     public function editPackage($id)
@@ -357,7 +358,8 @@ class AdminController extends Controller
         $themes = DB::table('themes')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $holidayTypes = DB::table('holiday_types')->where('status', 'Active')->orderBy('name', 'asc')->get();
         $transits = DB::table('transits')->where('status', 'Active')->orderBy('sr_no', 'asc')->get();
-        return view('admin.packages-edit', compact('pkg', 'agents', 'themes', 'holidayTypes', 'transits'));
+        $hotelCategories = DB::table('hotel_categories')->where('status', 1)->orderBy('name', 'asc')->get();
+        return view('admin.packages-edit', compact('pkg', 'agents', 'themes', 'holidayTypes', 'transits', 'hotelCategories'));
     }
 
     public function storePackage(Request $request)

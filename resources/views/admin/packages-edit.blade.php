@@ -12,5 +12,6 @@
         :holiday-types="$holidayTypes ?? []"
         :transits="$transits ?? []"
         :agents="$agents ?? []"
+        :hotel-categories="$hotelCategories ?? []"
     />
 @endsection
