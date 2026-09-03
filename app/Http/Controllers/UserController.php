@@ -822,14 +822,28 @@ class UserController extends Controller
             ]);
         }
 
-        // Send Welcome Email to Customer / User
+        // Send Welcome Email & SMS to Customer / User
         if ($request->type != 'admin') {
-            \App\Services\MailService::sendView(
-                $request->email,
-                'Welcome to Tour Raja! ✈️',
-                'emails.welcome-customer',
-                ['name' => $name]
-            );
+            try {
+                \App\Services\MailService::sendView(
+                    $email,
+                    'Welcome to Tour Raja!',
+                    'emails.welcome-customer',
+                    ['name' => $name]
+                );
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Customer Welcome Email Exception: " . $e->getMessage());
+            }
+
+            try {
+                if (!empty($phone)) {
+                    $msgClubService = app(\App\Services\MsgClubService::class);
+                    $welcomeText = "Welcome to Tour Raja, {$name}! Your account has been registered successfully. Explore tour packages at " . url('/');
+                    $msgClubService->sendCustomSms($phone, $welcomeText);
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error("Customer Welcome SMS Exception: " . $e->getMessage());
+            }
         }
 
         // If the user is signing up as an admin, do not log them in automatically.

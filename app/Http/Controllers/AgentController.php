@@ -95,16 +95,47 @@ class AgentController extends Controller
 
         $id = DB::table('agents')->insertGetId($data);
 
-        // Send Welcome Email to Agent
-        \App\Services\MailService::sendView(
-            $request->email,
-            'Welcome to Tour Raja Partner Network! 🎉',
-            'emails.welcome-agent',
-            [
-                'name'       => $request->name,
-                'agencyName' => $request->agency_name ?? $request->name
-            ]
-        );
+        // 1. Send Welcome Email to Agent
+        try {
+            \App\Services\MailService::sendView(
+                $request->email,
+                'Welcome to Tour Raja Partner Network!',
+                'emails.welcome-agent',
+                [
+                    'name'       => $request->name,
+                    'agencyName' => $request->agency_name ?? $request->name
+                ]
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Agent Welcome Email Exception: " . $e->getMessage());
+        }
+
+        // 2. Send Welcome SMS / Notification to Agent Mobile Phone
+        try {
+            if (!empty($request->phone)) {
+                $msgClubService = app(\App\Services\MsgClubService::class);
+                $smsMsg = "Welcome to Tour Raja Partner Network, " . $request->name . "! Your agency account has been created successfully. Login at " . url('/agent/login');
+                $msgClubService->sendCustomSms($request->phone, $smsMsg);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Agent Welcome SMS Exception: " . $e->getMessage());
+        }
+
+        // 3. Create Welcome Notification in Agent Dashboard
+        try {
+            if (Schema::hasTable('agent_notifications')) {
+                DB::table('agent_notifications')->insert([
+                    'agent_id'   => $id,
+                    'title'      => 'Welcome to Tour Raja!',
+                    'message'    => 'Your account ' . ($request->agency_name ?? $request->name) . ' was registered successfully. Complete your profile to start listing packages!',
+                    'is_read'    => 0,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Agent Welcome Notification Exception: " . $e->getMessage());
+        }
 
         // Auto-login the new agent
         session([
