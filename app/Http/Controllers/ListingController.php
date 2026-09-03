@@ -1314,6 +1314,21 @@ class ListingController extends Controller
 
             $feedbacks = \App\Models\AgentFeedback::where('agent_id', $agent->id)->latest()->get();
 
+            $canBusinessProfile = true;
+            if ($agent && isset($agent->id)) {
+                $planId = $agent->plan_id ?? null;
+                if (!$planId) {
+                    $planId = \DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+                }
+                $perm = \DB::table('plan_permissions')
+                    ->where('plan_id', $planId)
+                    ->where('permission_key', 'feat_business_profile')
+                    ->first();
+                if ($perm) {
+                    $canBusinessProfile = (bool)$perm->boolean_value;
+                }
+            }
+
             return view('agent-showcase', [
                 'packages' => $packages->values(),
                 'suggestedPackages' => $suggestedPackages,
@@ -1324,7 +1339,8 @@ class ListingController extends Controller
                 'filterCounts' => $filterCounts,
                 'branches' => $branches,
                 'profile_images' => $profile_images,
-                'feedbacks' => $feedbacks
+                'feedbacks' => $feedbacks,
+                'canBusinessProfile' => $canBusinessProfile
             ]);
         }
 

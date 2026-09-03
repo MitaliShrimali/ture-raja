@@ -1051,6 +1051,22 @@
 
                             $avgRating = \DB::table('agent_feedback')->where('agent_id', $agentId)->avg('rating');
                             $displayRating = $avgRating ? number_format((float)$avgRating, 1) : 'No rating';
+
+                            $canBusinessProfile = true;
+                            if ($agentId) {
+                                $agentRecord = \DB::table('agents')->where('id', $agentId)->first();
+                                $planId = $agentRecord->plan_id ?? null;
+                                if (!$planId) {
+                                    $planId = \DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+                                }
+                                $perm = \DB::table('plan_permissions')
+                                    ->where('plan_id', $planId)
+                                    ->where('permission_key', 'feat_business_profile')
+                                    ->first();
+                                if ($perm) {
+                                    $canBusinessProfile = (bool)$perm->boolean_value;
+                                }
+                            }
                         @endphp
                         <!-- FontAwesome CDN for social media icons -->
                         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1237,9 +1253,11 @@
                                     <a href="{{ $agentPackagesUrl }}" class="flex items-center justify-center gap-1.5 bg-[#e85d26] hover:bg-[#d0501f] text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
                                         <i data-lucide="package" class="w-4 h-4"></i> Packages
                                     </a>
+                                    @if($canBusinessProfile)
                                     <a href="{{ $agentProfileUrl }}" class="flex items-center justify-center gap-1.5 bg-gray-900 hover:bg-black text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
                                         <i data-lucide="user" class="w-4 h-4"></i> Profile
                                     </a>
+                                    @endif
                                 </div>
                                 
                                 <!-- Why Us -->

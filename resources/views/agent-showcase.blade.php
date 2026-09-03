@@ -1,7 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
-<div x-data="{ activeTab: new URLSearchParams(window.location.search).get('tab') || 'both' }">
+@php
+    $canBusinessProfile = $canBusinessProfile ?? true;
+@endphp
+<div x-data="{ activeTab: {{ $canBusinessProfile ? "(new URLSearchParams(window.location.search).get('tab') || 'both')" : "'packages'" }} }">
     <!-- FontAwesome CDN for social media icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom styling to match the reference design perfectly -->
@@ -367,11 +370,13 @@
         <!-- Tab Navigation embedded at the bottom of the banner -->
         <div class="absolute bottom-0 left-0 w-full bg-black/40 backdrop-blur-sm border-t border-white/20 z-20">
             <div class="container-custom flex justify-end gap-1 sm:gap-6 overflow-x-auto pb-1 sm:pb-0">
+                @if($canBusinessProfile)
                 <button type="button" @click="activeTab = 'profile'; window.history.pushState({}, '', '?agent_id={{ $agent->id }}&tab=profile');"
                     class="mobile-tab-text py-3 px-3 sm:px-6 border-b-[3px] font-black text-[13px] sm:text-base uppercase tracking-wider transition-colors whitespace-nowrap"
                     :class="activeTab === 'profile' || activeTab === 'both' ? 'border-[#e85d26] text-white bg-black/40' : 'border-transparent text-gray-200 hover:text-white hover:bg-white/10'">
                     <i class="fas fa-id-card mr-1 sm:mr-2"></i> About Agent
                 </button>
+                @endif
                 <button type="button" @click="activeTab = 'packages'; window.history.pushState({}, '', '?agent_id={{ $agent->id }}&tab=packages');"
                     class="mobile-tab-text py-3 px-3 sm:px-6 border-b-[3px] font-black text-[13px] sm:text-base uppercase tracking-wider transition-colors whitespace-nowrap"
                     :class="activeTab === 'packages' ? 'border-[#e85d26] text-white bg-black/40' : 'border-transparent text-gray-200 hover:text-white hover:bg-white/10'">
@@ -381,6 +386,7 @@
         </div>
     </div>
 
+    @if($canBusinessProfile)
     <!-- Agent Profile details section precisely matched to image layout -->
     <div class="agent-profile-section" x-show="activeTab === 'profile' || activeTab === 'both'" x-cloak>
         <div class="container-custom">
@@ -784,6 +790,7 @@
             @endif
         </div>
     </div>
+    @endif
 
     <!-- Featured Tour Packages Showcase Grid -->
     <div class="bg-[#FAFAFA] py-12" x-show="activeTab === 'packages' || activeTab === 'both'" x-cloak>
