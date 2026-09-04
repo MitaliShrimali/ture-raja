@@ -379,13 +379,7 @@ class AdminController extends Controller
         }
 
         // Gallery Images Upload
-        $galleryUrls = [];
-        
-        // Handle images selected from gallery
-        if ($request->has('existing_gallery_urls')) {
-            $galleryUrls = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
-        }
-        
+        $uploadedFilePaths = [];
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $file) {
                 if (!$file->isValid()) {
@@ -393,9 +387,38 @@ class AdminController extends Controller
                 }
                 $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/packages/gallery'), $fileName);
-                $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
+                $uploadedFilePaths[] = 'uploads/packages/gallery/' . $fileName;
             }
         }
+
+        $galleryUrls = [];
+        if ($request->has('gallery_order') && is_array($request->gallery_order)) {
+            foreach ($request->gallery_order as $orderItem) {
+                if (str_starts_with($orderItem, 'existing:')) {
+                    $path = ltrim(substr($orderItem, 9), '/');
+                    if (!empty($path)) {
+                        $galleryUrls[] = $path;
+                    }
+                } elseif (str_starts_with($orderItem, 'file:')) {
+                    $fileIdx = (int)substr($orderItem, 5);
+                    if (isset($uploadedFilePaths[$fileIdx])) {
+                        $galleryUrls[] = $uploadedFilePaths[$fileIdx];
+                    }
+                }
+            }
+        } else {
+            if ($request->has('existing_gallery_urls')) {
+                $existing = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
+                foreach ($existing as $ex) {
+                    $galleryUrls[] = ltrim($ex, '/');
+                }
+            }
+            foreach ($uploadedFilePaths as $up) {
+                $galleryUrls[] = $up;
+            }
+        }
+
+        $galleryUrls = array_values(array_unique($galleryUrls));
 
         if (count($galleryUrls) > 0) {
             $imageUrl = $galleryUrls[0];
@@ -589,19 +612,7 @@ class AdminController extends Controller
             }
 
             // Gallery Images Upload
-            $galleryUrls = [];
-            
-            // Handle images selected from gallery
-            if ($request->has('existing_gallery_urls')) {
-                $galleryUrls = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
-            } else {
-                if ($request->has('title')) {
-                    $galleryUrls = []; // Form submitted but no gallery images left
-                } else if ($oldPkg && $oldPkg->gallery) {
-                    $galleryUrls = json_decode($oldPkg->gallery, true) ?: [];
-                }
-            }
-            
+            $uploadedFilePaths = [];
             if ($request->hasFile('gallery_files')) {
                 foreach ($request->file('gallery_files') as $file) {
                     if (!$file->isValid()) {
@@ -609,9 +620,42 @@ class AdminController extends Controller
                     }
                     $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
                     $file->move(public_path('uploads/packages/gallery'), $fileName);
-                    $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
+                    $uploadedFilePaths[] = 'uploads/packages/gallery/' . $fileName;
                 }
             }
+
+            $galleryUrls = [];
+            if ($request->has('gallery_order') && is_array($request->gallery_order)) {
+                foreach ($request->gallery_order as $orderItem) {
+                    if (str_starts_with($orderItem, 'existing:')) {
+                        $path = ltrim(substr($orderItem, 9), '/');
+                        if (!empty($path)) {
+                            $galleryUrls[] = $path;
+                        }
+                    } elseif (str_starts_with($orderItem, 'file:')) {
+                        $fileIdx = (int)substr($orderItem, 5);
+                        if (isset($uploadedFilePaths[$fileIdx])) {
+                            $galleryUrls[] = $uploadedFilePaths[$fileIdx];
+                        }
+                    }
+                }
+            } else {
+                if ($request->has('existing_gallery_urls')) {
+                    $existing = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
+                    foreach ($existing as $ex) {
+                        $galleryUrls[] = ltrim($ex, '/');
+                    }
+                } else {
+                    if (!$request->has('title') && $oldPkg && $oldPkg->gallery) {
+                        $galleryUrls = json_decode($oldPkg->gallery, true) ?: [];
+                    }
+                }
+                foreach ($uploadedFilePaths as $up) {
+                    $galleryUrls[] = $up;
+                }
+            }
+
+            $galleryUrls = array_values(array_unique($galleryUrls));
 
             if (count($galleryUrls) > 0) {
                 $imageUrl = $galleryUrls[0];
@@ -4962,6 +5006,9 @@ class AdminController extends Controller
     {
         $agentId = 0; // Admin global gallery
         $parentId = $request->query('folder', null);
+        if (empty($parentId)) {
+            $parentId = null;
+        }
 
         // Current folder if any
         $currentFolder = null;
@@ -4985,8 +5032,14 @@ class AdminController extends Controller
         }
 
         // Fetch contents
-        $media = AgentMedia::where('parent_id', $parentId)
-            ->orderBy('type') // Folders first
+        $query = AgentMedia::query();
+        if (empty($parentId)) {
+            $query->whereNull('parent_id');
+        } else {
+            $query->where('parent_id', $parentId);
+        }
+
+        $media = $query->orderBy('type') // Folders first
             ->orderBy('name')
             ->get();
             
@@ -5011,9 +5064,18 @@ class AdminController extends Controller
     {
         $agentId = 0;
         $parentId = $request->query('folder', null);
+        if (empty($parentId)) {
+            $parentId = null;
+        }
 
-        $media = AgentMedia::where('parent_id', $parentId)
-            ->orderBy('type') // Folders first
+        $query = AgentMedia::query();
+        if (empty($parentId)) {
+            $query->whereNull('parent_id');
+        } else {
+            $query->where('parent_id', $parentId);
+        }
+
+        $media = $query->orderBy('type') // Folders first
             ->orderBy('name')
             ->get();
             

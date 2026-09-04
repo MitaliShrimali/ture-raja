@@ -608,25 +608,49 @@ class AgentController extends Controller
             $imageUrl = 'uploads/packages/' . $fileName;
         }
 
-        $galleryUrls = [];
-        if ($request->has('existing_gallery_urls')) {
-            $galleryUrls = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
-        } else {
-            if ($request->has('title')) {
-                $galleryUrls = []; // Form submitted but no gallery images left
-            } else {
-                $galleryUrls = json_decode($pkg->gallery, true) ?: []; // Fallback
-            }
-        }
+        $uploadedFilePaths = [];
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $file) {
                 if ($file->isValid()) {
                     $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
                     $file->move(public_path('uploads/packages/gallery'), $fileName);
-                    $galleryUrls[] = 'uploads/packages/gallery/' . $fileName;
+                    $uploadedFilePaths[] = 'uploads/packages/gallery/' . $fileName;
                 }
             }
         }
+
+        $galleryUrls = [];
+        if ($request->has('gallery_order') && is_array($request->gallery_order)) {
+            foreach ($request->gallery_order as $orderItem) {
+                if (str_starts_with($orderItem, 'existing:')) {
+                    $path = ltrim(substr($orderItem, 9), '/');
+                    if (!empty($path)) {
+                        $galleryUrls[] = $path;
+                    }
+                } elseif (str_starts_with($orderItem, 'file:')) {
+                    $fileIdx = (int)substr($orderItem, 5);
+                    if (isset($uploadedFilePaths[$fileIdx])) {
+                        $galleryUrls[] = $uploadedFilePaths[$fileIdx];
+                    }
+                }
+            }
+        } else {
+            if ($request->has('existing_gallery_urls')) {
+                $existing = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
+                foreach ($existing as $ex) {
+                    $galleryUrls[] = ltrim($ex, '/');
+                }
+            } else {
+                if (!$request->has('title')) {
+                    $galleryUrls = json_decode($pkg->gallery, true) ?: [];
+                }
+            }
+            foreach ($uploadedFilePaths as $up) {
+                $galleryUrls[] = $up;
+            }
+        }
+
+        $galleryUrls = array_values(array_unique($galleryUrls));
 
         if (count($galleryUrls) > 0) {
             $imageUrl = $galleryUrls[0];
@@ -829,18 +853,48 @@ class AgentController extends Controller
         }
 
         // Gallery Images Upload
-        $galleryUrls = [];
-        if ($request->has('gallery_urls') && is_array($request->gallery_urls)) {
-            $galleryUrls = array_merge($galleryUrls, $request->gallery_urls);
-        }
+        $uploadedFilePaths = [];
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $file) {
                 if (!$file->isValid()) continue;
                 $fileName = time() . '_' . rand(1000, 9999) . '_' . $file->getClientOriginalName();
                 $file->move(public_path('uploads/packages/gallery'), $fileName);
-                $galleryUrls[] = '/uploads/packages/gallery/' . $fileName;
+                $uploadedFilePaths[] = 'uploads/packages/gallery/' . $fileName;
             }
         }
+
+        $galleryUrls = [];
+        if ($request->has('gallery_order') && is_array($request->gallery_order)) {
+            foreach ($request->gallery_order as $orderItem) {
+                if (str_starts_with($orderItem, 'existing:')) {
+                    $path = ltrim(substr($orderItem, 9), '/');
+                    if (!empty($path)) {
+                        $galleryUrls[] = $path;
+                    }
+                } elseif (str_starts_with($orderItem, 'file:')) {
+                    $fileIdx = (int)substr($orderItem, 5);
+                    if (isset($uploadedFilePaths[$fileIdx])) {
+                        $galleryUrls[] = $uploadedFilePaths[$fileIdx];
+                    }
+                }
+            }
+        } else {
+            if ($request->has('existing_gallery_urls')) {
+                $existing = is_array($request->existing_gallery_urls) ? $request->existing_gallery_urls : [];
+                foreach ($existing as $ex) {
+                    $galleryUrls[] = ltrim($ex, '/');
+                }
+            } elseif ($request->has('gallery_urls') && is_array($request->gallery_urls)) {
+                foreach ($request->gallery_urls as $gu) {
+                    $galleryUrls[] = ltrim($gu, '/');
+                }
+            }
+            foreach ($uploadedFilePaths as $up) {
+                $galleryUrls[] = $up;
+            }
+        }
+
+        $galleryUrls = array_values(array_unique($galleryUrls));
 
         if (count($galleryUrls) > 0) {
             $imageUrl = $galleryUrls[0];
@@ -1154,6 +1208,9 @@ class AgentController extends Controller
         }
 
         $parentId = $request->query('folder', null);
+        if (empty($parentId)) {
+            $parentId = null;
+        }
 
         // Current folder if any
         $currentFolder = null;
@@ -1177,8 +1234,19 @@ class AgentController extends Controller
         }
 
         // Fetch contents
-        $media = AgentMedia::where('parent_id', $parentId)
-            ->orderBy('type') // Folders first
+        $query = AgentMedia::query();
+        if ($agentId) {
+            $query->where(function($q) use ($agentId) {
+                $q->where('agent_id', $agentId)->orWhereNull('agent_id')->orWhere('agent_id', 0);
+            });
+        }
+        if (empty($parentId)) {
+            $query->whereNull('parent_id');
+        } else {
+            $query->where('parent_id', $parentId);
+        }
+
+        $media = $query->orderBy('type') // Folders first
             ->orderBy('name')
             ->get();
             
@@ -1186,7 +1254,13 @@ class AgentController extends Controller
         $images = $media->where('type', 'image');
 
         // All folders for the "Move to" dropdown
-        $allFolders = AgentMedia::where('type', 'folder')->orderBy('name')->get();
+        $allFoldersQuery = AgentMedia::where('type', 'folder');
+        if ($agentId) {
+            $allFoldersQuery->where(function($q) use ($agentId) {
+                $q->where('agent_id', $agentId)->orWhereNull('agent_id')->orWhere('agent_id', 0);
+            });
+        }
+        $allFolders = $allFoldersQuery->orderBy('name')->get();
 
         return view('agent.pages.gallery', [
             'page_title'      => 'Gallery',
@@ -1203,9 +1277,23 @@ class AgentController extends Controller
     {
         $agentId = session('agent_id');
         $parentId = $request->query('folder', null);
+        if (empty($parentId)) {
+            $parentId = null;
+        }
 
-        $media = AgentMedia::where('parent_id', $parentId)
-            ->orderBy('type') // Folders first
+        $query = AgentMedia::query();
+        if ($agentId) {
+            $query->where(function($q) use ($agentId) {
+                $q->where('agent_id', $agentId)->orWhereNull('agent_id')->orWhere('agent_id', 0);
+            });
+        }
+        if (empty($parentId)) {
+            $query->whereNull('parent_id');
+        } else {
+            $query->where('parent_id', $parentId);
+        }
+
+        $media = $query->orderBy('type') // Folders first
             ->orderBy('name')
             ->get();
             
@@ -1238,6 +1326,21 @@ class AgentController extends Controller
     }
 
 
+    private function canAgentAddGallery($agentId): bool
+    {
+        if (!$agentId) return false;
+        $agentRecord = DB::table('agents')->where('id', $agentId)->first();
+        $planId = $agentRecord->plan_id ?? null;
+        if (!$planId) {
+            $planId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+        }
+        $galleryPerm = DB::table('plan_permissions')
+            ->where('plan_id', $planId)
+            ->where('permission_key', 'feat_add_gallery')
+            ->first();
+        return $galleryPerm ? (bool)$galleryPerm->boolean_value : true;
+    }
+
     public function createFolder(Request $request)
     {
         $request->validate([
@@ -1248,6 +1351,10 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         if (!$agentId) {
             return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
+        }
+
+        if (!$this->canAgentAddGallery($agentId)) {
+            return redirect()->back()->with('error', 'Gallery feature is not available on your current plan. Please upgrade your plan.');
         }
 
         // Check if parent folder belongs to agent
@@ -1278,6 +1385,10 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         if (!$agentId) {
             return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
+        }
+
+        if (!$this->canAgentAddGallery($agentId)) {
+            return redirect()->back()->with('error', 'Gallery feature is not available on your current plan. Please upgrade your plan.');
         }
 
         $agent = DB::table('agents')->where('id', $agentId)->first();
@@ -1336,6 +1447,11 @@ class AgentController extends Controller
         if (!$agentId) {
             return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
         }
+
+        if (!$this->canAgentAddGallery($agentId)) {
+            return redirect()->back()->with('error', 'Gallery feature is not available on your current plan. Please upgrade your plan.');
+        }
+
         $targetId = $request->target_folder_id === 'root' ? null : $request->target_folder_id;
 
         if ($targetId) {
@@ -1361,6 +1477,10 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         if (!$agentId) {
             return redirect()->route('agent.login')->with('error', 'Session expired. Please log in again.');
+        }
+
+        if (!$this->canAgentAddGallery($agentId)) {
+            return redirect()->back()->with('error', 'Gallery feature is not available on your current plan. Please upgrade your plan.');
         }
         
         $items = AgentMedia::whereIn('id', $request->selected_ids)

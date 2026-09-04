@@ -129,6 +129,18 @@
         rating: {{ json_encode($pkg->rating ?? '4.8') }},
         reviews: {{ json_encode($pkg->reviews ?? '10') }},
         previewUrl: {{ json_encode(($pkg->image ?? null) ? asset($pkg->image) : '') }},
+        uploadedFiles: [],
+        syncFileInput() {
+            try {
+                const dt = new DataTransfer();
+                this.uploadedFiles.forEach(file => dt.items.add(file));
+                if (this.$refs.galleryFilesInput) {
+                    this.$refs.galleryFilesInput.files = dt.files;
+                }
+            } catch (e) {
+                console.error("DataTransfer sync error:", e);
+            }
+        },
         galleryPreviews: {{ json_encode(array_values(array_map(function ($url) {
             return [
                 'url' => asset($url),
@@ -307,20 +319,37 @@
         },
         handleGalleryChange(event) {
             const files = event.target.files;
+            if (!files || files.length === 0) return;
             for (let i = 0; i < files.length; i++) {
                 if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
                     window.showAlertLimit('Your plan allows a maximum of ' + this.photoLimit + ' package photos in Gallery Portfolio.');
                     break;
                 }
+                const fileObj = files[i];
+                const fileIdx = this.uploadedFiles.length;
+                this.uploadedFiles.push(fileObj);
                 this.galleryPreviews.push({
-                    url: URL.createObjectURL(files[i]),
-                    name: files[i].name,
-                    size: (files[i].size / (1024 * 1024)).toFixed(1) + ' MB',
-                    file: files[i]
+                    url: URL.createObjectURL(fileObj),
+                    name: fileObj.name,
+                    size: (fileObj.size / (1024 * 1024)).toFixed(1) + ' MB',
+                    is_gallery: false,
+                    file_index: fileIdx
                 });
             }
+            this.syncFileInput();
         },
         removeGalleryPhoto(index) {
+            const item = this.galleryPreviews[index];
+            if (item && !item.is_gallery && typeof item.file_index !== 'undefined') {
+                const fileIdx = item.file_index;
+                this.uploadedFiles.splice(fileIdx, 1);
+                this.galleryPreviews.forEach(p => {
+                    if (!p.is_gallery && typeof p.file_index !== 'undefined' && p.file_index > fileIdx) {
+                        p.file_index--;
+                    }
+                });
+                this.syncFileInput();
+            }
             this.galleryPreviews.splice(index, 1);
         },
         // Gallery Modal State
@@ -2003,6 +2032,15 @@
                                             <template x-if="img.is_gallery">
                                                 <input type="hidden" name="existing_gallery_urls[]" :value="img.path" />
                                             </template>
+                                            <input type="hidden" name="gallery_order[]" :value="img.is_gallery ? ('existing:' + img.path) : ('file:' + img.file_index)" />
+                                            
+                                            <!-- Cover Photo Badge for index 0 -->
+                                            <template x-if="idx === 0">
+                                                <div class="absolute top-2 left-2 bg-[#e85d26] text-white text-[9px] font-black px-2 py-0.5 rounded-md shadow-md uppercase tracking-wider z-10" style="background-color: #e85d26 !important; color: white !important;">
+                                                    Cover Photo
+                                                </div>
+                                            </template>
+
                                             <div
                                                 class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                 <button type="button" @click="removeGalleryPhoto(idx)"
