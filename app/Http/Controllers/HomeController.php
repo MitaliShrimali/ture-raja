@@ -25,10 +25,10 @@ class HomeController extends Controller
             $homeDomestic = collect();
         }
 
-        // Fetch agents to enrich package cards with locations
+        // Fetch agents to enrich package cards with locations, verification & plan info
         try {
             $agentsList = DB::table('agents')
-                ->select('id', 'name', 'city', 'state', 'logo')
+                ->select('id', 'name', 'status', 'service_guaranteed', 'plan_id', 'city', 'state', 'logo')
                 ->get();
             $agentsById = $agentsList->keyBy('id')->toArray();
             $agentsByName = $agentsList->keyBy(function($item) {
@@ -39,7 +39,22 @@ class HomeController extends Controller
             $agentsByName = [];
         }
 
-        $packages = collect($packages)->map(function($pkg) use ($agentsById, $agentsByName) {
+        // Fetch plan IDs that have 'feat_featured_destination' = 1
+        $featuredPlanIds = [];
+        try {
+            $featuredPlanIds = DB::table('plan_permissions')
+                ->where('permission_key', 'feat_featured_destination')
+                ->where('boolean_value', 1)
+                ->pluck('plan_id')
+                ->toArray();
+        } catch (\Exception $e) {}
+
+        $defaultPlanId = null;
+        try {
+            $defaultPlanId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id');
+        } catch (\Exception $e) {}
+
+        $packagesMapped = collect($packages)->map(function($pkg) use ($agentsById, $agentsByName) {
             if (is_object($pkg) && method_exists($pkg, 'toArray')) {
                 $pkg = $pkg->toArray();
             } else {
@@ -90,7 +105,124 @@ class HomeController extends Controller
                 }
             }
             return $pkg;
+        })->filter(function($pkg) use ($agentsById, $agentsByName) {
+            $agentData = $pkg['agent'] ?? null;
+            $agentId   = null;
+            $agentName = null;
+            if (is_array($agentData)) {
+                $agentId   = $agentData['id']   ?? null;
+                $agentName = $agentData['name'] ?? null;
+            } elseif (is_object($agentData)) {
+                $agentId   = $agentData->id   ?? null;
+                $agentName = $agentData->name ?? null;
+            } elseif (is_string($agentData)) {
+                $agentName = $agentData;
+            }
+
+            $dbAgent = null;
+            if ($agentId && isset($agentsById[$agentId])) {
+                $dbAgent = (array) $agentsById[$agentId];
+            } elseif ($agentName) {
+                $key = strtolower(trim($agentName));
+                if (isset($agentsByName[$key])) {
+                    $dbAgent = (array) $agentsByName[$key];
+                }
+            }
+
+            if ($dbAgent && isset($dbAgent['status'])) {
+                $st = strtolower((string)$dbAgent['status']);
+                if (in_array($st, ['inactive', '0', 'disabled', 'blocked'])) {
+                    return false;
+                }
+            }
+
+            return true;
         });
+
+        // Compute priority score for each package
+        // Priority Tiers:
+        // Score 40: Trusted Agent Verified (service_guaranteed == 1) AND Boosted package
+        // Score 30: Trusted Agent Verified (service_guaranteed == 1)
+        // Score 20: Boosted Package (is_boosted active)
+        // Score 10: Agent plan has 'feat_featured_destination' = 1
+        // Score 0: Normal Active Package
+        $packagesWithScore = $packagesMapped->map(function($pkgArray) use ($agentsById, $agentsByName, $featuredPlanIds, $defaultPlanId) {
+            $agentData = $pkgArray['agent'] ?? null;
+            $agentId   = null;
+            $agentName = null;
+            if (is_array($agentData)) {
+                $agentId   = $agentData['id']   ?? null;
+                $agentName = $agentData['name'] ?? null;
+            } elseif (is_object($agentData)) {
+                $agentId   = $agentData->id   ?? null;
+                $agentName = $agentData->name ?? null;
+            } elseif (is_string($agentData)) {
+                $agentName = $agentData;
+            }
+
+            $dbAgent = null;
+            if ($agentId && isset($agentsById[$agentId])) {
+                $dbAgent = (array) $agentsById[$agentId];
+            } elseif ($agentName) {
+                $key = strtolower(trim($agentName));
+                if (isset($agentsByName[$key])) {
+                    $dbAgent = (array) $agentsByName[$key];
+                }
+            }
+
+            $isTrusted = false;
+            if ($dbAgent && !empty($dbAgent['service_guaranteed'])) {
+                $isTrusted = true;
+            }
+
+            $isBoosted = false;
+            if (!empty($pkgArray['is_boosted'])) {
+                $isExpired = false;
+                if (!empty($pkgArray['boost_expires_at'])) {
+                    try {
+                        if (\Carbon\Carbon::parse($pkgArray['boost_expires_at'])->isPast()) {
+                            $isExpired = true;
+                        }
+                    } catch (\Exception $e) {}
+                }
+                if (!$isExpired) {
+                    $isBoosted = true;
+                }
+            }
+
+            $hasFeaturedPlan = false;
+            if ($dbAgent) {
+                $planId = $dbAgent['plan_id'] ?? $defaultPlanId;
+                if ($planId && in_array($planId, $featuredPlanIds)) {
+                    $hasFeaturedPlan = true;
+                }
+            }
+
+            if ($isTrusted && $isBoosted) {
+                $score = 40;
+            } elseif ($isTrusted) {
+                $score = 30;
+            } elseif ($isBoosted) {
+                $score = 20;
+            } elseif ($hasFeaturedPlan) {
+                $score = 10;
+            } else {
+                $score = 0;
+            }
+
+            $pkgArray['_priority_score'] = $score;
+            return $pkgArray;
+        });
+
+        // Group by score, shuffle each priority group randomly for page refresh rotation, and merge
+        $grouped = $packagesWithScore->groupBy('_priority_score');
+        $packages = collect();
+        foreach ([40, 30, 20, 10, 0] as $scoreKey) {
+            if (isset($grouped[$scoreKey])) {
+                $shuffledGroup = $grouped[$scoreKey]->shuffle();
+                $packages = $packages->concat($shuffledGroup);
+            }
+        }
 
         return view('welcome', compact('packages'));
     }

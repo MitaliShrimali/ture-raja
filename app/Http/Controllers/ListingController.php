@@ -245,30 +245,30 @@ class ListingController extends Controller
             return true;
         });
 
-        // Shuffle all packages first for randomization, then sort by tier
-        $packages = $packages->shuffle()->sortByDesc(function ($p) use ($agentsById, $agentsByName) {
+        // Fetch plan IDs that have 'feat_featured_destination' = 1
+        $featuredPlanIds = [];
+        try {
+            $featuredPlanIds = \Illuminate\Support\Facades\DB::table('plan_permissions')
+                ->where('permission_key', 'feat_featured_destination')
+                ->where('boolean_value', 1)
+                ->pluck('plan_id')
+                ->toArray();
+        } catch (\Exception $e) {}
+
+        $defaultPlanId = null;
+        try {
+            $defaultPlanId = \Illuminate\Support\Facades\DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id');
+        } catch (\Exception $e) {}
+
+        // Compute priority score for each package
+        // Priority Tiers:
+        // Score 40: Trusted Agent Verified (service_guaranteed == 1) AND Boosted package
+        // Score 30: Trusted Agent Verified (service_guaranteed == 1)
+        // Score 20: Boosted Package (is_boosted active)
+        // Score 10: Agent plan has 'feat_featured_destination' = 1
+        // Score 0: Normal Active Package
+        $packagesWithScore = $packages->map(function ($p) use ($agentsById, $agentsByName, $featuredPlanIds, $defaultPlanId) {
             $pkg = (array) $p;
-            $tier = 1; // Default: unpaid / basic account
-            
-            // 3: Ad Placement
-            if (!empty($pkg['ad_placement'])) {
-                $tier = max($tier, 2);
-            }
-            
-            // 2: Boosted Package (Check expiration)
-            if (!empty($pkg['is_boosted'])) {
-                $isExpired = false;
-                if (!empty($pkg['boost_expires_at'])) {
-                    try {
-                        if (\Carbon\Carbon::parse($pkg['boost_expires_at'])->isPast()) {
-                            $isExpired = true;
-                        }
-                    } catch (\Exception $e) {}
-                }
-                if (!$isExpired) {
-                    $tier = max($tier, 3);
-                }
-            }
             
             $agentId = null;
             $agentName = null;
@@ -299,24 +299,61 @@ class ListingController extends Controller
                 }
             }
 
-            $paidPlanIds = [];
-            try {
-                $paidPlanIds = \Illuminate\Support\Facades\DB::table('plans')->where('price', '>', 0)->pluck('id')->toArray();
-            } catch (\Exception $e) {}
+            $isTrusted = false;
+            if ($agentInfo && !empty($agentInfo->service_guaranteed)) {
+                $isTrusted = true;
+            }
 
-            if ($agentInfo) {
-                // 2: Paid plan
-                if (!empty($agentInfo->plan_id) && in_array($agentInfo->plan_id, $paidPlanIds)) {
-                    $tier = max($tier, 3);
+            $isBoosted = false;
+            if (!empty($pkg['is_boosted'])) {
+                $isExpired = false;
+                if (!empty($pkg['boost_expires_at'])) {
+                    try {
+                        if (\Carbon\Carbon::parse($pkg['boost_expires_at'])->isPast()) {
+                            $isExpired = true;
+                        }
+                    } catch (\Exception $e) {}
                 }
-                // 1: Verified / Service Guaranteed (Top priority)
-                if (!empty($agentInfo->service_guaranteed)) {
-                    $tier = max($tier, 4);
+                if (!$isExpired) {
+                    $isBoosted = true;
                 }
             }
-            
-            return $tier;
-        })->values();
+
+            $hasFeaturedPlan = false;
+            if ($agentInfo) {
+                $planId = $agentInfo->plan_id ?? $defaultPlanId;
+                if ($planId && in_array($planId, $featuredPlanIds)) {
+                    $hasFeaturedPlan = true;
+                }
+            }
+
+            if ($isTrusted && $isBoosted) {
+                $score = 40;
+            } elseif ($isTrusted) {
+                $score = 30;
+            } elseif ($isBoosted) {
+                $score = 20;
+            } elseif ($hasFeaturedPlan) {
+                $score = 10;
+            } else {
+                $score = 0;
+            }
+
+            $pkg['_priority_score'] = $score;
+            return $pkg;
+        });
+
+        // Group by score, shuffle each priority group randomly for page refresh rotation, and merge
+        $grouped = $packagesWithScore->groupBy('_priority_score');
+        $sortedPackages = collect();
+        foreach ([40, 30, 20, 10, 0] as $scoreKey) {
+            if (isset($grouped[$scoreKey])) {
+                $shuffledGroup = $grouped[$scoreKey]->shuffle();
+                $sortedPackages = $sortedPackages->concat($shuffledGroup);
+            }
+        }
+
+        $packages = $sortedPackages;
 
         // Keep a backup of all packages sorted by tier, to use for suggestions
         $allPackages = clone $packages;

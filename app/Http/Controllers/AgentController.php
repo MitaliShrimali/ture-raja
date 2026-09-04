@@ -159,6 +159,22 @@ class AgentController extends Controller
         $agentId = session('agent_id');
         $agent = DB::table('agents')->where('id', $agentId)->first();
 
+        // Check feat_profile_analytics plan permission
+        $canProfileAnalytics = true;
+        if ($agent) {
+            $planId = $agent->plan_id ?? null;
+            if (!$planId) {
+                $planId = DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
+            }
+            $perm = DB::table('plan_permissions')
+                ->where('plan_id', $planId)
+                ->where('permission_key', 'feat_profile_analytics')
+                ->first();
+            if ($perm) {
+                $canProfileAnalytics = (bool)$perm->boolean_value;
+            }
+        }
+
         // Fetch all packages and filter to this agent's packages
         $allPackages = DB::table('packages')->select('id', 'agent', 'status')->get();
         $agentPackages = $allPackages->filter(function ($pkg) use ($agentId, $agent) {
@@ -182,19 +198,20 @@ class AgentController extends Controller
         $profileReviews = DB::table('agent_feedback')->count();
 
         return view('agent.pages.dashboard', [
-            'page_title'      => 'Dashboard',
-            'page_breadcrumb' => 'Pages / Dashboard',
-            'agent'           => $agent,
-            'totalPackages'   => $totalPackages,
-            'activePackages'  => $activePackages,
-            'pendingPackages' => $pendingPackages,
-            'expiredPackages' => $expiredPackages,
-            'totalLeads'      => $totalLeads,
-            'profilePackages' => $totalPackages,
-            'profileLeads'    => $totalLeads,
-            'profileReviews'  => $profileReviews,
-            'recentLeads'     => [],
-            'chartData'       => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            'page_title'          => 'Dashboard',
+            'page_breadcrumb'     => 'Pages / Dashboard',
+            'agent'               => $agent,
+            'canProfileAnalytics' => $canProfileAnalytics,
+            'totalPackages'       => $totalPackages,
+            'activePackages'      => $activePackages,
+            'pendingPackages'     => $pendingPackages,
+            'expiredPackages'     => $expiredPackages,
+            'totalLeads'          => $totalLeads,
+            'profilePackages'     => $totalPackages,
+            'profileLeads'        => $totalLeads,
+            'profileReviews'      => $profileReviews,
+            'recentLeads'         => [],
+            'chartData'           => [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ]);
     }
 
@@ -208,6 +225,16 @@ class AgentController extends Controller
 
     public function addBranch()
     {
+        $agentId = session('agent_id');
+        if ($agentId) {
+            $agent = DB::table('agents')->where('id', $agentId)->first();
+            $branchesCount = DB::table('branches')->where('agent_id', $agentId)->count();
+            $permService = new \App\Services\PlanPermissionService();
+            if ($permService->hasReachedLimit($agent, 'limit_branches', $branchesCount)) {
+                return redirect()->route('agent.branch')->with('error', 'You have reached your branch limit. Please upgrade your plan to add more branches.');
+            }
+        }
+
         return view('agent.pages.add-branch', [
             'page_title' => 'Add Branch',
             'page_breadcrumb' => 'Pages / Add Branch',
@@ -241,7 +268,7 @@ class AgentController extends Controller
         $branchesCount = DB::table('branches')->where('agent_id', $agentId)->count();
         $permService = new \App\Services\PlanPermissionService();
         if ($permService->hasReachedLimit($agent, 'limit_branches', $branchesCount)) {
-            return redirect()->back()->with('error', 'You have reached your branch limit. Please upgrade your plan to add more branches.');
+            return redirect()->route('agent.branch')->with('error', 'You have reached your branch limit. Please upgrade your plan to add more branches.');
         }
 
         $request->validate([
@@ -384,9 +411,14 @@ class AgentController extends Controller
 
     public function addHotel()
     {
+        $hotelCategories = DB::table('hotel_categories')->where('status', 1)->orderBy('name', 'asc')->get();
+        $packages = DB::table('packages')->select('id', 'title')->orderBy('title', 'asc')->get();
+
         return view('agent.pages.add-hotel', [
             'page_title' => 'Add Hotel',
-            'page_breadcrumb' => 'Pages / Add Hotel'
+            'page_breadcrumb' => 'Pages / Add Hotel',
+            'hotelCategories' => $hotelCategories,
+            'packages' => $packages
         ]);
     }
 
@@ -399,6 +431,10 @@ class AgentController extends Controller
 
         $agent = DB::table('agents')->where('id', $agentId)->first();
         $branches = DB::table('branches')->where('agent_id', $agentId)->orderBy('created_at', 'desc')->get();
+        $branchesCount = $branches->count();
+
+        $permService = new \App\Services\PlanPermissionService();
+        $canAddBranch = !$permService->hasReachedLimit($agent, 'limit_branches', $branchesCount);
 
         $mainBranch = (object)[
             'id' => 0,
@@ -414,7 +450,8 @@ class AgentController extends Controller
         return view('agent.pages.branch', [
             'page_title' => 'Branches',
             'page_breadcrumb' => 'Pages / Branches',
-            'branches' => $branches
+            'branches' => $branches,
+            'canAddBranch' => $canAddBranch
         ]);
     }
 

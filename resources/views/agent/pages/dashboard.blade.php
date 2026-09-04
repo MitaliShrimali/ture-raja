@@ -55,8 +55,12 @@
             </a>
         </div>
 
+        @php
+            $canProfileAnalytics = $canProfileAnalytics ?? true;
+        @endphp
         <!-- Middle Section: Chart & Profiles -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 mb-6 sm:mb-8">
+            @if($canProfileAnalytics)
             <!-- Chart Placeholder -->
             <div class="lg:col-span-8 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
                 <div class="flex items-center justify-between mb-8">
@@ -78,9 +82,10 @@
                     <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
                 </div>
             </div>
+            @endif
 
             <!-- Profile Card -->
-            <div class="lg:col-span-4 bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+            <div class="{{ $canProfileAnalytics ? 'lg:col-span-4' : 'lg:col-span-12' }} bg-white p-4 sm:p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
                 <div class="relative mb-4">
                     @php
                         $profileLogo = ($agent && $agent->logo) ? $agent->logo : 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode(session('agent_name', 'Agent'));

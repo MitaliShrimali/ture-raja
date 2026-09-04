@@ -4,6 +4,19 @@
 
 @section('content')
 
+        @if(session('error'))
+        <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-xl text-red-700 text-sm font-semibold flex items-center shadow-sm">
+            <i class="fas fa-exclamation-circle text-red-500 mr-3 text-lg"></i>
+            <span>{{ session('error') }}</span>
+        </div>
+        @endif
+
+        @if(session('success'))
+        <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-xl text-green-700 text-sm font-semibold flex items-center shadow-sm">
+            <i class="fas fa-check-circle text-green-500 mr-3 text-lg"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+        @endif
 
         <!-- Search Bar -->
         <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center mb-8">
@@ -20,9 +33,15 @@
         <div class="bg-white rounded-[32px] p-8 shadow-sm border border-gray-100">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <h3 class="text-sm font-bold text-gray-800 uppercase tracking-widest">Branch</h3>
+                @if($canAddBranch ?? true)
                 <a href="{{ route('agent.add-branch') }}" class="bg-primary text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg shadow-orange-100 hover:scale-105 transition-all w-fit">
                     + Add Branch
                 </a>
+                @else
+                <a href="{{ route('agent.add-branch') }}" class="bg-gray-400 text-white px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-lg transition-all w-fit cursor-not-allowed" title="Branch limit reached">
+                    + Add Branch (Limit Reached)
+                </a>
+                @endif
             </div>
 
             <div class="overflow-x-auto">

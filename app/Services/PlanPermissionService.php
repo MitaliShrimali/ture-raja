@@ -42,9 +42,11 @@ class PlanPermissionService
             return false;
         }
 
-        $planId = $user->plan_id; // Agents have plan_id
+        $planId = $user ? ($user->plan_id ?? null) : null;
         if (!$planId) {
-            return self::PERMISSIONS[$key]['type'] === 'numeric' ? 0 : false;
+            $planId = \Illuminate\Support\Facades\DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id')
+                ?? \Illuminate\Support\Facades\DB::table('plans')->value('id')
+                ?? 1;
         }
 
         $permission = PlanPermission::where('plan_id', $planId)
@@ -55,7 +57,7 @@ class PlanPermissionService
             return self::PERMISSIONS[$key]['type'] === 'numeric' ? 0 : false;
         }
 
-        return self::PERMISSIONS[$key]['type'] === 'numeric' ? $permission->limit_value : $permission->boolean_value;
+        return self::PERMISSIONS[$key]['type'] === 'numeric' ? (int)$permission->limit_value : (bool)$permission->boolean_value;
     }
 
     /**

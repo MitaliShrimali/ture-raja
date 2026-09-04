@@ -1053,18 +1053,31 @@
                             $displayRating = $avgRating ? number_format((float)$avgRating, 1) : 'No rating';
 
                             $canBusinessProfile = true;
+                            $canWhatsappOnProfile = true;
+                            $canEmailOnProfile = true;
+                            $canWebsiteOnProfile = true;
                             if ($agentId) {
                                 $agentRecord = \DB::table('agents')->where('id', $agentId)->first();
                                 $planId = $agentRecord->plan_id ?? null;
                                 if (!$planId) {
                                     $planId = \DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
                                 }
-                                $perm = \DB::table('plan_permissions')
+                                $perms = \DB::table('plan_permissions')
                                     ->where('plan_id', $planId)
-                                    ->where('permission_key', 'feat_business_profile')
-                                    ->first();
-                                if ($perm) {
-                                    $canBusinessProfile = (bool)$perm->boolean_value;
+                                    ->whereIn('permission_key', ['feat_business_profile', 'feat_whatsapp_on_profile', 'feat_email_on_profile', 'feat_website_on_profile'])
+                                    ->get()
+                                    ->keyBy('permission_key');
+                                if (isset($perms['feat_business_profile'])) {
+                                    $canBusinessProfile = (bool)$perms['feat_business_profile']->boolean_value;
+                                }
+                                if (isset($perms['feat_whatsapp_on_profile'])) {
+                                    $canWhatsappOnProfile = (bool)$perms['feat_whatsapp_on_profile']->boolean_value;
+                                }
+                                if (isset($perms['feat_email_on_profile'])) {
+                                    $canEmailOnProfile = (bool)$perms['feat_email_on_profile']->boolean_value;
+                                }
+                                if (isset($perms['feat_website_on_profile'])) {
+                                    $canWebsiteOnProfile = (bool)$perms['feat_website_on_profile']->boolean_value;
                                 }
                             }
                         @endphp
@@ -1198,6 +1211,7 @@
                                     </a>
                                     @endif
                                     
+                                    @if($canEmailOnProfile)
                                     <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all group/mail border border-transparent hover:border-gray-200">
                                         <div class="flex items-center gap-3">
                                             <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-600 group-hover/mail:text-orange-500 transition-colors">
@@ -1210,8 +1224,9 @@
                                         </div>
                                         <i data-lucide="chevron-right" class="w-4 h-4 text-gray-300 group-hover/mail:translate-x-1 transition-transform"></i>
                                     </a>
+                                    @endif
 
-                                    @if(!empty($dbAgent->website))
+                                    @if($canWebsiteOnProfile && !empty($dbAgent->website))
                                     <a href="{{ $dbAgent->website }}" target="_blank" class="flex items-center justify-between p-3.5 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all group/web border border-transparent hover:border-gray-200">
                                         <div class="flex items-center gap-3">
                                             <div class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-gray-600 group-hover/web:text-green-600 transition-colors">
@@ -1244,12 +1259,16 @@
                                             ? "https://api.whatsapp.com/send?phone={$cleanPhone}&text=" . rawurlencode($adminWhatsappTemplate) . "&type=phone_number&app_absent=0"
                                             : "https://api.whatsapp.com/send?phone={$cleanPhone}&type=phone_number&app_absent=0";
                                     @endphp
+                                    @if($canWhatsappOnProfile)
                                     <a href="{{ $whatsappUrl }}" target="_blank" class="flex items-center justify-center gap-1.5 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                                         <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
                                     </a>
+                                    @endif
+                                    @if($canEmailOnProfile)
                                     <a href="mailto:{{ $agentEmail }}" class="flex items-center justify-center gap-1.5 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl text-xs font-bold transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5">
                                         <i data-lucide="mail" class="w-4 h-4"></i> Send Email
                                     </a>
+                                    @endif
                                     <a href="{{ $agentPackagesUrl }}" class="flex items-center justify-center gap-1.5 bg-[#e85d26] hover:bg-[#d0501f] text-white py-3 rounded-xl text-[11px] font-bold transition-all shadow-sm uppercase tracking-wider hover:shadow-md hover:-translate-y-0.5">
                                         <i data-lucide="package" class="w-4 h-4"></i> Packages
                                     </a>

@@ -130,24 +130,25 @@
                     <div class="relative">
                         <i class="fas fa-map-marker-alt absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                         <input type="text" id="hotelCity" name="location" required placeholder="Search City" autocomplete="off"
-                            oninput="suggestPlaces()"
                             class="w-full pl-12 pr-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium placeholder:text-gray-300">
                     </div>
                     <!-- Place Suggestion Dropdown -->
-                    <div id="placeSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg z-[110] max-h-48 overflow-y-auto hidden">
+                    <div id="placeSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg z-[110] max-h-48 overflow-y-auto hidden custom-scroll">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
+                    <div class="relative">
                         <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">State</label>
-                        <input type="text" id="hotelState" name="state" required placeholder="State (e.g. Goa)"
+                        <input type="text" id="hotelState" name="state" required placeholder="State (e.g. Goa)" autocomplete="off"
                             class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium placeholder:text-gray-300">
+                        <div id="stateSuggestions" class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg z-[110] max-h-48 overflow-y-auto hidden custom-scroll"></div>
                     </div>
-                    <div>
+                    <div class="relative">
                         <label class="block text-[9px] font-bold text-gray-400 uppercase mb-2 tracking-widest">Country</label>
-                        <input type="text" id="hotelCountry" name="country" required placeholder="Country (e.g. India)"
+                        <input type="text" id="hotelCountry" name="country" required placeholder="Country (e.g. India)" autocomplete="off"
                             class="w-full px-5 py-3 rounded-2xl bg-gray-50 border-none focus:ring-1 focus:ring-primary/20 text-xs font-medium placeholder:text-gray-300">
+                        <div id="countrySuggestions" class="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-100 rounded-xl shadow-lg z-[110] max-h-48 overflow-y-auto hidden custom-scroll"></div>
                     </div>
                 </div>
 
@@ -206,107 +207,247 @@
 
     <!-- Suggested Cities List -->
     <script>
-        let debounceTimer;
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.setupAutocompleteElement) {
+                window.setupAutocompleteElement = (input, suggestionsDiv, type, onSelect, targetStateId, targetCountryId) => {
+                    if (!input || !suggestionsDiv) return;
 
-        function suggestPlaces() {
-            const input = document.getElementById('hotelCity');
-            const suggestionsDiv = document.getElementById('placeSuggestions');
-            const query = input.value.trim();
+                    let debounceTimer;
+                    input.addEventListener('input', () => {
+                        const query = input.value.trim();
+                        clearTimeout(debounceTimer);
+                        if (!query || query.length < 2) {
+                            suggestionsDiv.innerHTML = '';
+                            suggestionsDiv.classList.add('hidden');
+                            return;
+                        }
 
-            clearTimeout(debounceTimer);
-            if (!query || query.length < 2) {
-                suggestionsDiv.innerHTML = '';
-                suggestionsDiv.classList.add('hidden');
-                return;
+                        suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-primary"></i> Searching...</div>';
+                        suggestionsDiv.classList.remove('hidden');
+
+                        debounceTimer = setTimeout(() => {
+                            const urlIndia = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=40&bbox=68.1,6.7,97.4,35.5`;
+                            const urlGlobal = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=40`;
+
+                            Promise.all([
+                                fetch(urlIndia).then(r => r.json()).catch(() => ({ features: [] })),
+                                fetch(urlGlobal).then(r => r.json()).catch(() => ({ features: [] }))
+                            ]).then(([indiaData, globalData]) => {
+                                suggestionsDiv.innerHTML = '';
+                                const seen = new Set();
+                                let results = [];
+
+                                const features = [...(indiaData.features || []), ...(globalData.features || [])];
+                                features.forEach(f => {
+                                    const p = f.properties || {};
+                                    let city = p.city || p.town || p.village || p.county || p.name || '';
+                                    let state = p.state || '';
+                                    let country = p.country || '';
+                                    
+                                    if (type === 'city') {
+                                        if (p.osm_key === 'place' && (p.osm_value === 'country' || p.osm_value === 'state')) return;
+                                    }
+                                    if (type === 'state') {
+                                        if (p.osm_value !== 'state' && p.osm_value !== 'administrative') return;
+                                        city = '';
+                                        if (p.name) state = p.name;
+                                    }
+                                    if (type === 'country') {
+                                        if (p.osm_value !== 'country' && p.osm_value !== 'administrative') return;
+                                        city = '';
+                                        state = '';
+                                        if (p.name) country = p.name;
+                                    }
+
+                                    let display_name = [city, state, country].filter(Boolean).join(', ');
+                                    const parsed = { city, state, country, display: display_name, importance: p.importance || 0.5 };
+
+                                    let key = '';
+                                    if (type === 'city') key = `${parsed.city}_${parsed.state}_${parsed.country}`.toLowerCase();
+                                    else if (type === 'state') key = `${parsed.state}_${parsed.country}`.toLowerCase();
+                                    else key = `${parsed.country}`.toLowerCase();
+
+                                    if (!key || seen.has(key)) return;
+                                    seen.add(key);
+                                    results.push(parsed);
+                                });
+
+                                if (type === 'city') {
+                                    const qLower = query.toLowerCase();
+                                    const getMatchQuality = (str) => {
+                                        const c = (str || '').toLowerCase();
+                                        if (c === qLower) return 4;
+                                        if (c.startsWith(qLower)) return 3;
+                                        if (c.split(/[\s,-]+/).some(w => w.startsWith(qLower))) return 2;
+                                        if (c.includes(qLower)) return 1;
+                                        return 0;
+                                    };
+                                    const getLocationPriority = (res) => {
+                                        const country = (res.country || '').toLowerCase();
+                                        const state = (res.state || '').toLowerCase();
+                                        if (country === 'india') {
+                                            if (state === 'gujarat') return 2;
+                                            return 1;
+                                        }
+                                        return 0;
+                                    };
+
+                                    results = results.filter(r => getMatchQuality(r.city) > 0);
+
+                                    results.sort((a, b) => {
+                                        const mqA = getMatchQuality(a.city);
+                                        const mqB = getMatchQuality(b.city);
+                                        if (mqA !== mqB) return mqB - mqA;
+
+                                        const lpA = getLocationPriority(a);
+                                        const lpB = getLocationPriority(b);
+                                        if (lpA !== lpB) return lpB - lpA;
+                                        
+                                        return b.importance - a.importance;
+                                    });
+                                } else if (type === 'state') {
+                                    const qLower = query.toLowerCase();
+                                    const getMatchQuality = (str) => {
+                                        const c = (str || '').toLowerCase();
+                                        if (c === qLower) return 4;
+                                        if (c.startsWith(qLower)) return 3;
+                                        if (c.split(/[\s,-]+/).some(w => w.startsWith(qLower))) return 2;
+                                        if (c.includes(qLower)) return 1;
+                                        return 0;
+                                    };
+                                    results = results.filter(r => getMatchQuality(r.state) > 0);
+
+                                    results.sort((a, b) => {
+                                        const mqA = getMatchQuality(a.state);
+                                        const mqB = getMatchQuality(b.state);
+                                        if (mqA !== mqB) return mqB - mqA;
+
+                                        const isIndA = (a.country || '').toLowerCase() === 'india' ? 1 : 0;
+                                        const isIndB = (b.country || '').toLowerCase() === 'india' ? 1 : 0;
+                                        if (isIndA !== isIndB) return isIndB - isIndA;
+                                        
+                                        return b.importance - a.importance;
+                                    });
+                                } else if (type === 'country') {
+                                    const qLower = query.toLowerCase();
+                                    const getMatchQuality = (str) => {
+                                        const c = (str || '').toLowerCase();
+                                        if (c === qLower) return 4;
+                                        if (c.startsWith(qLower)) return 3;
+                                        if (c.split(/[\s,-]+/).some(w => w.startsWith(qLower))) return 2;
+                                        if (c.includes(qLower)) return 1;
+                                        return 0;
+                                    };
+                                    results = results.filter(r => getMatchQuality(r.country) > 0);
+
+                                    results.sort((a, b) => {
+                                        const mqA = getMatchQuality(a.country);
+                                        const mqB = getMatchQuality(b.country);
+                                        if (mqA !== mqB) return mqB - mqA;
+
+                                        const isIndA = (a.country || '').toLowerCase() === 'india' ? 1 : 0;
+                                        const isIndB = (b.country || '').toLowerCase() === 'india' ? 1 : 0;
+                                        if (isIndA !== isIndB) return isIndB - isIndA;
+                                        
+                                        return b.importance - a.importance;
+                                    });
+                                }
+
+                                results = results.slice(0, 10);
+
+                                if (results.length === 0) {
+                                    suggestionsDiv.innerHTML = `<div class="px-4 py-3 text-xs text-gray-400 font-medium">No results found</div>`;
+                                    return;
+                                }
+
+                                results.forEach(res => {
+                                    const row = document.createElement('div');
+                                    row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex flex-col justify-center border-b border-gray-50 last:border-0';
+                                    
+                                    let mainText = '';
+                                    let subText = '';
+                                    
+                                    if (type === 'city') {
+                                        mainText = res.city;
+                                        subText = [res.state, res.country].filter(Boolean).join(', ');
+                                        row.innerHTML = `<span>${mainText}</span><span class="text-[10px] text-gray-400 font-medium">${subText}</span>`;
+                                    } else if (type === 'state') {
+                                        mainText = res.state;
+                                        subText = res.country;
+                                        row.innerHTML = `<span>${mainText}</span><span class="text-[10px] text-gray-400 font-medium">${subText}</span>`;
+                                    } else {
+                                        mainText = res.country;
+                                        row.innerHTML = `<span>${mainText}</span>`;
+                                    }
+
+                                    row.onclick = () => {
+                                        if (type === 'city') {
+                                            input.value = res.city;
+                                            const stateEl = document.getElementById(targetStateId || 'hotelState');
+                                            const countryEl = document.getElementById(targetCountryId || 'hotelCountry');
+                                            if (!onSelect) {
+                                                if (stateEl && res.state) {
+                                                    stateEl.value = res.state;
+                                                    stateEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                                    stateEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                                }
+                                                if (countryEl && res.country) {
+                                                    countryEl.value = res.country;
+                                                    countryEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                                    countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                                }
+                                            }
+                                        } else if (type === 'state') {
+                                            input.value = res.state;
+                                            const countryEl = document.getElementById(targetCountryId || 'hotelCountry');
+                                            if (!onSelect) {
+                                                if (countryEl && res.country) {
+                                                    countryEl.value = res.country;
+                                                    countryEl.dispatchEvent(new Event('input', { bubbles: true }));
+                                                    countryEl.dispatchEvent(new Event('change', { bubbles: true }));
+                                                }
+                                            }
+                                        } else {
+                                            input.value = res.country;
+                                        }
+                                        
+                                        if (onSelect) onSelect(res);
+                                        input.dispatchEvent(new Event('input', { bubbles: true }));
+                                        input.dispatchEvent(new Event('change', { bubbles: true }));
+                                        suggestionsDiv.classList.add('hidden');
+                                    };
+                                    suggestionsDiv.appendChild(row);
+                                });
+                            }).catch(() => {
+                                suggestionsDiv.classList.add('hidden');
+                            });
+                        }, 350);
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                            suggestionsDiv.classList.add('hidden');
+                        }
+                    });
+                };
             }
 
-            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-primary"></i> Searching cities...</div>';
-            suggestionsDiv.classList.remove('hidden');
+            const cityInput = document.getElementById('hotelCity');
+            const citySuggestionsDiv = document.getElementById('placeSuggestions');
+            if (cityInput && citySuggestionsDiv) {
+                window.setupAutocompleteElement(cityInput, citySuggestionsDiv, 'city', null, 'hotelState', 'hotelCountry');
+            }
 
-            debounceTimer = setTimeout(() => {
-                const base = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&accept-language=en`;
-                const indiaUrl = `${base}&countrycodes=in&limit=15&q=${encodeURIComponent(query)}`;
+            const stateInput = document.getElementById('hotelState');
+            const stateSuggestionsDiv = document.getElementById('stateSuggestions');
+            if (stateInput && stateSuggestionsDiv) {
+                window.setupAutocompleteElement(stateInput, stateSuggestionsDiv, 'state', null, null, 'hotelCountry');
+            }
 
-                const parseItem = (item) => {
-                    const address = item.address || {};
-                    let city = address.city || address.town || address.village || address.suburb || address.municipality || address.county || address.state_district || '';
-                    if (!city && item.display_name) city = item.display_name.split(',')[0].trim();
-                    const state   = address.state   || address.region || '';
-                    const country = address.country || '';
-                    return { city, state, country };
-                };
-
-                const renderRow = (city, state, country) => {
-                    const row = document.createElement('div');
-                    row.className = 'px-4 py-2.5 hover:bg-orange-50 cursor-pointer text-xs font-semibold text-gray-700 transition-colors flex items-center justify-between border-b border-gray-50 last:border-0';
-                    row.innerHTML = `<span>${city}</span><span class="text-[10px] text-gray-400 font-medium">${state ? state + ', ' : ''}${country}</span>`;
-                    row.onclick = () => {
-                        input.value = city;
-                        const stateEl   = document.getElementById('hotelState');
-                        const countryEl = document.getElementById('hotelCountry');
-                        if (stateEl)   stateEl.value   = state;
-                        if (countryEl) countryEl.value = country;
-                        suggestionsDiv.classList.add('hidden');
-                    };
-                    return row;
-                };
-
-                fetch(indiaUrl).then(r => r.json()).then(indiaData => {
-                    suggestionsDiv.innerHTML = '';
-                    const seen = new Set();
-                    const indiaResults = [];
-
-                    (indiaData || []).forEach(item => {
-                        const { city, state, country } = parseItem(item);
-                        if (!city || !country) return;
-                        const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
-                        if (seen.has(key)) return;
-                        seen.add(key);
-                        indiaResults.push({ city, state, country });
-                    });
-
-                    indiaResults.forEach(({ city, state, country }) => {
-                        suggestionsDiv.appendChild(renderRow(city, state, country));
-                    });
-
-                    if (indiaResults.length < 5) {
-                        const globalUrl = `${base}&limit=10&q=${encodeURIComponent(query)}`;
-                        fetch(globalUrl).then(r => r.json()).then(globalData => {
-                            (globalData || []).forEach(item => {
-                                const { city, state, country } = parseItem(item);
-                                if (!city || !country) return;
-                                if (country.toLowerCase() === 'india') return;
-                                const key = `${city.toLowerCase()}_${state.toLowerCase()}_${country.toLowerCase()}`;
-                                if (seen.has(key)) return;
-                                seen.add(key);
-                                suggestionsDiv.appendChild(renderRow(city, state, country));
-                            });
-                            if (suggestionsDiv.children.length === 0) {
-                                suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium">No cities found</div>';
-                            }
-                            suggestionsDiv.classList.remove('hidden');
-                        }).catch(() => {
-                            suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-red-500 font-medium">Failed to load suggestions</div>';
-                        });
-                    } else {
-                        suggestionsDiv.classList.remove('hidden');
-                    }
-
-                    if (suggestionsDiv.children.length === 0 && indiaResults.length === 0) {
-                        suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-gray-400 font-medium flex items-center gap-2"><i class="fas fa-spinner fa-spin text-primary"></i> Searching...</div>';
-                    }
-                }).catch(() => {
-                    suggestionsDiv.innerHTML = '<div class="px-4 py-3 text-xs text-red-500 font-medium">Failed to load suggestions</div>';
-                });
-            }, 350);
-        }
-
-        // Hide suggestions when clicking outside
-        document.addEventListener('click', function(e) {
-            const input = document.getElementById('hotelCity');
-            const suggestionsDiv = document.getElementById('placeSuggestions');
-            if (input && suggestionsDiv && !input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
-                suggestionsDiv.classList.add('hidden');
+            const countryInput = document.getElementById('hotelCountry');
+            const countrySuggestionsDiv = document.getElementById('countrySuggestions');
+            if (countryInput && countrySuggestionsDiv) {
+                window.setupAutocompleteElement(countryInput, countrySuggestionsDiv, 'country');
             }
         });
 
