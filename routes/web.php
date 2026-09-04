@@ -612,15 +612,6 @@ Route::get('/packages/{slug}', function ($slug) {
                     ->values()
                     ->toArray();
             }
-
-            if (empty($agentPackages)) {
-                $agentPackages = \App\Models\Package::where('status', 'Active')
-                    ->where('id', '!=', $dbPkg->id)
-                    ->inRandomOrder()
-                    ->take(8)
-                    ->get()
-                    ->toArray();
-            }
             
             $similarPackages = [];
             
