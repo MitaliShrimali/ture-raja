@@ -84,327 +84,336 @@
                 alert(message);
             }
         };
+        function packageFormData() {
+            return {
+                step: 1,
+                showGalleryError: false,
+                showBrochureError: false,
+                category: {!! json_encode($pkg->category ?? ($canDomestic ? 'domestic' : ($canInternational ? 'international' : 'domestic'))) !!},
+                photoLimit: {{ (int)$photoLimit }},
+                hotelLimit: {{ (int)$hotelLimit }},
+                title: {!! json_encode($pkg->title ?? '') !!},
+                location: {!! json_encode($pkg->location ?? '') !!},
+                duration: {!! json_encode($pkg->duration ?? '') !!},
+                price: {!! json_encode($pkg->price ?? '') !!},
+                currency: {!! json_encode($pkg->currency ?? '₹') !!},
+                inrPrice: '',
+                rates: { '₹': 1, '$': 86.5, '€': 89.2, '£': 105.4, 'AED': 23.5 },
+                initPrice() {
+                    if (this.price) {
+                        this.inrPrice = (this.price * this.rates[this.currency]).toFixed(2);
+                        if(this.inrPrice.endsWith('.00')) this.inrPrice = Math.round(this.inrPrice);
+                    }
+                },
+                updatePrice(fromBase) {
+                    if (fromBase) {
+                        this.inrPrice = (this.price * this.rates[this.currency]).toFixed(2);
+                        if(this.inrPrice.endsWith('.00')) this.inrPrice = Math.round(this.inrPrice);
+                    } else {
+                        if(this.inrPrice) {
+                            this.price = (this.inrPrice / this.rates[this.currency]).toFixed(2);
+                            if(this.price.endsWith('.00')) this.price = Math.round(this.price);
+                        } else {
+                            this.price = '';
+                        }
+                    }
+                },
+                old_price: {!! json_encode($pkg->old_price ?? '') !!},
+                validity: {!! json_encode($pkg->validity ?? '') !!},
+                sightseeing: {!! json_encode($pkg->sightseeing ?? '') !!},
+                stock: {!! json_encode($pkg->stock ?? '') !!},
+                categories: {!! json_encode($catArray) !!},
+                badge: {!! json_encode($pkg->badge ?? '') !!},
+                group_size: {!! json_encode($pkg->group_size ?? 'Direct Flight') !!},
+                rating: {!! json_encode($pkg->rating ?? '4.8') !!},
+                reviews: {!! json_encode($pkg->reviews ?? '10') !!},
+                previewUrl: {!! json_encode(($pkg->image ?? null) ? asset($pkg->image) : '') !!},
+                uploadedFiles: [],
+                syncFileInput() {
+                    try {
+                        const dt = new DataTransfer();
+                        this.uploadedFiles.forEach(file => dt.items.add(file));
+                        if (this.$refs.galleryFilesInput) {
+                            this.$refs.galleryFilesInput.files = dt.files;
+                        }
+                    } catch (e) {
+                        console.error("DataTransfer sync error:", e);
+                    }
+                },
+                galleryPreviews: {!! json_encode(array_values(array_map(function ($url) {
+                    return [
+                        'url' => asset($url),
+                        'name' => basename($url),
+                        'size' => 'Existing',
+                        'is_gallery' => true,
+                        'path' => $url
+                    ];
+                }, $galleryUrls))) !!},
+                brochureName: {!! json_encode(($pkg->brochure ?? null) ? basename($pkg->brochure) : '') !!},
+                brochureUrl: {!! json_encode(($pkg->brochure ?? null) ? asset($pkg->brochure) : '') !!},
+                itineraryContent: {!! json_encode(strip_tags($pkg->editorial_itinerary ?? '') ? trim(strip_tags($pkg->editorial_itinerary)) : '') !!},
+                overview: {!! json_encode($pkg->overview ?? '') !!},
+                highlights: {!! json_encode(($pkg->highlights ?? null) ? (is_string($pkg->highlights) ? json_decode($pkg->highlights, true) : $pkg->highlights) : []) !!},
+                newHighlight: '',
+                addHighlight() {
+                    if (this.newHighlight.trim()) {
+                        this.highlights.push(this.newHighlight.trim());
+                        this.newHighlight = '';
+                    }
+                },
+                removeHighlight(i) { this.highlights.splice(i, 1); },
+                departureDates: {!! json_encode($departureDates) !!},
+                addDepartureRow() { this.departureDates.push({ month: '', dates: [] }); },
+                removeDepartureRow(i) { this.departureDates.splice(i, 1); },
+                inclusions: {!! json_encode($included) !!},
+                exclusions: {!! json_encode($excluded) !!},
+                newInclusion: '',
+                newExclusion: '',
+                editingInclusionIndex: null,
+                editingExclusionIndex: null,
+                amenitiesList: (() => {
+                    const defaultAmenities = [
+                        'Kitchen facilities', 'Dining', 'Casino', 'Wi-Fi', 
+                        'Health & Beauty treatments', 'Television', 'Parking', 
+                        'Workouts', 'Fitness Center', 'Bar & Lounge', 'Towels', 
+                        'Swimming pools', 'Room Service', 'Express Laundry'
+                    ];
+                    const savedAmenities = JSON.parse(atob('{!! base64_encode(json_encode(json_decode($pkg->amenities ?? "[]", true) ?: [])) !!}'));
+                    const allAmenities = [...new Set([...defaultAmenities, ...savedAmenities])];
+                    return allAmenities.map(name => ({
+                        name: name,
+                        selected: savedAmenities.includes(name)
+                    }));
+                })(),
+                newAmenity: '',
+                editingAmenityIndex: null,
+                addAmenity() {
+                    if (this.newAmenity.trim()) {
+                        this.amenitiesList.push({
+                            name: this.newAmenity.trim(),
+                            selected: true
+                        });
+                        this.newAmenity = '';
+                    }
+                },
+                removeAmenity(index) {
+                    this.amenitiesList.splice(index, 1);
+                },
+                cities: [],
+                newCity: '',
+                keywords: {!! json_encode($keywords) !!},
+                keywordRows: [],
+                initKeywords() {
+                    let kws = this.keywords || [];
+                    if(kws.length === 0) {
+                        this.keywordRows.push({ city: '', state: '', country: '' });
+                    } else {
+                        kws.forEach(k => {
+                            let parts = k.split(',').map(p => p.trim());
+                            this.keywordRows.push({
+                                city: parts[0] || '',
+                                state: parts[1] || '',
+                                country: parts[2] || ''
+                            });
+                        });
+                    }
+                },
+                addKeywordRow() {
+                    this.keywordRows.push({ city: '', state: '', country: '' });
+                },
+                removeKeywordRow(index) {
+                    this.keywordRows.splice(index, 1);
+                    if(this.keywordRows.length === 0) {
+                        this.keywordRows.push({ city: '', state: '', country: '' });
+                    }
+                },
+                addInclusion() {
+                    if (this.newInclusion.trim()) {
+                        this.inclusions.push(this.newInclusion.trim());
+                        this.newInclusion = '';
+                    }
+                },
+                removeInclusion(i) {
+                    this.inclusions.splice(i, 1);
+                },
+                addExclusion() {
+                    if (this.newExclusion.trim()) {
+                        this.exclusions.push(this.newExclusion.trim());
+                        this.newExclusion = '';
+                    }
+                },
+                removeExclusion(i) {
+                    this.exclusions.splice(i, 1);
+                },
+                hidePrice: false,
+                transfers: [],
+                hotels: (() => {
+                    let h = {!! json_encode($pkg->hotels ?? null) !!};
+                    if (typeof h === 'string') {
+                        try { h = JSON.parse(h); } catch(e) { h = []; }
+                    }
+                    return Array.isArray(h) ? h : [];
+                })(),
+                newTransfer: '',
+                newHotelName: '',
+                newHotelCity: '',
+                newHotelRoom: '',
+                newHotelImage: '',
+                editingHotelIndex: null,
+                addHotel() {
+                    if (!Array.isArray(this.hotels)) this.hotels = [];
+                    if (this.hotelLimit > 0 && this.hotels.length >= this.hotelLimit) {
+                        window.showAlertLimit('Your plan allows a maximum of ' + this.hotelLimit + ' hotel options per package.');
+                        return;
+                    }
+                    if (this.newHotelName && this.newHotelName.trim()) {
+                        this.hotels.push({
+                            name: this.newHotelName.trim(),
+                            city: (this.newHotelCity || '').trim(),
+                            room: (this.newHotelRoom || '').trim(),
+                            image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'
+                        });
+                        this.newHotelName = '';
+                        this.newHotelCity = '';
+                        this.newHotelRoom = '';
+                    }
+                },
+                previewPdf() {
+                    if (this.$refs.brochureInput && this.$refs.brochureInput.files && this.$refs.brochureInput.files[0]) {
+                        window.open(URL.createObjectURL(this.$refs.brochureInput.files[0]), '_blank');
+                    }
+                },
+                clearPdf() {
+                    this.brochureName = '';
+                    if (this.$refs.brochureInput) this.$refs.brochureInput.value = '';
+                },
+                validity_from: '',
+                validity_to: '',
+                toPicker: null,
+                nights: {!! json_encode($pkg->duration ?? "") !!} ? parseInt({!! json_encode($pkg->duration ?? "") !!}) || '' : '',
+                updateDurationFromNights() {
+                    if (this.nights && !isNaN(parseInt(this.nights))) {
+                        let n = parseInt(this.nights);
+                        this.duration = `${n} Nights / ${n + 1} Days`;
+                    } else {
+                        this.duration = '';
+                    }
+                },
+                init() {
+                    this.initKeywords();
+                    if (this.duration && this.duration.includes(' Nights')) {
+                        this.nights = parseInt(this.duration.split(' ')[0]);
+                    }
+
+                    flatpickr(this.$refs.validityPicker, {
+                        dateFormat: 'd M Y',
+                        defaultDate: this.validity,
+                        minDate: 'today',
+                        onChange: (selectedDates, dateStr) => {
+                            this.validity = dateStr;
+                        }
+                    });
+                },
+                get hasItineraryData() { return this.itineraryContent.trim() !== '' || this.days.some(d => (d.title || '').trim() !== '' || (d.desc || '').trim() !== ''); },
+                days: {!! ($itinerary && count($itinerary) > 0) ? json_encode($itinerary) : json_encode([['title' => '', 'desc' => '', 'duration' => '']]) !!},
+                addDay() {
+                    this.days.push({ title: '', desc: '' });
+                },
+                removeDay(index) {
+                    this.days.splice(index, 1);
+                },
+                handleGalleryChange(event) {
+                    const files = event.target.files;
+                    if (!files || files.length === 0) return;
+                    for (let i = 0; i < files.length; i++) {
+                        if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
+                            window.showAlertLimit('Your plan allows a maximum of ' + this.photoLimit + ' package photos in Gallery Portfolio.');
+                            break;
+                        }
+                        const fileObj = files[i];
+                        const fileIdx = this.uploadedFiles.length;
+                        this.uploadedFiles.push(fileObj);
+                        this.galleryPreviews.push({
+                            url: URL.createObjectURL(fileObj),
+                            name: fileObj.name,
+                            size: (fileObj.size / (1024 * 1024)).toFixed(1) + ' MB',
+                            is_gallery: false,
+                            file_index: fileIdx
+                        });
+                    }
+                    this.syncFileInput();
+                },
+                removeGalleryPhoto(index) {
+                    const item = this.galleryPreviews[index];
+                    if (item && !item.is_gallery && typeof item.file_index !== 'undefined') {
+                        const fileIdx = item.file_index;
+                        this.uploadedFiles.splice(fileIdx, 1);
+                        this.galleryPreviews.forEach(p => {
+                            if (!p.is_gallery && typeof p.file_index !== 'undefined' && p.file_index > fileIdx) {
+                                p.file_index--;
+                            }
+                        });
+                        this.syncFileInput();
+                    }
+                    this.galleryPreviews.splice(index, 1);
+                },
+                // Gallery Modal State
+                isGalleryModalOpen: false,
+                galleryModalType: 'main', // 'main' or 'gallery'
+                currentGalleryFolder: null,
+                galleryBreadcrumbs: [],
+                galleryFolders: [],
+                galleryImages: [],
+
+                openGalleryModal(type) {
+                    this.galleryModalType = type;
+                    this.isGalleryModalOpen = true;
+                    this.fetchGallery();
+                },
+                closeGalleryModal() {
+                    this.isGalleryModalOpen = false;
+                },
+                fetchGallery(folderId = null) {
+                    let url = '{!! request()->is("admin/*") ? route("admin.api.gallery") : route("agent.api.gallery") !!}';
+                    if (folderId) url += '?folder=' + folderId;
+                    url += (url.includes('?') ? '&' : '?') + '_t=' + new Date().getTime();
+
+                    fetch(url)
+                        .then(res => res.json())
+                        .then(data => {
+                            this.galleryFolders = data.folders;
+                            this.galleryImages = data.images;
+                            this.galleryBreadcrumbs = data.breadcrumbs;
+                            this.currentGalleryFolder = folderId;
+                        });
+                },
+                toggleGalleryImage(image) {
+                    const baseUrl = '{!! asset('') !!}';
+                    const targetPath = '/' + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path);
+                    const fullUrl = baseUrl + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path);
+                    
+                    const index = this.galleryPreviews.findIndex(p => p.url === fullUrl);
+                    if (index === -1) {
+                        if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
+                            window.showAlertLimit('Your plan allows a maximum of ' + this.photoLimit + ' package photos in Gallery Portfolio.');
+                            return;
+                        }
+                        this.galleryPreviews.push({
+                            url: fullUrl,
+                            name: image.name,
+                            is_gallery: true,
+                            path: targetPath,
+                            size: 'From Gallery'
+                        });
+                    } else {
+                        this.galleryPreviews.splice(index, 1);
+                    }
+                }
+            };
+        }
     </script>
 
-    <div class="space-y-4 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="{ 
-        step: 1,
-        showGalleryError: false,
-        showBrochureError: false,
-        category: {{ json_encode($pkg->category ?? ($canDomestic ? 'domestic' : ($canInternational ? 'international' : 'domestic'))) }},
-        photoLimit: {{ (int)$photoLimit }},
-        hotelLimit: {{ (int)$hotelLimit }},
-        title: {{ json_encode($pkg->title ?? '') }},
-        location: {{ json_encode($pkg->location ?? '') }},
-        duration: {{ json_encode($pkg->duration ?? '') }},
-        price: {{ json_encode($pkg->price ?? '') }},
-        currency: {{ json_encode($pkg->currency ?? '₹') }},
-        inrPrice: '',
-        rates: { '₹': 1, '$': 86.5, '€': 89.2, '£': 105.4, 'AED': 23.5 },
-        initPrice() {
-            if (this.price) {
-                this.inrPrice = (this.price * this.rates[this.currency]).toFixed(2);
-                if(this.inrPrice.endsWith('.00')) this.inrPrice = Math.round(this.inrPrice);
-            }
-        },
-        updatePrice(fromBase) {
-            if (fromBase) {
-                this.inrPrice = (this.price * this.rates[this.currency]).toFixed(2);
-                if(this.inrPrice.endsWith('.00')) this.inrPrice = Math.round(this.inrPrice);
-            } else {
-                if(this.inrPrice) {
-                    this.price = (this.inrPrice / this.rates[this.currency]).toFixed(2);
-                    if(this.price.endsWith('.00')) this.price = Math.round(this.price);
-                } else {
-                    this.price = '';
-                }
-            }
-        },
-        old_price: {{ json_encode($pkg->old_price ?? '') }},
-        validity: {{ json_encode($pkg->validity ?? '') }},
-        sightseeing: {{ json_encode($pkg->sightseeing ?? '') }},
-        stock: {{ json_encode($pkg->stock ?? '') }},
-        categories: {{ json_encode($catArray) }},
-        badge: {{ json_encode($pkg->badge ?? '') }},
-        group_size: {{ json_encode($pkg->group_size ?? 'Direct Flight') }},
-        rating: {{ json_encode($pkg->rating ?? '4.8') }},
-        reviews: {{ json_encode($pkg->reviews ?? '10') }},
-        previewUrl: {{ json_encode(($pkg->image ?? null) ? asset($pkg->image) : '') }},
-        uploadedFiles: [],
-        syncFileInput() {
-            try {
-                const dt = new DataTransfer();
-                this.uploadedFiles.forEach(file => dt.items.add(file));
-                if (this.$refs.galleryFilesInput) {
-                    this.$refs.galleryFilesInput.files = dt.files;
-                }
-            } catch (e) {
-                console.error("DataTransfer sync error:", e);
-            }
-        },
-        galleryPreviews: {{ json_encode(array_values(array_map(function ($url) {
-            return [
-                'url' => asset($url),
-                'name' => basename($url),
-                'size' => 'Existing',
-                'is_gallery' => true,
-                'path' => $url
-            ];
-        }, $galleryUrls))) }},
-        brochureName: {{ json_encode(($pkg->brochure ?? null) ? basename($pkg->brochure) : '') }},
-        brochureUrl: {{ json_encode(($pkg->brochure ?? null) ? asset($pkg->brochure) : '') }},
-        itineraryContent: {{ json_encode(strip_tags($pkg->editorial_itinerary ?? '') ? trim(strip_tags($pkg->editorial_itinerary)) : '') }},
-        overview: {{ json_encode($pkg->overview ?? '') }},
-        highlights: {{ json_encode(($pkg->highlights ?? null) ? (is_string($pkg->highlights) ? json_decode($pkg->highlights, true) : $pkg->highlights) : []) }},
-        newHighlight: '',
-        addHighlight() {
-            if (this.newHighlight.trim()) {
-                this.highlights.push(this.newHighlight.trim());
-                this.newHighlight = '';
-            }
-        },
-        removeHighlight(i) { this.highlights.splice(i, 1); }, departureDates: {{ json_encode($departureDates) }}, addDepartureRow() { this.departureDates.push({ month: '', dates: [] }); }, removeDepartureRow(i) { this.departureDates.splice(i, 1); },
-        inclusions: {{ json_encode($included) }},
-        exclusions: {{ json_encode($excluded) }},
-        newInclusion: '',
-        newExclusion: '',
-        editingInclusionIndex: null,
-        editingExclusionIndex: null,
-        amenitiesList: (() => {
-            const defaultAmenities = [
-                'Kitchen facilities', 'Dining', 'Casino', 'Wi-Fi', 
-                'Health & Beauty treatments', 'Television', 'Parking', 
-                'Workouts', 'Fitness Center', 'Bar & Lounge', 'Towels', 
-                'Swimming pools', 'Room Service', 'Express Laundry'
-            ];
-            const savedAmenities = JSON.parse(atob('{{ base64_encode(json_encode(json_decode($pkg->amenities ?? "[]", true) ?: [])) }}'));
-            const allAmenities = [...new Set([...defaultAmenities, ...savedAmenities])];
-            return allAmenities.map(name => ({
-                name: name,
-                selected: savedAmenities.includes(name)
-            }));
-        })(),
-        newAmenity: '',
-        editingAmenityIndex: null,
-        addAmenity() {
-            if (this.newAmenity.trim()) {
-                this.amenitiesList.push({
-                    name: this.newAmenity.trim(),
-                    selected: true
-                });
-                this.newAmenity = '';
-            }
-        },
-        removeAmenity(index) {
-            this.amenitiesList.splice(index, 1);
-        },
-        cities: [],
-        newCity: '',
-        keywords: {{ json_encode($keywords) }},
-        keywordRows: [],
-        initKeywords() {
-            let kws = this.keywords || [];
-            if(kws.length === 0) {
-                this.keywordRows.push({ city: '', state: '', country: '' });
-            } else {
-                kws.forEach(k => {
-                    let parts = k.split(',').map(p => p.trim());
-                    this.keywordRows.push({
-                        city: parts[0] || '',
-                        state: parts[1] || '',
-                        country: parts[2] || ''
-                    });
-                });
-            }
-        },
-        addKeywordRow() {
-            this.keywordRows.push({ city: '', state: '', country: '' });
-        },
-        removeKeywordRow(index) {
-            this.keywordRows.splice(index, 1);
-            if(this.keywordRows.length === 0) {
-                this.keywordRows.push({ city: '', state: '', country: '' });
-            }
-        },
-
-        addInclusion() {
-            if (this.newInclusion.trim()) {
-                this.inclusions.push(this.newInclusion.trim());
-                this.newInclusion = '';
-            }
-        },
-        removeInclusion(i) { this.inclusions.splice(i, 1); },
-        addExclusion() {
-            if (this.newExclusion.trim()) {
-                this.exclusions.push(this.newExclusion.trim());
-                this.newExclusion = '';
-            }
-        },
-        removeExclusion(i) { this.exclusions.splice(i, 1); },
-        hidePrice: false,
-        transfers: [],
-        hotels: (() => {
-            let h = {{ json_encode($pkg->hotels ?? null) }};
-            if (typeof h === 'string') {
-                try { h = JSON.parse(h); } catch(e) { h = []; }
-            }
-            return Array.isArray(h) ? h : [];
-        })(),
-        newTransfer: '',
-        newHotelName: '',
-        newHotelCity: '',
-        newHotelRoom: '',
-        newHotelImage: '',
-        editingHotelIndex: null,
-        addHotel() {
-            if (!Array.isArray(this.hotels)) this.hotels = [];
-            if (this.hotelLimit > 0 && this.hotels.length >= this.hotelLimit) {
-                window.showAlertLimit('Your plan allows a maximum of ' + this.hotelLimit + ' hotel options per package.');
-                return;
-            }
-            if (this.newHotelName && this.newHotelName.trim()) {
-                this.hotels.push({
-                    name: this.newHotelName.trim(),
-                    city: (this.newHotelCity || '').trim(),
-                    room: (this.newHotelRoom || '').trim(),
-                    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&q=80&w=100'
-                });
-                this.newHotelName = '';
-                this.newHotelCity = '';
-                this.newHotelRoom = '';
-            }
-        },
-        previewPdf() {
-            if (this.$refs.brochureInput && this.$refs.brochureInput.files && this.$refs.brochureInput.files[0]) {
-                window.open(URL.createObjectURL(this.$refs.brochureInput.files[0]), '_blank');
-            }
-        },
-        clearPdf() {
-            this.brochureName = '';
-            if (this.$refs.brochureInput) this.$refs.brochureInput.value = '';
-        },
-        validity_from: '',
-        validity_to: '',
-        toPicker: null,
-        nights: '{{ $pkg->duration ?? "" }}' ? parseInt('{{ $pkg->duration ?? "" }}') || '' : '',
-        updateDurationFromNights() {
-            if (this.nights && !isNaN(parseInt(this.nights))) {
-                let n = parseInt(this.nights);
-                this.duration = `${n} Nights / ${n + 1} Days`;
-            } else {
-                this.duration = '';
-            }
-        },
-        init() {
-            this.initKeywords();
-            if (this.duration && this.duration.includes(' Nights')) {
-                this.nights = parseInt(this.duration.split(' ')[0]);
-            }
-
-            flatpickr(this.$refs.validityPicker, {
-                dateFormat: 'd M Y',
-                defaultDate: this.validity,
-                minDate: 'today',
-                onChange: (selectedDates, dateStr) => {
-                    this.validity = dateStr;
-                }
-            });
-        },
-        get hasItineraryData() { return this.itineraryContent.trim() !== '' || this.days.some(d => (d.title || '').trim() !== '' || (d.desc || '').trim() !== ''); },
-        days: {{ ($itinerary && count($itinerary) > 0) ? json_encode($itinerary) : json_encode([['title' => '', 'desc' => '', 'duration' => '']]) }},
-        addDay() {
-            this.days.push({ title: '', desc: '' });
-        },
-        removeDay(index) {
-            this.days.splice(index, 1);
-        },
-        handleGalleryChange(event) {
-            const files = event.target.files;
-            if (!files || files.length === 0) return;
-            for (let i = 0; i < files.length; i++) {
-                if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
-                    window.showAlertLimit('Your plan allows a maximum of ' + this.photoLimit + ' package photos in Gallery Portfolio.');
-                    break;
-                }
-                const fileObj = files[i];
-                const fileIdx = this.uploadedFiles.length;
-                this.uploadedFiles.push(fileObj);
-                this.galleryPreviews.push({
-                    url: URL.createObjectURL(fileObj),
-                    name: fileObj.name,
-                    size: (fileObj.size / (1024 * 1024)).toFixed(1) + ' MB',
-                    is_gallery: false,
-                    file_index: fileIdx
-                });
-            }
-            this.syncFileInput();
-        },
-        removeGalleryPhoto(index) {
-            const item = this.galleryPreviews[index];
-            if (item && !item.is_gallery && typeof item.file_index !== 'undefined') {
-                const fileIdx = item.file_index;
-                this.uploadedFiles.splice(fileIdx, 1);
-                this.galleryPreviews.forEach(p => {
-                    if (!p.is_gallery && typeof p.file_index !== 'undefined' && p.file_index > fileIdx) {
-                        p.file_index--;
-                    }
-                });
-                this.syncFileInput();
-            }
-            this.galleryPreviews.splice(index, 1);
-        },
-        // Gallery Modal State
-        isGalleryModalOpen: false,
-        galleryModalType: 'main', // 'main' or 'gallery'
-        currentGalleryFolder: null,
-        galleryBreadcrumbs: [],
-        galleryFolders: [],
-        galleryImages: [],
-
-        openGalleryModal(type) {
-            this.galleryModalType = type;
-            this.isGalleryModalOpen = true;
-            this.fetchGallery();
-        },
-        closeGalleryModal() {
-            this.isGalleryModalOpen = false;
-        },
-        fetchGallery(folderId = null) {
-            let url = '{{ request()->is("admin/*") ? route("admin.api.gallery") : route("agent.api.gallery") }}';
-            if (folderId) url += '?folder=' + folderId;
-            url += (url.includes('?') ? '&' : '?') + '_t=' + new Date().getTime();
-
-            fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                    this.galleryFolders = data.folders;
-                    this.galleryImages = data.images;
-                    this.galleryBreadcrumbs = data.breadcrumbs;
-                    this.currentGalleryFolder = folderId;
-                });
-        },
-        toggleGalleryImage(image) {
-            const baseUrl = '{{ asset('') }}';
-            const targetPath = '/' + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path);
-            const fullUrl = baseUrl + (image.file_path.startsWith('/') ? image.file_path.substring(1) : image.file_path);
-            
-            const index = this.galleryPreviews.findIndex(p => p.url === fullUrl);
-            if (index === -1) {
-                if (this.photoLimit > 0 && this.galleryPreviews.length >= this.photoLimit) {
-                    window.showAlertLimit('Your plan allows a maximum of ' + this.photoLimit + ' package photos in Gallery Portfolio.');
-                    return;
-                }
-                this.galleryPreviews.push({
-                    url: fullUrl,
-                    name: image.name,
-                    is_gallery: true,
-                    path: targetPath,
-                    size: 'From Gallery'
-                });
-            } else {
-                this.galleryPreviews.splice(index, 1);
-            }
-        }
-    }">
+    <div class="space-y-4 pb-12" @itinerary-updated.window="itineraryContent = $event.detail" x-data="packageFormData()">
         <!-- Custom Style Tags for Step Track and Segmented Controls -->
         <style>
             .step-track-container {
