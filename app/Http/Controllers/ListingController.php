@@ -1352,17 +1352,26 @@ class ListingController extends Controller
             $feedbacks = \App\Models\AgentFeedback::where('agent_id', $agent->id)->latest()->get();
 
             $canBusinessProfile = true;
+            $canReviewsRatings = true;
             if ($agent && isset($agent->id)) {
                 $planId = $agent->plan_id ?? null;
                 if (!$planId) {
                     $planId = \DB::table('plans')->where('price', 0)->where('status', 'Active')->value('id') ?? 1;
                 }
-                $perm = \DB::table('plan_permissions')
+                $permBusiness = \DB::table('plan_permissions')
                     ->where('plan_id', $planId)
                     ->where('permission_key', 'feat_business_profile')
                     ->first();
-                if ($perm) {
-                    $canBusinessProfile = (bool)$perm->boolean_value;
+                if ($permBusiness) {
+                    $canBusinessProfile = (bool)$permBusiness->boolean_value;
+                }
+
+                $permReviews = \DB::table('plan_permissions')
+                    ->where('plan_id', $planId)
+                    ->where('permission_key', 'feat_reviews_ratings')
+                    ->first();
+                if ($permReviews) {
+                    $canReviewsRatings = (bool)$permReviews->boolean_value;
                 }
             }
 
@@ -1377,7 +1386,8 @@ class ListingController extends Controller
                 'branches' => $branches,
                 'profile_images' => $profile_images,
                 'feedbacks' => $feedbacks,
-                'canBusinessProfile' => $canBusinessProfile
+                'canBusinessProfile' => $canBusinessProfile,
+                'canReviewsRatings' => $canReviewsRatings
             ]);
         }
 

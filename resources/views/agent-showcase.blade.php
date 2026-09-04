@@ -469,14 +469,27 @@
                         </div>
 
                         <!-- Reviews -->
-                        <div class="agent-info-item">
-                            <svg class="agent-info-icon text-yellow-500" width="18" height="18" fill="currentColor"
-                                viewBox="0 0 24 24">
-                                <polygon
-                                    points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                            </svg>
-                            <span>Reviews <span class="font-black ml-1 text-gray-800">4.9</span></span>
-                        </div>
+                        @if($canReviewsRatings ?? true)
+                            @php
+                                $feedbacksCount = isset($feedbacks) ? $feedbacks->count() : 0;
+                                $avgRating = ($feedbacksCount > 0) ? number_format($feedbacks->avg('rating'), 1) : null;
+                            @endphp
+                            <div class="agent-info-item">
+                                <svg class="agent-info-icon text-yellow-500" width="18" height="18" fill="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <polygon
+                                        points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                </svg>
+                                <span>Reviews 
+                                    @if($feedbacksCount > 0)
+                                        <span class="font-black ml-1 text-gray-800">{{ $avgRating }}</span>
+                                        <span class="text-xs text-gray-500 font-normal">({{ $feedbacksCount }})</span>
+                                    @else
+                                        <span class="font-medium ml-1 text-gray-500 text-xs">No reviews yet</span>
+                                    @endif
+                                </span>
+                            </div>
+                        @endif
 
                         <!-- Empty slot to balance grid -->
                         <div class="hidden lg:block"></div>
@@ -599,7 +612,7 @@
             @endif
 
             <!-- Customer Feedback Section (Below Gallery) -->
-            @if(isset($feedbacks) && $feedbacks->count() > 0)
+            @if(($canReviewsRatings ?? true) && isset($feedbacks) && $feedbacks->count() > 0)
                 <div class="mt-8 border-b border-gray-100 pb-6"
                      x-data="{ 
                         currentIndex: 0,
